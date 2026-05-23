@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Pizza & Massa — Pizzería artesanal en Las Flores, Buenos Aires. Pizzas y empanadas elaboradas al momento. Pedidos al 02244 44-4110.">
+<meta name="theme-color" content="#0f0f0f">
+<title>Pizza & Massa — Las Flores</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./img/logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,400;1,9..144,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:       #c0392b;
+  --red-light: #e74c3c;
+  --red-dark:  #96281b;
+  --green:     #27ae60;
+  --dark:      #0f0f0f;
+  --surface:   #181818;
+  --surface2:  #222;
+  --text:      #f0ece8;
+  --muted:     #888;
+  --border:    rgba(255,255,255,0.07);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--dark); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
+
+section { padding: 5rem 0; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+/* Scroll progress */
+#scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: var(--red); z-index: 1000; transition: width 0.1s linear;
+}
+
+/* Navbar */
+#navbar {
+  position: sticky; top: 0; z-index: 900;
+  background: rgba(15,15,15,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 2rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.nav-brand {
+  font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 1.3rem; text-decoration: none; display: flex; align-items: baseline; gap: 0.3rem;
+}
+.brand-pizza { color: var(--red); }
+.brand-amp   { color: var(--muted); font-size: 0.9em; font-style: normal; font-weight: 400; }
+.brand-massa { color: var(--text); }
+.nav-links { display: flex; align-items: center; gap: 1.5rem; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.04em; transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+#nav-estado {
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.25rem 0.7rem; border-radius: 999px;
+  background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3);
+}
+#nav-estado.cerrado { background: rgba(192,57,43,0.15); color: var(--red-light); border-color: rgba(192,57,43,0.3); }
+.nav-tienda {
+  background: var(--red); color: #fff; padding: 0.5rem 1.1rem; border-radius: 6px;
+  font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: background 0.2s; white-space: nowrap;
+}
+.nav-tienda:hover { background: var(--red-light); }
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  #navbar { padding: 0.8rem 1.25rem; }
+}
+
+/* Navbar logo img */
+.nav-logo { height: 42px; width: auto; display: block; }
+
+/* Hero — full screen con foto de fachada */
+#inicio {
+  min-height: 100vh; position: relative; overflow: hidden; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-bg {
+  position: absolute; inset: -30px;
+  background: url('./img/hero.jpg') center 40%/cover no-repeat;
+  filter: blur(5px);
+  transform: scale(1.08);
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(10,10,10,0.75) 0%, rgba(10,10,10,0.6) 50%, rgba(10,10,10,0.82) 100%);
+}
+.hero-content {
+  position: relative; z-index: 2; text-align: center;
+  padding: 2rem 1.5rem; max-width: 680px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.hero-logo-img {
+  height: clamp(100px, 20vw, 180px); width: auto; margin-bottom: 1.5rem; opacity: 0;
+}
+.hero-eyebrow {
+  font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.45);
+  margin-bottom: 0.75rem; opacity: 0;
+}
+.hero-sub {
+  font-size: 1rem; color: rgba(255,255,255,0.65); max-width: 420px;
+  line-height: 1.6; margin-bottom: 2rem; opacity: 0;
+}
+.hero-actions {
+  display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 2.5rem; opacity: 0;
+}
+.btn-main {
+  background: var(--red); color: #fff; padding: 0.85rem 1.75rem;
+  border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-main:hover { background: var(--red-light); transform: translateY(-1px); }
+.btn-wa-hero {
+  background: rgba(255,255,255,0.1); color: #fff; padding: 0.85rem 1.5rem;
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-weight: 500; font-size: 0.9rem;
+  text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+  backdrop-filter: blur(4px); transition: background 0.2s;
+}
+.btn-wa-hero:hover { background: rgba(255,255,255,0.18); }
+.hero-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; opacity: 0; }
+.hero-meta span { font-size: 0.78rem; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 0.4rem; }
+.hero-meta strong { color: rgba(255,255,255,0.8); font-weight: 500; }
+.hero-scroll {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+  color: rgba(255,255,255,0.3); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.hero-scroll-line {
+  width: 1px; height: 36px; background: rgba(255,255,255,0.2);
+  animation: line-pulse 2s ease-in-out infinite;
+}
+@keyframes line-pulse { 0%,100%{opacity:0.3;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.15)} }
+@media (max-width: 500px) {
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .btn-wa-hero { justify-content: center; }
+}
+
+/* Dividers */
+.divider-line {
+  height: 1px; background: var(--border); margin: 0;
+}
+.divider-geo {
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  padding: 2.5rem 0;
+}
+.divider-geo::before, .divider-geo::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.divider-icon { color: var(--red); font-size: 1.2rem; }
+
+/* Nosotros */
+#nosotros {
+  position: relative; overflow: hidden;
+}
+#nosotros .nosotros-bg {
+  position: absolute; inset: -20px;
+  background: url('./img/logo.webp') center/cover no-repeat;
+  filter: blur(18px) brightness(0.25);
+  transform: scale(1.08);
+}
+#nosotros .container {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 1fr 1.1fr; gap: 3rem; align-items: center;
+}
+.nosotros-text h2 {
+  font-family: var(--font-display); font-style: italic; font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700; color: var(--text); margin-bottom: 1.5rem; line-height: 1.1;
+}
+.nosotros-text h2 em { color: var(--red); font-style: italic; }
+.nosotros-text p { color: var(--muted); margin-bottom: 1.1rem; line-height: 1.75; font-size: 0.95rem; }
+.nosotros-text p:last-child { margin-bottom: 0; }
+.nosotros-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.nosotros-badge {
+  font-size: 0.72rem; padding: 0.3rem 0.8rem; border: 1px solid var(--border);
+  border-radius: 999px; color: var(--muted); letter-spacing: 0.05em;
+}
+.nosotros-photo {
+  position: relative; border-radius: 12px; overflow: hidden;
+  aspect-ratio: 4/3;
+  justify-self: end; width: 100%;
+}
+.nosotros-photo img {
+  width: 100%; height: 100%; object-fit: cover; object-position: 28% center;
+  display: block; transition: transform 0.6s ease;
+}
+.nosotros-photo:hover img { transform: scale(1.03); }
+.nosotros-photo-tag {
+  position: absolute; bottom: 1rem; left: 1rem;
+  background: rgba(15,15,15,0.85); backdrop-filter: blur(8px);
+  padding: 0.5rem 1rem; border-radius: 8px;
+  font-size: 0.75rem; color: var(--text); border: 1px solid var(--border);
+}
+@media (max-width: 768px) {
+  #nosotros .container { grid-template-columns: 1fr; gap: 2rem; }
+  .nosotros-photo { aspect-ratio: 16/9; }
+}
+
+/* Productos */
+#productos { background: var(--surface); }
+#productos h2 {
+  font-family: var(--font-display); font-style: italic; font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700; text-align: center; margin-bottom: 0.5rem;
+}
+.productos-sub { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 2.5rem; }
+.tabs { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+.tab-btn {
+  background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+  padding: 0.6rem 1.4rem; border-radius: 999px; font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.tab-btn.active { background: var(--red); color: #fff; border-color: var(--red); }
+.tab-btn:hover:not(.active) { border-color: rgba(255,255,255,0.15); color: var(--text); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.products-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem;
+}
+.pcard {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; transition: border-color 0.2s, transform 0.2s;
+}
+.pcard:hover { border-color: rgba(192,57,43,0.3); transform: translateY(-2px); }
+.pcard-img {
+  width: 100%; aspect-ratio: 4/3; background: var(--dark);
+  display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.pcard-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pcard-body { padding: 1rem 1.1rem 1.2rem; }
+.pcard-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.3rem; }
+.pcard-desc { color: var(--muted); font-size: 0.78rem; line-height: 1.5; margin-bottom: 0.85rem; }
+.pcard-footer { display: flex; align-items: center; justify-content: space-between; }
+.pcard-price { font-size: 1rem; font-weight: 600; color: var(--text); }
+.pcard-cta {
+  font-size: 0.78rem; color: var(--red); border: 1px solid rgba(192,57,43,0.4);
+  padding: 0.35rem 0.8rem; border-radius: 6px; text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.pcard-cta:hover { background: var(--red); color: #fff; }
+.productos-cta {
+  text-align: center; margin-top: 2.5rem;
+}
+.btn-tienda {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.15);
+  padding: 0.85rem 2rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-tienda:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.25); }
+
+/* Oferta banner */
+#oferta-banner {
+  background: linear-gradient(135deg, var(--red-dark), var(--red));
+  display: none;
+}
+#oferta-banner.visible { display: block; }
+#oferta-banner .container {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.oferta-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.75; margin-bottom: 0.35rem; }
+.oferta-nombre { font-family: var(--font-display); font-style: italic; font-size: 1.6rem; font-weight: 700; }
+.oferta-precios { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; }
+.oferta-original { text-decoration: line-through; opacity: 0.55; font-size: 0.95rem; }
+.oferta-precio-final { font-size: 1.5rem; font-weight: 700; }
+.oferta-badge {
+  background: rgba(0,0,0,0.3); color: #fff; font-size: 0.75rem; font-weight: 700;
+  padding: 0.25rem 0.6rem; border-radius: 6px; letter-spacing: 0.03em;
+}
+.oferta-btn {
+  background: rgba(0,0,0,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+  padding: 0.85rem 2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+  text-decoration: none; white-space: nowrap; transition: background 0.2s;
+}
+.oferta-btn:hover { background: rgba(0,0,0,0.4); }
+@media (max-width: 600px) {
+  #oferta-banner .container { flex-direction: column; align-items: flex-start; }
+}
+
+/* Horarios */
+#horarios h2 {
+  font-family: var(--font-display); font-style: italic; font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700; text-align: center; margin-bottom: 0.5rem;
+}
+#estado-local {
+  display: inline-block; font-size: 0.9rem; font-weight: 500; color: var(--green);
+  text-align: center; width: 100%; margin-bottom: 2rem;
+}
+#estado-local.cerrado { color: var(--red-light); }
+.horarios-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; max-width: 800px; margin: 0 auto;
+}
+.dia-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 1rem; text-align: center;
+}
+.dia-card.hoy { border-color: var(--red); background: rgba(192,57,43,0.08); }
+.dia-nombre { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; }
+.dia-card.hoy .dia-nombre { color: var(--red); }
+.dia-hora { font-size: 0.88rem; font-weight: 500; }
+.dia-cerrado { color: var(--muted); font-size: 0.85rem; }
+.horarios-nota { text-align: center; color: var(--muted); font-size: 0.78rem; margin-top: 1.5rem; }
+
+/* Reseñas */
+#resenas { background: var(--surface); }
+#resenas h2 {
+  font-family: var(--font-display); font-style: italic; font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700; text-align: center; margin-bottom: 0.4rem;
+}
+.resenas-rating { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 2.5rem; }
+.resenas-rating strong { color: var(--text); }
+.resenas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+.resena-card {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.5rem;
+}
+.resena-stars { color: #f1c40f; font-size: 1rem; margin-bottom: 0.75rem; }
+.resena-texto { color: var(--muted); font-size: 0.88rem; line-height: 1.65; margin-bottom: 1rem; }
+.resena-autor { font-size: 0.78rem; color: rgba(255,255,255,0.45); font-weight: 500; }
+
+/* Contacto */
+#contacto h2 {
+  font-family: var(--font-display); font-style: italic; font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700; text-align: center; margin-bottom: 2.5rem;
+}
+#contacto .container { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+.contacto-info { display: flex; flex-direction: column; gap: 1.25rem; }
+.info-row { display: flex; align-items: flex-start; gap: 0.85rem; }
+.info-icon { font-size: 1.1rem; margin-top: 0.1rem; flex-shrink: 0; }
+.info-label { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.15rem; }
+.info-value { font-size: 0.95rem; color: var(--text); }
+.btn-wa-contact {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: #25D366; color: #fff; padding: 0.9rem 1.5rem; border-radius: 8px;
+  font-weight: 600; font-size: 0.9rem; text-decoration: none; margin-top: 0.5rem;
+  transition: opacity 0.2s;
+}
+.btn-wa-contact:hover { opacity: 0.9; }
+.contacto-map { border-radius: 12px; overflow: hidden; height: 380px; background: var(--surface2); border: 1px solid var(--border); }
+.contacto-map iframe { width: 100%; height: 100%; border: none; display: block; }
+@media (max-width: 768px) {
+  #contacto .container { grid-template-columns: 1fr; }
+  .contacto-map { height: 260px; }
+}
+
+/* Footer */
+footer {
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 2.5rem 2rem; text-align: center;
+}
+.footer-brand {
+  display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;
+}
+.footer-brand img { height: 64px; width: auto; }
+.footer-address { color: var(--muted); font-size: 0.82rem; margin-bottom: 1rem; }
+.footer-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.footer-links a { color: var(--muted); font-size: 0.78rem; text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--text); }
+.footer-powered { color: rgba(255,255,255,0.18); font-size: 0.7rem; }
+
+/* WhatsApp float */
+#wa-float {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 800;
+  background: #25D366; color: #fff; border-radius: 999px;
+  width: 54px; height: 54px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.4); text-decoration: none;
+  opacity: 0; transform: scale(0.8); transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+#wa-float.visible { opacity: 1; transform: scale(1); pointer-events: auto; }
+#wa-float svg { width: 26px; height: 26px; fill: currentColor; }
+
+/* Back to top */
+#back-to-top {
+  position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 800;
+  background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  font-size: 1.1rem;
+}
+#back-to-top.visible { opacity: 1; pointer-events: auto; }
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<nav id="navbar">
+  <a class="nav-brand" href="#">
+    <img class="nav-logo" src="./img/logo.png" alt="Pizza & Massa">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#productos">Carta</a></li>
+    <li><a href="#horarios">Horarios</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:0.75rem">
+    <span id="nav-estado">Abierto</span>
+    <a class="nav-tienda" href="./tienda.html">Pedir online</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="inicio">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <img class="hero-logo-img" src="./img/logo.png" alt="Pizza & Massa">
+    <p class="hero-eyebrow">Las Flores · Buenos Aires · Argentina</p>
+    <p class="hero-sub">Elaboradas con masa propia, horneadas al momento. Calidad artesanal en cada porción.</p>
+    <div class="hero-actions">
+      <a href="#productos" class="btn-main">Ver carta</a>
+      <a href="https://wa.me/5492244444110" target="_blank" class="btn-wa-hero">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Pedir ahora
+      </a>
+    </div>
+    <div class="hero-meta">
+      <span>📍 <strong>Leandro N. Alem 610</strong></span>
+      <span>☎ <strong>02244 44-4110</strong></span>
+      <span>🕐 <strong>7 a 23 hs todos los días</strong></span>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<div class="divider-line"></div>
+
+<!-- Nosotros -->
+<section id="nosotros">
+  <div class="nosotros-bg"></div>
+  <div class="container">
+    <div class="nosotros-text">
+      <h2>Masa propia,<br><em>tradición de barrio</em></h2>
+      <p>En Pizza & Massa hacemos la masa nosotros mismos, todos los días. Sin atajos, sin mixes industriales. La receta es simple: harina, agua, levadura, tiempo y un horno que sabe lo que hace.</p>
+      <p>Desde nuestra esquina en Leandro N. Alem 610, llevamos años siendo parte de la mesa de Las Flores. Pizzas que llegan calientes, con abundante mozzarella, y empanadas que se agotan rápido porque la gente vuelve a buscarlas.</p>
+      <p>Abrimos todos los días de 7 a 23 horas porque sabemos que las ganas de una buena pizza no tienen horario fijo. Pedís por teléfono o venís a buscarlas vos: siempre están recién hechas.</p>
+      <div class="nosotros-badges">
+        <span class="nosotros-badge">Masa propia</span>
+        <span class="nosotros-badge">Horneadas al momento</span>
+        <span class="nosotros-badge">4.5★ en Google</span>
+        <span class="nosotros-badge">Solo efectivo</span>
+        <span class="nosotros-badge">Sin reservas</span>
+      </div>
+    </div>
+    <div class="nosotros-photo">
+      <img src="./img/logo.webp" alt="Pizza & Massa">
+      <div class="nosotros-photo-tag">📍 Leandro N. Alem 610</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-geo">
+  <span class="divider-icon">🍕</span>
+</div>
+
+<!-- Productos -->
+<section id="productos">
+  <div class="container">
+    <h2>La <em style="color:var(--red)">carta</em></h2>
+    <p class="productos-sub">Pizzas elaboradas con masa propia · Empanadas artesanales</p>
+    <div class="tabs" id="tabs-bar"></div>
+    <div id="tabs-content"></div>
+    <div class="productos-cta">
+      <a href="./tienda.html" class="btn-tienda">
+        Ver toda la carta y hacer tu pedido →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Oferta banner -->
+<section id="oferta-banner" style="padding:2.5rem 0">
+  <div class="container">
+    <div>
+      <p class="oferta-label">Pizza de la semana</p>
+      <p class="oferta-nombre" id="oferta-nombre">Calabresa</p>
+      <div class="oferta-precios">
+        <span class="oferta-original" id="oferta-original">$8.500</span>
+        <span class="oferta-precio-final" id="oferta-final">$7.000</span>
+        <span class="oferta-badge" id="oferta-pct">-18%</span>
+      </div>
+    </div>
+    <a href="./tienda.html" class="oferta-btn">Aprovechar oferta</a>
+  </div>
+</section>
+
+<!-- Horarios -->
+<section id="horarios">
+  <div class="container">
+    <h2>Horarios</h2>
+    <p id="estado-local">Calculando estado...</p>
+    <div class="horarios-grid" id="horarios-grid"></div>
+    <p class="horarios-nota">Solo efectivo · Sin reservas</p>
+  </div>
+</section>
+
+<!-- Reseñas -->
+<section id="resenas">
+  <div class="container">
+    <h2>Lo que dice la gente</h2>
+    <p class="resenas-rating">⭐ <strong>4.5</strong> · 72 opiniones en Google</p>
+    <div class="resenas-grid">
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"Las mejores pizzas de Las Flores, sin duda. La calabresa es increíble. Rápido, rico y a buen precio. Siempre pido acá cuando tengo ganas de pizza de verdad."</p>
+        <span class="resena-autor">María V. — Google</span>
+      </div>
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"Siempre que pido acá llega todo caliente y bien armado. La fugazzeta es para chuparse los dedos. Las empanadas de jamón y queso también son una pasada. 100% recomendable."</p>
+        <span class="resena-autor">Gonzalo R. — Google</span>
+      </div>
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"Excelente atención y una pizza con mucha mozzarella, como tiene que ser. La masa es casera, se nota. Las empanadas de carne son de lo mejor que probé en el pueblo."</p>
+        <span class="resena-autor">Lucía M. — Google</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contacto -->
+<section id="contacto">
+  <div class="container">
+    <h2>Dónde encontrarnos</h2>
+    <div class="contacto-info">
+      <div class="info-row">
+        <span class="info-icon">📍</span>
+        <div>
+          <p class="info-label">Dirección</p>
+          <p class="info-value">Leandro N. Alem 610, Las Flores, Buenos Aires</p>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">☎</span>
+        <div>
+          <p class="info-label">Teléfono</p>
+          <p class="info-value">02244 44-4110</p>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">🕐</span>
+        <div>
+          <p class="info-label">Horario</p>
+          <p class="info-value">Todos los días de 7:00 a 23:00 hs</p>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">💳</span>
+        <div>
+          <p class="info-label">Medios de pago</p>
+          <p class="info-value">Solo efectivo · Sin reservas</p>
+        </div>
+      </div>
+      <a href="https://wa.me/5492244444110" target="_blank" class="btn-wa-contact">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Pedí por WhatsApp
+      </a>
+    </div>
+    <div class="contacto-map">
+      <iframe
+        src="https://maps.google.com/maps?q=Leandro+N.+Alem+610,+Las+Flores,+Buenos+Aires,+Argentina&output=embed&z=16"
+        loading="lazy"
+        allowfullscreen
+        title="Pizza & Massa en Google Maps">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">
+    <img src="./img/logo.png" alt="Pizza & Massa">
+  </div>
+  <p class="footer-address">Leandro N. Alem 610 · Las Flores, Buenos Aires · 02244 44-4110</p>
+  <div class="footer-links">
+    <a href="#inicio">Inicio</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#productos">Carta</a>
+    <a href="./tienda.html">Tienda online</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+  <p class="footer-powered">Sitio web por PushCommerce</p>
+</footer>
+
+<a id="wa-float" href="https://wa.me/5492244444110" target="_blank" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Volver arriba">↑</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+
+function fmtPrecio(n) { return '$' + n.toLocaleString('es-AR'); }
+
+function buildHorarios(data) {
+  const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+  const nombres = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  const ahora = new Date();
+  const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+  const diaSemana = ahora.getDay();
+  const hoyIdx = diaSemana === 0 ? 6 : diaSemana - 1;
+  const hoy = dias[hoyIdx];
+  const turnos = data.horarios[hoy] || [];
+  const abierto = turnos.some(t => {
+    const [ah, am] = t.abre.split(':').map(Number);
+    const [ch, cm] = t.cierra.split(':').map(Number);
+    return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+  });
+  const estadoEl = document.getElementById('nav-estado');
+  const estadoLocal = document.getElementById('estado-local');
+  if (abierto) {
+    estadoEl.textContent = 'Abierto'; estadoEl.classList.remove('cerrado');
+    estadoLocal.textContent = '✅ Abierto ahora · Cerramos a las 23:00 hs'; estadoLocal.classList.remove('cerrado');
+  } else {
+    estadoEl.textContent = 'Cerrado'; estadoEl.classList.add('cerrado');
+    estadoLocal.textContent = '🔴 Cerrado · Abrimos todos los días a las 7:00 hs'; estadoLocal.classList.add('cerrado');
+  }
+  const grid = document.getElementById('horarios-grid');
+  grid.innerHTML = '';
+  dias.forEach((dia, i) => {
+    const t = data.horarios[dia] || [];
+    const card = document.createElement('div');
+    card.className = 'dia-card' + (i === hoyIdx ? ' hoy' : '');
+    card.innerHTML = `<div class="dia-nombre">${nombres[i]}</div>` +
+      (t.length ? `<div class="dia-hora">${t.map(x => x.abre.replace(':','hs ').replace(':00','') + ' – ' + x.cierra.replace(':00','') + 'hs').join('<br>')}</div>` : '<div class="dia-cerrado">Cerrado</div>');
+    grid.appendChild(card);
+  });
+}
+
+function buildProducts(data) {
+  const tabsBar = document.getElementById('tabs-bar');
+  const tabsContent = document.getElementById('tabs-content');
+  tabsBar.innerHTML = ''; tabsContent.innerHTML = '';
+  data.categorias.forEach((cat, ci) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (ci === 0 ? ' active' : '');
+    btn.textContent = cat.icono + ' ' + cat.nombre;
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + cat.id).classList.add('active');
+    };
+    tabsBar.appendChild(btn);
+
+    const panel = document.createElement('div');
+    panel.id = 'panel-' + cat.id;
+    panel.className = 'tab-panel' + (ci === 0 ? ' active' : '');
+    const grid = document.createElement('div');
+    grid.className = 'products-grid';
+    cat.productos.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'pcard';
+      const imgHtml = p.imagen
+        ? `<div class="pcard-img"><img src="${p.imagen}" alt="${p.nombre}" loading="lazy"></div>`
+        : `<div class="pcard-img">${cat.icono}</div>`;
+      card.innerHTML = `${imgHtml}
+        <div class="pcard-body">
+          <div class="pcard-name">${p.nombre}</div>
+          <div class="pcard-desc">${p.descripcion}</div>
+          <div class="pcard-footer">
+            <span class="pcard-price">${fmtPrecio(p.precio)}</span>
+            <a class="pcard-cta" href="./tienda.html">Pedir</a>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+    panel.appendChild(grid);
+    tabsContent.appendChild(panel);
+  });
+}
+
+function buildOferta(data) {
+  if (!data.oferta || !data.oferta.activa) return;
+  const banner = document.getElementById('oferta-banner');
+  const allProds = data.categorias.flatMap(c => c.productos);
+  const prod = allProds.find(p => p.id === data.oferta.producto_id);
+  if (!prod) return;
+  const pct = Math.round((1 - data.oferta.precio_oferta / prod.precio) * 100);
+  document.getElementById('oferta-nombre').textContent = prod.nombre;
+  document.getElementById('oferta-original').textContent = fmtPrecio(prod.precio);
+  document.getElementById('oferta-final').textContent = fmtPrecio(data.oferta.precio_oferta);
+  document.getElementById('oferta-pct').textContent = '-' + pct + '%';
+  banner.classList.add('visible');
+}
+
+function initPage(data) {
+  buildHorarios(data);
+  buildProducts(data);
+  buildOferta(data);
+  initAnimations();
+}
+
+function initAnimations() {
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Scroll progress
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('scroll-progress').style.width = pct + '%';
+    document.getElementById('wa-float').classList.toggle('visible', window.scrollY > 400);
+    document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 600);
+  });
+
+  // Hero entrance
+  gsap.fromTo('.hero-logo-img', { opacity: 0, scale: 0.9, y: -10 }, { opacity: 1, scale: 1, y: 0, duration: 1.1, delay: 0.2, ease: 'power2.out' });
+  gsap.fromTo('.hero-eyebrow',  { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, delay: 0.8 });
+  gsap.fromTo('.hero-sub',      { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, delay: 1.0 });
+  gsap.fromTo('.hero-actions',  { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, delay: 1.2 });
+  gsap.fromTo('.hero-meta',     { opacity: 0 },        { opacity: 1,        duration: 0.6, delay: 1.5 });
+
+  // Scroll-triggered sections
+  gsap.from('#nosotros .nosotros-text > *', {
+    scrollTrigger: { trigger: '#nosotros', start: 'top 80%' },
+    y: 40, opacity: 0, stagger: 0.15, duration: 0.7, ease: 'power2.out'
+  });
+  gsap.from('.nosotros-photo', {
+    scrollTrigger: { trigger: '#nosotros', start: 'top 75%' },
+    x: 40, opacity: 0, duration: 0.8, ease: 'power2.out'
+  });
+  gsap.from('.pcard', {
+    scrollTrigger: { trigger: '#productos', start: 'top 80%' },
+    y: 30, opacity: 0, stagger: 0.07, duration: 0.5, ease: 'power2.out'
+  });
+  gsap.from('.resena-card', {
+    scrollTrigger: { trigger: '#resenas', start: 'top 80%' },
+    y: 30, opacity: 0, stagger: 0.15, duration: 0.6, ease: 'power2.out'
+  });
+  gsap.from('.dia-card', {
+    scrollTrigger: { trigger: '#horarios', start: 'top 80%' },
+    y: 20, opacity: 0, stagger: 0.06, duration: 0.4
+  });
+}
+
+fetch('./productos.json')
+  .then(r => r.json())
+  .then(initPage)
+  .catch(() => {});
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>

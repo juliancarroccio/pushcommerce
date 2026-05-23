@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Pizza & Massa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,700&family=Inter:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f0f0f; color: #f0ece8; font-family: 'Inter', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center; padding: 2rem;
+  }
+  .num {
+    font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 700;
+    font-size: clamp(6rem, 20vw, 12rem); line-height: 1; color: #c0392b;
+    margin-bottom: 0.25rem;
+  }
+  .brand { margin-bottom: 1rem; }
+  .brand img { height: 80px; width: auto; }
+  .msg { color: #888; font-size: 0.95rem; margin-bottom: 2rem; }
+  .btn {
+    background: #c0392b; color: #fff; padding: 0.8rem 2rem; border-radius: 8px;
+    text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: background 0.2s;
+  }
+  .btn:hover { background: #e74c3c; }
+</style>
+</head>
+<body>
+  <p class="num">404</p>
+  <p class="brand"><img src="./img/logo.png" alt="Pizza & Massa"></p>
+  <p class="msg">Esta página no existe, pero nuestras pizzas sí.</p>
+  <a href="./index.html" class="btn">Volver al inicio</a>
+</body>
+</html>

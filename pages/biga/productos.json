@@ -1,0 +1,86 @@
+{
+  "negocio": {
+    "nombre": "Biga",
+    "whatsapp": "5492244000000",
+    "saludo": "¡Hola Biga! 🥐",
+    "analytics_id": ""
+  },
+  "categorias": [
+    {
+      "id": "facturas",
+      "label": "Facturas",
+      "emoji": "🥐",
+      "cols": 4,
+      "productos": [
+        { "id": 1,  "nombre": "Medialunas de Manteca", "unidad": "6u",  "precio": 2200, "imagen": "img/productos/medialunas-manteca.jpg" },
+        { "id": 2,  "nombre": "Vigilantes",             "unidad": "6u",  "precio": 2000, "imagen": "img/productos/vigilantes.jpg" },
+        { "id": 3,  "nombre": "Cañas de Dulce",         "unidad": "6u",  "precio": 2100, "imagen": "img/productos/canas-dulce.jpg" },
+        { "id": 4,  "nombre": "Cuernitos",               "unidad": "6u",  "precio": 1900, "imagen": "img/productos/cuernitos.jpg" }
+      ]
+    },
+    {
+      "id": "panes",
+      "label": "Panes",
+      "emoji": "🍞",
+      "cols": 4,
+      "productos": [
+        { "id": 5,  "nombre": "Pan de Campo",      "unidad": "1 kg",  "precio": 3200, "imagen": "img/productos/pan-de-campo.jpg" },
+        { "id": 6,  "nombre": "Pan Integral",       "unidad": "500g",  "precio": 2800, "imagen": "img/productos/pan-integral.jpg" },
+        { "id": 7,  "nombre": "Baguette Artesanal", "unidad": "u",     "precio": 1800, "imagen": "img/productos/baguette.jpg" },
+        { "id": 8,  "nombre": "Pan de Leche",       "unidad": "6u",    "precio": 2400, "imagen": "img/productos/pan-leche.jpg" }
+      ]
+    },
+    {
+      "id": "sandwiches",
+      "label": "Sandwiches",
+      "emoji": "🥪",
+      "cols": 4,
+      "productos": [
+        { "id": 9,  "nombre": "Sandwich de Miga",          "unidad": "12u",  "precio": 4800, "imagen": "img/productos/sandwich-miga.jpg" },
+        { "id": 10, "nombre": "Tostados Jamón y Queso",    "unidad": "6u",   "precio": 3800, "imagen": "img/productos/tostados.jpg" },
+        { "id": 11, "nombre": "Club Sandwich",             "unidad": "u",    "precio": 2200, "imagen": "img/productos/club-sandwich.jpg" },
+        { "id": 12, "nombre": "Especial de Bondiola",      "unidad": "u",    "precio": 2600, "imagen": "img/productos/especial-bondiola.jpg" }
+      ]
+    },
+    {
+      "id": "tortas",
+      "label": "Tortas y Postres",
+      "emoji": "🎂",
+      "cols": 3,
+      "productos": [
+        { "id": 13, "nombre": "Torta de Chocolate",       "unidad": "8 porciones", "precio": 9500,  "imagen": "img/productos/torta-chocolate.jpg" },
+        { "id": 14, "nombre": "Cheesecake Frutos Rojos",  "unidad": "8 porciones", "precio": 10500, "imagen": "img/productos/cheesecake.jpg" },
+        { "id": 15, "nombre": "Brownie",                  "unidad": "6u",          "precio": 3800,  "imagen": "img/productos/brownie.jpg" },
+        { "id": 16, "nombre": "Flan Casero",              "unidad": "6u",          "precio": 3200,  "imagen": "img/productos/flan-casero.jpg" }
+      ]
+    },
+    {
+      "id": "masas",
+      "label": "Masas Finas",
+      "emoji": "🍪",
+      "cols": 4,
+      "productos": [
+        { "id": 17, "nombre": "Alfajores de Maicena", "unidad": "6u",  "precio": 3400, "imagen": "img/productos/alfajores-maicena.jpg" },
+        { "id": 18, "nombre": "Pepas de Membrillo",   "unidad": "6u",  "precio": 2800, "imagen": "img/productos/pepas-membrillo.jpg" },
+        { "id": 19, "nombre": "Mantecol Casero",      "unidad": "6u",  "precio": 3200, "imagen": "img/productos/mantecol.jpg" },
+        { "id": 20, "nombre": "Surtido de Masas",     "unidad": "12u", "precio": 5500, "imagen": "img/productos/surtido-masas.jpg" }
+      ]
+    }
+  ],
+  "horarios": {
+    "lunes":     [{ "abre": "07:30", "cierra": "13:00" }, { "abre": "17:00", "cierra": "21:00" }],
+    "martes":    [{ "abre": "07:30", "cierra": "13:00" }, { "abre": "17:00", "cierra": "21:00" }],
+    "miercoles": [{ "abre": "07:30", "cierra": "13:00" }, { "abre": "17:00", "cierra": "21:00" }],
+    "jueves":    [{ "abre": "07:30", "cierra": "13:00" }, { "abre": "17:00", "cierra": "21:00" }],
+    "viernes":   [{ "abre": "07:30", "cierra": "13:00" }, { "abre": "17:00", "cierra": "21:00" }],
+    "sabado":    [{ "abre": "07:30", "cierra": "13:00" }],
+    "domingo":   [{ "abre": "08:00", "cierra": "12:00" }]
+  },
+  "oferta": {
+    "activa": true,
+    "titulo": "Oferta de la semana",
+    "producto_id": 13,
+    "precio_oferta": 7500,
+    "vigencia": "Válido hasta el domingo"
+  }
+}

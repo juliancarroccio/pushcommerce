@@ -1,0 +1,74 @@
+{
+  "negocio": {
+    "nombre": "Amadeo Café",
+    "whatsapp": "5492244485082",
+    "direccion": "Av. San Martín 519, Las Flores",
+    "telefono": "02244 48-5082",
+    "instagram": "@amadeo_cafe",
+    "analytics_id": ""
+  },
+  "oferta": {
+    "activa": true,
+    "producto_id": 2,
+    "texto": "Cappuccino de la semana",
+    "precio_oferta": 3100
+  },
+  "horarios": {
+    "lunes":     [{"abre": "08:00", "cierra": "20:00"}],
+    "martes":    [{"abre": "08:00", "cierra": "20:00"}],
+    "miércoles": [{"abre": "08:00", "cierra": "20:00"}],
+    "jueves":    [{"abre": "08:00", "cierra": "20:00"}],
+    "viernes":   [{"abre": "08:00", "cierra": "20:00"}],
+    "sábado":    [{"abre": "08:00", "cierra": "20:00"}],
+    "domingo":   [{"abre": "08:00", "cierra": "20:00"}]
+  },
+  "categorias": [
+    {
+      "nombre": "Cafés y Bebidas Calientes",
+      "productos": [
+        { "id": 1,  "nombre": "Café con Leche",  "descripcion": "Café de especialidad con leche cremosa",                         "precio": 3500, "emoji": "☕" },
+        { "id": 2,  "nombre": "Cappuccino",        "descripcion": "Doble espresso con espuma de leche y cacao en polvo",            "precio": 3800, "emoji": "☕" },
+        { "id": 3,  "nombre": "Espresso",           "descripcion": "Café de especialidad en taza pequeña",                          "precio": 2500, "emoji": "☕" },
+        { "id": 4,  "nombre": "Cortado",            "descripcion": "Espresso cortado con un toque de leche tibia",                  "precio": 3000, "emoji": "☕" },
+        { "id": 5,  "nombre": "Té en Hebras",       "descripcion": "Blend seleccionado — consultar variedades del día",             "precio": 3000, "emoji": "🫖" }
+      ]
+    },
+    {
+      "nombre": "Bebidas Frías",
+      "productos": [
+        { "id": 6,  "nombre": "Gaseosa",            "descripcion": "Lata 354 ml",                                                   "precio": 2500, "emoji": "🥤" },
+        { "id": 7,  "nombre": "Agua Saborizada",    "descripcion": "Botella 500 ml",                                                "precio": 2500, "emoji": "💧" },
+        { "id": 8,  "nombre": "Cerveza",             "descripcion": "Lata fría",                                                     "precio": 4500, "emoji": "🍺" },
+        { "id": 9,  "nombre": "Jugo Natural",        "descripcion": "De naranja o limón, exprimido al momento",                     "precio": 3500, "emoji": "🍊" }
+      ]
+    },
+    {
+      "nombre": "Pastelería",
+      "productos": [
+        { "id": 10, "nombre": "Medialuna",          "descripcion": "Hojaldrada, recién horneada",                                   "precio": 1800, "emoji": "🥐" },
+        { "id": 11, "nombre": "Croissant",           "descripcion": "De manteca, dorado y crocante",                                "precio": 2500, "emoji": "🥐" },
+        { "id": 12, "nombre": "Cookie",              "descripcion": "De avena con chips de chocolate",                              "precio": 2200, "emoji": "🍪" },
+        { "id": 13, "nombre": "Porción de Torta",   "descripcion": "Torta del día — consultar disponibilidad",                     "precio": 4500, "emoji": "🍰" }
+      ]
+    },
+    {
+      "nombre": "Para Picar",
+      "productos": [
+        { "id": 14, "nombre": "Tostado",             "descripcion": "Jamón y queso en pan lactal tostado",                          "precio": 3500, "emoji": "🥪" },
+        { "id": 15, "nombre": "Sandwich J y Q",      "descripcion": "Sándwich de jamón y queso en pan de molde",                   "precio": 5500, "emoji": "🥪" },
+        { "id": 16, "nombre": "Muzzarela",           "descripcion": "Muzzarela con tomate y albahaca",                              "precio": 6000, "emoji": "🍕" },
+        { "id": 17, "nombre": "Panqueque Pollo",     "descripcion": "Panqueque relleno de pollo y verduras salteadas",              "precio": 9000, "emoji": "🫔" }
+      ]
+    },
+    {
+      "nombre": "Promos",
+      "productos": [
+        { "id": 18, "nombre": "Promo 1 — Café + Medialunas",   "descripcion": "Café con Leche + 2 medialunas",                    "precio": 6500, "emoji": "☕" },
+        { "id": 19, "nombre": "Promo 2 — Café + Tostado",      "descripcion": "Café con Leche + Tostado de J&Q",                  "precio": 8500, "emoji": "☕" },
+        { "id": 20, "nombre": "Promo 3 — Sandwich + Gaseosa",  "descripcion": "Sandwich J y Q + Gaseosa",                         "precio": 9000, "emoji": "🥪" },
+        { "id": 21, "nombre": "Promo 4 — Panqueque + Agua",    "descripcion": "Panqueque pollo y verduras + Agua saborizada",     "precio": 13000, "emoji": "🫔" },
+        { "id": 22, "nombre": "Promo 5 — Muzza + Cerveza",     "descripcion": "Muzzarela + Lata de cerveza",                      "precio": 9500, "emoji": "🍕" }
+      ]
+    }
+  ]
+}

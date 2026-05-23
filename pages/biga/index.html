@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biga — Panadería y Pastelería Artesanal · Las Flores</title>
+  <meta name="description" content="Panadería y pastelería artesanal en Las Flores, Buenos Aires. Facturas, panes, tortas y masas finas hechas con amor. El sabor del tiempo.">
+  <meta property="og:title" content="Biga — El sabor del tiempo">
+  <meta property="og:description" content="Panadería y pastelería artesanal en Las Flores. Facturas, panes, tortas y masas 100% caseras.">
+  <meta property="og:image" content="./logo.png">
+  <link rel="icon" href="./favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#C4956A">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,700;6..96,900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream:    '#F2EDE5',
+            espresso: '#3A3429',
+            'esp-mid':'#4A4338',
+            sage:     '#6E7A6C',
+            'sage-lt':'#9BA89A',
+            wheat:    '#C4956A',
+            'wheat-lt':'#D9AC80',
+            stone:    '#8B857E',
+            parchment:'#FAF7F2',
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'Georgia', 'serif'],
+            bodoni:  ['"Bodoni Moda"', 'Georgia', 'serif'],
+            serif:   ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans:    ['"DM Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #F2EDE5; color: #3A3429; font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, #C4956A, #D9AC80);
+      z-index: 99999; transition: width 0.1s linear;
+    }
+
+    .grain {
+      position: fixed; inset: -50%; width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.022;
+      animation: grain-shift 0.4s steps(1) infinite;
+    }
+    @keyframes grain-shift {
+      0%  { transform: translate(0,0) }
+      25% { transform: translate(-2%,-3%) }
+      50% { transform: translate(3%,2%) }
+      75% { transform: translate(-1%,3%) }
+    }
+
+    .nav-link { transition: color 0.2s; }
+    .nav-link:hover { color: #C4956A; }
+
+    #back-to-top {
+      position: fixed; bottom: 24px; right: 24px; z-index: 30;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: #C4956A; color: #FAF7F2;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+      border: none; cursor: pointer;
+    }
+    #back-to-top.show { opacity: 1; pointer-events: auto; }
+
+    #wa-float {
+      position: fixed; bottom: 24px; left: 24px; z-index: 30;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25D366; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+      text-decoration: none;
+    }
+    #wa-float.show { opacity: 1; pointer-events: auto; }
+    #wa-float:hover { background: #1ebe5c; }
+
+    .hero-img {
+      position: absolute; inset: 0;
+      background: url('./interior.png') center/cover no-repeat;
+      opacity: 0.18;
+    }
+
+    .divider-ornament {
+      display: flex; align-items: center; gap: 12px;
+      color: #C4956A;
+    }
+    .divider-ornament::before, .divider-ornament::after {
+      content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.3;
+    }
+
+    .product-card {
+      background: #FAF7F2;
+      border: 1px solid rgba(196,149,106,0.18);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(58,52,41,0.1);
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: #C4956A; color: #FAF7F2;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500; font-size: 13px; letter-spacing: 0.12em;
+      text-transform: uppercase; text-decoration: none;
+      padding: 14px 36px; transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: #D9AC80; transform: scale(1.02); }
+
+    .btn-outline {
+      display: inline-block;
+      border: 1.5px solid #C4956A; color: #C4956A;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500; font-size: 13px; letter-spacing: 0.12em;
+      text-transform: uppercase; text-decoration: none;
+      padding: 13px 36px; transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+    .btn-outline:hover { background: #C4956A; color: #FAF7F2; transform: scale(1.02); }
+
+    .category-tab {
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 8px 20px; border: 1px solid rgba(196,149,106,0.3);
+      color: #8B857E; cursor: default;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .hour-row { border-bottom: 1px solid rgba(196,149,106,0.12); }
+    .hour-row:last-child { border-bottom: none; }
+
+    .char { display: inline-block; will-change: transform, opacity; }
+    .word { display: inline-block; overflow: hidden; }
+    .word-inner { display: inline-block; will-change: transform, opacity; }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    "name": "Biga",
+    "description": "Panadería y pastelería artesanal en Las Flores, Buenos Aires",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Las Flores",
+      "addressRegion": "Buenos Aires",
+      "addressCountry": "AR"
+    },
+    "url": "https://juliancarroccio.github.io/pushcommerce/pages/biga/",
+    "image": "./logo.png",
+    "openingHours": ["Mo-Fr 07:30-13:00", "Mo-Fr 17:00-21:00", "Sa 07:30-13:00", "Su 08:00-12:00"]
+  }
+  </script>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav id="navbar" class="fixed top-0 inset-x-0 z-50 bg-cream/90 backdrop-blur-sm border-b border-wheat/10 transition-shadow duration-300">
+    <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
+      <a href="#inicio" class="font-bodoni text-2xl font-black text-espresso tracking-wide uppercase" style="font-variation-settings:'opsz' 18">Biga</a>
+      <div class="flex items-center gap-3">
+        <span id="nav-estado" class="hidden font-sans text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-sm"></span>
+        <div class="hidden md:flex items-center gap-6">
+          <a href="#nosotros" class="nav-link font-sans text-sm text-stone">Nosotros</a>
+          <a href="#productos" class="nav-link font-sans text-sm text-stone">Productos</a>
+          <a href="#horarios" class="nav-link font-sans text-sm text-stone">Horarios</a>
+          <a href="#contacto" class="nav-link font-sans text-sm text-stone">Contacto</a>
+        </div>
+        <a id="nav-wa" href="#" target="_blank" rel="noopener" class="btn-primary text-[11px] py-2 px-5">Pedir por WhatsApp</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="inicio" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-14">
+    <div class="hero-img"></div>
+    <div id="hero-content" class="relative z-10 text-center px-6 max-w-3xl mx-auto">
+      <div id="hero-logo" class="mb-8">
+        <img src="./logo.png" alt="Biga" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-wheat/30 shadow-md">
+      </div>
+      <h1 class="font-display text-5xl md:text-7xl font-bold text-espresso leading-tight mb-4">
+        <span id="hero-line1" class="block">El sabor</span>
+        <em id="hero-line2" class="font-normal text-wheat">del tiempo</em>
+      </h1>
+      <p id="hero-sub" class="font-serif italic text-xl text-stone mb-10">
+        Panadería y pastelería artesanal · Las Flores, Buenos Aires
+      </p>
+      <div id="hero-cta" class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="./tienda.html" class="btn-primary">Ver catálogo</a>
+        <a id="hero-wa" href="#" target="_blank" rel="noopener" class="btn-outline">Hacer un pedido</a>
+      </div>
+    </div>
+    <a href="#productos" class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-stone/50 hover:text-wheat transition-colors">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="animate-bounce">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </a>
+  </section>
+
+  <!-- NOSOTROS -->
+  <section id="nosotros" class="py-24 px-6 bg-espresso text-parchment overflow-hidden">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+      <div class="nosotros-text">
+        <p class="font-sans text-xs tracking-widest uppercase text-wheat mb-4">Nuestra historia</p>
+        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight mb-6">
+          Artesanal<br><em class="font-normal text-wheat-lt">desde siempre</em>
+        </h2>
+        <p class="font-sans text-parchment/70 leading-relaxed mb-4">
+          En Biga cada pieza se elabora con el tiempo que merece. Usamos fermentación lenta, ingredientes de calidad y recetas que respetan la tradición panadera de la región.
+        </p>
+        <p class="font-sans text-parchment/70 leading-relaxed mb-8">
+          Desde las primeras medialunas del amanecer hasta las tortas de encargo para cada celebración — ponemos el mismo cuidado en todo lo que sale de nuestra cocina.
+        </p>
+        <a href="./tienda.html" class="btn-primary inline-block">Explorar productos</a>
+      </div>
+      <div class="nosotros-img relative h-80 md:h-auto">
+        <img src="./interior.png" alt="Interior de Biga" class="w-full h-full object-cover rounded-sm shadow-2xl opacity-60">
+        <div class="absolute inset-0 bg-gradient-to-t from-espresso/60 to-transparent rounded-sm"></div>
+        <div class="absolute bottom-6 left-6 right-6">
+          <p class="font-serif italic text-parchment/70 text-lg leading-snug">
+            "Facturas, Panes, Flanes — 100% Manteca"
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div class="px-6 py-2">
+    <div class="max-w-6xl mx-auto divider-ornament">
+      <span class="font-serif italic text-wheat/60 text-sm px-4">hecho con amor, todos los días</span>
+    </div>
+  </div>
+
+  <!-- FEATURED PRODUCTS -->
+  <section id="productos" class="py-24 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="section-header text-center mb-16">
+        <p class="section-label font-sans text-xs tracking-widest uppercase text-wheat mb-3">Lo que hacemos</p>
+        <h2 class="font-display text-4xl md:text-5xl text-espresso mb-4">Nuestros productos</h2>
+        <p class="font-serif italic text-stone text-lg">Elaborados a diario con ingredientes seleccionados, sin aditivos</p>
+      </div>
+
+      <!-- Category tabs (decorative) -->
+      <div id="cat-tabs" class="flex flex-wrap gap-2 justify-center mb-12"></div>
+
+      <!-- Product grid -->
+      <div id="featured-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"></div>
+
+      <div class="productos-cta text-center mt-8">
+        <a href="./tienda.html" class="btn-primary">Ver todo el catálogo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFERTA BANNER -->
+  <div id="oferta-banner" class="hidden bg-espresso text-parchment py-3 px-6">
+    <div class="max-w-6xl mx-auto flex items-center justify-center gap-3 text-sm">
+      <span class="font-display text-wheat text-xs tracking-widest uppercase" id="oferta-titulo"></span>
+      <span class="text-parchment/40">·</span>
+      <span class="font-sans" id="oferta-producto-nombre"></span>
+      <span class="text-parchment/40">·</span>
+      <span class="font-display text-wheat font-bold" id="oferta-precio"></span>
+      <span class="text-parchment/30 text-xs" id="oferta-vigencia"></span>
+    </div>
+  </div>
+
+  <!-- HORARIOS -->
+  <section id="horarios" class="py-24 px-6">
+    <div class="max-w-2xl mx-auto">
+      <div class="section-header text-center mb-12">
+        <p class="section-label font-sans text-xs tracking-widest uppercase text-wheat mb-3">Cuándo encontrarnos</p>
+        <h2 class="font-display text-4xl text-espresso">Horarios</h2>
+      </div>
+      <div id="horarios-tabla" class="border border-wheat/15"></div>
+      <p id="estado-local" class="mt-6 text-center font-sans text-sm"></p>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="py-24 px-6 bg-parchment">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-header text-center mb-14">
+        <p class="section-label font-sans text-xs tracking-widest uppercase text-wheat mb-3">Dónde estamos</p>
+        <h2 class="font-display text-4xl text-espresso mb-4">Encontranos</h2>
+        <p class="font-serif italic text-stone">¿Encargo especial o reserva de medialunas? Escribinos.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Datos -->
+        <div class="contact-left flex flex-col gap-3">
+          <div class="border border-wheat/20 p-5 hover:border-wheat/45 transition-colors group">
+            <p class="font-sans text-[10px] tracking-widest uppercase text-wheat mb-2">Dirección</p>
+            <p class="font-sans text-sm text-espresso/80 leading-relaxed">Hipólito Yrigoyen 371<br>Las Flores, Buenos Aires (B7200)</p>
+            <a href="https://maps.google.com/?q=Hipólito+Yrigoyen+371,+Las+Flores,+Buenos+Aires"
+               target="_blank" rel="noopener"
+               class="inline-block mt-2 font-sans text-[10px] tracking-widest uppercase text-stone/40 group-hover:text-wheat transition-colors">
+              Ver en Google Maps →
+            </a>
+          </div>
+
+          <div class="border border-wheat/20 p-5 hover:border-wheat/45 transition-colors">
+            <p class="font-sans text-[10px] tracking-widest uppercase text-wheat mb-2">Redes sociales</p>
+            <div class="flex items-center gap-3 mt-1">
+              <!-- WA -->
+              <a id="contact-wa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp"
+                 class="w-9 h-9 border border-wheat/20 flex items-center justify-center hover:border-[#25D366]/50 transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.114.553 4.1 1.523 5.823L0 24l6.355-1.498A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-1.958 0-3.786-.53-5.347-1.453l-.384-.228-3.975.937.979-3.875-.25-.397A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+              </a>
+              <!-- IG -->
+              <a href="https://www.instagram.com/bigaelsabordeltiempo" target="_blank" rel="noopener" aria-label="Instagram"
+                 class="w-9 h-9 border border-wheat/20 flex items-center justify-center hover:border-[#E1306C]/40 transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <a id="contact-wa-btn" href="#" target="_blank" rel="noopener"
+             class="flex items-center justify-between p-5 bg-wheat hover:bg-wheat-lt text-parchment transition-colors group">
+            <span>
+              <p class="font-display font-bold text-base uppercase tracking-wider">Escribinos por WhatsApp</p>
+              <p class="font-sans text-parchment/70 text-sm mt-0.5">Respondemos rápido</p>
+            </span>
+            <span class="font-sans text-xl group-hover:translate-x-1 transition-transform">→</span>
+          </a>
+        </div>
+
+        <!-- Mapa -->
+        <div class="contact-right flex flex-col gap-4">
+          <div class="flex-1 border border-wheat/20 overflow-hidden" style="min-height:280px">
+            <iframe
+              src="https://maps.google.com/maps?q=Hip%C3%B3lito+Yrigoyen+371,+Las+Flores,+Buenos+Aires&output=embed"
+              width="100%" height="100%" style="border:0;min-height:280px;display:block"
+              allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Ubicación Biga">
+            </iframe>
+          </div>
+          <a href="./tienda.html" class="btn-outline text-center">Ver el catálogo →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-espresso text-parchment py-10 px-6">
+    <div class="max-w-6xl mx-auto flex flex-col items-center gap-6">
+      <span class="font-bodoni text-3xl font-black text-wheat uppercase" style="font-variation-settings:'opsz' 24">Biga</span>
+      <div class="flex items-center gap-4">
+        <!-- WhatsApp -->
+        <a id="footer-wa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp"
+           class="w-8 h-8 border border-parchment/15 flex items-center justify-center hover:border-wheat/60 transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="text-parchment/60 hover:text-[#25D366]"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.114.553 4.1 1.523 5.823L0 24l6.355-1.498A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-1.958 0-3.786-.53-5.347-1.453l-.384-.228-3.975.937.979-3.875-.25-.397A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        </a>
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/bigaelsabordeltiempo" target="_blank" rel="noopener" aria-label="Instagram"
+           class="w-8 h-8 border border-parchment/15 flex items-center justify-center hover:border-wheat/60 transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="text-parchment/60"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+      </div>
+      <nav class="flex flex-wrap justify-center gap-x-6 gap-y-1 text-[11px] tracking-widest uppercase text-parchment/30">
+        <a href="#inicio" class="hover:text-wheat/60 transition-colors">Inicio</a>
+        <a href="#productos" class="hover:text-wheat/60 transition-colors">Productos</a>
+        <a href="#nosotros" class="hover:text-wheat/60 transition-colors">Nosotros</a>
+        <a href="#horarios" class="hover:text-wheat/60 transition-colors">Horarios</a>
+        <a href="#contacto" class="hover:text-wheat/60 transition-colors">Contacto</a>
+        <a href="./tienda.html" class="hover:text-wheat/60 transition-colors">Tienda</a>
+      </nav>
+      <p class="text-[10px] tracking-widest uppercase text-parchment/15">
+        Las Flores, Buenos Aires · Argentina
+      </p>
+      <p class="text-[9px] tracking-widest uppercase text-parchment/10">PushCommerce by Julian Carroccio</p>
+    </div>
+  </footer>
+
+  <!-- WA Float & Back-to-top -->
+  <a id="wa-float" href="#" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.114.553 4.1 1.523 5.823L0 24l6.355-1.498A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-1.958 0-3.786-.53-5.347-1.453l-.384-.228-3.975.937.979-3.875-.25-.397A9.713 9.713 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+  </a>
+  <button id="back-to-top" aria-label="Volver arriba" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <script>
+    function initGA4(id) {
+      const s = document.createElement('script');
+      s.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+      s.async = true; document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ window.dataLayer.push(arguments); };
+      window.gtag('js', new Date()); window.gtag('config', id);
+    }
+
+    function isAbierto(horarios) {
+      const dias = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+      const now = new Date();
+      const diaKey = dias[now.getDay()];
+      const turnos = horarios[diaKey] || [];
+      const hhmm = now.getHours() * 60 + now.getMinutes();
+      return turnos.some(t => {
+        const [ah, am] = t.abre.split(':').map(Number);
+        const [ch, cm] = t.cierra.split(':').map(Number);
+        return hhmm >= ah * 60 + am && hhmm < ch * 60 + cm;
+      });
+    }
+
+    function getNextOpening(horarios) {
+      const dias = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+      const diaLabels = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+      const now = new Date();
+      const hhmm = now.getHours() * 60 + now.getMinutes();
+      for (let offset = 0; offset < 8; offset++) {
+        const d = new Date(now); d.setDate(d.getDate() + offset);
+        const diaKey = dias[d.getDay()];
+        const turnos = horarios[diaKey] || [];
+        for (const t of turnos) {
+          const [ah, am] = t.abre.split(':').map(Number);
+          const minutos = ah * 60 + am;
+          if (offset > 0 || minutos > hhmm) {
+            if (offset === 0) return `hoy a las ${t.abre}`;
+            if (offset === 1) return `mañana a las ${t.abre}`;
+            return `${diaLabels[d.getDay()]} a las ${t.abre}`;
+          }
+        }
+      }
+      return null;
+    }
+
+    function formatPrecio(n) {
+      return '$' + n.toLocaleString('es-AR');
+    }
+
+    fetch('./productos.json', { cache: 'no-cache' })
+      .then(r => r.json())
+      .then(data => {
+        const negocio = data.negocio;
+        const waBase = `https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(negocio.saludo)}`;
+
+        document.getElementById('nav-wa').href = waBase;
+        document.getElementById('hero-wa').href = waBase;
+        document.getElementById('contact-wa').href = waBase;
+        document.getElementById('contact-wa-btn').href = waBase;
+        document.getElementById('footer-wa').href = waBase;
+        document.getElementById('wa-float').href = waBase;
+
+        if (negocio.analytics_id) initGA4(negocio.analytics_id);
+
+        // Oferta
+        const oferta = data.oferta;
+        if (oferta && oferta.activa) {
+          const allProds = data.categorias.flatMap(c => c.productos);
+          const prod = allProds.find(p => p.id === oferta.producto_id);
+          if (prod) {
+            document.getElementById('oferta-titulo').textContent = oferta.titulo;
+            document.getElementById('oferta-producto-nombre').textContent = prod.nombre;
+            document.getElementById('oferta-precio').textContent = formatPrecio(oferta.precio_oferta);
+            document.getElementById('oferta-vigencia').textContent = oferta.vigencia;
+            document.getElementById('oferta-banner').classList.remove('hidden');
+            if (window._animateOferta) window._animateOferta();
+          }
+        }
+
+        // Category tabs
+        const tabs = document.getElementById('cat-tabs');
+        data.categorias.forEach(cat => {
+          const btn = document.createElement('div');
+          btn.className = 'category-tab font-sans text-stone';
+          btn.textContent = `${cat.emoji} ${cat.label}`;
+          tabs.appendChild(btn);
+        });
+
+        // Featured grid — first product from each category
+        const grid = document.getElementById('featured-grid');
+        const featured = data.categorias.map(c => c.productos[0]).filter(Boolean);
+        featured.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'product-card p-0 overflow-hidden';
+          card.innerHTML = `
+            <div class="aspect-square bg-cream/60 flex items-center justify-center overflow-hidden">
+              <img src="${p.imagen}" alt="${p.nombre}" class="w-full h-full object-cover" loading="lazy"
+                   onerror="this.closest('.aspect-square').innerHTML='<span class=\\'text-3xl\\'>🥐</span>'">
+            </div>
+            <div class="p-3 text-center">
+              <p class="font-display text-sm text-espresso leading-snug">${p.nombre}</p>
+              <p class="font-sans text-xs text-stone mt-0.5">${p.unidad}</p>
+              <p class="font-display text-wheat font-bold mt-1">${formatPrecio(p.precio)}</p>
+            </div>`;
+          grid.appendChild(card);
+        });
+        if (window._animateProductCards) { ScrollTrigger.refresh(); window._animateProductCards(); }
+
+        // Horarios
+        const diasLabels = { lunes:'Lunes', martes:'Martes', miercoles:'Miércoles', jueves:'Jueves', viernes:'Viernes', sabado:'Sábado', domingo:'Domingo' };
+        const tabla = document.getElementById('horarios-tabla');
+        Object.entries(data.horarios).forEach(([dia, turnos]) => {
+          const row = document.createElement('div');
+          row.className = 'hour-row flex justify-between items-center px-6 py-3';
+          const horarioStr = turnos.map(t => `${t.abre}–${t.cierra}`).join('  ·  ');
+          row.innerHTML = `<span class="font-sans text-sm text-espresso">${diasLabels[dia]}</span><span class="font-sans text-sm text-stone">${horarioStr}</span>`;
+          tabla.appendChild(row);
+        });
+        if (window._animateHorarios) { ScrollTrigger.refresh(); window._animateHorarios(); }
+
+        // Estado
+        const abierto = isAbierto(data.horarios);
+        const estadoEl = document.getElementById('estado-local');
+        if (abierto) {
+          estadoEl.innerHTML = `<span class="inline-flex items-center gap-1.5 bg-sage/10 text-sage px-3 py-1.5 text-xs tracking-widest uppercase"><span class="w-1.5 h-1.5 bg-sage rounded-full inline-block"></span> Abierto ahora</span>`;
+        } else {
+          const prox = getNextOpening(data.horarios);
+          estadoEl.innerHTML = `<span class="inline-flex items-center gap-1.5 bg-stone/10 text-stone px-3 py-1.5 text-xs tracking-widest uppercase"><span class="w-1.5 h-1.5 bg-stone/50 rounded-full inline-block"></span> Cerrado${prox ? ` · Abre ${prox}` : ''}</span>`;
+        }
+
+        // Nav estado
+        const navEstado = document.getElementById('nav-estado');
+        navEstado.textContent = abierto ? 'Abierto' : 'Cerrado';
+        navEstado.className = `font-sans text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-sm ${abierto ? 'bg-sage/15 text-sage' : 'bg-stone/15 text-stone'}`;
+        navEstado.classList.remove('hidden');
+      });
+
+    // ── GSAP ────────────────────────────────────────────────────────────────────
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Nav: shadow on scroll
+    ScrollTrigger.create({
+      start: 'top -50px',
+      onEnter:     () => document.getElementById('navbar').style.boxShadow = '0 4px 24px rgba(58,52,41,0.08)',
+      onLeaveBack: () => document.getElementById('navbar').style.boxShadow = 'none',
+    });
+
+    // Hero: logo entrance
+    gsap.from('#hero-logo', {
+      scale: 0.4, opacity: 0, duration: 1.4, ease: 'power4.out',
+    });
+
+    // Hero: title lines slide up from clip
+    gsap.from('#hero-line1', {
+      y: 70, opacity: 0, duration: 1.1, ease: 'power3.out', delay: 0.6,
+    });
+    gsap.from('#hero-line2', {
+      y: 70, opacity: 0, duration: 1.1, ease: 'power3.out', delay: 0.85,
+    });
+
+    // Hero: subtitle + CTA
+    gsap.from('#hero-sub',  { y: 28, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 1.3 });
+    gsap.from('#hero-cta',  { y: 24, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 1.6 });
+
+    // Hero: parallax content on scroll
+    gsap.to('#hero-content', {
+      scrollTrigger: { trigger: '#inicio', start: 'top top', end: 'bottom top', scrub: true },
+      y: 180, opacity: 0.1,
+    });
+
+    // Hero image: subtle Ken Burns
+    gsap.to('.hero-img', {
+      scale: 1.08, duration: 14, ease: 'none', repeat: -1, yoyo: true,
+    });
+
+    // Section labels: wipe reveal
+    gsap.utils.toArray('.section-label').forEach(el => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 88%' },
+        clipPath: 'inset(0 100% 0 0)', opacity: 0,
+        duration: 0.9, ease: 'power3.out',
+      });
+    });
+
+    // Section headers: slide up
+    gsap.utils.toArray('.section-header h2').forEach(el => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 85%' },
+        y: 40, opacity: 0, duration: 0.95, ease: 'power3.out',
+      });
+    });
+    gsap.utils.toArray('.section-header p:not(.section-label)').forEach(el => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 88%' },
+        y: 20, opacity: 0, duration: 0.8, ease: 'power2.out', delay: 0.1,
+      });
+    });
+
+    // Nosotros: text from left, image from right
+    gsap.from('.nosotros-text', {
+      scrollTrigger: { trigger: '.nosotros-text', start: 'top 78%' },
+      x: -70, opacity: 0, duration: 1.1, ease: 'power3.out',
+    });
+    gsap.from('.nosotros-img', {
+      scrollTrigger: { trigger: '.nosotros-img', start: 'top 78%' },
+      x: 70, opacity: 0, duration: 1.1, ease: 'power3.out', delay: 0.15,
+    });
+    // Parallax on nosotros image
+    gsap.to('.nosotros-img img', {
+      scrollTrigger: { trigger: '#nosotros', start: 'top bottom', end: 'bottom top', scrub: true },
+      y: -40,
+    });
+
+    // Divider ornament: lines grow from center
+    gsap.from('.divider-ornament', {
+      scrollTrigger: { trigger: '.divider-ornament', start: 'top 90%' },
+      scaleX: 0, opacity: 0, duration: 1, ease: 'power3.out', transformOrigin: 'center',
+    });
+
+    // Product cards: staggered cascade (triggered after fetch populates them)
+    function animateProductCards() {
+      gsap.from('#featured-grid .product-card', {
+        scrollTrigger: { trigger: '#featured-grid', start: 'top 78%' },
+        y: 60, opacity: 0, duration: 0.85, stagger: 0.08, ease: 'power3.out',
+      });
+      gsap.from('#cat-tabs .category-tab', {
+        scrollTrigger: { trigger: '#cat-tabs', start: 'top 85%' },
+        y: 20, opacity: 0, duration: 0.6, stagger: 0.07, ease: 'power2.out',
+      });
+      gsap.from('.productos-cta', {
+        scrollTrigger: { trigger: '.productos-cta', start: 'top 88%' },
+        y: 20, opacity: 0, duration: 0.7, ease: 'power2.out',
+      });
+    }
+
+    // Horarios rows: staggered slide in (triggered after fetch)
+    function animateHorarios() {
+      gsap.from('#horarios-tabla .hour-row', {
+        scrollTrigger: { trigger: '#horarios-tabla', start: 'top 80%' },
+        x: -30, opacity: 0, duration: 0.65, stagger: 0.06, ease: 'power2.out',
+      });
+      gsap.from('#estado-local', {
+        scrollTrigger: { trigger: '#estado-local', start: 'top 90%' },
+        y: 14, opacity: 0, duration: 0.7, ease: 'power2.out',
+      });
+    }
+
+    // Oferta banner: slide down
+    function animateOferta() {
+      gsap.from('#oferta-banner', {
+        y: -40, opacity: 0, duration: 0.8, ease: 'power3.out',
+      });
+    }
+
+    // Contact: left from left, right from right
+    gsap.from('.contact-left', {
+      scrollTrigger: { trigger: '.contact-left', start: 'top 80%' },
+      x: -55, opacity: 0, duration: 1, ease: 'power3.out',
+    });
+    gsap.from('.contact-right', {
+      scrollTrigger: { trigger: '.contact-right', start: 'top 80%' },
+      x: 55, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.1,
+    });
+
+    // Footer brand
+    gsap.from('footer .font-bodoni', {
+      scrollTrigger: { trigger: 'footer', start: 'top 90%' },
+      scale: 0.7, opacity: 0, duration: 1, ease: 'power3.out',
+    });
+
+    // Expose animation hooks for fetch callback
+    window._animateProductCards = animateProductCards;
+    window._animateHorarios = animateHorarios;
+    window._animateOferta = animateOferta;
+
+    // Scroll: progress bar + back-to-top + WA float
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('scroll-progress').style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+      document.getElementById('back-to-top').classList.toggle('show', scrolled > 300);
+      const heroH = document.getElementById('inicio').offsetHeight;
+      document.getElementById('wa-float').classList.toggle('show', scrolled > heroH * 0.6);
+    }, { passive: true });
+
+    // SW
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "Panadería y Confitería San Martín",
+  "short_name": "San Martín",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#2C2A27",
+  "theme_color": "#C4956A",
+  "icons": [
+    { "src": "./img/logo.png", "sizes": "any", "type": "image/png" }
+  ]
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sala de Exposiciones — MAPA Espacio de Arte</title>
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="icon" href="./favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #000; --white: #fff; --gray-100: #f4f4f4; --gray-200: #e0e0e0; --gray-400: #9e9e9e; --gray-600: #555; --font-display: 'Reem Kufi', sans-serif; --font-body: 'Inter', sans-serif; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--white); color: var(--black); font-family: var(--font-body); font-weight: 300; line-height: 1.7; }
+  nav { position: sticky; top: 0; z-index: 800; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; background: var(--white); border-bottom: 1px solid var(--gray-200); }
+  .nav-logo { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; letter-spacing: 0.15em; text-decoration: none; color: var(--black); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-link { font-family: var(--font-display); font-size: 0.78rem; letter-spacing: 0.1em; color: var(--black); text-decoration: none; text-transform: uppercase; opacity: 0.5; }
+  .nav-link:hover, .nav-link.active { opacity: 1; }
+  @media (max-width: 768px) { .nav-links { display: none; } }
+  .page-hero { position: relative; height: 60vh; overflow: hidden; }
+  .page-hero img { width: 100%; height: 100%; object-fit: cover; }
+  .page-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)); }
+  .page-hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 3rem; color: var(--white); }
+  .page-hero-label { font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.6; margin-bottom: 0.5rem; }
+  .page-hero-title { font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1; }
+  .subnav { border-bottom: 1px solid var(--gray-200); padding: 0 3rem; display: flex; gap: 0; overflow-x: auto; }
+  .subnav a { font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); text-decoration: none; padding: 1rem 1.25rem; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .subnav a:hover { color: var(--black); }
+  .subnav a.active { color: var(--black); border-bottom-color: var(--black); }
+  .content { max-width: 760px; margin: 0 auto; padding: 5rem 3rem; }
+  .content h2 { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3rem); margin-bottom: 2.5rem; line-height: 1.2; }
+  .content p { font-size: 1.05rem; color: var(--gray-600); margin-bottom: 1.5rem; line-height: 1.85; }
+  .back-link { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray-400); text-decoration: none; margin-top: 3rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 2px; }
+  .back-link:hover { color: var(--black); border-bottom-color: var(--black); }
+  footer { padding: 3rem; border-top: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--gray-400); flex-wrap: wrap; gap: 1rem; }
+  footer a { color: inherit; text-decoration: none; }
+  footer a:hover { color: var(--black); }
+  @media (max-width: 600px) { .content { padding: 3rem 1.5rem; } .subnav { padding: 0 1rem; } }
+  .nav-logo { display: flex; align-items: center; }
+  .nav-logo-img { height: 40px; display: block; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="./index.html"><img class="nav-logo-img" src="./img/site/logo-transparent.png" alt="MAPA"></a>
+  <ul class="nav-links">
+    <li><a class="nav-link active" href="./espacio.html">El Espacio</a></li>
+    <li><a class="nav-link" href="./artistas.html">Artistas</a></li>
+    <li><a class="nav-link" href="./exposiciones.html">Exposiciones</a></li>
+    <li><a class="nav-link" href="./index.html#contacto">Contacto</a></li>
+  </ul>
+</nav>
+<div class="page-hero">
+  <img src="./img/espacio/interior1.jpg" alt="MAPA — Sala de Exposiciones" loading="eager">
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-content">
+    <p class="page-hero-label">El Espacio</p>
+    <h1 class="page-hero-title">Sala de Exposiciones</h1>
+  </div>
+</div>
+<nav class="subnav">
+  <a href="./espacio.html">El Espacio</a>
+  <a href="./historia.html">Historia</a>
+  <a href="./sala.html" class="active">Sala de Exposiciones</a>
+  <a href="./trastienda.html">Trastienda</a>
+  <a href="./biblioteca.html">Biblioteca</a>
+  <a href="./patio.html">Patio de Esculturas</a>
+  <a href="./experimental.html">Espacio Experimental</a>
+</nav>
+<div class="content">
+  <h2>Sala de Exposiciones</h2>
+  <p>Realizamos exposiciones individuales y colectivas de artistas locales y de otras regiones del país. Charlas y diálogos con los artistas, seminarios, proyecciones, presentaciones de libros.</p>
+  <p>Diversas propuestas temáticas y conceptuales donde participamos junto a artistas, docentes, y alumnxs generando trabajo en equipo y producciones colectivas.</p>
+  <a class="back-link" href="./espacio.html">← Volver a El Espacio</a>
+</div>
+<footer>
+  <span>© MAPA Espacio de Arte — Av. Rivadavia 489, Las Flores</span>
+  <div style="display:flex;gap:1.5rem">
+    <a href="./index.html">Inicio</a>
+    <a href="./artistas.html">Artistas</a>
+    <a href="https://github.com/juliancarroccio" target="_blank">PushCommerce</a>
+  </div>
+</footer>
+</body>
+</html>

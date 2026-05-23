@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Cani Ventas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080C14;
+      color: #EDF5EE;
+      font-family: 'Manrope', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+    .logo { height: 64px; width: auto; object-fit: contain; margin-bottom: 2.5rem; opacity: 0.7; }
+    .code {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(6rem, 20vw, 10rem);
+      line-height: 1;
+      background: linear-gradient(135deg, #56BC6D, #94D769);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+    .message {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1.125rem;
+      color: #8AA89A;
+      margin-bottom: 2.5rem;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #56BC6D, #94D769);
+      color: #080C14;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 0.875rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <img src="./img/logo.png" alt="Cani Ventas" class="logo">
+  <div class="code">404</div>
+  <p class="message">Esta página no existe.</p>
+  <a href="./index.html" class="btn">Volver al inicio</a>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página no encontrada — Biga</title>
+  <link rel="icon" href="./favicon.ico" sizes="any">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#C4956A">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital@0,400;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #F2EDE5;
+      color: #3A3429;
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+      overflow: hidden;
+    }
+
+    .grain {
+      position: fixed; inset: -50%; width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.02;
+      animation: grain-shift 0.35s steps(1) infinite;
+    }
+    @keyframes grain-shift {
+      0%  { transform: translate(0,0) }
+      25% { transform: translate(-2%,-3%) }
+      50% { transform: translate(3%,2%) }
+      75% { transform: translate(-1%,3%) }
+    }
+
+    .bg-num {
+      position: fixed;
+      font-size: clamp(160px, 30vw, 280px);
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700; line-height: 1;
+      color: rgba(196,149,106,0.06);
+      letter-spacing: 0.05em;
+      user-select: none; pointer-events: none;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    .logo {
+      width: 72px; height: 72px; border-radius: 50%;
+      object-fit: cover; opacity: 0.8;
+      border: 1.5px solid rgba(196,149,106,0.25);
+      margin: 0 auto 32px; display: block;
+    }
+
+    h1 {
+      font-size: 11px; letter-spacing: 0.35em;
+      text-transform: uppercase; color: #C4956A;
+      font-family: 'DM Sans', sans-serif; margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic; font-size: 21px;
+      line-height: 1.5; color: rgba(58,52,41,0.45);
+      margin-bottom: 40px;
+    }
+
+    .divider {
+      width: 3rem; height: 1px;
+      background: rgba(196,149,106,0.2);
+      margin: 0 auto 40px;
+    }
+
+    a.btn {
+      display: inline-block;
+      background: #C4956A; color: #FAF7F2;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500; font-size: 11px;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      text-decoration: none; padding: 14px 40px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    a.btn:hover { background: #D9AC80; transform: scale(1.03); }
+
+    .brand {
+      margin-top: 48px; font-size: 9px;
+      letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(58,52,41,0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <p class="bg-num" aria-hidden="true">404</p>
+
+  <div class="content">
+    <img src="./logo.png" alt="Biga" class="logo">
+    <h1>Página no encontrada</h1>
+    <p class="subtitle">
+      Lo que buscás no está aquí.<br>
+      Pero las medialunas sí.
+    </p>
+    <div class="divider"></div>
+    <a href="./index.html" class="btn">← Volver al inicio</a>
+    <p class="brand">Biga · Las Flores, Buenos Aires</p>
+  </div>
+</body>
+</html>

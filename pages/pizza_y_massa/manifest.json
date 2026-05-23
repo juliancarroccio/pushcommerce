@@ -1,0 +1,12 @@
+{
+  "name": "Pizza & Massa — Las Flores",
+  "short_name": "Pizza & Massa",
+  "description": "Pizzería artesanal en Las Flores, Buenos Aires",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#c0392b",
+  "icons": [
+    { "src": "./img/logo.png", "sizes": "any", "type": "image/png" }
+  ]
+}

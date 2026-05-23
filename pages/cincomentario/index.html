@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cincomentario — Fiambrería y Quesería · Las Flores</title>
+  <meta name="description" content="Fiambrería y Quesería Cincomentario. Quesos regionales, fiambres artesanales y picadas en Las Flores, Buenos Aires.">
+  <meta property="og:title" content="Cincomentario · Fiambrería y Quesería">
+  <meta property="og:description" content="Quesos regionales, fiambres artesanales y picadas. Las Flores, Buenos Aires.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./494509243_18122239129446348_7279241484691807032_n.jpg">
+
+  <link rel="icon" href="./favicon.ico" sizes="any">
+  <link rel="icon" href="./apple-touch-icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#C8822E">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "GroceryStore",
+    "name": "Fiambrería y Quesería Cincomentario",
+    "image": "./494509243_18122239129446348_7279241484691807032_n.jpg",
+    "telephone": "+5402244444777",
+    "email": "RegionalesCincomentario@hotmail.com",
+    "url": "https://juliancarroccio.github.io/pushcommerce/pages/cincomentario/",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. San Martín 862",
+      "addressLocality": "Las Flores",
+      "addressRegion": "Buenos Aires",
+      "postalCode": "B7200",
+      "addressCountry": "AR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -36.0175,
+      "longitude": -59.1003
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.7",
+      "reviewCount": "34"
+    },
+    "sameAs": ["https://www.facebook.com/RegionalesCincomentario"]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wood:        '#1A1008',
+            'wood-mid':  '#261808',
+            'wood-light':'#3D2810',
+            tan:         '#C9A87C',
+            amber:       '#C8822E',
+            'amber-lt':  '#E09840',
+            parchment:   '#F2E8D5',
+            charcoal:    '#0C0800',
+          },
+          fontFamily: {
+            display: ['Oswald', 'sans-serif'],
+            serif:   ['Cormorant Garamond', 'Georgia', 'serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* Film grain overlay */
+    .grain {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.038;
+      animation: grain-shift 0.35s steps(1) infinite;
+    }
+    @keyframes grain-shift {
+      0%  { transform: translate(0,0) }
+      25% { transform: translate(-2%,-3%) }
+      50% { transform: translate(3%,2%) }
+      75% { transform: translate(-1%,3%) }
+    }
+
+    /* Ring decorations */
+    .ring {
+      position: absolute;
+      border-radius: 9999px;
+      border: 1px solid rgba(201,168,124,0.07);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    /* Logo */
+    .logo-img {
+      transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), filter 0.5s ease;
+      filter: drop-shadow(0 0 40px rgba(201,168,124,0.12));
+    }
+    .logo-img:hover {
+      transform: scale(1.06) rotate(4deg);
+      filter: drop-shadow(0 0 60px rgba(201,168,124,0.35));
+    }
+
+    /* Product card */
+    .pcard {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .pcard:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+    }
+
+    /* Divider line */
+    .bar {
+      display: flex; align-items: center; gap: 1rem; color: inherit;
+    }
+    .bar::before, .bar::after {
+      content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.2;
+    }
+
+    /* CTA pulse ring */
+    .cta-main {
+      position: relative;
+    }
+    .cta-main::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 1px solid rgba(200,130,46,0.5);
+      animation: cta-ring 2.4s ease-in-out infinite;
+    }
+    @keyframes cta-ring {
+      0%, 100% { opacity: 0; transform: scale(0.94); }
+      50%       { opacity: 1; transform: scale(1.06); }
+    }
+
+    /* Char spans */
+    .char { display: inline-block; will-change: transform, opacity; }
+
+    /* Scroll progress bar */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0;
+      width: 0%; height: 3px;
+      background: #C8822E;
+      z-index: 99999;
+      pointer-events: none;
+      transition: width 0.08s linear;
+    }
+
+    /* Back to top */
+    #back-to-top {
+      opacity: 0; pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #back-to-top.visible {
+      opacity: 1; pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* WA float */
+    #wa-float {
+      opacity: 0; pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    #wa-float.visible {
+      opacity: 1; pointer-events: auto;
+      transform: translateY(0);
+    }
+    #wa-float:hover { transform: scale(1.1); }
+  </style>
+</head>
+
+<body class="bg-wood text-parchment font-sans overflow-x-hidden">
+  <div class="grain" aria-hidden="true"></div>
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-500">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="font-display text-xs tracking-[0.28em] uppercase text-tan/80">Cincomentario</span>
+        <span id="nav-estado" class="hidden font-display text-[9px] tracking-wider uppercase px-2 py-0.5"></span>
+      </div>
+      <a href="https://wa.me/5492244444777?text=Hola!%20Quisiera%20hacer%20un%20pedido"
+         target="_blank"
+         class="border border-tan/40 hover:border-amber hover:bg-amber/10 text-tan/80 hover:text-amber font-display text-xs tracking-widest uppercase px-5 py-2 transition-all duration-300">
+        Hacer pedido
+      </a>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section id="hero" class="relative flex items-center justify-center min-h-screen overflow-hidden">
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse 90% 70% at 50% 45%, #2E1A06 0%, #1A1008 60%, #0C0800 100%)"></div>
+
+    <!-- rings -->
+    <div class="ring" style="width:500px;height:500px"></div>
+    <div class="ring" style="width:720px;height:720px;border-color:rgba(201,168,124,0.05)"></div>
+    <div class="ring" style="width:960px;height:960px;border-color:rgba(201,168,124,0.03)"></div>
+
+    <div id="hero-content" class="relative z-10 flex flex-col items-center text-center px-6">
+      <!-- Logo badge -->
+      <div class="hero-logo mb-10 w-40 h-40 md:w-52 md:h-52">
+        <img src="./494509243_18122239129446348_7279241484691807032_n.jpg"
+             alt="Cincomentario logo"
+             class="logo-img w-full h-full object-cover rounded-full">
+      </div>
+
+      <!-- Title (split into chars by JS) -->
+      <h1 id="hero-title" class="font-display text-6xl md:text-8xl lg:text-[6.5rem] font-bold tracking-[0.07em] uppercase text-parchment leading-none mb-2">
+        Cincomentario
+      </h1>
+
+      <!-- Separator -->
+      <div class="hero-sub bar text-tan/40 w-72 md:w-[26rem] my-5">
+        <span class="font-serif text-sm italic text-tan whitespace-nowrap tracking-wide">· Fiambrería &amp; Quesería ·</span>
+      </div>
+
+      <p class="hero-sub font-serif text-xl md:text-2xl italic text-parchment/60 mb-10 max-w-md leading-relaxed">
+        Quesos regionales, fiambres artesanales<br>y picadas de verdad. Las Flores.
+      </p>
+
+      <div class="hero-cta flex flex-col sm:flex-row gap-4 items-center">
+        <a href="https://wa.me/5492244444777?text=Hola!%20Quisiera%20hacer%20un%20pedido"
+           target="_blank"
+           class="cta-main bg-amber hover:bg-amber-lt text-wood font-display font-semibold tracking-[0.18em] uppercase text-sm px-10 py-4 transition-all duration-300 hover:scale-105">
+          📲 Pedir por WhatsApp
+        </a>
+        <a href="#productos"
+           class="border border-parchment/25 hover:border-tan text-parchment/55 hover:text-tan font-display text-xs tracking-[0.2em] uppercase px-8 py-4 transition-all duration-300">
+          Ver productos ↓
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="absolute bottom-8 inset-x-0 flex flex-col items-center gap-2 text-tan/30">
+      <span class="font-display text-[10px] tracking-[0.3em] uppercase">scroll</span>
+      <span class="block w-px h-8 bg-tan/20 animate-pulse"></span>
+    </div>
+  </section>
+
+  <!-- ═══ STATEMENT ═══ -->
+  <section class="py-28 px-6 bg-wood-mid overflow-hidden">
+    <div class="max-w-4xl mx-auto text-center">
+      <p id="statement" class="font-serif text-3xl md:text-5xl italic text-parchment/90 leading-relaxed">
+        "Buen queso, buen salame.<br>
+        <em class="text-tan not-italic">Nada más hace falta."</em>
+      </p>
+      <div class="bar text-tan/20 max-w-[6rem] mx-auto mt-10"></div>
+      <p class="mt-6 font-display text-[11px] tracking-[0.35em] uppercase text-tan/40">
+        Av. San Martín 862 · Las Flores · Buenos Aires
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ PRODUCTOS ═══ -->
+  <section id="productos" class="py-28 px-6 bg-parchment">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Lo que ofrecemos</p>
+        <h2 class="font-display text-5xl md:text-6xl text-wood font-bold uppercase">Nuestra selección</h2>
+        <div class="w-16 h-px bg-wood/20 mx-auto mt-5"></div>
+      </div>
+
+      <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <div class="pcard bg-white border border-wood/8 p-8">
+          <p class="text-3xl mb-5">🧀</p>
+          <h3 class="font-display text-lg font-semibold uppercase tracking-wider text-wood mb-3">Quesos Regionales</h3>
+          <div class="w-8 h-px bg-amber mb-4"></div>
+          <p class="text-wood/55 leading-relaxed text-sm">Cremosos, duros, semiduros. Selección artesanal para cada gusto y cada ocasión.</p>
+        </div>
+
+        <div class="pcard bg-white border border-wood/8 p-8">
+          <p class="text-3xl mb-5">🥩</p>
+          <h3 class="font-display text-lg font-semibold uppercase tracking-wider text-wood mb-3">Fiambres y Embutidos</h3>
+          <div class="w-8 h-px bg-amber mb-4"></div>
+          <p class="text-wood/55 leading-relaxed text-sm">Salames, jamones, mortadelas. Cortados al momento, siempre frescos.</p>
+        </div>
+
+        <div class="pcard bg-wood-light text-parchment p-8">
+          <p class="text-3xl mb-5">🫙</p>
+          <h3 class="font-display text-lg font-semibold uppercase tracking-wider mb-3">Picadas y Tablas</h3>
+          <div class="w-8 h-px bg-amber mb-4"></div>
+          <p class="text-parchment/55 leading-relaxed text-sm">La tabla perfecta para tu reunión, armada a medida. Encargá con anticipación.</p>
+        </div>
+
+        <div class="pcard bg-white border border-wood/8 p-8">
+          <p class="text-3xl mb-5">🫒</p>
+          <h3 class="font-display text-lg font-semibold uppercase tracking-wider text-wood mb-3">Conservas y Delicatessen</h3>
+          <div class="w-8 h-px bg-amber mb-4"></div>
+          <p class="text-wood/55 leading-relaxed text-sm">Aceitunas, antipastos y conservas seleccionadas. El complemento perfecto.</p>
+        </div>
+
+        <div class="pcard bg-white border border-wood/8 p-8">
+          <p class="text-3xl mb-5">❄️</p>
+          <h3 class="font-display text-lg font-semibold uppercase tracking-wider text-wood mb-3">Congelados</h3>
+          <div class="w-8 h-px bg-amber mb-4"></div>
+          <p class="text-wood/55 leading-relaxed text-sm">Empanadas, sorrentinos y más. Caseros, listos para llevar y guardar.</p>
+        </div>
+
+        <div class="pcard bg-amber p-8 flex flex-col justify-between">
+          <div>
+            <p class="text-3xl mb-5">🛒</p>
+            <h3 class="font-display text-lg font-semibold uppercase tracking-wider text-wood mb-3">Armá tu pedido</h3>
+            <div class="w-8 h-px bg-wood/25 mb-4"></div>
+            <p class="text-wood/65 leading-relaxed text-sm">Elegí productos, cantidades y mandá el pedido directo por WhatsApp.</p>
+          </div>
+          <a href="./tienda.html"
+             class="mt-6 bg-wood text-parchment font-display text-xs tracking-[0.2em] uppercase px-5 py-3 text-center hover:bg-charcoal transition-colors duration-300 block">
+            Ir al catálogo →
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STATS ═══ -->
+  <section class="py-24 px-6 bg-wood overflow-hidden">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+
+      <div class="stat-block">
+        <p class="font-display text-7xl font-bold text-tan" data-count="4.7" data-decimals="1">0.0</p>
+        <div class="bar text-tan/15 my-4"></div>
+        <p class="font-serif text-base italic text-parchment/40">estrellas en Google</p>
+      </div>
+
+      <div class="stat-block">
+        <p class="font-display text-7xl font-bold text-tan" data-count="34" data-decimals="0">0</p>
+        <div class="bar text-tan/15 my-4"></div>
+        <p class="font-serif text-base italic text-parchment/40">opiniones reales</p>
+      </div>
+
+      <div class="stat-block">
+        <div class="w-24 h-24 mx-auto mb-4">
+          <img src="./494509243_18122239129446348_7279241484691807032_n.jpg"
+               alt="CM" class="w-full h-full rounded-full opacity-70 object-cover">
+        </div>
+        <div class="bar text-tan/15 my-4"></div>
+        <p class="font-serif text-base italic text-parchment/40">en Las Flores</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ RESEÑAS ═══ -->
+  <section class="py-28 px-6 bg-wood overflow-hidden">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Lo que dicen de nosotros</p>
+        <div class="flex items-center justify-center gap-5">
+          <span class="font-display text-7xl font-bold text-tan">4.7</span>
+          <div class="text-left">
+            <div class="text-amber text-2xl tracking-wider">★★★★★</div>
+            <p class="font-serif italic text-parchment/40 text-sm mt-1">34 opiniones en Google</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+        <div class="review-card bg-wood-light border border-tan/10 p-7 flex flex-col">
+          <div class="text-amber text-sm tracking-wider mb-5">★★★★★</div>
+          <p class="font-serif italic text-parchment/75 text-base leading-relaxed flex-1">
+            "Los mejores quesos de Las Flores, sin duda. La tabla picada fue el éxito de la reunión. Siempre frescos y bien cortados."
+          </p>
+          <div class="border-t border-tan/10 pt-5 mt-6 flex items-center justify-between">
+            <p class="font-display text-xs tracking-widest uppercase text-tan/60">María G.</p>
+            <p class="font-serif italic text-parchment/25 text-xs">hace 2 semanas</p>
+          </div>
+        </div>
+
+        <div class="review-card bg-wood-light border border-tan/10 p-7 flex flex-col">
+          <div class="text-amber text-sm tracking-wider mb-5">★★★★★</div>
+          <p class="font-serif italic text-parchment/75 text-base leading-relaxed flex-1">
+            "Pedí las empanadas de carne y los sorrentinos. Todo casero, se nota la diferencia. Muy recomendable para llevar."
+          </p>
+          <div class="border-t border-tan/10 pt-5 mt-6 flex items-center justify-between">
+            <p class="font-display text-xs tracking-widest uppercase text-tan/60">Carlos M.</p>
+            <p class="font-serif italic text-parchment/25 text-xs">hace 1 mes</p>
+          </div>
+        </div>
+
+        <div class="review-card bg-wood-light border border-tan/10 p-7 flex flex-col">
+          <div class="text-amber text-sm tracking-wider mb-5">★★★★★</div>
+          <p class="font-serif italic text-parchment/75 text-base leading-relaxed flex-1">
+            "Atención excelente, los salames artesanales son increíbles. Calidad muy por encima de los supermercados. Volvería siempre."
+          </p>
+          <div class="border-t border-tan/10 pt-5 mt-6 flex items-center justify-between">
+            <p class="font-display text-xs tracking-widest uppercase text-tan/60">Ana L.</p>
+            <p class="font-serif italic text-parchment/25 text-xs">hace 3 semanas</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="https://maps.google.com/?q=Fiambreria+Queseria+Cincomentario+Las+Flores"
+           target="_blank"
+           class="font-display text-[11px] tracking-[0.3em] uppercase text-tan/30 hover:text-tan transition-colors duration-300">
+          Ver todas las reseñas en Google →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CÓMO PEDIR ═══ -->
+  <section class="py-28 px-6 bg-parchment overflow-hidden">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Simple y rápido</p>
+        <h2 class="font-display text-5xl md:text-6xl text-wood font-bold uppercase">¿Cómo pedir?</h2>
+        <div class="w-16 h-px bg-wood/20 mx-auto mt-5"></div>
+      </div>
+
+      <div class="space-y-0">
+
+        <div class="step flex items-start gap-8 py-8 border-b border-wood/12">
+          <span class="font-display text-6xl font-bold text-amber/15 leading-none w-16 flex-shrink-0 text-right select-none">01</span>
+          <div>
+            <h3 class="font-display text-2xl font-semibold uppercase tracking-wider text-wood mb-2">Elegí lo que querés</h3>
+            <p class="text-wood/50 text-sm leading-relaxed">Revisá nuestra selección y armá tu pedido ideal.</p>
+          </div>
+        </div>
+
+        <div class="step flex items-start gap-8 py-8 border-b border-wood/12">
+          <span class="font-display text-6xl font-bold text-amber/15 leading-none w-16 flex-shrink-0 text-right select-none">02</span>
+          <div>
+            <h3 class="font-display text-2xl font-semibold uppercase tracking-wider text-wood mb-2">Escribinos por WhatsApp</h3>
+            <p class="text-wood/50 text-sm leading-relaxed">Respondemos rápido, confirmamos el pedido y acordamos el horario.</p>
+          </div>
+        </div>
+
+        <div class="step flex items-start gap-8 py-8">
+          <span class="font-display text-6xl font-bold text-amber/15 leading-none w-16 flex-shrink-0 text-right select-none">03</span>
+          <div>
+            <h3 class="font-display text-2xl font-semibold uppercase tracking-wider text-wood mb-2">Retirá en el local</h3>
+            <p class="text-wood/50 text-sm leading-relaxed">Pasá por Av. San Martín 862 cuando quieras. Listo.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="text-center mt-16">
+        <a href="https://wa.me/5492244444777?text=Hola!%20Quisiera%20hacer%20un%20pedido"
+           target="_blank"
+           class="cta-main inline-block bg-amber hover:bg-amber-lt text-wood font-display font-semibold tracking-[0.18em] uppercase text-sm px-12 py-5 transition-all duration-300 hover:scale-105">
+          📲 Hacer pedido por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ OFERTA ═══ -->
+  <!-- Controlada por productos.json > oferta. Editar solo ahí. -->
+  <section id="oferta-section" class="hidden py-20 px-6 bg-amber overflow-hidden"></section>
+
+  <!-- ═══ CONTACTO ═══ -->
+  <section id="contacto" class="py-28 px-6 bg-wood">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Dónde estamos</p>
+        <h2 class="font-display text-5xl md:text-6xl text-parchment font-bold uppercase">Encontranos</h2>
+        <div class="w-16 h-px bg-parchment/15 mx-auto mt-5"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="contact-col space-y-3">
+          <div class="border border-tan/15 p-6 hover:border-tan/35 transition-colors duration-300 group">
+            <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber mb-3">Dirección</p>
+            <p class="text-parchment/75 text-sm leading-relaxed">Av. San Martín 862<br>Las Flores, Buenos Aires (B7200)</p>
+            <a href="https://maps.google.com/?q=Fiambreria+Queseria+Cincomentario+Las+Flores"
+               target="_blank"
+               class="inline-block mt-3 font-display text-[10px] tracking-widest uppercase text-tan/40 group-hover:text-tan transition-colors">
+              Ver en mapa →
+            </a>
+          </div>
+          <div class="border border-tan/15 p-6 hover:border-tan/35 transition-colors duration-300">
+            <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber mb-3">Teléfono</p>
+            <a href="tel:+5402244444777" class="text-parchment/75 hover:text-tan text-sm transition-colors">02244 44-4777</a>
+          </div>
+          <div class="border border-tan/15 p-6 hover:border-tan/35 transition-colors duration-300">
+            <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber mb-3">Email</p>
+            <a href="mailto:RegionalesCincomentario@hotmail.com"
+               class="text-parchment/75 hover:text-tan text-sm transition-colors break-all">
+              RegionalesCincomentario@hotmail.com
+            </a>
+          </div>
+          <div class="border border-tan/15 p-6 hover:border-tan/35 transition-colors duration-300">
+            <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber mb-3">Facebook</p>
+            <a href="https://www.facebook.com/RegionalesCincomentario" target="_blank" rel="noopener"
+               class="text-parchment/75 hover:text-tan text-sm transition-colors">
+              @RegionalesCincomentario
+            </a>
+          </div>
+          <div class="border border-tan/15 p-6 hover:border-tan/35 transition-colors duration-300">
+            <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber mb-3">Instagram</p>
+            <a href="https://www.instagram.com/regionalescincomentario/" target="_blank" rel="noopener"
+               class="text-parchment/75 hover:text-tan text-sm transition-colors">
+              @regionalescincomentario
+            </a>
+          </div>
+          <div id="horarios-card" class="hidden border border-tan/15 p-6 hover:border-tan/35 transition-colors duration-300">
+            <div class="flex items-center justify-between mb-3">
+              <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber">Horarios</p>
+              <span id="estado-local" class="font-display text-[9px] tracking-wider uppercase px-2 py-0.5"></span>
+            </div>
+            <div id="horarios-list" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <div class="contact-col flex flex-col gap-4">
+          <div class="flex-1 min-h-56 border border-tan/15 overflow-hidden">
+            <iframe
+              src="https://maps.google.com/maps?q=Av.+San+Martin+862,+Las+Flores,+Buenos+Aires&output=embed"
+              width="100%" height="100%" style="border:0;min-height:280px;display:block"
+              allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Ubicación Cincomentario">
+            </iframe>
+          </div>
+          <a href="https://wa.me/5492244444777?text=Hola!%20Quisiera%20hacer%20una%20consulta"
+             target="_blank"
+             class="flex items-center justify-between p-6 bg-amber hover:bg-amber-lt text-wood transition-colors duration-300 group">
+            <span>
+              <p class="font-display font-semibold text-base uppercase tracking-wider">Escribinos por WhatsApp</p>
+              <p class="text-wood/60 text-sm mt-1">Respondemos rápido</p>
+            </span>
+            <span class="font-display text-2xl group-hover:translate-x-1 transition-transform duration-300">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="bg-charcoal py-14 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
+        <div class="flex items-center gap-5">
+          <img src="./494509243_18122239129446348_7279241484691807032_n.jpg"
+               alt="Cincomentario" class="w-14 h-14 rounded-full opacity-60 object-cover">
+          <div>
+            <p class="font-display text-sm tracking-[0.25em] uppercase text-tan/80">Cincomentario</p>
+            <p class="font-serif italic text-parchment/25 text-xs mt-0.5">Fiambrería y Quesería · Las Flores</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-4">
+          <div class="flex items-center gap-2">
+            <a href="tel:+5402244444777" title="02244 44-4777"
+               class="w-9 h-9 border border-tan/20 hover:border-tan/50 text-parchment/30 hover:text-tan flex items-center justify-center transition-all duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+            </a>
+            <a href="https://wa.me/5492244444777" target="_blank" rel="noopener" title="WhatsApp"
+               class="w-9 h-9 border border-tan/20 hover:border-tan/50 text-parchment/30 hover:text-tan flex items-center justify-center transition-all duration-300">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </a>
+            <a href="https://www.facebook.com/RegionalesCincomentario" target="_blank" rel="noopener" title="Facebook"
+               class="w-9 h-9 border border-tan/20 hover:border-tan/50 text-parchment/30 hover:text-tan flex items-center justify-center transition-all duration-300">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/regionalescincomentario/" target="_blank" rel="noopener" title="Instagram"
+               class="w-9 h-9 border border-tan/20 hover:border-tan/50 text-parchment/30 hover:text-tan flex items-center justify-center transition-all duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+              </svg>
+            </a>
+          </div>
+          <div class="flex gap-6">
+            <a href="#productos" class="font-display text-[10px] tracking-widest uppercase text-parchment/20 hover:text-tan/50 transition-colors">Productos</a>
+            <a href="#contacto" class="font-display text-[10px] tracking-widest uppercase text-parchment/20 hover:text-tan/50 transition-colors">Contacto</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-3">
+        <p class="text-parchment/15 text-xs">© 2025 Cincomentario · Las Flores, Buenos Aires</p>
+        <p class="text-parchment/15 text-xs">
+          Desarrollado por <a href="#" class="text-tan/40 hover:text-tan transition-colors">PushCommerce</a> · Julian Carroccio
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WA Float -->
+  <a id="wa-float"
+     href="https://wa.me/5492244444777?text=Hola!%20Quisiera%20hacer%20un%20pedido"
+     target="_blank"
+     aria-label="Pedir por WhatsApp"
+     class="fixed bottom-6 left-6 z-30 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-xl">
+    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+
+  <!-- Back to top -->
+  <button id="back-to-top"
+          onclick="window.scrollTo({top:0,behavior:'smooth'})"
+          aria-label="Volver al inicio"
+          class="fixed bottom-6 right-6 z-30 w-11 h-11 bg-wood/80 hover:bg-wood text-tan/70 hover:text-tan flex items-center justify-center border border-tan/15 hover:border-tan/35 transition-colors duration-300 backdrop-blur-sm">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+  </button>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ── Nav background on scroll ── */
+    ScrollTrigger.create({
+      start: 'top -60px',
+      onEnter:     () => gsap.to('#nav', { backgroundColor: 'rgba(12,8,0,0.92)', backdropFilter: 'blur(14px)', duration: 0.4 }),
+      onLeaveBack: () => gsap.to('#nav', { backgroundColor: 'transparent',         backdropFilter: 'blur(0px)',  duration: 0.4 }),
+    });
+
+    /* ── Hero: logo entrance ── */
+    gsap.from('.hero-logo', {
+      scale: 0.3, opacity: 0, duration: 1.5, ease: 'power4.out',
+    });
+
+    /* ── Hero: title letter-by-letter ── */
+    const titleEl = document.getElementById('hero-title');
+    titleEl.innerHTML = titleEl.textContent.trim().split('').map(c =>
+      `<span class="char">${c}</span>`
+    ).join('');
+    gsap.from('#hero-title .char', {
+      y: 90, opacity: 0, duration: 1,
+      stagger: 0.032, ease: 'power3.out', delay: 0.7,
+    });
+
+    /* ── Hero: subs & CTA ── */
+    gsap.from('.hero-sub',  { y: 28, opacity: 0, duration: 0.9, stagger: 0.18, ease: 'power3.out', delay: 1.5 });
+    gsap.from('.hero-cta',  { y: 28, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 1.95 });
+
+    /* ── Hero: content parallax on scroll ── */
+    gsap.to('#hero-content', {
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
+      y: 200, opacity: 0.1,
+    });
+
+    /* ── Statement: slide from left ── */
+    gsap.from('#statement', {
+      scrollTrigger: { trigger: '#statement', start: 'top 80%' },
+      x: -70, opacity: 0, duration: 1.2, ease: 'power3.out',
+    });
+
+    /* ── Section headers ── */
+    document.querySelectorAll('.section-head').forEach(el => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 85%' },
+        y: 35, opacity: 0, duration: 0.9, ease: 'power3.out',
+      });
+    });
+
+    /* ── Product cards: staggered cascade ── */
+    gsap.from('#cards-grid .pcard', {
+      scrollTrigger: { trigger: '#cards-grid', start: 'top 75%' },
+      y: 80, opacity: 0, duration: 0.9,
+      stagger: 0.1, ease: 'power3.out',
+    });
+
+    /* ── Stats: count up ── */
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const target   = parseFloat(el.dataset.count);
+      const decimals = parseInt(el.dataset.decimals ?? '0');
+      ScrollTrigger.create({
+        trigger: el, start: 'top 82%', once: true,
+        onEnter() {
+          gsap.to({ v: 0 }, {
+            v: target, duration: 2, ease: 'power2.out',
+            onUpdate() { el.textContent = this.targets()[0].v.toFixed(decimals); },
+          });
+        },
+      });
+    });
+
+    /* ── Stat blocks: fade in ── */
+    gsap.from('.stat-block', {
+      scrollTrigger: { trigger: '.stat-block', start: 'top 80%' },
+      y: 50, opacity: 0, duration: 0.9, stagger: 0.18, ease: 'power3.out',
+    });
+
+    /* ── Steps: slide alternating ── */
+    document.querySelectorAll('.step').forEach((el, i) => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 88%' },
+        x: i % 2 === 0 ? -55 : 55,
+        opacity: 0, duration: 0.85, ease: 'power3.out',
+      });
+    });
+
+    /* ── Contact columns ── */
+    const contactCols = document.querySelectorAll('.contact-col');
+    gsap.from(contactCols[0], {
+      scrollTrigger: { trigger: contactCols[0], start: 'top 80%' },
+      x: -50, opacity: 0, duration: 1, ease: 'power3.out',
+    });
+    gsap.from(contactCols[1], {
+      scrollTrigger: { trigger: contactCols[1], start: 'top 80%' },
+      x: 50, opacity: 0, duration: 1, ease: 'power3.out',
+    });
+
+    /* ── Reseñas: stagger cascade ── */
+    gsap.from('.review-card', {
+      scrollTrigger: { trigger: '#reviews-grid', start: 'top 75%' },
+      y: 60, opacity: 0, duration: 0.9, stagger: 0.15, ease: 'power3.out',
+    });
+
+    /* ── GA4 ── */
+    function initGA4(id) {
+      const s = document.createElement('script');
+      s.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+      s.async = true;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', id);
+    }
+
+    /* ── Oferta: renderizada desde productos.json ── */
+    fetch('./productos.json', { cache: 'no-cache' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.negocio && data.negocio.analytics_id) initGA4(data.negocio.analytics_id);
+        /* ── Horarios ── */
+        if (data.horarios) {
+          const dias = { lunes:'Lun', martes:'Mar', miercoles:'Mié', jueves:'Jue', viernes:'Vie', sabado:'Sáb', domingo:'Dom' };
+          const ahora = new Date();
+          const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+          const diaActual = Object.keys(dias)[ahora.getDay() === 0 ? 6 : ahora.getDay() - 1];
+          const turnos = data.horarios[diaActual] || [];
+          const abierto = turnos.some(t => {
+            const [ah, am] = t.abre.split(':').map(Number);
+            const [ch, cm] = t.cierra.split(':').map(Number);
+            return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+          });
+          const estadoEl = document.getElementById('estado-local');
+          estadoEl.textContent = abierto ? 'Abierto' : 'Cerrado';
+          estadoEl.className = `font-display text-[9px] tracking-wider uppercase px-2 py-0.5 ${abierto ? 'bg-green-800/40 text-green-400' : 'bg-red-900/30 text-red-400'}`;
+          const navEstado = document.getElementById('nav-estado');
+          navEstado.textContent = abierto ? 'Abierto' : 'Cerrado';
+          navEstado.className = `font-display text-[9px] tracking-wider uppercase px-2 py-0.5 ${abierto ? 'bg-green-800/60 text-green-300' : 'bg-red-900/50 text-red-300'}`;
+          navEstado.classList.remove('hidden');
+          document.getElementById('horarios-list').innerHTML = Object.entries(dias).map(([key, label]) => {
+            const ts = data.horarios[key] || [];
+            const esHoy = key === diaActual;
+            const texto = ts.length ? ts.map(t => `${t.abre} – ${t.cierra}`).join(' · ') : 'Cerrado';
+            return `<div class="flex justify-between ${esHoy ? 'text-parchment' : 'text-parchment/40'} text-xs">
+              <span class="font-display tracking-wider">${label}</span>
+              <span class="font-serif italic">${texto}</span>
+            </div>`;
+          }).join('');
+          document.getElementById('horarios-card').classList.remove('hidden');
+        }
+
+        /* ── Oferta ── */
+        const o = data.oferta;
+        if (!o || !o.activa) return;
+        let product = null;
+        for (const cat of data.categorias) {
+          product = cat.productos.find(p => p.id === o.producto_id);
+          if (product) break;
+        }
+        if (!product) return;
+        const pct = Math.round((1 - o.precio_oferta / product.precio) * 100);
+        const section = document.getElementById('oferta-section');
+        section.innerHTML = `
+          <div class="max-w-5xl mx-auto oferta-inner flex flex-col md:flex-row items-center justify-between gap-10">
+            <div>
+              <p class="font-display text-[11px] tracking-[0.38em] uppercase text-wood/50 mb-3">${o.titulo}</p>
+              <h2 class="font-display text-4xl md:text-5xl font-bold uppercase text-wood leading-tight mb-2">${product.nombre}</h2>
+              <p class="font-serif italic text-wood/55 text-lg mb-6">${product.unidad}</p>
+              <div class="flex items-baseline gap-4">
+                <span class="font-display text-xl text-wood/35 line-through">$${product.precio.toLocaleString('es-AR')}</span>
+                <span class="font-display text-5xl font-bold text-wood">$${o.precio_oferta.toLocaleString('es-AR')}</span>
+                <span class="font-display text-sm font-bold bg-wood text-amber px-3 py-1">-${pct}%</span>
+              </div>
+              <p class="font-serif italic text-wood/45 text-sm mt-3">${o.vigencia}</p>
+            </div>
+            <div class="flex-shrink-0">
+              <a href="./tienda.html"
+                 class="block bg-wood hover:bg-charcoal text-parchment font-display font-semibold tracking-[0.18em] uppercase text-sm px-12 py-5 transition-all duration-300 hover:scale-105 whitespace-nowrap text-center">
+                Ver en el catálogo →
+              </a>
+            </div>
+          </div>
+        `;
+        section.classList.remove('hidden');
+        gsap.from('.oferta-inner', {
+          scrollTrigger: { trigger: '.oferta-inner', start: 'top 82%' },
+          y: 40, opacity: 0, duration: 0.9, ease: 'power3.out',
+        });
+      })
+      .catch(() => {});
+
+    /* ── Scroll: progress bar + back-to-top + WA float ── */
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('scroll-progress').style.width = (total > 0 ? scrolled / total * 100 : 0) + '%';
+
+      const btt = document.getElementById('back-to-top');
+      scrolled > 300 ? btt.classList.add('visible') : btt.classList.remove('visible');
+
+      const heroH = document.getElementById('hero').offsetHeight;
+      const wa = document.getElementById('wa-float');
+      scrolled > heroH * 0.6 ? wa.classList.add('visible') : wa.classList.remove('visible');
+    }, { passive: true });
+
+    /* ── Service Worker ── */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

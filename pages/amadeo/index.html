@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amadeo Café — Las Flores</title>
+  <meta name="description" content="Café de especialidad, blends de té en hebras y pastelería artesanal. Av. San Martín 519, Las Flores.">
+  <link rel="icon" href="./img/favicon.png" type="image/png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:  #1C1C1A;
+      --sage:  #6B7A6D;
+      --cream: #F4EFE6;
+      --mid:   #5A5A55;
+      --warm:  #A07850;
+      --light: #FAFAF7;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLL PROGRESS ── */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      height: 3px; width: 0%; background: var(--sage);
+      transition: width 0.1s linear;
+    }
+
+    /* ── NAVBAR ── */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 64px;
+      background: transparent;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    #navbar.scrolled {
+      background: rgba(244, 239, 230, 0.96);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 1px 0 rgba(28,28,26,0.08);
+    }
+    .nav-logo img {
+      width: 80px; height: auto; display: block;
+      filter: brightness(0) invert(1);
+      transition: filter 0.3s;
+    }
+    #navbar.scrolled .nav-logo img { filter: brightness(0); }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.85); font-size: 0.8rem;
+      font-weight: 500; letter-spacing: 0.06em; text-decoration: none;
+      text-transform: uppercase; transition: color 0.2s;
+    }
+    #navbar.scrolled .nav-links a { color: var(--mid); }
+    .nav-links a:hover { color: var(--sage) !important; }
+
+    #nav-estado {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+    }
+    #nav-estado.abierto { background: #D1FAE5; color: #065F46; }
+    #nav-estado.cerrado { background: #FEE2E2; color: #991B1B; }
+
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; background: none; border: none; padding: 4px;
+    }
+    .nav-hamburger span {
+      width: 22px; height: 2px; background: #fff;
+      transition: background 0.3s; display: block;
+    }
+    #navbar.scrolled .nav-hamburger span { background: var(--dark); }
+
+    /* ── HERO ── */
+    #inicio {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('./img/hero.jpg') center/cover no-repeat;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(28,28,26,0.88) 0%,
+        rgba(28,28,26,0.45) 40%,
+        rgba(28,28,26,0.15) 100%
+      );
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      min-height: 100vh;
+      padding: 0 5rem 5rem;
+      color: #fff;
+      max-width: 680px;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--sage);
+      margin-bottom: 1.2rem; display: block;
+    }
+    .hero-logo-img {
+      width: min(260px, 60%); height: auto; display: block;
+      filter: brightness(0) invert(1);
+      margin-bottom: 2rem;
+    }
+    .hero-tagline {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 900;
+      line-height: 0.96;
+      letter-spacing: -0.025em;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+    .hero-desc {
+      font-size: 0.95rem; font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      max-width: 360px; line-height: 1.65;
+      margin-bottom: 2.5rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn-main {
+      display: inline-block; background: var(--sage); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;
+      text-decoration: none; padding: 0.9rem 2.2rem;
+      border-radius: 4px; transition: background 0.2s;
+    }
+    .btn-main:hover { background: #58675A; }
+    .btn-outline {
+      display: inline-block; border: 1.5px solid rgba(255,255,255,0.4);
+      color: #fff; font-family: 'Inter', sans-serif; font-weight: 500;
+      font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;
+      text-decoration: none; padding: 0.9rem 2.2rem;
+      border-radius: 4px; transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.08); }
+    .hero-meta {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 1.5rem;
+    }
+    .hero-meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .hero-meta-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+    .hero-meta-val { font-size: 0.88rem; font-weight: 500; color: rgba(255,255,255,0.9); }
+
+    /* ── DIVIDERS ── */
+    .divider { height: 1px; background: rgba(107,122,109,0.2); margin: 0 3rem; }
+    .divider-pattern {
+      height: 56px; display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; opacity: 0.25;
+    }
+    .divider-pattern span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sage); display: block;
+    }
+    .divider-pattern span:nth-child(odd) { transform: scale(0.6); }
+
+    /* ── SECTION COMMONS ── */
+    section { padding: 5rem 3rem; }
+    .section-eyebrow {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--sage);
+      margin-bottom: 0.8rem;
+    }
+    .section-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900; line-height: 1;
+      letter-spacing: -0.025em; color: var(--dark);
+      margin-bottom: 1.2rem;
+    }
+    .section-sub {
+      font-size: 0.95rem; color: var(--mid);
+      max-width: 480px; line-height: 1.65; font-weight: 300;
+    }
+
+    /* ── NOSOTROS ── */
+    #nosotros .nosotros-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+      align-items: center;
+    }
+    .nosotros-text p {
+      font-size: 0.97rem; color: var(--mid); line-height: 1.8;
+      font-weight: 300; margin-bottom: 1.4rem;
+    }
+    .nosotros-text p:last-child { margin-bottom: 0; }
+    .nosotros-pull {
+      font-family: 'Fraunces', serif; font-style: italic;
+      font-size: 1.25rem; color: var(--sage);
+      border-left: 3px solid var(--sage); padding-left: 1.2rem;
+      margin: 1.8rem 0; line-height: 1.5;
+    }
+    .nosotros-photo-wrap {
+      border-radius: 8px; overflow: hidden;
+      aspect-ratio: 3/4; position: relative;
+    }
+    .nosotros-photo-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      object-position: center; display: block;
+      transition: transform 0.6s ease;
+    }
+    .nosotros-photo-wrap:hover img { transform: scale(1.03); }
+
+    /* ── PRODUCTOS ── */
+    #productos { background: var(--cream); }
+    #productos .productos-inner { max-width: 1100px; margin: 0 auto; }
+    .pcard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+    .pcard {
+      background: #fff; border-radius: 8px;
+      overflow: hidden; border: 1px solid rgba(107,122,109,0.15);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .pcard:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(28,28,26,0.1); }
+    .pcard-img {
+      aspect-ratio: 4/3; background: rgba(107,122,109,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.6rem;
+    }
+    .pcard-body { padding: 1rem; }
+    .pcard-name {
+      font-family: 'Fraunces', serif; font-weight: 700;
+      font-size: 1rem; color: var(--dark); margin-bottom: 0.3rem;
+    }
+    .pcard-desc { font-size: 0.78rem; color: var(--mid); line-height: 1.5; margin-bottom: 0.75rem; font-weight: 300; }
+    .pcard-footer { display: flex; align-items: center; justify-content: space-between; }
+    .pcard-price { font-weight: 600; font-size: 0.95rem; color: var(--dark); }
+    .pcard-price .old { text-decoration: line-through; color: #aaa; font-size: 0.78rem; font-weight: 400; margin-right: 0.3rem; }
+    .pcard-offer-badge {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em;
+      background: var(--sage); color: #fff; padding: 0.2rem 0.5rem;
+      border-radius: 3px; text-transform: uppercase;
+    }
+    .cta-tienda { text-align: center; }
+    .cta-tienda a {
+      font-family: 'Fraunces', serif; font-style: italic;
+      font-size: 1.05rem; color: var(--sage);
+      text-decoration: none; border-bottom: 1px solid var(--sage);
+      padding-bottom: 2px; transition: color 0.2s;
+    }
+    .cta-tienda a:hover { color: var(--dark); border-color: var(--dark); }
+
+    /* ── OFERTA BANNER ── */
+    #oferta-banner {
+      background: var(--dark); padding: 3.5rem 3rem;
+      display: none;
+    }
+    #oferta-banner.visible { display: block; }
+    .oferta-inner {
+      max-width: 800px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem; flex-wrap: wrap;
+    }
+    .oferta-text .oferta-label {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--sage); font-weight: 600; display: block; margin-bottom: 0.5rem;
+    }
+    .oferta-nombre {
+      font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900;
+      color: #fff; line-height: 1.1; margin-bottom: 0.5rem;
+    }
+    .oferta-desc-txt { font-size: 0.88rem; color: rgba(255,255,255,0.55); font-weight: 300; }
+    .oferta-precio-wrap { display: flex; align-items: baseline; gap: 0.75rem; }
+    .oferta-precio-old { font-size: 1rem; color: rgba(255,255,255,0.35); text-decoration: line-through; }
+    .oferta-precio-new { font-family: 'Fraunces', serif; font-size: 2.8rem; font-weight: 900; color: var(--sage); }
+    .oferta-badge {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;
+      background: var(--sage); color: #fff; padding: 0.35rem 0.8rem;
+      border-radius: 4px; text-transform: uppercase; align-self: flex-start;
+    }
+    .oferta-cta {
+      display: inline-block; background: var(--sage); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;
+      text-decoration: none; padding: 0.85rem 2rem; border-radius: 4px;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .oferta-cta:hover { background: #58675A; }
+
+    /* ── HORARIOS ── */
+    #horarios { background: var(--light); }
+    #horarios .horarios-inner { max-width: 800px; margin: 0 auto; }
+    #estado-local {
+      font-size: 0.92rem; color: var(--mid); margin-bottom: 2.5rem;
+      font-weight: 300; line-height: 1.5;
+    }
+    .horarios-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 0.6rem;
+    }
+    .horario-dia {
+      background: #fff; border-radius: 6px;
+      border: 1px solid rgba(107,122,109,0.15);
+      padding: 1rem 0.5rem; text-align: center;
+    }
+    .horario-dia.hoy { border-color: var(--sage); background: rgba(107,122,109,0.06); }
+    .horario-dia .dia-nombre {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--mid);
+      margin-bottom: 0.5rem; display: block;
+    }
+    .horario-dia.hoy .dia-nombre { color: var(--sage); }
+    .horario-dia .dia-hora {
+      font-family: 'Fraunces', serif; font-size: 0.78rem;
+      font-weight: 700; color: var(--dark);
+    }
+    .horario-dia.cerrado-dia { opacity: 0.4; }
+    .horario-dia.cerrado-dia .dia-hora { color: var(--mid); }
+
+    /* ── RESEÑAS ── */
+    #resenas { background: var(--cream); }
+    #resenas .resenas-inner { max-width: 1100px; margin: 0 auto; }
+    .resenas-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 3rem; flex-wrap: wrap; }
+    .resenas-rating { display: flex; align-items: baseline; gap: 0.5rem; }
+    .rating-num {
+      font-family: 'Fraunces', serif; font-size: 3.5rem;
+      font-weight: 900; color: var(--dark); line-height: 1;
+    }
+    .rating-stars { font-size: 1.4rem; color: #FBBF24; letter-spacing: 2px; }
+    .rating-total { font-size: 0.82rem; color: var(--mid); font-weight: 300; }
+    .resenas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .resena-card {
+      background: #fff; border-radius: 8px; padding: 1.75rem;
+      border: 1px solid rgba(107,122,109,0.12);
+    }
+    .resena-stars { font-size: 0.9rem; color: #FBBF24; margin-bottom: 0.8rem; }
+    .resena-texto {
+      font-size: 0.9rem; color: var(--mid); line-height: 1.7;
+      font-style: italic; margin-bottom: 1.2rem; font-weight: 300;
+    }
+    .resena-autor { font-size: 0.78rem; font-weight: 600; color: var(--dark); }
+
+    /* ── CONTACTO ── */
+    #contacto .contacto-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: start;
+    }
+    .contacto-info p { font-size: 0.9rem; color: var(--mid); line-height: 1.8; font-weight: 300; margin-bottom: 0.5rem; }
+    .contacto-info strong { color: var(--dark); font-weight: 600; }
+    .wa-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: #25D366; color: #fff; text-decoration: none;
+      font-weight: 600; font-size: 0.88rem; padding: 0.9rem 1.8rem;
+      border-radius: 4px; margin-top: 1.5rem; transition: background 0.2s;
+    }
+    .wa-btn:hover { background: #1da851; }
+    .map-wrap { border-radius: 8px; overflow: hidden; height: 320px; }
+    .map-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); color: rgba(255,255,255,0.5);
+      padding: 3rem; font-size: 0.82rem; line-height: 1.8;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo img {
+      width: 100px; height: auto; display: block;
+      filter: brightness(0) invert(1); opacity: 0.6;
+    }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.85); }
+
+    /* ── WA FLOAT ── */
+    #wa-float {
+      position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 900;
+      width: 54px; height: 54px; border-radius: 50%;
+      background: #25D366; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+      text-decoration: none; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s, transform 0.2s;
+    }
+    #wa-float.visible { opacity: 1; pointer-events: auto; }
+    #wa-float:hover { transform: scale(1.08); }
+    #wa-float svg { width: 28px; height: 28px; fill: #fff; }
+
+    /* ── BACK TO TOP ── */
+    #back-to-top {
+      position: fixed; bottom: 1.8rem; left: 1.8rem; z-index: 900;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(28,28,26,0.85); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+      color: #fff;
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; }
+    #back-to-top svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #inicio .hero-content { padding: 0 2rem 4rem; }
+      #nosotros .nosotros-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .nosotros-photo-wrap { aspect-ratio: 16/10; }
+      .pcard-grid { grid-template-columns: repeat(2, 1fr); }
+      .resenas-grid { grid-template-columns: 1fr; }
+      #contacto .contacto-inner { grid-template-columns: 1fr; }
+      .horarios-grid { grid-template-columns: repeat(4, 1fr); }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      section { padding: 4rem 1.5rem; }
+      .divider { margin: 0 1.5rem; }
+    }
+
+    @media (max-width: 540px) {
+      .pcard-grid { grid-template-columns: repeat(2, 1fr); }
+      .horarios-grid { grid-template-columns: repeat(4, 1fr); }
+      .oferta-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#inicio" class="nav-logo">
+    <img src="./img/logo.png" alt="Amadeo Café" width="80">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#productos">Menú</a></li>
+    <li><a href="#horarios">Horarios</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+    <li><span id="nav-estado">…</span></li>
+  </ul>
+  <button class="nav-hamburger" onclick="this.closest('nav').querySelector('.nav-links').style.display = this.closest('nav').querySelector('.nav-links').style.display === 'flex' ? 'none' : 'flex'" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="inicio">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">Café de especialidad · Las Flores</span>
+    <img src="./img/logo.png" alt="Amadeo Café" class="hero-logo-img">
+    <h1 class="hero-tagline">El buen café<br>empieza aquí.</h1>
+    <p class="hero-desc">Café de especialidad, blends de té en hebras y pastelería artesanal. Un espacio para tomarse el tiempo.</p>
+    <div class="hero-actions">
+      <a href="./tienda.html" class="btn-main">Ver menú</a>
+      <a href="#nosotros" class="btn-outline">Conocernos</a>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Rating</span>
+        <span class="hero-meta-val">4.2★ · 197 reseñas</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Horario</span>
+        <span class="hero-meta-val">Lun – Dom · 8 a 20 hs</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Dirección</span>
+        <span class="hero-meta-val">Av. San Martín 519</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NOSOTROS -->
+<section id="nosotros">
+  <div class="nosotros-inner">
+    <div class="nosotros-text">
+      <p class="section-eyebrow">Nuestra historia</p>
+      <h2 class="section-title">Un café con alma propia.</h2>
+      <p>Amadeo nació con una idea simple: que tomar un café en Las Flores sea una experiencia que valga la pena. Trabajamos con granos de especialidad seleccionados, procesados con cuidado para preservar sus notas de sabor únicas.</p>
+      <blockquote class="nosotros-pull">"Cada taza es una invitación a pausar el día."</blockquote>
+      <p>Además del café, ofrecemos una selección de blends de té en hebras y pastelería artesanal elaborada con ingredientes frescos. Nuestros croissants, medialunas y tortas del día son el complemento ideal para cualquier momento.</p>
+      <p>Estamos en el corazón de Las Flores, en Av. San Martín 519, abiertos todos los días de 8 a 20 hs. Pasá cuando quieras.</p>
+    </div>
+    <div class="nosotros-photo-wrap">
+      <img src="./img/interior.jpg" alt="Interior de Amadeo Café">
+    </div>
+  </div>
+</section>
+
+<div class="divider-pattern">
+  <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<!-- PRODUCTOS DESTACADOS -->
+<section id="productos">
+  <div class="productos-inner">
+    <p class="section-eyebrow">Destacados</p>
+    <h2 class="section-title">Lo que más pedimos.</h2>
+    <p class="section-sub" style="margin-bottom: 2.5rem;">Una selección de nuestros clásicos — precios orientativos, pueden variar.</p>
+    <div class="pcard-grid" id="destacados-grid"></div>
+    <div class="cta-tienda" style="margin-top: 2.5rem;">
+      <a href="./tienda.html">Ver el menú completo →</a>
+    </div>
+  </div>
+</section>
+
+<!-- OFERTA BANNER -->
+<section id="oferta-banner">
+  <div class="oferta-inner">
+    <div class="oferta-text">
+      <span class="oferta-label">Promo de la semana</span>
+      <p class="oferta-nombre" id="oferta-nombre">—</p>
+      <p class="oferta-desc-txt" id="oferta-desc">—</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+      <div class="oferta-precio-wrap">
+        <span class="oferta-precio-old" id="oferta-precio-old"></span>
+        <span class="oferta-precio-new" id="oferta-precio-new">—</span>
+      </div>
+      <span class="oferta-badge" id="oferta-badge"></span>
+    </div>
+    <a href="./tienda.html" class="oferta-cta">Agregar al pedido</a>
+  </div>
+</section>
+
+<!-- HORARIOS -->
+<section id="horarios">
+  <div class="horarios-inner">
+    <p class="section-eyebrow">Cuándo encontrarnos</p>
+    <h2 class="section-title">Horarios.</h2>
+    <p id="estado-local" style="margin-bottom:2rem; font-size:0.95rem; color:var(--mid);">Cargando horarios…</p>
+    <div class="horarios-grid" id="horarios-grid"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RESEÑAS -->
+<section id="resenas">
+  <div class="resenas-inner">
+    <div class="resenas-header">
+      <div class="resenas-rating">
+        <span class="rating-num">4.2</span>
+        <div>
+          <div class="rating-stars">★★★★☆</div>
+          <div class="rating-total">197 opiniones en Google</div>
+        </div>
+      </div>
+    </div>
+    <div class="resenas-grid">
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"El mejor café de Las Flores. Muy buena atención y ambiente acogedor. Siempre volvemos con toda la familia."</p>
+        <span class="resena-autor">María G.</span>
+      </div>
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"El cappuccino es una obra de arte. Se nota que trabajan con café de especialidad de verdad. Las medialunas, increíbles."</p>
+        <span class="resena-autor">Sebastián T.</span>
+      </div>
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"Un lugar especial para tomarse un momento. La selección de tés en hebras sorprende, y el espacio tiene mucha onda."</p>
+        <span class="resena-autor">Laura M.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="contacto-inner">
+    <div class="contacto-info">
+      <p class="section-eyebrow">Dónde estamos</p>
+      <h2 class="section-title">Contacto.</h2>
+      <p><strong>Dirección:</strong> Av. San Martín 519, Las Flores, Buenos Aires</p>
+      <p><strong>Teléfono:</strong> 02244 48-5082</p>
+      <p><strong>Horario:</strong> Lunes a Domingo — 8:00 a 20:00 hs</p>
+      <p><strong>Instagram:</strong> <a href="https://www.instagram.com/amadeo_cafe/" target="_blank" rel="noopener" style="color:var(--sage)">@amadeo_cafe</a></p>
+      <a href="https://wa.me/5492244485082?text=Hola!%20Quiero%20hacer%20una%20consulta%20a%20Amadeo%20Caf%C3%A9." target="_blank" rel="noopener" class="wa-btn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Escribinos por WhatsApp
+      </a>
+    </div>
+    <div class="map-wrap">
+      <iframe
+        src="https://maps.google.com/maps?q=Av.+San+Mart%C3%ADn+519,+Las+Flores,+Buenos+Aires&output=embed"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Ubicación de Amadeo Café">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo" style="margin-bottom:0.75rem">
+        <img src="./img/logo.png" alt="Amadeo Café" width="100">
+      </div>
+      <div>Av. San Martín 519 · Las Flores, Buenos Aires</div>
+      <div style="margin-top:0.25rem;font-size:0.75rem;opacity:0.5">© 2025 Amadeo Café · Powered by PushCommerce</div>
+    </div>
+    <nav class="footer-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="./tienda.html">Menú</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- WA FLOAT -->
+<a id="wa-float" href="https://wa.me/5492244485082?text=Hola!%20Quiero%20hacer%20una%20consulta%20a%20Amadeo%20Caf%C3%A9." target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- BACK TO TOP -->
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Volver arriba">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ── FALLBACK (mirrors productos.json) ── */
+
+  fetch('./productos.json').then(r => r.json()).then(initPage).catch(() => {});
+
+  function initPage(data) {
+    buildHorarios(data);
+    buildDestacados(data);
+    buildOferta(data);
+  }
+
+  /* ── HORARIOS ── */
+  function buildHorarios(data) {
+    const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+    const diasCorto = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+    const ahora = new Date();
+    const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+    const hoyIdx = ahora.getDay() === 0 ? 6 : ahora.getDay() - 1;
+    const hoy = dias[hoyIdx];
+    const turnos = data.horarios[hoy] || [];
+    const abierto = turnos.some(t => {
+      const [ah, am] = t.abre.split(':').map(Number);
+      const [ch, cm] = t.cierra.split(':').map(Number);
+      return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+    });
+
+    const estadoEl = document.getElementById('nav-estado');
+    estadoEl.textContent = abierto ? 'Abierto' : 'Cerrado';
+    estadoEl.className = abierto ? 'abierto' : 'cerrado';
+
+    const estadoLocal = document.getElementById('estado-local');
+    if (abierto) {
+      const turnoActivo = turnos.find(t => {
+        const [ah, am] = t.abre.split(':').map(Number);
+        const [ch, cm] = t.cierra.split(':').map(Number);
+        return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+      });
+      estadoLocal.innerHTML = `<span style="color:#065F46;font-weight:600">Abierto ahora</span> — cierra a las ${turnoActivo ? turnoActivo.cierra : '?'} hs`;
+    } else {
+      let proxDia = '', proxHora = '';
+      for (let i = 1; i <= 7; i++) {
+        const idx = (hoyIdx + i) % 7;
+        const t = data.horarios[dias[idx]];
+        if (t && t.length) { proxDia = diasCorto[idx]; proxHora = t[0].abre; break; }
+      }
+      estadoLocal.innerHTML = `<span style="color:#991B1B;font-weight:600">Cerrado ahora</span> — próxima apertura: ${proxDia} a las ${proxHora} hs`;
+    }
+
+    const grid = document.getElementById('horarios-grid');
+    grid.innerHTML = '';
+    dias.forEach((dia, i) => {
+      const turnos = data.horarios[dia] || [];
+      const div = document.createElement('div');
+      div.className = 'horario-dia' + (i === hoyIdx ? ' hoy' : '') + (turnos.length === 0 ? ' cerrado-dia' : '');
+      const horaStr = turnos.length
+        ? turnos.map(t => `${t.abre}–${t.cierra}`).join('<br>')
+        : 'Cerrado';
+      div.innerHTML = `<span class="dia-nombre">${diasCorto[i]}</span><span class="dia-hora">${horaStr}</span>`;
+      grid.appendChild(div);
+    });
+  }
+
+  /* ── DESTACADOS ── */
+  function buildDestacados(data) {
+    const featured = [];
+    const usedCats = new Set();
+
+    if (data.oferta.activa) {
+      data.categorias.forEach((cat, ci) => {
+        cat.productos.forEach(p => {
+          if (p.id === data.oferta.producto_id && featured.length === 0) {
+            featured.push({ ...p, isOffer: true, offerPrice: data.oferta.precio_oferta });
+            usedCats.add(ci);
+          }
+        });
+      });
+    }
+
+    for (let i = 0; i < data.categorias.length && featured.length < 4; i++) {
+      if (usedCats.has(i)) continue;
+      usedCats.add(i);
+      featured.push({ ...data.categorias[i].productos[0] });
+    }
+
+    const grid = document.getElementById('destacados-grid');
+    grid.innerHTML = '';
+    featured.forEach(p => {
+      const badge = p.isOffer ? Math.round((1 - p.offerPrice / p.precio) * 100) : 0;
+      const card = document.createElement('div');
+      card.className = 'pcard';
+      card.innerHTML = `
+        <div class="pcard-img">${p.emoji || '☕'}</div>
+        <div class="pcard-body">
+          <div class="pcard-name">${p.nombre}</div>
+          <div class="pcard-desc">${p.descripcion}</div>
+          <div class="pcard-footer">
+            <div class="pcard-price">
+              ${p.isOffer ? `<span class="old">$${p.precio.toLocaleString('es-AR')}</span>$${p.offerPrice.toLocaleString('es-AR')}` : `$${p.precio.toLocaleString('es-AR')}`}
+            </div>
+            ${p.isOffer ? `<span class="pcard-offer-badge">-${badge}%</span>` : ''}
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    gsap.from('.pcard', {
+      scrollTrigger: { trigger: '#productos', start: 'top 78%' },
+      y: 40, opacity: 0, stagger: 0.1, duration: 0.65, ease: 'power3.out'
+    });
+  }
+
+  /* ── OFERTA BANNER ── */
+  function buildOferta(data) {
+    if (!data.oferta.activa) return;
+    let prodRef = null, prodCat = '';
+    data.categorias.forEach(cat => {
+      cat.productos.forEach(p => {
+        if (p.id === data.oferta.producto_id) { prodRef = p; prodCat = cat.nombre; }
+      });
+    });
+    if (!prodRef) return;
+    const badge = Math.round((1 - data.oferta.precio_oferta / prodRef.precio) * 100);
+    document.getElementById('oferta-nombre').textContent = prodRef.nombre;
+    document.getElementById('oferta-desc').textContent = prodRef.descripcion;
+    document.getElementById('oferta-precio-old').textContent = `$${prodRef.precio.toLocaleString('es-AR')}`;
+    document.getElementById('oferta-precio-new').textContent = `$${data.oferta.precio_oferta.toLocaleString('es-AR')}`;
+    document.getElementById('oferta-badge').textContent = `-${badge}%`;
+    const banner = document.getElementById('oferta-banner');
+    banner.classList.add('visible');
+    gsap.from('#oferta-banner .oferta-inner > *', {
+      scrollTrigger: { trigger: '#oferta-banner', start: 'top 80%' },
+      y: 24, opacity: 0, stagger: 0.12, duration: 0.7, ease: 'power3.out'
+    });
+  }
+
+  /* ── SCROLL EFFECTS ── */
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    document.getElementById('scroll-progress').style.width = pct + '%';
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+    document.getElementById('wa-float').classList.toggle('visible', window.scrollY > 400);
+    document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 400);
+  });
+
+  /* ── GSAP HERO ANIMATIONS ── */
+  gsap.from('.hero-eyebrow', { opacity: 0, y: 14, duration: 0.8, delay: 0.2, ease: 'power3.out' });
+  gsap.from('.hero-logo-img', { opacity: 0, y: 20, duration: 0.9, delay: 0.4, ease: 'power3.out' });
+  gsap.from('.hero-tagline', { opacity: 0, y: 30, duration: 1.0, delay: 0.55, ease: 'power3.out' });
+  gsap.from('.hero-desc',    { opacity: 0, y: 20, duration: 0.8, delay: 0.7,  ease: 'power3.out' });
+  gsap.from('.hero-actions', { opacity: 0, y: 16, duration: 0.8, delay: 0.85, ease: 'power3.out' });
+  gsap.from('.hero-meta',    { opacity: 0,         duration: 0.8, delay: 1.0,  ease: 'power2.out' });
+
+  /* ── GSAP SCROLL ANIMATIONS ── */
+  gsap.from('#nosotros .nosotros-text', {
+    scrollTrigger: { trigger: '#nosotros', start: 'top 75%' },
+    x: -30, opacity: 0, duration: 0.9, ease: 'power3.out'
+  });
+  gsap.from('#nosotros .nosotros-photo-wrap', {
+    scrollTrigger: { trigger: '#nosotros', start: 'top 75%' },
+    x: 30, opacity: 0, duration: 0.9, delay: 0.15, ease: 'power3.out'
+  });
+  gsap.from('.resena-card', {
+    scrollTrigger: { trigger: '#resenas', start: 'top 80%' },
+    y: 30, opacity: 0, stagger: 0.12, duration: 0.7, ease: 'power3.out'
+  });
+  gsap.from('#horarios .horario-dia', {
+    scrollTrigger: { trigger: '#horarios', start: 'top 80%' },
+    y: 20, opacity: 0, stagger: 0.06, duration: 0.5, ease: 'power2.out'
+  });
+  gsap.from('#contacto .contacto-info', {
+    scrollTrigger: { trigger: '#contacto', start: 'top 80%' },
+    y: 24, opacity: 0, duration: 0.8, ease: 'power3.out'
+  });
+
+  /* ── SERVICE WORKER ── */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>

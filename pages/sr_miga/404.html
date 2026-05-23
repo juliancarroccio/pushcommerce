@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Sr. Miga</title>
+  <link rel="icon" href="./img/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1A1A1A;
+      color: #FEF6F9;
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    img { height: auto; display: block; }
+    .logo { width: min(200px, 60%); margin: 0 auto 2.5rem; filter: brightness(0) invert(1); }
+    .code {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(6rem, 20vw, 10rem);
+      line-height: 1;
+      color: #B83A7A;
+      margin-bottom: 1rem;
+    }
+    .msg {
+      font-size: 1.125rem;
+      font-weight: 300;
+      color: #a09098;
+      margin-bottom: 2.5rem;
+      max-width: 320px;
+    }
+    .btn {
+      display: inline-block;
+      background: #B83A7A;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.875rem 2.5rem;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <img src="./img/logo.png" alt="Sr. Miga" class="logo">
+  <div class="code">404</div>
+  <p class="msg">Esta página no existe.</p>
+  <a href="./index.html" class="btn">Volver al inicio</a>
+</body>
+</html>

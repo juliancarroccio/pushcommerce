@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panadería y Confitería San Martín — Las Flores</title>
+  <meta name="description" content="Panadería y Confitería San Martín en Las Flores, Buenos Aires. Facturas, panes, tortas y masas finas artesanales. Horarios, productos y pedidos por WhatsApp." />
+  <link rel="canonical" href="https://juliancarroccio.github.io/pushcommerce/pages/panaderia_san_martin/" />
+  <link rel="icon" href="./img/logo.png" sizes="any" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#2C2A27" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Panadería y Confitería San Martín" />
+  <meta property="og:description" content="Facturas, panes y tortas artesanales en Las Flores. Pedí por WhatsApp." />
+  <meta property="og:image" content="./img/logo.png" />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            charcoal:  '#2C2A27',
+            slate:     '#3A3835',
+            cream:     '#E6DDC8',
+            wheat:     '#C4956A',
+            parchment: '#F5EFE0',
+          },
+          fontFamily: {
+            playfair: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #2C2A27; color: #E6DDC8; }
+
+    /* ── SCROLL PROGRESS ── */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; width: 0; height: 2px;
+      background: #C4956A; z-index: 100; transition: width .1s linear;
+    }
+
+    /* ── NAV ── */
+    #navbar { transition: background .3s, box-shadow .3s; }
+    #navbar.scrolled { background: rgba(44,42,39,0.97); box-shadow: 0 1px 0 rgba(230,221,200,.08); }
+
+    /* ── HERO ── */
+    .hero-overlay {
+      background: linear-gradient(
+        to bottom,
+        rgba(44,42,39,0.55) 0%,
+        rgba(44,42,39,0.30) 40%,
+        rgba(44,42,39,0.75) 80%,
+        rgba(44,42,39,1.00) 100%
+      );
+    }
+
+    /* ── HERO KEN BURNS ── */
+    .hero-img {
+      animation: kenburns 18s ease-in-out infinite alternate;
+      transform-origin: center 60%;
+    }
+    @keyframes kenburns {
+      from { transform: scale(1); }
+      to   { transform: scale(1.08); }
+    }
+
+    /* ── PATTERN BG ── */
+    .pattern-bg {
+      background-image: url('./img/pattern.png');
+      background-size: 220px;
+      background-repeat: repeat;
+      opacity: 0.06;
+    }
+
+    /* ── DIVIDER ── */
+    .divider-wheat { user-select: none; }
+
+    /* ── PRODUCT CARDS ── */
+    .product-card { transition: transform .2s, box-shadow .2s; }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.25); }
+
+    /* ── CATEGORY TABS ── */
+    .cat-btn { transition: background .2s, color .2s, border-color .2s; }
+    .cat-btn.active { background: #C4956A; color: #2C2A27; border-color: #C4956A; }
+
+    /* ── STARS ── */
+    .star { color: #C4956A; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); }
+
+    /* ── WA FLOAT ── */
+    #wa-float { transition: opacity .3s, transform .3s; }
+    #wa-float.hidden-fab { opacity: 0; pointer-events: none; transform: scale(.85); }
+
+    /* ── BACK TO TOP ── */
+    #back-to-top { transition: opacity .3s, transform .3s; }
+    #back-to-top.hidden-fab { opacity: 0; pointer-events: none; transform: scale(.85); }
+  </style>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- ══ SCROLL PROGRESS ══ -->
+  <div id="scroll-progress"></div>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-transparent">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#inicio" class="flex items-center gap-3">
+        <img src="./img/logo.png" alt="San Martín" class="h-9 w-auto" />
+        <span id="nav-estado" class="hidden text-[9px] tracking-wider uppercase px-2 py-0.5 font-sans"></span>
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-cream/70">
+        <a href="#nosotros"  class="hover:text-cream transition-colors">Nosotros</a>
+        <a href="#productos" class="hover:text-cream transition-colors">Productos</a>
+        <a href="#horarios"  class="hover:text-cream transition-colors">Horarios</a>
+        <a href="#contacto"  class="hover:text-cream transition-colors">Contacto</a>
+      </div>
+      <a href="./tienda.html"
+         class="bg-wheat text-charcoal text-sm font-semibold px-5 py-2 rounded hover:opacity-90 transition-opacity">
+        Pedir por WhatsApp
+      </a>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section id="inicio" class="relative h-screen overflow-hidden flex items-center justify-center">
+    <img src="./img/hero.jpg" alt="Torta San Martín"
+         class="hero-img absolute inset-0 w-full h-full object-cover object-center" />
+    <div class="hero-overlay absolute inset-0"></div>
+
+    <div class="relative z-10 text-center px-6 max-w-3xl mx-auto">
+      <p id="hero-label" class="text-wheat/80 text-xs tracking-[0.25em] uppercase mb-5 font-medium">
+        Las Flores, Buenos Aires
+      </p>
+      <h1 id="hero-title" class="font-playfair text-5xl md:text-7xl font-bold text-parchment leading-tight mb-4">
+        Panadería y<br>Confitería<br><em>San Martín</em>
+      </h1>
+      <p id="hero-sub" class="text-cream/80 text-lg md:text-xl mb-10 font-light">
+        Desde siempre, en Las Flores.
+      </p>
+      <div id="hero-ctas" class="flex flex-wrap gap-4 justify-center">
+        <a href="./tienda.html"
+           class="bg-wheat text-charcoal font-semibold px-8 py-3 rounded hover:opacity-90 transition-opacity text-sm">
+          Ver productos
+        </a>
+        <a href="#nosotros"
+           class="border border-cream/40 text-cream font-medium px-8 py-3 rounded hover:border-cream/70 transition-colors text-sm">
+          Conocernos
+        </a>
+      </div>
+    </div>
+
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 opacity-60" id="hero-scroll">
+      <svg width="20" height="32" viewBox="0 0 20 32" fill="none">
+        <rect x="1" y="1" width="18" height="30" rx="9" stroke="#E6DDC8" stroke-width="1.5"/>
+        <circle cx="10" cy="8" r="3" fill="#E6DDC8">
+          <animate attributeName="cy" values="8;18;8" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;0;1" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ══ DIVIDER ══ -->
+  <div class="divider-wheat flex items-center justify-center gap-4 py-10 px-6">
+    <div class="h-px flex-1 bg-cream/10 max-w-xs"></div>
+    <svg width="28" height="40" viewBox="0 0 28 40" fill="none" class="text-wheat/60" aria-hidden="true">
+      <path d="M14 38V2M14 2C14 2 6 8 6 16C6 20 10 22 14 22C18 22 22 20 22 16C22 8 14 2 14 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M14 10 L8 6M14 14 L6 12M14 10 L20 6M14 14 L22 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    <div class="h-px flex-1 bg-cream/10 max-w-xs"></div>
+  </div>
+
+  <!-- ══ NOSOTROS ══ -->
+  <section id="nosotros" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+      <div class="nosotros-text">
+        <p class="text-wheat text-xs tracking-[0.2em] uppercase mb-3 reveal">// Nosotros</p>
+        <h2 class="font-playfair text-4xl md:text-5xl font-bold text-parchment mb-6 reveal">
+          Una panadería<br>de toda la vida.
+        </h2>
+        <p class="text-cream/70 leading-relaxed mb-4 reveal">
+          En San Martín el pan se hace como siempre: con masa fermentada, harina de calidad y el tiempo que necesita. Nada de apuros. Nada de atajos.
+        </p>
+        <p class="text-cream/70 leading-relaxed mb-4 reveal">
+          Desde hace décadas somos parte de la mesa de Las Flores. Las medialunas del domingo, el pan de campo de cada día, la torta del cumpleaños — acá están.
+        </p>
+        <p class="text-cream/70 leading-relaxed reveal">
+          Panadería, confitería y mucho más. Siempre frescos, siempre cerca.
+        </p>
+      </div>
+      <div class="nosotros-img overflow-hidden rounded-sm">
+        <img src="./img/nosotros.png" alt="Panadería San Martín"
+             class="w-full h-80 object-cover object-center" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DIVIDER ══ -->
+  <div class="relative h-12 overflow-hidden">
+    <div class="pattern-bg absolute inset-0"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-charcoal via-transparent to-charcoal"></div>
+  </div>
+
+  <!-- ══ PRODUCTOS ══ -->
+  <section id="productos" class="py-20 px-6 relative">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <p class="section-label text-wheat text-xs tracking-[0.2em] uppercase mb-3 reveal">// Productos</p>
+        <h2 class="section-title font-playfair text-4xl md:text-5xl font-bold text-parchment reveal">
+          Lo que hacemos cada día
+        </h2>
+      </div>
+
+      <!-- Tabs -->
+      <div id="cat-tabs" class="flex flex-wrap gap-2 justify-center mb-10 reveal"></div>
+
+      <!-- Grid -->
+      <div id="products-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+
+      <div class="text-center mt-10 reveal">
+        <a href="./tienda.html"
+           class="productos-cta inline-flex items-center gap-2 border border-wheat/40 text-wheat px-8 py-3 rounded hover:bg-wheat hover:text-charcoal transition-all text-sm font-semibold">
+          Ver catálogo completo y pedir
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ OFERTA ══ -->
+  <div id="oferta-banner" class="hidden px-6 py-4">
+    <div class="max-w-4xl mx-auto bg-wheat/10 border border-wheat/25 rounded-lg px-8 py-6 flex flex-col sm:flex-row items-center gap-6 justify-between">
+      <div>
+        <p class="text-wheat text-xs tracking-[0.2em] uppercase font-medium mb-1">⭐ Oferta de la semana</p>
+        <p id="oferta-nombre" class="font-playfair text-2xl font-bold text-parchment"></p>
+        <p id="oferta-desc" class="text-cream/60 text-sm mt-1"></p>
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="flex items-center gap-3 justify-end mb-1">
+          <span id="oferta-precio-original" class="text-cream/40 text-sm line-through"></span>
+          <span id="oferta-pct" class="bg-wheat/20 text-wheat text-xs font-bold px-2 py-0.5 rounded"></span>
+        </div>
+        <p id="oferta-precio" class="font-playfair text-3xl font-bold text-wheat mb-3"></p>
+        <a href="./tienda.html" id="oferta-link"
+           class="inline-block bg-wheat text-charcoal text-sm font-semibold px-6 py-2 rounded hover:opacity-90 transition-opacity">
+          Pedir ahora
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ HORARIOS ══ -->
+  <section id="horarios" class="py-20 px-6 bg-slate/40">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-12">
+        <p class="text-wheat text-xs tracking-[0.2em] uppercase mb-3 reveal">// Horarios</p>
+        <h2 class="font-playfair text-4xl font-bold text-parchment reveal">Cuándo encontrarnos</h2>
+        <p id="estado-local" class="mt-3 text-sm font-medium"></p>
+      </div>
+      <div id="horarios-grid" class="grid sm:grid-cols-2 gap-3"></div>
+    </div>
+  </section>
+
+  <!-- ══ RESEÑAS ══ -->
+  <section id="resenas" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        <p class="text-wheat text-xs tracking-[0.2em] uppercase mb-3 reveal">// Opiniones</p>
+        <h2 class="font-playfair text-4xl font-bold text-parchment reveal">Lo que dicen nuestros clientes</h2>
+        <div class="flex items-center justify-center gap-2 mt-3 reveal">
+          <span class="star text-xl">★★★★★</span>
+          <span class="text-parchment font-semibold">4.7</span>
+          <span class="text-cream/50 text-sm">· 359 opiniones en Google</span>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <div class="review-card bg-slate/50 border border-cream/10 p-7 flex flex-col" style="opacity:0;transform:translateY(24px)">
+          <div class="flex gap-0.5 mb-5">
+            <span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span>
+          </div>
+          <p class="font-playfair italic text-cream/75 text-base leading-relaxed flex-1">"Las medialunas son las mejores de Las Flores, sin duda. Cada mañana paso antes del trabajo y nunca me defraudaron. La atención es excelente."</p>
+          <div class="border-t border-cream/10 pt-5 mt-6 flex items-center justify-between">
+            <p class="text-xs tracking-widest uppercase text-cream/50 font-sans">María G.</p>
+            <p class="font-playfair italic text-cream/25 text-xs">hace 2 semanas</p>
+          </div>
+        </div>
+
+        <div class="review-card bg-slate/50 border border-cream/10 p-7 flex flex-col" style="opacity:0;transform:translateY(24px)">
+          <div class="flex gap-0.5 mb-5">
+            <span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span>
+          </div>
+          <p class="font-playfair italic text-cream/75 text-base leading-relaxed flex-1">"Compré la torta de crema para el cumple de mi hija y fue un éxito total. Hermosa presentación y un sabor que no se consigue en otro lugar."</p>
+          <div class="border-t border-cream/10 pt-5 mt-6 flex items-center justify-between">
+            <p class="text-xs tracking-widest uppercase text-cream/50 font-sans">Carlos P.</p>
+            <p class="font-playfair italic text-cream/25 text-xs">hace 1 mes</p>
+          </div>
+        </div>
+
+        <div class="review-card bg-slate/50 border border-cream/10 p-7 flex flex-col" style="opacity:0;transform:translateY(24px)">
+          <div class="flex gap-0.5 mb-5">
+            <span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span><span class="star text-sm">★</span>
+          </div>
+          <p class="font-playfair italic text-cream/75 text-base leading-relaxed flex-1">"El pan de campo es una cosa seria. Tienen una corteza perfecta y la miga es suave. Lo recomiendo para cualquier momento del día."</p>
+          <div class="border-t border-cream/10 pt-5 mt-6 flex items-center justify-between">
+            <p class="text-xs tracking-widest uppercase text-cream/50 font-sans">Laura M.</p>
+            <p class="font-playfair italic text-cream/25 text-xs">hace 3 semanas</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="text-center mt-12 reveal">
+        <a href="https://maps.google.com/?q=Panaderia+San+Martin+Las+Flores+Buenos+Aires"
+           target="_blank"
+           class="text-xs tracking-[0.3em] uppercase text-cream/30 hover:text-wheat transition-colors">
+          Ver todas las reseñas en Google →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONTACTO ══ -->
+  <section id="contacto" class="py-20 px-6 bg-slate/40">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        <p class="text-wheat text-xs tracking-[0.2em] uppercase mb-3 reveal">// Contacto</p>
+        <h2 class="font-playfair text-4xl font-bold text-parchment reveal">Dónde estamos</h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-10 items-start">
+        <div class="contact-left space-y-6">
+          <div class="flex items-start gap-4">
+            <svg class="text-wheat mt-1 flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <p class="text-parchment font-semibold">Dirección</p>
+              <p class="text-cream/70">Av. San Martín 921, Las Flores<br>B7200, Buenos Aires</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <svg class="text-wheat mt-1 flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.5 11.5a19.79 19.79 0 01-3-8.59A2 2 0 013.5 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            <div>
+              <p class="text-parchment font-semibold">Teléfono</p>
+              <a href="tel:+5402244441919" class="text-wheat hover:underline">02244 44-1919</a>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <svg class="text-wheat mt-1 flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div>
+              <p class="text-parchment font-semibold">Horario general</p>
+              <p class="text-cream/70">Lun–Sáb: 8:00 – 20:00<br>Dom: 8:00 – 14:00 y 15:30 – 20:00</p>
+            </div>
+          </div>
+          <a href="https://wa.me/5492244441919?text=Hola%2C%20quiero%20hacer%20un%20pedido"
+             target="_blank"
+             class="inline-flex items-center gap-3 bg-[#25D366] text-white font-semibold px-7 py-3 rounded hover:opacity-90 transition-opacity text-sm">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            Escribinos por WhatsApp
+          </a>
+        </div>
+        <div class="contact-right rounded-sm overflow-hidden h-72 md:h-full min-h-64">
+          <iframe
+            src="https://maps.google.com/maps?q=Av.+San+Mart%C3%ADn+921,+Las+Flores,+Buenos+Aires&output=embed"
+            width="100%" height="100%" style="border:0;filter:grayscale(30%) contrast(1.05)"
+            allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            title="Ubicación Panadería San Martín">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="bg-charcoal border-t border-cream/10 py-10 px-6 text-center">
+    <div class="relative inline-block mb-4">
+      <div class="pattern-bg absolute inset-0 rounded-full" style="opacity:0.08"></div>
+      <img src="./img/logo.png" alt="San Martín" class="h-12 w-auto mx-auto relative" />
+    </div>
+    <p class="font-playfair text-parchment text-lg font-semibold mb-1">Panadería y Confitería San Martín</p>
+    <p class="text-cream/50 text-sm mb-4">Av. San Martín 921 · Las Flores, Buenos Aires</p>
+    <div class="flex gap-6 justify-center text-sm text-cream/40">
+      <a href="tel:+5402244441919" class="hover:text-cream transition-colors">02244 44-1919</a>
+      <a href="./tienda.html" class="hover:text-cream transition-colors">Tienda</a>
+    </div>
+    <p class="text-cream/20 text-xs mt-8">© 2026 · Sitio web por <a href="https://juliancarroccio.github.io/pushcommerce" class="hover:text-cream/40 transition-colors">PushCommerce</a></p>
+  </footer>
+
+  <!-- ══ WA FLOAT ══ -->
+  <a id="wa-float"
+     href="https://wa.me/5492244441919?text=Hola%2C%20quiero%20hacer%20un%20pedido"
+     target="_blank"
+     class="hidden-fab fixed bottom-6 right-6 z-40 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+     aria-label="WhatsApp">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+  </a>
+
+  <!-- ══ BACK TO TOP ══ -->
+  <button id="back-to-top"
+    class="hidden-fab fixed bottom-6 left-6 z-40 bg-slate border border-cream/20 text-cream/60 w-11 h-11 rounded-full flex items-center justify-center shadow hover:bg-wheat hover:text-charcoal transition-colors"
+    aria-label="Volver arriba" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ── Hero entrance ──
+    gsap.set(['#hero-label','#hero-title','#hero-sub','#hero-ctas','#hero-scroll'], { opacity: 0, y: 30 });
+    gsap.timeline({ delay: 0.2 })
+      .to('#hero-label',  { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' })
+      .to('#hero-title',  { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '-=0.3')
+      .to('#hero-sub',    { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4')
+      .to('#hero-ctas',   { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3')
+      .to('#hero-scroll', { opacity: 0.6, y: 0, duration: 0.5 }, '-=0.2');
+
+    // ── Navbar scroll + progress bar ──
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+      const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('scroll-progress').style.width = pct + '%';
+      const pastHero = window.scrollY > window.innerHeight * 0.6;
+      document.getElementById('wa-float').classList.toggle('hidden-fab', !pastHero);
+      document.getElementById('back-to-top').classList.toggle('hidden-fab', !pastHero);
+    });
+
+    // ── Scroll reveals ──
+    gsap.utils.toArray('.reveal').forEach(el => {
+      gsap.to(el, {
+        opacity: 1, y: 0, duration: 0.65, ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+      });
+    });
+
+    // ── Nosotros slide in ──
+    gsap.set('.nosotros-text', { opacity: 0, x: -40 });
+    gsap.set('.nosotros-img',  { opacity: 0, x:  40 });
+    ScrollTrigger.batch(['.nosotros-text', '.nosotros-img'], {
+      start: 'top 85%',
+      onEnter: batch => gsap.to(batch, { opacity: 1, x: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out' })
+    });
+
+    // ── Section labels wipe ──
+    gsap.utils.toArray('.section-label').forEach(el => {
+      gsap.fromTo(el,
+        { clipPath: 'inset(0 100% 0 0)' },
+        { clipPath: 'inset(0 0% 0 0)', duration: 0.7, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 90%' }
+        }
+      );
+    });
+
+    // ── Contact columns ──
+    gsap.set('.contact-left',  { opacity: 0, x: -32 });
+    gsap.set('.contact-right', { opacity: 0, x:  32 });
+    ScrollTrigger.batch(['.contact-left', '.contact-right'], {
+      start: 'top 85%',
+      onEnter: batch => gsap.to(batch, { opacity: 1, x: 0, duration: 0.65, stagger: 0.15, ease: 'power2.out' })
+    });
+
+    // ══ DATA LOAD ══
+
+    function initPage(data) {
+      buildHorarios(data);
+      buildProducts(data);
+      buildOferta(data);
+    }
+
+    fetch('./productos.json', { cache: 'no-cache' })
+      .then(r => r.json())
+      .then(data => initPage(data))
+      .catch(() => {});
+
+    // ── Reseñas hardcodeadas ──
+    gsap.to('.review-card', {
+      opacity: 1, y: 0, duration: 0.55, stagger: 0.12, ease: 'power2.out',
+      scrollTrigger: { trigger: '#resenas', start: 'top 80%' }
+    });
+
+    // ── Horarios + open/closed status ──
+    function buildHorarios(data) {
+      const ahora = new Date();
+      const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+      const diasKeys = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+      const hoy = diasKeys[ahora.getDay() === 0 ? 6 : ahora.getDay() - 1];
+
+      const turnosHoy = data.horarios[hoy] || [];
+      const abierto = turnosHoy.some(t => {
+        const [ah, am] = t.abre.split(':').map(Number);
+        const [ch, cm] = t.cierra.split(':').map(Number);
+        return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+      });
+
+      // Nav badge
+      const navEstado = document.getElementById('nav-estado');
+      navEstado.textContent = abierto ? 'Abierto' : 'Cerrado';
+      navEstado.className = `text-[9px] tracking-wider uppercase px-2 py-0.5 font-sans ${abierto ? 'bg-green-800/60 text-green-300' : 'bg-red-900/50 text-red-300'}`;
+      navEstado.classList.remove('hidden');
+
+      // Section status
+      const estadoLocal = document.getElementById('estado-local');
+      estadoLocal.textContent = abierto ? '● Abierto ahora' : '● Cerrado ahora';
+      estadoLocal.className = `mt-3 text-sm font-medium ${abierto ? 'text-green-400' : 'text-red-400'}`;
+
+      // Horarios rows
+      const grid = document.getElementById('horarios-grid');
+      diasKeys.forEach(dia => {
+        const turnos = data.horarios[dia];
+        if (!turnos) return;
+        const esHoy = dia === hoy;
+        const horario = turnos.map(t => `${t.abre} – ${t.cierra}`).join(' y ');
+        const row = document.createElement('div');
+        row.className = `flex justify-between items-center px-5 py-3 rounded-sm border ${esHoy ? 'border-wheat/40 bg-wheat/8' : 'border-cream/10 bg-slate/40'}`;
+        row.style.cssText = 'opacity:0;transform:translateY(16px)';
+        row.innerHTML = `
+          <span class="capitalize font-medium ${esHoy ? 'text-wheat' : 'text-cream/80'}">${dia}${esHoy ? ' <span class="text-xs font-normal text-wheat/70">(hoy)</span>' : ''}</span>
+          <span class="text-sm ${esHoy ? 'text-parchment font-semibold' : 'text-cream/60'}">${horario}</span>`;
+        grid.appendChild(row);
+        gsap.to(row, {
+          opacity: 1, y: 0, duration: 0.45, ease: 'power2.out',
+          scrollTrigger: { trigger: row, start: 'top 90%' }
+        });
+      });
+    }
+
+    // ── Products ──
+    function buildProducts(data) {
+      const tabs = document.getElementById('cat-tabs');
+      const grid = document.getElementById('products-grid');
+      let activeId = data.categorias[0].id;
+
+      function render(catId) {
+        const cat = data.categorias.find(c => c.id === catId);
+        grid.innerHTML = '';
+        cat.productos.forEach((p, i) => {
+          const card = document.createElement('div');
+          card.className = 'product-card bg-slate/60 border border-cream/10 rounded-sm overflow-hidden flex flex-col';
+          card.style.cssText = 'opacity:0;transform:translateY(20px)';
+          card.innerHTML = `
+            <div class="aspect-[4/3] bg-charcoal/50 border-b border-cream/10 flex items-center justify-center overflow-hidden">
+              <span class="text-5xl opacity-30 select-none">${cat.emoji}</span>
+            </div>
+            <div class="p-5 flex flex-col gap-3 flex-1">
+              <h3 class="font-playfair text-parchment font-semibold text-base leading-snug">${p.nombre}</h3>
+              <p class="text-cream/60 text-sm leading-relaxed flex-1">${p.descripcion}</p>
+              <div class="flex items-center justify-between mt-auto pt-2 border-t border-cream/10">
+                <span class="text-wheat font-semibold">$${p.precio.toLocaleString('es-AR')}</span>
+                <a href="./tienda.html" class="text-xs text-cream/50 hover:text-wheat transition-colors font-medium">Ver en tienda →</a>
+              </div>
+            </div>`;
+          grid.appendChild(card);
+          gsap.to(card, { opacity: 1, y: 0, duration: 0.45, delay: i * 0.07, ease: 'power2.out' });
+        });
+      }
+
+      data.categorias.forEach((cat, i) => {
+        const btn = document.createElement('button');
+        btn.className = `cat-btn border border-cream/20 text-cream/70 text-sm px-5 py-2 rounded-full${i === 0 ? ' active' : ''}`;
+        btn.textContent = `${cat.emoji} ${cat.nombre}`;
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          render(cat.id);
+        });
+        tabs.appendChild(btn);
+      });
+
+      render(activeId);
+    }
+
+    // ── Oferta ──
+    function buildOferta(data) {
+      const o = data.oferta;
+      if (!o || !o.activa) return;
+      let producto = null;
+      data.categorias.forEach(cat => {
+        const p = cat.productos.find(p => p.id === o.producto_id);
+        if (p) producto = p;
+      });
+      if (!producto) return;
+      const pct = Math.round((1 - o.precio_oferta / producto.precio) * 100);
+      const banner = document.getElementById('oferta-banner');
+      document.getElementById('oferta-nombre').textContent = producto.nombre;
+      document.getElementById('oferta-desc').textContent = producto.descripcion;
+      document.getElementById('oferta-precio-original').textContent = `$${producto.precio.toLocaleString('es-AR')}`;
+      document.getElementById('oferta-pct').textContent = `-${pct}%`;
+      document.getElementById('oferta-precio').textContent = `$${o.precio_oferta.toLocaleString('es-AR')}`;
+      banner.classList.remove('hidden');
+      gsap.from(banner, {
+        opacity: 0, y: 20, duration: 0.6, ease: 'power2.out',
+        scrollTrigger: { trigger: banner, start: 'top 88%' }
+      });
+    }
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

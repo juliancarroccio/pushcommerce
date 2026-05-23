@@ -1,0 +1,91 @@
+{
+  "negocio": {
+    "nombre": "La Redonda",
+    "whatsapp": "5492244474117",
+    "direccion": "Av. Avellaneda 715, Las Flores",
+    "telefono": "02244 47-4117",
+    "analytics_id": ""
+  },
+  "oferta": {
+    "activa": true,
+    "producto_id": 1,
+    "texto": "Pizza de la semana",
+    "precio_oferta": 5500
+  },
+  "horarios": {
+    "lunes":     [],
+    "martes":    [],
+    "miércoles": [],
+    "jueves":    [{"abre": "19:00", "cierra": "22:00"}],
+    "viernes":   [{"abre": "19:00", "cierra": "22:00"}],
+    "sábado":    [{"abre": "19:00", "cierra": "22:00"}],
+    "domingo":   [{"abre": "19:00", "cierra": "22:00"}]
+  },
+  "categorias": [
+    {
+      "nombre": "Pizzas Grandes",
+      "productos": [
+        {"id": 1,  "nombre": "Mozzarella",              "descripcion": "Salsa, mozzarella generosa.",                              "precio": 7000,  "imagen": ""},
+        {"id": 2,  "nombre": "Mozzarella Doble",        "descripcion": "Doble capa de mozzarella derretida.",                      "precio": 8000,  "imagen": ""},
+        {"id": 3,  "nombre": "Mozzarella con Jamón",    "descripcion": "Mozzarella y jamón cocido.",                               "precio": 8000,  "imagen": ""},
+        {"id": 4,  "nombre": "Muzza a la Provenzal",    "descripcion": "Mozzarella con ajo y perejil.",                            "precio": 7500,  "imagen": ""},
+        {"id": 5,  "nombre": "Jamón y Morrones",        "descripcion": "Jamón cocido y morrones asados.",                          "precio": 8500,  "imagen": ""},
+        {"id": 6,  "nombre": "Roquefort",                "descripcion": "Salsa y roquefort cremoso.",                               "precio": 8000,  "imagen": ""},
+        {"id": 7,  "nombre": "Provoleta",                "descripcion": "Queso provolone gratinado al horno.",                      "precio": 9000,  "imagen": ""},
+        {"id": 8,  "nombre": "Cheddar",                  "descripcion": "Mozzarella y cheddar fundido.",                            "precio": 8000,  "imagen": ""},
+        {"id": 9,  "nombre": "Cuatro Quesos",            "descripcion": "Mozzarella, cheddar, roquefort y provolone.",              "precio": 9500,  "imagen": ""},
+        {"id": 10, "nombre": "Verdeo con Roquefort",    "descripcion": "Cebolla de verdeo salteada y roquefort.",                  "precio": 8500,  "imagen": ""},
+        {"id": 11, "nombre": "Napolitana",               "descripcion": "Salsa, mozzarella, tomate fresco y ajo.",                  "precio": 7500,  "imagen": ""},
+        {"id": 12, "nombre": "Napolitana con Jamón",    "descripcion": "Napolitana clásica con jamón cocido.",                     "precio": 8000,  "imagen": ""},
+        {"id": 13, "nombre": "Anchoa",                   "descripcion": "Salsa, mozzarella y filetes de anchoa.",                   "precio": 8500,  "imagen": ""},
+        {"id": 14, "nombre": "Fugazzeta",                "descripcion": "Cebolla caramelizada, mozzarella y oliva.",                "precio": 8500,  "imagen": ""},
+        {"id": 15, "nombre": "Espinaca",                 "descripcion": "Espinaca salteada, ajo y mozzarella.",                     "precio": 8000,  "imagen": ""},
+        {"id": 16, "nombre": "Criolla",                  "descripcion": "Salsa criolla, morrones, cebolla y aceitunas.",            "precio": 6600,  "imagen": ""},
+        {"id": 17, "nombre": "Verdeo",                   "descripcion": "Cebolla de verdeo sobre base de mozzarella.",              "precio": 6600,  "imagen": ""},
+        {"id": 18, "nombre": "Panceta Ahumada",         "descripcion": "Panceta crocante con mozzarella.",                         "precio": 15000, "imagen": ""},
+        {"id": 19, "nombre": "Lomito",                   "descripcion": "Lomito en tiras, mozzarella y oliva.",                     "precio": 15000, "imagen": ""},
+        {"id": 20, "nombre": "Jamón y Ananá",           "descripcion": "El clásico dulce-salado.",                                  "precio": 10000, "imagen": ""}
+      ]
+    },
+    {
+      "nombre": "Pizzas Chicas",
+      "productos": [
+        {"id": 21, "nombre": "Mozzarella",              "descripcion": "Salsa, mozzarella generosa. Ideal para uno.",              "precio": 4500,  "imagen": ""},
+        {"id": 22, "nombre": "Mozzarella Doble",        "descripcion": "Doble capa de mozzarella. Tamaño individual.",             "precio": 4800,  "imagen": ""},
+        {"id": 23, "nombre": "Mozzarella con Jamón",    "descripcion": "Mozzarella y jamón. Tamaño individual.",                   "precio": 4800,  "imagen": ""},
+        {"id": 24, "nombre": "Muzza a la Provenzal",    "descripcion": "Ajo y perejil. Tamaño individual.",                        "precio": 4000,  "imagen": ""},
+        {"id": 25, "nombre": "Jamón y Morrones",        "descripcion": "Jamón y morrones. Tamaño individual.",                     "precio": 4800,  "imagen": ""},
+        {"id": 26, "nombre": "Roquefort",                "descripcion": "Roquefort cremoso. Tamaño individual.",                    "precio": 4800,  "imagen": ""},
+        {"id": 27, "nombre": "Provoleta",                "descripcion": "Provolone gratinado. Tamaño individual.",                  "precio": 5000,  "imagen": ""},
+        {"id": 28, "nombre": "Cheddar",                  "descripcion": "Mozzarella y cheddar. Tamaño individual.",                 "precio": 4500,  "imagen": ""},
+        {"id": 29, "nombre": "Cuatro Quesos",            "descripcion": "Cuatro quesos. Tamaño individual.",                        "precio": 5000,  "imagen": ""},
+        {"id": 30, "nombre": "Verdeo con Roquefort",    "descripcion": "Verdeo y roquefort. Tamaño individual.",                   "precio": 4500,  "imagen": ""},
+        {"id": 31, "nombre": "Napolitana",               "descripcion": "Tomate fresco y ajo. Tamaño individual.",                  "precio": 4000,  "imagen": ""},
+        {"id": 32, "nombre": "Napolitana con Jamón",    "descripcion": "Napolitana con jamón. Tamaño individual.",                 "precio": 4800,  "imagen": ""},
+        {"id": 33, "nombre": "Anchoa",                   "descripcion": "Con anchoas. Tamaño individual.",                          "precio": 4500,  "imagen": ""},
+        {"id": 34, "nombre": "Fugazzeta",                "descripcion": "Cebolla caramelizada. Tamaño individual.",                 "precio": 4500,  "imagen": ""},
+        {"id": 35, "nombre": "Espinaca",                 "descripcion": "Espinaca y ajo. Tamaño individual.",                       "precio": 4800,  "imagen": ""},
+        {"id": 36, "nombre": "Criolla",                  "descripcion": "Salsa criolla. Tamaño individual.",                        "precio": 4000,  "imagen": ""},
+        {"id": 37, "nombre": "Verdeo",                   "descripcion": "Cebolla de verdeo. Tamaño individual.",                    "precio": 4000,  "imagen": ""},
+        {"id": 38, "nombre": "Panceta Ahumada",         "descripcion": "Panceta crocante. Tamaño individual.",                     "precio": 9000,  "imagen": ""},
+        {"id": 39, "nombre": "Lomito",                   "descripcion": "Lomito en tiras. Tamaño individual.",                      "precio": 9000,  "imagen": ""},
+        {"id": 40, "nombre": "Jamón y Ananá",           "descripcion": "Dulce-salado. Tamaño individual.",                         "precio": 6000,  "imagen": ""}
+      ]
+    },
+    {
+      "nombre": "Especiales",
+      "productos": [
+        {"id": 41, "nombre": "De la Casa",              "descripcion": "La creación especial del día. Consultanos.",               "precio": 16000, "imagen": ""},
+        {"id": 42, "nombre": "Calabresa",                "descripcion": "Salame calabrés picante sobre mozzarella.",                "precio": 16000, "imagen": ""},
+        {"id": 43, "nombre": "Fugazzeta Rellena",       "descripcion": "Doble masa rellena de mozzarella y cebolla.",              "precio": 20000, "imagen": ""}
+      ]
+    },
+    {
+      "nombre": "Fainá y Extras",
+      "productos": [
+        {"id": 44, "nombre": "Fainá",                   "descripcion": "Torta de harina de garbanzo, horneada al momento.",        "precio": 2500,  "imagen": ""},
+        {"id": 45, "nombre": "Porción de Pizza",        "descripcion": "Porción individual de la pizza del momento.",              "precio": 2200,  "imagen": ""}
+      ]
+    }
+  ]
+}

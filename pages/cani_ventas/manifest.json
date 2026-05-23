@@ -1,0 +1,16 @@
+{
+  "name": "Cani Ventas",
+  "short_name": "Cani Ventas",
+  "description": "Electrodomésticos, tecnología y hogar en Las Flores.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#080C14",
+  "theme_color": "#56BC6D",
+  "icons": [
+    {
+      "src": "./img/logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

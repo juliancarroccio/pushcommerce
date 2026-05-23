@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Arizona Indumentaria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: #F9F7F4;
+      color: #0D0D0D;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      gap: 1.5rem;
+    }
+
+    .logo img {
+      height: 44px;
+      width: auto;
+      display: block;
+      filter: brightness(0);
+      opacity: 0.7;
+    }
+
+    .error-code {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(6rem, 20vw, 10rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: #B5622B;
+    }
+
+    .message {
+      font-size: 1.1rem;
+      color: #555;
+      max-width: 320px;
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #0D0D0D;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      padding: 0.9rem 2.5rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: #B5622B; }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="./img/logo.png" alt="Arizona Indumentaria">
+  </div>
+
+  <div class="error-code">404</div>
+
+  <p class="message">Esta página no existe.</p>
+
+  <a href="./index.html" class="btn">Volver al inicio</a>
+</body>
+</html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://juliancarroccio.github.io/pushcommerce/pages/cincomentario/sitemap.xml

@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exposiciones — MAPA Espacio de Arte</title>
+<meta name="description" content="Archivo de exposiciones de MAPA Espacio de Arte desde 2012 hasta hoy. Más de 100 muestras individuales y colectivas en Las Flores, Buenos Aires.">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="icon" href="./favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --black: #000; --white: #fff; --gray-100: #f4f4f4; --gray-200: #e0e0e0; --gray-400: #9e9e9e; --gray-600: #555; --font-display: 'Reem Kufi', sans-serif; --font-body: 'Inter', sans-serif; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--white); color: var(--black); font-family: var(--font-body); font-weight: 300; line-height: 1.7; }
+
+  #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--black); z-index: 9999; }
+
+  nav { position: sticky; top: 0; z-index: 800; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; background: var(--white); border-bottom: 1px solid var(--gray-200); }
+  .nav-logo { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; letter-spacing: 0.15em; text-decoration: none; color: var(--black); display: flex; align-items: center; }
+  .nav-logo-img { height: 40px; display: block; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-link { font-family: var(--font-display); font-size: 0.78rem; letter-spacing: 0.1em; color: var(--black); text-decoration: none; text-transform: uppercase; opacity: 0.5; }
+  .nav-link:hover, .nav-link.active { opacity: 1; }
+  @media (max-width: 768px) { .nav-links { display: none; } }
+
+  /* HERO */
+  .page-hero { position: relative; height: 60vh; overflow: hidden; }
+  .page-hero img { width: 100%; height: 100%; object-fit: cover; object-position: center 50%; filter: grayscale(20%); }
+  .page-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%); }
+  .page-hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 3rem; color: var(--white); }
+  .page-hero-label { font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.6; margin-bottom: 0.5rem; }
+  .page-hero-title { font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1; }
+  .page-hero-sub { font-size: 0.9rem; opacity: 0.6; margin-top: 0.75rem; letter-spacing: 0.05em; }
+
+  /* STATS */
+  .stats-bar { background: var(--black); color: var(--white); padding: 2.5rem 3rem; }
+  .stats-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+  .stat { border-left: 1px solid rgba(255,255,255,0.1); padding-left: 1.5rem; }
+  .stat-num { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem; }
+  @media (max-width: 600px) { .stats-inner { grid-template-columns: repeat(2, 1fr); } .stats-bar { padding: 2rem 1.5rem; } }
+
+  /* YEAR FILTER */
+  .filter-section { padding: 3rem; border-bottom: 1px solid var(--gray-200); }
+  .filter-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .year-btn { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 0.1em; padding: 0.4rem 1rem; border: 1px solid var(--gray-200); background: none; cursor: pointer; color: var(--gray-400); transition: all 0.2s; }
+  .year-btn:hover, .year-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
+  @media (max-width: 600px) { .filter-section { padding: 1.5rem; } }
+
+  /* EXPO CONTENT */
+  .expo-content { padding: 4rem 3rem; max-width: 1200px; margin: 0 auto; }
+  .year-group { margin-bottom: 6rem; }
+  .year-group.hidden { display: none; }
+  .year-heading { display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+  .year-num { font-family: var(--font-display); font-size: 4rem; color: var(--gray-200); line-height: 1; }
+  .year-divider { flex: 1; height: 1px; background: var(--gray-200); }
+
+  /* EXPO BLOCK — poster izquierda | meta + fotos 2×2 derecha */
+  .expo-block { display: grid; grid-template-columns: 220px 1fr; gap: 1.5rem; align-items: start; padding-bottom: 2.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--gray-200); }
+  .year-group .expo-block:last-child { border-bottom: none; padding-bottom: 0; }
+  .expo-block.no-poster { grid-template-columns: 1fr; }
+  .expo-poster-col img { width: 100%; height: auto; display: block; cursor: zoom-in; }
+  .expo-main-col { display: flex; flex-direction: column; gap: 1rem; }
+  .expo-meta { }
+  .expo-type { font-family: var(--font-display); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 0.5rem; }
+  .expo-titulo { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; margin-bottom: 0.25rem; line-height: 1.3; }
+  .expo-artista { font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem; }
+  .expo-mes { font-size: 0.78rem; color: var(--gray-400); }
+  .expo-photos-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  .expo-photo-cell img { width: 100%; height: auto; display: block; filter: grayscale(20%); transition: filter 0.4s; cursor: zoom-in; }
+  .expo-photo-cell:hover img { filter: grayscale(0%); }
+  @media (max-width: 768px) {
+    .expo-block { grid-template-columns: 1fr; }
+    .expo-content { padding: 3rem 1.5rem; }
+  }
+
+  /* LIGHTBOX */
+  #poster-lb { position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; cursor: zoom-out; padding: 1rem; }
+  #poster-lb.open { display: flex; }
+  #poster-lb img { max-width: 90vw; max-height: 90vh; object-fit: contain; box-shadow: 0 0 80px rgba(0,0,0,0.6); }
+
+  /* AÑADA */
+  .anada-section { background: var(--gray-100); padding: 6rem 3rem; }
+  .anada-inner { max-width: 1200px; margin: 0 auto; }
+  .anada-title { font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); margin-bottom: 1.5rem; }
+  .anada-text { max-width: 600px; font-size: 0.95rem; color: var(--gray-600); line-height: 1.8; }
+  .anada-nums { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 3rem; }
+  .anada-chip { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 0.1em; padding: 0.5rem 1.25rem; border: 1px solid var(--gray-200); background: var(--white); }
+  @media (max-width: 600px) { .anada-section { padding: 4rem 1.5rem; } }
+
+  footer { padding: 3rem; border-top: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--gray-400); flex-wrap: wrap; gap: 1rem; }
+  footer a { color: inherit; text-decoration: none; }
+  footer a:hover { color: var(--black); }
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<nav>
+  <a class="nav-logo" href="./index.html"><img class="nav-logo-img" src="./img/site/logo-transparent.png" alt="MAPA"></a>
+  <ul class="nav-links">
+    <li><a class="nav-link" href="./espacio.html">El Espacio</a></li>
+    <li><a class="nav-link" href="./artistas.html">Artistas</a></li>
+    <li><a class="nav-link active" href="./exposiciones.html">Exposiciones</a></li>
+    <li><a class="nav-link" href="./index.html#contacto">Contacto</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <img src="./img/espacio/interior1.jpg" alt="Exposición en MAPA" loading="eager">
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-content">
+    <p class="page-hero-label">MAPA Espacio de Arte</p>
+    <h1 class="page-hero-title">Exposiciones</h1>
+    <p class="page-hero-sub">Archivo de muestras 2012 — 2023</p>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><p class="stat-num">11</p><p class="stat-label">Añadas MAPA</p></div>
+    <div class="stat"><p class="stat-num">+100</p><p class="stat-label">Exposiciones</p></div>
+    <div class="stat"><p class="stat-num">23</p><p class="stat-label">Artistas estables</p></div>
+    <div class="stat"><p class="stat-num">2012</p><p class="stat-label">Desde</p></div>
+  </div>
+</div>
+
+<div class="filter-section">
+  <div class="filter-inner">
+    <button class="year-btn active" onclick="filterYear('all',this)">Todos</button>
+    <button class="year-btn" onclick="filterYear('2023',this)">2023</button>
+    <button class="year-btn" onclick="filterYear('2022',this)">2022</button>
+    <button class="year-btn" onclick="filterYear('2021',this)">2021</button>
+    <button class="year-btn" onclick="filterYear('2020',this)">2020</button>
+    <button class="year-btn" onclick="filterYear('2019',this)">2019</button>
+    <button class="year-btn" onclick="filterYear('2018',this)">2018</button>
+    <button class="year-btn" onclick="filterYear('2017',this)">2017</button>
+    <button class="year-btn" onclick="filterYear('2016',this)">2016</button>
+    <button class="year-btn" onclick="filterYear('2015',this)">2015</button>
+    <button class="year-btn" onclick="filterYear('2014',this)">2014</button>
+    <button class="year-btn" onclick="filterYear('2013',this)">2013</button>
+    <button class="year-btn" onclick="filterYear('2012',this)">2012</button>
+  </div>
+</div>
+
+<div class="expo-content">
+
+  <!-- 2023 -->
+  <div class="year-group" data-year="2023">
+    <div class="year-heading"><span class="year-num">2023</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/FLYER-MARANA.jpg" alt="11ª Añada MAPA — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">11ª Añada MAPA</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">Febrero 2023</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/11o-ANADA-sala-actualizacion-2023-1024x683.jpg" alt="11ª Añada — sala" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/11o-ANADA-publico-2-actualizacion-2023-1024x683.jpg" alt="11ª Añada — público" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/11o-ANADA-artistas-actualizacion-2023-1024x683.jpg" alt="11ª Añada — artistas" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/11o-ANADA-publico-actualizacion-2023-1024x683.jpg" alt="11ª Añada — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/FLYER-AISLAR-PARA-VER.jpg" alt="Aislar para ver — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Aislar para ver</p>
+          <p class="expo-artista">Muestra individual</p>
+          <p class="expo-mes">2023</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/AISLAR-PARA-VER-1024x741.jpg" alt="Aislar para ver — sala" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/inauguracion-AISLAR-PARA-VER-1024x741.jpg" alt="Aislar para ver — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Flyer-MATERIA-DEL-DESEO.jpg" alt="Materia del Deseo — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Materia del Deseo</p>
+          <p class="expo-artista">Muestra individual</p>
+          <p class="expo-mes">2023</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/MATERIA-DEL-DESEO-1024x683.jpg" alt="Materia del Deseo — sala" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Inauguracion-MATERIA-DEL-DESEO-1-1024x741.jpg" alt="Materia del Deseo — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/FLYER-CONVERSADAS.jpg" alt="Conversadas — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Encuentro / Charla</p>
+          <p class="expo-titulo">Conversadas</p>
+          <p class="expo-artista">Programa público</p>
+          <p class="expo-mes">2023</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Flyer-MATERIA-DEL-DESEO-CONVERSADAS.jpg" alt="Materia del Deseo · Conversadas — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Ciclo combinado</p>
+          <p class="expo-titulo">Materia del Deseo · Conversadas</p>
+          <p class="expo-artista">Ciclo de arte y diálogo</p>
+          <p class="expo-mes">2023</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/PUNTOS-DE-CULTURA.jpg" alt="Puntos de Cultura — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Programa cultural</p>
+          <p class="expo-titulo">Puntos de Cultura</p>
+          <p class="expo-artista">Programa público</p>
+          <p class="expo-mes">2023</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/MICRO-FERIA-ROSARIO.png" alt="Micro Feria Rosario — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Evento / Feria</p>
+          <p class="expo-titulo">Micro Feria Rosario</p>
+          <p class="expo-artista">Participación institucional</p>
+          <p class="expo-mes">2023</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2022 -->
+  <div class="year-group" data-year="2022">
+    <div class="year-heading"><span class="year-num">2022</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/10-ANADA-I.jpg" alt="10ª Añada MAPA — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">10ª Añada MAPA</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">Febrero 2022</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/10-ANADA-sala-2022-Mediano-1024x683.jpg" alt="10ª Añada — sala" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/inauguracion-10-ANADA-Mediano-1024x665.jpg" alt="10ª Añada — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/flyer-SEMANA-DE-LAS-ARTES.jpg" alt="Semana de las Artes — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Evento multidisciplinario</p>
+          <p class="expo-titulo">Semana de las Artes</p>
+          <p class="expo-artista">Moracci, Curci y otros</p>
+          <p class="expo-mes">2022</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/semana-de-las-artes-2022-Marga-S-1024x741.jpg" alt="Semana de las Artes — Marga S." loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Semana-de-las-artes-Adriana-Moracci-1024x741.jpg" alt="Semana de las Artes — Adriana Moracci" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Semana-de-las-artes-Marina-Curci-1024x741.jpg" alt="Semana de las Artes — Marina Curci" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/semana-de-las-artes-musica-2022-1024x741.jpg" alt="Semana de las Artes — música" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/FLYER-VOLUMETRIAS.jpg" alt="Volumetrías — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Volumetrías</p>
+          <p class="expo-artista">Lucio Stuer</p>
+          <p class="expo-mes">2022</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/INAUGURACION-VOLUMETRIAS-LUCIO-STUER.jpg" alt="Volumetrías — inauguración" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/INAUGURACION-VOLUMETRIAS-LUCIO-STUER-2.jpg" alt="Volumetrías — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/FERIA-DE-ARTE-MAPA.jpg" alt="Feria de Arte MAPA — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Evento / Feria</p>
+          <p class="expo-titulo">Feria de Arte MAPA</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">2022</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2021 -->
+  <div class="year-group" data-year="2021">
+    <div class="year-heading"><span class="year-num">2021</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Flyer-ALTO-GUISO-Martin-Guerra.jpg" alt="Alto Guiso — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Alto Guiso</p>
+          <p class="expo-artista">Martín Guerra</p>
+          <p class="expo-mes">2021</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/ALTO-GUISO-Martin-Guerra.jpg" alt="Alto Guiso — sala" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/ALTO-GUISO-Inauguracion.jpg" alt="Alto Guiso — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Grafica-9o-ANADA.jpg" alt="9ª Añada MAPA — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">9ª Añada MAPA — Galpón de Máquinas</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">2021</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/iNAUGURACION-9o-ANADA-Galpon-de-maquinas-1024x717.jpg" alt="9ª Añada — Galpón de Máquinas" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/INAUGURACION-9o-ANADA-2-1024x717.jpg" alt="9ª Añada — inauguración" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Inauguracion-9o-ANADA-Galpon-de-maquinas-1-1024x717.jpg" alt="9ª Añada — galpón" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Inauguracion-9o-ANADA-1024x717.jpg" alt="9ª Añada — público" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Flyer-SE-ANDAR-Pablo-Solo-Diaz.jpg" alt="Se Andar — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Se Andar</p>
+          <p class="expo-artista">Pablo Solo Díaz</p>
+          <p class="expo-mes">2021</p>
+        </div>
+        <div class="expo-photos-row three">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Inauguracion-SE-ANDAR.jpg" alt="Se Andar — inauguración" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/SE-ANDAR-2.jpg" alt="Se Andar — sala" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/SE-ANDAR.jpg" alt="Se Andar — obra" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Flyer-Lucila-Beaudoin-BISAGRA.jpg" alt="Bisagra — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Bisagra</p>
+          <p class="expo-artista">Lucila Beaudoin</p>
+          <p class="expo-mes">2021</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Inauguracion-BISAGRA-1024x680.jpg" alt="Bisagra — inauguración" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Inauguracion-BISAGRA-2-1024x680.jpg" alt="Bisagra — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Flyer-DUBOR-40-anos.jpg" alt="Dubor 40 años — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra retrospectiva</p>
+          <p class="expo-titulo">Dubor 40 años</p>
+          <p class="expo-artista">Eduardo Dubor</p>
+          <p class="expo-mes">2021</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Inauguracion-DUBOR-40-ANOS-1024x683.jpg" alt="Dubor 40 años — inauguración" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/Inauguracion-DUBOR-40-ANOS-2-1024x683.jpg" alt="Dubor 40 años — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2020 -->
+  <div class="year-group" data-year="2020">
+    <div class="year-heading"><span class="year-num">2020</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/COLECTIVA-CAMINOS-FEBRERO-2020-scaled.jpg" alt="8ª Añada MAPA — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">8ª Añada MAPA — Caminos</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">Febrero 2020</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/1-inauguracion-Expo-Colectiva-Caminos-febrero-2020-1024x683.jpg" alt="8ª Añada — inauguración" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/0-Inauguracion-8ANADAMAPA-Expo-Colectiva-Caminos-febrero-2020-1024x671.jpg" alt="8ª Añada — público" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2019 -->
+  <div class="year-group" data-year="2019">
+    <div class="year-heading"><span class="year-num">2019</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/COLOR-VIOLETA-COLECTIVA-FEBRERO-2019.jpg" alt="7ª Añada MAPA — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">7ª Añada MAPA</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">Febrero 2019</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/7ANADA-MAPA-Colectiva.jpg" alt="7ª Añada — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Afiche-para-imprimir.jpg" alt="Espacio Interior — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Espacio Interior</p>
+          <p class="expo-artista">Nico Vilela</p>
+          <p class="expo-mes">2019</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/NICO-Espacio-Interior-1024x683.jpg" alt="Espacio Interior — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/CONJURO-FRENTE-SARRAUA-JULIO-2019.jpg" alt="Conjuro — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Conjuro</p>
+          <p class="expo-artista">Sandra Sarraua</p>
+          <p class="expo-mes">Julio 2019</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/SARRAUA-Conjuro-1024x683.jpg" alt="Conjuro — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/SIMETRIAS-AMBIGUEDADES-Y-SEMEJANZAS-ABELIZA-AGOSTO-2019.jpg" alt="Simetrías — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Simetrías, Ambigüedades y Semejanzas</p>
+          <p class="expo-artista">Alberto Abeliza</p>
+          <p class="expo-mes">Agosto 2019</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/ABELIZA-Ambiguedades...-1024x683.jpg" alt="Simetrías — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Espinas-y-cenizas-2-1.jpg" alt="Espinas y Cenizas — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Espinas y Cenizas</p>
+          <p class="expo-artista">Manuel Díaz Vigo</p>
+          <p class="expo-mes">2019</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/MANUEL-Espinas-y-cenizas-1024x683.jpg" alt="Espinas y Cenizas — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/LINEAS-EN-EL-TIEMPO-DE-MEO-DICIEMBRE-2019.jpg" alt="Líneas en el tiempo — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Líneas en el tiempo</p>
+          <p class="expo-artista">Italia De Meo</p>
+          <p class="expo-mes">Diciembre 2019</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/ITALIA-Lineas-en-el-tiempo-1024x683.jpg" alt="Líneas en el tiempo — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2018 -->
+  <div class="year-group" data-year="2018">
+    <div class="year-heading"><span class="year-num">2018</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/EXPO-COLECTIVA-BICICLETAS-FEBRERO-2018.jpg" alt="6ª Añada Colectiva Bicicletas — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">6ª Añada — Colectiva Bicicletas</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">Febrero 2018</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/6ANADAMAPA-Colectiva-Bicicletas-1024x683.jpg" alt="6ª Añada — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/EL-PATIO-DE-LA-VIEJA-CABRERA-MARZO-2018.jpg" alt="El Patio de la Vieja — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">El Patio de la Vieja</p>
+          <p class="expo-artista">Mario Cabrera</p>
+          <p class="expo-mes">Marzo 2018</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/CABRERA-El-Patio-de-la-vieja-1024x683.jpg" alt="El Patio de la Vieja — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/BORRON-Y-MANCHA-NUEVA-GUERRA-MAYO-2018.jpg" alt="Borrón y Mancha Nueva — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Borrón y Mancha Nueva</p>
+          <p class="expo-artista">Martín Guerra</p>
+          <p class="expo-mes">Mayo 2018</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/GUERRA-Borron-y-mancha-nueva-1024x683.jpg" alt="Borrón y Mancha Nueva — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/LOS-PIBES-DEL-BARRIO-SABARESO-JULIO-2018.jpg" alt="Los Pibes del Barrio — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Los Pibes del Barrio</p>
+          <p class="expo-artista">Pablo Sabareso</p>
+          <p class="expo-mes">Julio 2018</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/SABARESO-Los-pibes-del-barrio-1024x683.jpg" alt="Los Pibes del Barrio — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/TODO-SIRVE-RODRIGUEZ-SEPTIEMBRE-2018.jpg" alt="Todo Sirve — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Todo Sirve</p>
+          <p class="expo-artista">Edgardo Nelson Rodríguez</p>
+          <p class="expo-mes">Septiembre 2018</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/EDGARDO-RODRIGUEZ-Todo-Sirve-1-1024x683.jpg" alt="Todo Sirve — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/DESPARRAMANDO-INCERTIDUMBRES-DIAZ-NOVIEMBRE-2018.jpg" alt="Desparramando Incertidumbres — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Desparramando Incertidumbres</p>
+          <p class="expo-artista">Pablo Solo Díaz</p>
+          <p class="expo-mes">Noviembre 2018</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/PABLO-SOLO-Desparramando-incertidumbres-1024x683.jpg" alt="Desparramando Incertidumbres — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/MILO-LOCKETT-DICIEMBRE-2018.jpg" alt="Milo Lockett — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Milo Lockett</p>
+          <p class="expo-artista">Milo Lockett</p>
+          <p class="expo-mes">Diciembre 2018</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/MILO-1024x683.jpg" alt="Milo Lockett — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2017 -->
+  <div class="year-group" data-year="2017">
+    <div class="year-heading"><span class="year-num">2017</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/DE-LO-PROFUNDO-DE-LA-CUNETA-DIAZ-VIGO-FEBRERO-2017.jpg" alt="De lo profundo de la cuneta — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">De lo profundo de la cuneta</p>
+          <p class="expo-artista">Manuel Díaz Vigo</p>
+          <p class="expo-mes">Febrero 2017</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/DIAZ-VIGO-De-lo-profundo-de-la-cuneta-1024x716.jpg" alt="De lo profundo de la cuneta — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/PAISAJE-DE-GIGANTES-D-VILELA-MAYO-2017.jpg" alt="Paisaje de Gigantes — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Paisaje de Gigantes</p>
+          <p class="expo-artista">Nicolás Vilela</p>
+          <p class="expo-mes">Mayo 2017</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/NICO-Paisaje-de-Gigantes-1024x683.jpg" alt="Paisaje de Gigantes — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/ECOSISTEMA-CURCI-SEPTIEMBRE-2017.jpg" alt="Ecosistema — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Ecosistema</p>
+          <p class="expo-artista">Marina Curci</p>
+          <p class="expo-mes">Septiembre 2017</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/CURCI-Botanica-1024x683.jpg" alt="Ecosistema — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/ESCONDIDA-BEAUDOIN-NOVIEMBRE-2017.jpg" alt="Escondida — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Escondida</p>
+          <p class="expo-artista">Lucila Beaudoin</p>
+          <p class="expo-mes">Noviembre 2017</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/BEAUDOIN-Escondidas-1024x683.jpg" alt="Escondida — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2016 -->
+  <div class="year-group" data-year="2016">
+    <div class="year-heading"><span class="year-num">2016</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/EXPO-COLECTIVA-ARROYOS-VERTIENTES-Y-LAGUNAS-FEBRERO-2016.jpg" alt="4ª Añada — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">4ª Añada — Arroyos, Vertientes y Lagunas</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">Febrero 2016</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/colectivava-1024x683.jpg" alt="4ª Añada — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/CLINICAS-INSTRUMENTALES-ABELIZA-ABRIL-2016.jpg" alt="Clínicas Instrumentales — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Clínicas Instrumentales</p>
+          <p class="expo-artista">Alberto Abeliza</p>
+          <p class="expo-mes">Abril 2016</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/pequeanim-1024x683.jpg" alt="Clínicas Instrumentales — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/CERCANIAS-DEL-TANDILEOFU-OLHABERRY-JUNIO-2016.jpg" alt="Cercanías del Tandileofu — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Cercanías del Tandileofu</p>
+          <p class="expo-artista">Olhaberry</p>
+          <p class="expo-mes">Junio 2016</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/planb-1024x683.jpg" alt="Cercanías del Tandileofu — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/PLAN-B-GUERRA-AGOSTO-2016.jpg" alt="Plan B — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Plan B</p>
+          <p class="expo-artista">Martín Guerra</p>
+          <p class="expo-mes">Agosto 2016</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/teresita.jpg" alt="Plan B — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/EL-TUNGO-20-ANOS-DIAZ-SEPTIEMBRE-2016.jpg" alt="El Tungo 20 años — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">El Tungo 20 años</p>
+          <p class="expo-artista">Pablo Solo Díaz</p>
+          <p class="expo-mes">Septiembre 2016</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/PABLOSOLODIAZ-El-Tungo-20Anos.jpg" alt="El Tungo 20 años — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/LOS-PUENTES-PIAMONTI-DICIEMBRE-2016.jpg" alt="Los Puentes — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Los Puentes</p>
+          <p class="expo-artista">Fernanda Piamonti</p>
+          <p class="expo-mes">Diciembre 2016</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/PIAMONTI-Puentes-1024x680.jpg" alt="Los Puentes — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- 2015 -->
+  <div class="year-group" data-year="2015">
+    <div class="year-heading"><span class="year-num">2015</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/COLECTIVA-2015.jpg" alt="3ª Añada MAPA — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">3ª Añada MAPA</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">Febrero 2015</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/3ANADA-COLECTIVA-1024x683.jpg" alt="3ª Añada — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/EL-TIEMPO-EL-IMPLACABLE-NYGAARD-ABRIL-2015.jpg" alt="El tiempo, el implacable — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">El tiempo, el implacable</p>
+          <p class="expo-artista">Nygaard</p>
+          <p class="expo-mes">Abril 2015</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/NYGAARS-El-tiempo-el-implacable-1024x683.jpg" alt="El tiempo, el implacable — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/FOTOGRAFIAS-DUBOR-SEPTIEMBRE-2015.jpg" alt="Fotografías — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Fotografías</p>
+          <p class="expo-artista">Eduardo Dubor</p>
+          <p class="expo-mes">Septiembre 2015</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/DUBOR-Fotografias.jpg" alt="Fotografías — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2014 -->
+  <div class="year-group" data-year="2014">
+    <div class="year-heading"><span class="year-num">2014</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/GARIBALDI-955-VILELA-VIEGAS-VIGO-FEBRERO-2014.jpg" alt="Garibaldi 955 — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">Garibaldi 955</p>
+          <p class="expo-artista">Vilela, Viegas, Díaz Vigo</p>
+          <p class="expo-mes">Febrero 2014</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/VIEGAS-VILELA-DIAZ-VIGO-Garibaldi-955-1024x683.jpg" alt="Garibaldi 955 — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/POETICA-DE-LO-EFIMERO-MORACCI-ABRIL-2014.jpg" alt="Poética de lo Efímero — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Poética de lo Efímero</p>
+          <p class="expo-artista">Adriana Moracci</p>
+          <p class="expo-mes">Abril 2014</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/MORACCI-Poetica-de-lo-esfimero-1024x687.jpg" alt="Poética de lo Efímero — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/AGUANTE-LOS-TRAPOS-GUERRA-MAYO-2014.jpg" alt="Aguante los Trapos — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Aguante los Trapos</p>
+          <p class="expo-artista">Martín Guerra</p>
+          <p class="expo-mes">Mayo 2014</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/GUERRA-Borron-y-mancha-nueva.jpg" alt="Aguante los Trapos — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/TODO-SIRVE-RODRIGUEZ-JUNIO-2014.jpg" alt="Todo Sirve — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Todo Sirve</p>
+          <p class="expo-artista">Edgardo Nelson Rodríguez</p>
+          <p class="expo-mes">Junio 2014</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/EDGARDO-RODRIGUEZ-Todo-Sirve-1024x683.jpg" alt="Todo Sirve — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/RECORTES-BEAUDOIN-AGOSTO-2014.jpg" alt="Recortes — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Recortes</p>
+          <p class="expo-artista">Lucila Beaudoin</p>
+          <p class="expo-mes">Agosto 2014</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/BEAUDOIN-1-1024x683.jpg" alt="Recortes — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/FLORESCENCIA-CURCI-SEPTIEMBRE-2014.jpg" alt="Florescencia — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Florescencia</p>
+          <p class="expo-artista">Marina Curci</p>
+          <p class="expo-mes">Septiembre 2014</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/CURCI-Florescencia-1024x683.jpg" alt="Florescencia — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/CROTEADAS-DIAZ-NOVIEMBRE-2014.jpg" alt="Croteadas — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Croteadas</p>
+          <p class="expo-artista">Pablo Solo Díaz</p>
+          <p class="expo-mes">Noviembre 2014</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/PABLOSOLODIAZ-Croteadas-1024x683.jpg" alt="Croteadas — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2013 -->
+  <div class="year-group" data-year="2013">
+    <div class="year-heading"><span class="year-num">2013</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/EXPO-COLECTIVA-2013.jpg" alt="1ª Añada — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">1ª Añada — El Mapa, los mapas</p>
+          <p class="expo-artista">Artistas del espacio</p>
+          <p class="expo-mes">Febrero 2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/1ANOMAPA-Colectiva-EL-Mapa-los-mapas-1024x683.jpg" alt="1ª Añada — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/10-DE-CUARZO-Y-2-DE-OXIDO-REDDEL-ABRIL-2013.jpg" alt="10 de cuarzo y 2 de óxido — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">10 de cuarzo y 2 de óxido</p>
+          <p class="expo-artista">Reddel</p>
+          <p class="expo-mes">2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/REDDEL-10-de-acido-y-2-de-oxido-1024x687.jpg" alt="10 de cuarzo — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/RINCON-ETCHEVERRY-JUNIO-2013.jpg" alt="Fuera de foco — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Fuera de foco</p>
+          <p class="expo-artista">Rincón Etcheverry</p>
+          <p class="expo-mes">Junio 2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/RINCON-ETCHEVERRY-Fuera-de-foco-1024x683.jpg" alt="Fuera de foco — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/UN-VELO-DE-ALQUITRAN-EN-UN-MAPA-DE-FLORES-PIAMONTI-MAYO-2013.jpg" alt="Un velo de alquitrán — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Un velo de alquitrán en un mapa de flores</p>
+          <p class="expo-artista">Fernanda Piamonti</p>
+          <p class="expo-mes">Mayo 2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/PIAMONTI-Un-velo-de-alquitran-en-un-mapa-de-flores-1024x683.jpg" alt="Un velo de alquitrán — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/ESTAR-GRUPAL-JULIO-2013.jpg" alt="Estar — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">Estar</p>
+          <p class="expo-artista">Arraga, Díaz Bolchisky, Molinari</p>
+          <p class="expo-mes">Julio 2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/ARRAGA-DIAZ.BOLCHISKY-MOLINARI-Estar-1024x683.jpg" alt="Estar — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/ECLECTICA-GIRIMONTI-AGOSTO-2013.jpg" alt="Ecléctica — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Ecléctica</p>
+          <p class="expo-artista">Girimonti</p>
+          <p class="expo-mes">Agosto 2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/GIRIMONTI-Eclectica-1024x687.jpg" alt="Ecléctica — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/RETRATOS-DE-PERSONAS-EN-SU-LUGAR-DE-TRABAJO-COGLITORE-SEPTIEMBRE-2013.jpg" alt="Personas en su lugar de trabajo — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Personas en su lugar de trabajo</p>
+          <p class="expo-artista">Coglitore</p>
+          <p class="expo-mes">Septiembre 2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/COGLITORE-Personas-en-su-lugar-de-trabajo-1024x683.jpg" alt="Personas en su lugar de trabajo — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/MILO-NOVIEMBRE-2013-1.jpg" alt="Milo Lockett — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Milo Lockett</p>
+          <p class="expo-artista">Milo Lockett</p>
+          <p class="expo-mes">Noviembre 2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/DSC_0328-1024x683.jpg" alt="Milo Lockett — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/Afiche-Muestra-Memoria-1.jpg" alt="Fotografía y Memoria — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">Fotografía y Memoria</p>
+          <p class="expo-artista">Muestra colectiva</p>
+          <p class="expo-mes">2013</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/catalogo-PUENTE.jpg" alt="Puentes — catálogo" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra colectiva</p>
+          <p class="expo-titulo">Puentes</p>
+          <p class="expo-artista">Muestra colectiva</p>
+          <p class="expo-mes">2013</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/PUENTES-Colectiva-1024x683.jpg" alt="Puentes — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 2012 -->
+  <div class="year-group" data-year="2012">
+    <div class="year-heading"><span class="year-num">2012</span><div class="year-divider"></div></div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/MAPA-INVITACION.jpg" alt="Muestra Inaugural — invitación" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra inaugural</p>
+          <p class="expo-titulo">Muestra Colectiva Inaugural</p>
+          <p class="expo-artista">20 artistas</p>
+          <p class="expo-mes">20 de febrero de 2012</p>
+        </div>
+        <div class="expo-photos-row">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/DSC_1346-1024x687.jpg" alt="Inaugural — sala 1" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/DSC_1363-1024x687.jpg" alt="Inaugural — sala 2" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/DSC_1345-1024x687.jpg" alt="Inaugural — sala 3" loading="lazy"></div>
+          <div class="expo-photo-cell"><img src="./img/exposiciones/DSC_0074-1-1024x683.jpg" alt="Inaugural — inauguración" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/DESFILE-CRIOLLO-DIAZ-DUBOR-ABRIL-2012.jpg" alt="Desfile Criollo — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Desfile Criollo</p>
+          <p class="expo-artista">Díaz / Dubor</p>
+          <p class="expo-mes">Abril 2012</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/DIAZ-DUBOR-Desfile-criollo-1024x768.jpg" alt="Desfile Criollo — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/AFICHE-METAMORFOSEANDOSE-GUERRA-JUNIO-2012.jpg" alt="Metamorfoseándose — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Metamorfoseándose</p>
+          <p class="expo-artista">Martín Guerra</p>
+          <p class="expo-mes">Junio 2012</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/GUERRA-Metamorfoseandose-1024x768.jpg" alt="Metamorfoseándose — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/TARJETA-INVITACION-Huella-Triste.jpg" alt="Huella Triste — invitación" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Huella Triste</p>
+          <p class="expo-artista">Nygaard</p>
+          <p class="expo-mes">2012</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/NYGAARD-Huella-triste-1.jpg" alt="Huella Triste — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/afiche-sergio-san-martin.jpg" alt="La Paciencia de la Araña — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">La Paciencia de la Araña</p>
+          <p class="expo-artista">Sergio San Martín</p>
+          <p class="expo-mes">2012</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/SAN-MARTIN-La-paciencia-de-la-arana-1024x687.jpg" alt="La Paciencia de la Araña — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/invitacion-Lucila.jpg" alt="Mirada Mariposa — invitación" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Mirada Mariposa</p>
+          <p class="expo-artista">Lucila Beaudoin</p>
+          <p class="expo-mes">2012</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/BEAUDOIN-Mirada-mariposa.jpg" alt="Mirada Mariposa — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/clinica-de-pequenos-animales-Abeliza.jpg" alt="Clínica de Pequeños Animales — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Clínica de Pequeños Animales</p>
+          <p class="expo-artista">Alberto Abeliza</p>
+          <p class="expo-mes">2012</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/invitacion-Martin-Suarez-Lerra.jpg" alt="Zombi(n)venidos — invitación" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Zombi(n)venidos</p>
+          <p class="expo-artista">Martín Suárez Lerra</p>
+          <p class="expo-mes">2012</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/SUAREZ-LERRA-Zombie-nvenidos-1024x683.jpg" alt="Zombi(n)venidos — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/invitacion-feria-de-diseno-15-de-diciembre.jpg" alt="Feria de Diseño — invitación" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Evento / Feria</p>
+          <p class="expo-titulo">Feria de Diseño</p>
+          <p class="expo-artista">15 de diciembre</p>
+          <p class="expo-mes">Diciembre 2012</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/invitacion-taller-expresarte.jpg" alt="Taller Expresarte — invitación" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Taller</p>
+          <p class="expo-titulo">Taller Expresarte</p>
+          <p class="expo-artista">Actividad del espacio</p>
+          <p class="expo-mes">2012</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/invitacion-expo-TDM.jpg" alt="Trabajadores del Monte — invitación" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Trabajadores del Monte</p>
+          <p class="expo-artista">Tacha Guerendiain</p>
+          <p class="expo-mes">2012</p>
+        </div>
+        <div class="expo-photos-row one">
+          <div class="expo-photo-cell"><img src="./img/exposiciones/TACHA-GUERENDIAIN-Trabajadores-del-monte.jpg" alt="Trabajadores del Monte — sala" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/enfocate.jpg" alt="Enfocate — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Enfocate</p>
+          <p class="expo-artista">Muestra individual</p>
+          <p class="expo-mes">2012</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="expo-block">
+      <div class="expo-poster-col"><img src="./img/exposiciones/rocio-juarez.jpg" alt="Rocío Juárez — flyer" loading="lazy"></div>
+      <div class="expo-main-col">
+        <div class="expo-meta">
+          <p class="expo-type">Muestra individual</p>
+          <p class="expo-titulo">Rocío Juárez</p>
+          <p class="expo-artista">Rocío Juárez</p>
+          <p class="expo-mes">2012</p>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+</div>
+
+<div class="anada-section">
+  <div class="anada-inner">
+    <p style="font-family:var(--font-display);font-size:0.75rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gray-400);margin-bottom:1rem;">La Añada MAPA</p>
+    <h2 class="anada-title">Una tradición anual desde 2013</h2>
+    <p class="anada-text">Cada año, en febrero, MAPA celebra su aniversario con la <strong>Añada</strong>: una exposición colectiva donde todos los artistas del espacio comparten obras en torno a un eje conceptual. Es el evento más esperado de la temporada, un ritual que marca el comienzo del año artístico en Las Flores.</p>
+    <div class="anada-nums">
+      <span class="anada-chip">1ª Añada · 2013</span>
+      <span class="anada-chip">2ª · 2014</span>
+      <span class="anada-chip">3ª · 2015</span>
+      <span class="anada-chip">4ª · 2016</span>
+      <span class="anada-chip">5ª · 2017</span>
+      <span class="anada-chip">6ª · 2018</span>
+      <span class="anada-chip">7ª · 2019</span>
+      <span class="anada-chip">8ª Caminos · 2020</span>
+      <span class="anada-chip">9ª Galpón · 2021</span>
+      <span class="anada-chip">10ª · 2022</span>
+      <span class="anada-chip">11ª · 2023</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>© MAPA Espacio de Arte — Av. Rivadavia 489, Las Flores</span>
+  <div style="display:flex;gap:1.5rem">
+    <a href="./index.html">Inicio</a>
+    <a href="./artistas.html">Artistas</a>
+    <a href="https://github.com/juliancarroccio" target="_blank">PushCommerce</a>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+const bar = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  bar.style.width = (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100) + '%';
+});
+
+gsap.from('.page-hero-content > *', { opacity: 0, y: 30, duration: 1, stagger: 0.2, delay: 0.3 });
+gsap.from('.stat', { opacity: 0, y: 20, duration: 0.6, stagger: 0.1, scrollTrigger: { trigger: '.stats-bar', start: 'top 90%' } });
+
+function filterYear(year, btn) {
+  document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.year-group').forEach(g => {
+    const hide = year !== 'all' && g.dataset.year !== year;
+    g.classList.toggle('hidden', hide);
+    // Limpia estilos inline de GSAP para que el grupo sea visible aunque el ScrollTrigger no haya disparado
+    if (!hide) gsap.set(g, { clearProps: 'opacity,y,transform' });
+  });
+  window.scrollTo({ top: document.querySelector('.filter-section').offsetTop - 80, behavior: 'smooth' });
+}
+
+gsap.utils.toArray('.year-group').forEach(el => {
+  gsap.from(el, { opacity: 0, y: 30, duration: 0.7, scrollTrigger: { trigger: el, start: 'top 88%' } });
+});
+
+// Lightbox — poster y fotos de sala
+const lb = document.getElementById('poster-lb');
+const lbImg = document.getElementById('poster-lb-img');
+function openLb(src, alt) { lbImg.src = src; lbImg.alt = alt || ''; lb.classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeLb() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+document.querySelectorAll('.expo-poster-col img, .expo-photo-cell img').forEach(img => {
+  img.addEventListener('click', () => openLb(img.src, img.alt));
+});
+lb.addEventListener('click', closeLb);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+</script>
+
+<div id="poster-lb"><img id="poster-lb-img" src="" alt=""></div>
+</body>
+</html>

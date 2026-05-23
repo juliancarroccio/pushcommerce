@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR — Cani Ventas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Manrope', sans-serif; background: #080C14; color: #EDF5EE; }
+    @media print {
+      body { background: #ffffff; color: #111; }
+      .card { background: #ffffff !important; border: none !important; box-shadow: none !important; }
+      .print-hide { display: none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+
+  <div class="card bg-[#0D1820] border border-[#56BC6D]/20 rounded-3xl p-10 max-w-sm w-full text-center shadow-2xl">
+
+    <!-- Logo -->
+    <img src="./img/logo.png" alt="Cani Ventas" class="h-16 w-auto object-contain mx-auto mb-4">
+
+    <!-- Name -->
+    <h1 class="font-syne font-extrabold text-[#EDF5EE] text-2xl mb-1">Cani Ventas</h1>
+    <p class="font-manrope text-[#8AA89A] text-sm mb-6">Electrodomésticos · Tecnología · Hogar</p>
+
+    <!-- Divider -->
+    <div class="flex items-center gap-3 mb-6">
+      <div class="flex-1 h-px bg-[#56BC6D]/20"></div>
+      <span class="text-[#56BC6D] text-xs font-manrope font-semibold uppercase tracking-widest">Tienda online</span>
+      <div class="flex-1 h-px bg-[#56BC6D]/20"></div>
+    </div>
+
+    <!-- QR -->
+    <div id="qr-box" class="flex justify-center mb-4 p-3 bg-white rounded-2xl inline-block mx-auto"></div>
+
+    <!-- CTA -->
+    <p class="font-syne font-bold text-[#56BC6D] text-base mt-5 mb-2">Escaneá para ver nuestros productos</p>
+    <p class="font-manrope text-[#8AA89A] text-xs break-all mb-6">
+      juliancarroccio.github.io/pushcommerce/pages/cani_ventas/tienda.html
+    </p>
+
+    <!-- Divider -->
+    <div class="h-px bg-[#56BC6D]/10 mb-5"></div>
+
+    <!-- Address -->
+    <div class="flex items-center justify-center gap-2 text-[#8AA89A] text-sm font-manrope mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>
+      Gral. Paz 517, Las Flores
+    </div>
+
+    <!-- Powered by -->
+    <p class="font-manrope text-[#8AA89A]/40 text-xs">Powered by PushCommerce</p>
+  </div>
+
+  <!-- Print button -->
+  <button onclick="window.print()" class="print-hide mt-6 bg-[#56BC6D] hover:bg-[#94D769] text-[#080C14] font-syne font-bold px-6 py-3 rounded-xl transition-colors">
+    Imprimir QR
+  </button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    new QRCode(document.getElementById('qr-box'), {
+      text: 'https://juliancarroccio.github.io/pushcommerce/pages/cani_ventas/tienda.html',
+      width: 220,
+      height: 220,
+      colorDark: '#080C14',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+</body>
+</html>

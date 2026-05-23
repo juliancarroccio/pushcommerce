@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR — MAPA Espacio de Arte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #fff; font-family: 'Reem Kufi', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+  .card { width: 360px; text-align: center; padding: 3rem 2.5rem; border: 1px solid #e0e0e0; }
+  .logo { height: 56px; margin: 0 auto 2rem; display: block; }
+  .nombre { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.25rem; }
+  .tagline { font-family: 'Inter', sans-serif; font-size: 0.8rem; color: #9e9e9e; letter-spacing: 0.05em; margin-bottom: 2rem; }
+  .divider { width: 40px; height: 2px; background: #000; margin: 0 auto 2rem; }
+  #qr-box { display: flex; justify-content: center; margin-bottom: 2rem; }
+  #qr-box img, #qr-box canvas { border: 8px solid #fff; outline: 1px solid #e0e0e0; }
+  .scan-text { font-size: 0.75rem; color: #555; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; font-family: 'Inter', sans-serif; }
+  .url { font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #9e9e9e; word-break: break-all; margin-bottom: 1.5rem; }
+  .divider2 { width: 100%; height: 1px; background: #e0e0e0; margin-bottom: 1.5rem; }
+  .direccion { font-family: 'Inter', sans-serif; font-size: 0.8rem; color: #555; margin-bottom: 0.5rem; }
+  .powered { font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #ccc; margin-top: 1.5rem; }
+  @media print {
+    body { background: white; padding: 0; }
+    .card { border: none; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <img class="logo" src="./img/site/logonegro.png" alt="MAPA" onerror="this.src='./img/site/logo.png';this.style.filter='invert(1)'">
+  <p class="nombre">MAPA</p>
+  <p class="tagline">Espacio de Arte · Las Flores, Buenos Aires</p>
+  <div class="divider"></div>
+  <div id="qr-box"></div>
+  <p class="scan-text">Escaneá para ver las obras</p>
+  <p class="url">juliancarroccio.github.io/pushcommerce/pages/mapa/artistas.html</p>
+  <div class="divider2"></div>
+  <p class="direccion">Av. Rivadavia 489, Las Flores</p>
+  <p class="direccion">@Mapa_Espacio_De_Arte</p>
+  <p class="powered">Sitio web por PushCommerce</p>
+</div>
+
+<script>
+new QRCode(document.getElementById('qr-box'), {
+  text: 'https://juliancarroccio.github.io/pushcommerce/pages/mapa/artistas.html',
+  width: 220,
+  height: 220,
+  colorDark: '#000000',
+  colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.H
+});
+</script>
+</body>
+</html>

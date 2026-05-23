@@ -1,0 +1,167 @@
+{
+  "negocio": {
+    "nombre": "Cani Ventas",
+    "whatsapp": "5492244429964",
+    "direccion": "Gral. Paz 517, Las Flores",
+    "telefono": "2244 42-9964",
+    "analytics_id": "",
+    "product_modal": true
+  },
+  "oferta": {
+    "activa": true,
+    "producto_id": 6,
+    "texto": "Oferta de la semana",
+    "precio_oferta": 55000
+  },
+  "horarios": {
+    "lunes":     [{"abre": "09:00", "cierra": "13:00"}, {"abre": "16:00", "cierra": "20:00"}],
+    "martes":    [{"abre": "09:00", "cierra": "13:00"}, {"abre": "16:00", "cierra": "20:00"}],
+    "miércoles": [{"abre": "09:00", "cierra": "13:00"}, {"abre": "16:00", "cierra": "20:00"}],
+    "jueves":    [{"abre": "09:00", "cierra": "13:00"}, {"abre": "16:00", "cierra": "20:00"}],
+    "viernes":   [{"abre": "09:00", "cierra": "13:00"}, {"abre": "16:00", "cierra": "20:00"}],
+    "sábado":    [{"abre": "09:00", "cierra": "13:00"}],
+    "domingo":   []
+  },
+  "categorias": [
+    {
+      "id": "electrodomesticos",
+      "nombre": "Electrodomésticos",
+      "emoji": "🏠",
+      "productos": [
+        {
+          "id": 1,
+          "nombre": "Microondas digital 20L",
+          "descripcion": "Panel digital, 700W, interior antiadherente",
+          "precio": 85000,
+          "specs": ["Potencia: 700W", "Capacidad: 20 litros", "Panel de control digital con display LED", "Interior antiadherente de fácil limpieza", "Timer programable hasta 30 minutos", "Puerta con ventana y luz interior", "Función descongelación automática", "Color: Gris inoxidable"]
+        },
+        {
+          "id": 2,
+          "nombre": "Plancha a vapor cerámica",
+          "descripcion": "Suela cerámica antiadherente, 2200W, depósito 300ml",
+          "precio": 35000,
+          "specs": ["Potencia: 2200W", "Suela cerámica antiadherente premium", "Depósito de agua: 300ml", "Vapor continuo + golpe de vapor", "Control de temperatura regulable (lana a lino)", "Cable giratorio 360° · Longitud: 1.8m", "Función autoapagado de seguridad", "Color: Blanco con detalles violeta"]
+        },
+        {
+          "id": 3,
+          "nombre": "Aspiradora ciclónica sin bolsa",
+          "descripcion": "1200W, filtro HEPA lavable, depósito 2.5L",
+          "precio": 95000,
+          "specs": ["Potencia: 1200W de succión", "Sistema ciclónico sin pérdida de potencia", "Filtro HEPA lavable y reutilizable", "Depósito rígido: 2.5 litros", "Accesorios incluidos: cepillo turbo, flexible, boquilla rincones", "Cable retráctil 5m", "Ruedas multidireccionales silenciosas", "Color: Rojo/Negro"]
+        },
+        {
+          "id": 4,
+          "nombre": "Licuadora 1000W",
+          "descripcion": "Vaso de vidrio 1.5L, 5 velocidades + pulso",
+          "precio": 48000,
+          "specs": ["Potencia: 1000W", "Vaso de vidrio templado: 1.5 litros", "5 velocidades + función pulso", "Cuchillas en acero inoxidable reforzado", "Base en acero inoxidable antideslizante", "Apta para hielo, smoothies y sopas frías", "Tapa con tapón dosificador", "Color: Cromado/Negro"]
+        }
+      ]
+    },
+    {
+      "id": "tecnologia",
+      "nombre": "Tecnología",
+      "emoji": "📱",
+      "productos": [
+        {
+          "id": 5,
+          "nombre": "Smart TV 32\" HD Android",
+          "descripcion": "Android TV, WiFi, HDMI x2, USB, Netflix y YouTube",
+          "precio": 280000,
+          "specs": ["Pantalla: 32 pulgadas HD Ready (1366×768px)", "Sistema operativo: Android TV (Google Play Store)", "WiFi 2.4GHz integrado", "Conectividad: HDMI x2 · USB x1 · Audio óptico · AV", "Apps preinstaladas: Netflix, YouTube, Disney+, Prime Video", "Control por voz compatible con Google Assistant", "VESA 200×200mm (soporte de pared compatible)", "Color: Negro · Consumo: 45W"]
+        },
+        {
+          "id": 6,
+          "nombre": "Parlante Bluetooth portátil",
+          "descripcion": "Resistente al agua IPX5, 20W, 10hs batería, manos libres",
+          "precio": 75000,
+          "specs": ["Potencia: 20W RMS de salida", "Bluetooth 5.0 · Alcance: hasta 10 metros", "Resistencia al agua certificada IPX5", "Batería: 2000mAh · Autonomía: hasta 10 horas", "Función manos libres con micrófono integrado", "Entrada auxiliar 3.5mm · Carga USB-C", "Tiempo de carga: 2.5 horas", "Colores: Negro · Verde · Azul marino"]
+        },
+        {
+          "id": 7,
+          "nombre": "Auriculares inalámbricos",
+          "descripcion": "Cancelación de ruido activa, 30hs de autonomía",
+          "precio": 68000,
+          "specs": ["Cancelación de ruido activa (ANC) de doble capa", "Autonomía: hasta 30 horas con ANC desactivado", "Bluetooth 5.1 · Alcance 15m sin obstáculos", "Diseño plegable con estuche de transporte incluido", "Puerto audio 3.5mm para uso con cable (avión, etc.)", "Carga rápida USB-C: 10 min = 3hs de música", "Almohadillas de cuero sintético con memory foam", "Color: Negro mate / Blanco perla"]
+        },
+        {
+          "id": 8,
+          "nombre": "Cámara de seguridad WiFi",
+          "descripcion": "1080p, visión nocturna, detección de movimiento",
+          "precio": 42000,
+          "specs": ["Resolución: 1080p Full HD (2MP)", "Visión nocturna infrarroja hasta 10 metros", "Detección de movimiento con alerta push en tiempo real", "WiFi 2.4GHz · App gratuita para iOS y Android", "Almacenamiento: MicroSD hasta 128GB (no incluida) o nube", "Protección: IP65 (apta interior y exterior)", "Ángulo de visión: 110° gran angular", "Audio bidireccional (hablar y escuchar desde el teléfono)"]
+        }
+      ]
+    },
+    {
+      "id": "hogar",
+      "nombre": "Hogar",
+      "emoji": "🛋️",
+      "productos": [
+        {
+          "id": 9,
+          "nombre": "Set utensilios de cocina x5",
+          "descripcion": "Acero inoxidable con mango ergonómico, soporte incluido",
+          "precio": 28000,
+          "specs": ["Set de 5 piezas: cuchara, espátula, espumadera, pinza y cucharón", "Material: Acero inoxidable 18/10 de alta calidad", "Mango ergonómico antideslizante", "Gancho colgante en cada utensilio", "Soporte de mesa incluido", "Apto lavavajillas", "Longitud aproximada: 30cm c/u", "Color: Plateado/Negro"]
+        },
+        {
+          "id": 10,
+          "nombre": "Almohada viscoelástica",
+          "descripcion": "Memory foam 50×70cm, funda lavable antiácaros",
+          "precio": 32000,
+          "specs": ["Material: Memory foam viscoelástico de alta densidad", "Medidas: 50×70cm · Altura: 12cm", "Se adapta a la forma de la cabeza y el cuello", "Funda extraíble lavable en lavarropas (hasta 40°)", "Certificada antiácaros e hipoalergénica", "Indicada para todo tipo de durmiente (boca arriba, lado)", "Densidad: 50kg/m³ para soporte óptimo", "Cubierta exterior: algodón/poliéster transpirable"]
+        },
+        {
+          "id": 11,
+          "nombre": "Set de toallas premium x4",
+          "descripcion": "100% algodón 550g/m², 2 de baño y 2 de mano",
+          "precio": 24000,
+          "specs": ["Set de 4 toallas (2 toallas de baño + 2 toallas de mano)", "Material: 100% algodón peinado de primera calidad", "Gramaje: 550 g/m² (alta densidad, alta absorción)", "Suave al tacto desde el primer uso", "Colores disponibles: Blanco · Gris perla · Arena", "Apta para lavarropas (hasta 60°) sin pérdida de forma", "Talle toalla baño: 70×140cm · Talle toalla mano: 40×80cm", "Resistente al desteñido y al lavado frecuente"]
+        },
+        {
+          "id": 12,
+          "nombre": "Organizador heladera acero",
+          "descripcion": "Set x3 bandejas apilables, apto alimentos",
+          "precio": 18000,
+          "specs": ["Set de 3 bandejas organizadoras apilables", "Material: Acero inoxidable + plástico ABS libre de BPA", "100% apto para contacto con alimentos", "Fácil de limpiar: desmontable y apto lavavajillas", "Capacidad aprox.: 2.5 litros cada bandeja", "Compatible con heladeras estándar y no frost", "Se pueden apilar para maximizar el espacio", "Color: Transparente con borde inoxidable"]
+        }
+      ]
+    },
+    {
+      "id": "camping",
+      "nombre": "Camping y Jardín",
+      "emoji": "⛺",
+      "productos": [
+        {
+          "id": 13,
+          "nombre": "Carpa 4 personas impermeable",
+          "descripcion": "Armado rápido, fondo impermeable, ventilación doble",
+          "precio": 95000,
+          "specs": ["Capacidad: 4 personas cómodas", "Armado rápido tipo igloo: menos de 10 minutos", "Impermeabilidad fondo: 3000mm de columna de agua", "Doble techo con ventilación cruzada anti-condensación", "Estructura: varillas de fibra de vidrio flexibles y resistentes", "Incluye: estacas de aluminio, cuerdas vientos, bolso de transporte", "Dimensiones interiores: 210×240cm · Altura: 130cm", "Peso total: 3.2kg"]
+        },
+        {
+          "id": 14,
+          "nombre": "Silla plegable reforzada",
+          "descripcion": "Acero reforzado, lona 600D, hasta 120kg",
+          "precio": 22000,
+          "specs": ["Estructura: tubo de acero reforzado 25mm de diámetro", "Tela: lona 600 Denier resistente al agua y al desgarro", "Capacidad máxima de carga: 120kg", "Plegable en segundos para transporte y almacenamiento", "Bolso de transporte con correa incluido", "Medidas abiertas: 55×50×85cm · Plegada: 10×10×90cm", "Peso propio: 2.8kg", "Color: Azul/Negro · Verde/Negro (según stock)"]
+        },
+        {
+          "id": 15,
+          "nombre": "Linterna LED recargable solar",
+          "descripcion": "350 lúmenes, 3 modos, carga USB y panel solar",
+          "precio": 18000,
+          "specs": ["Potencia lumínica: 350 lúmenes (modo alta)", "3 modos de iluminación: Alta · Baja · Flash de emergencia", "Carga dual: panel solar integrado + cable USB", "Batería interna: 2000mAh recargable (no requiere pilas)", "Resistencia al agua: IPX4 (salpicaduras)", "Zoom ajustable: haz largo o foco difuso", "Material: aluminio aeronáutico + ABS", "Color: Negro · Autonomía: hasta 8hs en modo bajo"]
+        },
+        {
+          "id": 16,
+          "nombre": "Manguera extensible 15m",
+          "descripcion": "Se extiende 15m y se contrae sola, pistola 7 funciones",
+          "precio": 25000,
+          "specs": ["Longitud en uso: hasta 15 metros bajo presión de agua", "Se contrae automáticamente al vaciar (sin enrollar manualmente)", "Pistola de 7 funciones incluida: ducha · neblina · chorro · spray · cono · jet · plana", "Material: látex triple capa + cubierta de tela poliéster resistente", "Conectores de latón resistentes a la corrosión", "Apta para agua fría y tibia (hasta 40°)", "Conexión universal para canillas estándar", "Color: Verde con pistola negra"]
+        }
+      ]
+    }
+  ]
+}

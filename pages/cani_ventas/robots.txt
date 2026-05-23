@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://juliancarroccio.github.io/pushcommerce/pages/cani_ventas/sitemap.xml

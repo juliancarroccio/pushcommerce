@@ -1,0 +1,21 @@
+{
+  "name": "Sr. Miga",
+  "short_name": "Sr. Miga",
+  "description": "Sandwichería artesanal en Las Flores, Buenos Aires",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1A1A1A",
+  "theme_color": "#B83A7A",
+  "icons": [
+    {
+      "src": "./img/favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "./img/logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

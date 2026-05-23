@@ -1,0 +1,64 @@
+{
+  "negocio": {
+    "nombre": "Pizza & Massa",
+    "whatsapp": "5492244444110",
+    "direccion": "Leandro N. Alem 610, Las Flores",
+    "telefono": "02244 44-4110",
+    "analytics_id": ""
+  },
+  "oferta": {
+    "activa": true,
+    "producto_id": 2,
+    "texto": "Pizza de la semana",
+    "precio_oferta": 7000
+  },
+  "horarios": {
+    "lunes":     [{"abre": "07:00", "cierra": "23:00"}],
+    "martes":    [{"abre": "07:00", "cierra": "23:00"}],
+    "miércoles": [{"abre": "07:00", "cierra": "23:00"}],
+    "jueves":    [{"abre": "07:00", "cierra": "23:00"}],
+    "viernes":   [{"abre": "07:00", "cierra": "23:00"}],
+    "sábado":    [{"abre": "07:00", "cierra": "23:00"}],
+    "domingo":   [{"abre": "07:00", "cierra": "23:00"}]
+  },
+  "categorias": [
+    {
+      "id": 1,
+      "nombre": "Pizzas",
+      "icono": "🍕",
+      "productos": [
+        { "id": 1,  "nombre": "Mozzarella",          "descripcion": "Mozzarella · Salsa de Tomate · Aceitunas",                                      "precio": 8500,  "imagen": null },
+        { "id": 2,  "nombre": "Calabresa",            "descripcion": "Mozzarella · Salsa de Tomate · Longanizas Calabresas · Aceitunas",               "precio": 8500,  "imagen": null },
+        { "id": 3,  "nombre": "Napolitana",           "descripcion": "Mozzarella · Salsa de Tomate · Tomate en Rodajas · Aceitunas",                   "precio": 8500,  "imagen": null },
+        { "id": 4,  "nombre": "Primavera",            "descripcion": "Mozzarella · Salsa de Tomate · Tomate en Rodajas · Huevo Pasado · Aceitunas",    "precio": 9000,  "imagen": null },
+        { "id": 5,  "nombre": "Mozzarella con Morrón","descripcion": "Mozzarella · Salsa de Tomate · Morrón · Aceitunas",                             "precio": 8500,  "imagen": null },
+        { "id": 6,  "nombre": "Palmitos",             "descripcion": "Mozzarella · Salsa de Tomate · Palmitos · Jamón · Salsa Golf · Aceitunas",       "precio": 10500, "imagen": null },
+        { "id": 7,  "nombre": "Roquefort",            "descripcion": "Mozzarella · Roquefort · Aceitunas",                                             "precio": 9000,  "imagen": null },
+        { "id": 8,  "nombre": "Panceta",              "descripcion": "Mozzarella · Salsa de Tomate · Panceta · Aceitunas",                             "precio": 9500,  "imagen": null },
+        { "id": 9,  "nombre": "Choclo",               "descripcion": "Mozzarella · Salsa de Tomate · Choclo · Aceitunas",                              "precio": 8500,  "imagen": null },
+        { "id": 10, "nombre": "Jamón",                "descripcion": "Mozzarella · Salsa de Tomate · Jamón · Aceitunas",                               "precio": 9000,  "imagen": null },
+        { "id": 11, "nombre": "Jamón y Morrones",     "descripcion": "Mozzarella · Salsa de Tomate · Jamón · Morrones · Aceitunas",                    "precio": 9500,  "imagen": null },
+        { "id": 12, "nombre": "Cuatro Quesos",        "descripcion": "Mozzarella · Roquefort · Provolone · Queso Azul",                               "precio": 10500, "imagen": null },
+        { "id": 13, "nombre": "Fugazzeta",            "descripcion": "Mozzarella · Cebolla · Aceitunas",                                              "precio": 8500,  "imagen": null },
+        { "id": 14, "nombre": "Anchoa",               "descripcion": "Mozzarella · Salsa de Tomate · Anchoas · Aceitunas",                             "precio": 9500,  "imagen": null },
+        { "id": 15, "nombre": "Provoleta",            "descripcion": "Mozzarella · Provolone · Aceitunas",                                             "precio": 10500, "imagen": null },
+        { "id": 16, "nombre": "Verdura",              "descripcion": "Mozzarella · Salsa de Tomate · Verduras · Roquefort · Aceitunas",                "precio": 9000,  "imagen": null },
+        { "id": 17, "nombre": "Provenzal",            "descripcion": "Mozzarella · Ajo · Perejil · Aceitunas",                                        "precio": 9000,  "imagen": null }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Empanadas",
+      "icono": "🥟",
+      "productos": [
+        { "id": 18, "nombre": "Empanada de Carne",        "descripcion": "Carne picada con cebolla, huevo y condimentos",            "precio": 900, "imagen": null },
+        { "id": 19, "nombre": "Empanada Caprese",         "descripcion": "Tomate fresco, mozzarella y albahaca",                     "precio": 900, "imagen": null },
+        { "id": 20, "nombre": "Empanada de Pollo",        "descripcion": "Pollo con cebolla de verdeo y condimentos",                "precio": 900, "imagen": null },
+        { "id": 21, "nombre": "Empanada de Cebolla",      "descripcion": "Cebolla caramelizada con queso",                          "precio": 900, "imagen": null },
+        { "id": 22, "nombre": "Empanada Jamón y Queso",   "descripcion": "Jamón cocido y queso mozzarella",                         "precio": 900, "imagen": null },
+        { "id": 23, "nombre": "Empanada de Verdura",      "descripcion": "Espinaca, ricota y queso",                                "precio": 900, "imagen": null },
+        { "id": 24, "nombre": "Empanada de Huevo",        "descripcion": "Huevo duro con cebolla y perejil",                        "precio": 900, "imagen": null }
+      ]
+    }
+  ]
+}

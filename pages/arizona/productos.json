@@ -1,0 +1,90 @@
+{
+  "negocio": {
+    "nombre": "Arizona Indumentaria",
+    "whatsapp": "5492244409935",
+    "direccion": "Av. San Martín e Hipólito Yrigoyen, Las Flores",
+    "telefono": "02244 40-9935",
+    "analytics_id": ""
+  },
+  "oferta": {
+    "activa": true,
+    "producto_id": 2,
+    "texto": "Oferta de la semana",
+    "precio_oferta": 49000
+  },
+  "horarios": {
+    "lunes":     [{"abre": "10:00", "cierra": "12:30"}, {"abre": "18:00", "cierra": "21:00"}],
+    "martes":    [{"abre": "10:00", "cierra": "12:30"}, {"abre": "18:00", "cierra": "21:00"}],
+    "miércoles": [{"abre": "10:00", "cierra": "12:30"}, {"abre": "18:00", "cierra": "21:00"}],
+    "jueves":    [{"abre": "10:00", "cierra": "12:30"}, {"abre": "18:00", "cierra": "21:00"}],
+    "viernes":   [{"abre": "10:00", "cierra": "12:30"}, {"abre": "18:00", "cierra": "21:00"}],
+    "sábado":    [{"abre": "10:00", "cierra": "13:00"}],
+    "domingo":   []
+  },
+  "categorias": [
+    {
+      "nombre": "Indumentaria",
+      "productos": [
+        {"id": 1,  "nombre": "Remera Básica Unisex",    "descripcion": "100% algodón, corte amplio. Disponible en varios colores.",        "precio": 14000, "imagen": "", "talles": ["S", "M", "L", "XL", "XXL"]},
+        {"id": 2,  "nombre": "Campera de Abrigo",        "descripcion": "Acolchada, cierre central, bolsillos laterales. Unisex.",            "precio": 65000, "imagen": "", "talles": ["S", "M", "L", "XL"]},
+        {"id": 3,  "nombre": "Jogger Urbano",             "descripcion": "Frisa interior, puño ajustable. Cómodo y versátil.",                "precio": 28000, "imagen": "", "talles": ["S", "M", "L", "XL", "XXL"]},
+        {"id": 4,  "nombre": "Jean Clásico",              "descripcion": "Denim rígido, corte recto. Para hombre y mujer.",                   "precio": 45000, "imagen": "", "talles": ["36", "38", "40", "42", "44"]},
+        {"id": 5,  "nombre": "Buzo con Capucha",          "descripcion": "Frisa interior, canguro frontal. Estilo urbano.",                   "precio": 32000, "imagen": "", "talles": ["S", "M", "L", "XL", "XXL"]},
+        {"id": 6,  "nombre": "Vestido Casual",            "descripcion": "Tela fluida, manga corta. Ideal para el día a día.",                 "precio": 30000, "imagen": "", "talles": ["S", "M", "L", "XL"]},
+        {"id": 7,  "nombre": "Bermuda Cargo",             "descripcion": "Varios bolsillos, tela resistente. Unisex.",                        "precio": 22000, "imagen": "", "talles": ["S", "M", "L", "XL", "XXL"]},
+        {"id": 8,  "nombre": "Chaleco de Abrigo",         "descripcion": "Sin mangas, relleno pluma sintética. Liviano y cálido.",            "precio": 48000, "imagen": "", "talles": ["S", "M", "L", "XL"]}
+      ]
+    },
+    {
+      "nombre": "Calzado",
+      "productos": [
+        {"id": 11, "nombre": "Zapatillas Urbanas",        "descripcion": "Suela de goma, capellada de lona. Estilo retro.",                   "precio": 58000, "imagen": "", "talles": ["35", "36", "37", "38", "39", "40", "41", "42"]},
+        {"id": 12, "nombre": "Botas de Cuero",            "descripcion": "Cuero ecológico, caña media, cierre lateral.",                      "precio": 75000, "imagen": "", "talles": ["36", "37", "38", "39", "40", "41"]},
+        {"id": 13, "nombre": "Ojotas de Playa",           "descripcion": "Tira anatómica, suela antideslizante.",                             "precio": 12000, "imagen": "", "talles": ["35", "36", "37", "38", "39", "40", "41", "42"]},
+        {"id": 14, "nombre": "Mocasines",                 "descripcion": "Cuero suave, sin cordones. Cómodos todo el día.",                   "precio": 52000, "imagen": "", "talles": ["36", "37", "38", "39", "40", "41", "42"]},
+        {"id": 15, "nombre": "Sneakers de Colores",       "descripcion": "Suela chunky, varios colores disponibles.",                         "precio": 62000, "imagen": "", "talles": ["35", "36", "37", "38", "39", "40", "41", "42"]}
+      ]
+    },
+    {
+      "nombre": "Blanquería",
+      "productos": [
+        {"id": 16, "nombre": "Juego de Sábanas",          "descripcion": "Algodón percal 200 hilos. Incluye sábana, funda y ajustable.",      "precio": 48000, "imagen": "", "talles": ["1 plaza", "1.5 plazas", "2 plazas", "king"]},
+        {"id": 17, "nombre": "Acolchado de Invierno",     "descripcion": "Relleno pluma sintética 300g. Muy abrigado.",                       "precio": 85000, "imagen": "", "talles": ["1 plaza", "1.5 plazas", "2 plazas", "king"]},
+        {"id": 18, "nombre": "Frazada Polar",             "descripcion": "Micropolar suave, ribete en bordes. Lavable en lavarropas.",        "precio": 42000, "imagen": "", "talles": ["1 plaza", "1.5 plazas", "2 plazas", "king"]},
+        {"id": 19, "nombre": "Almohadón de Pluma",        "descripcion": "Relleno sintético hipoalergénico. Funda de algodón.",               "precio": 28000, "imagen": "", "talles": ["Estándar", "King"]},
+        {"id": 20, "nombre": "Toalla de Baño",            "descripcion": "Algodón 500g/m², ultra absorbente. Varios colores.",                "precio": 16000, "imagen": "", "talles": []}
+      ]
+    },
+    {
+      "nombre": "Pijamas",
+      "productos": [
+        {"id": 21, "nombre": "Pijama Polar",              "descripcion": "Frisa ultra suave, pantalón y buzo. Ideal para el invierno.",       "precio": 32000, "imagen": "", "talles": ["S", "M", "L", "XL", "XXL"]},
+        {"id": 22, "nombre": "Pijama de Algodón",         "descripcion": "Tela liviana, ideal para primavera-verano.",                        "precio": 24000, "imagen": "", "talles": ["S", "M", "L", "XL", "XXL"]},
+        {"id": 23, "nombre": "Baby Doll",                 "descripcion": "Tejido satinado, escote V, detalle de encaje.",                     "precio": 22000, "imagen": "", "talles": ["S", "M", "L", "XL"]},
+        {"id": 24, "nombre": "Enterito Térmico",          "descripcion": "Una pieza, cierre, puños ajustables. Para el frío extremo.",        "precio": 35000, "imagen": "", "talles": ["S", "M", "L", "XL", "XXL"]}
+      ]
+    },
+    {
+      "nombre": "Medias y Cintos",
+      "productos": [
+        {"id": 25, "nombre": "Medias Deportivas x3",      "descripcion": "Algodón con refuerzo en talón y puntera.",                          "precio": 8500,  "imagen": "", "talles": ["S/M", "L/XL"]},
+        {"id": 26, "nombre": "Medias de Compresión",      "descripcion": "Gradiente de presión, mejora la circulación.",                      "precio": 12000, "imagen": "", "talles": ["S/M", "L/XL"]},
+        {"id": 27, "nombre": "Medias Invisibles x3",      "descripcion": "Silicona antideslizante en talón. Para zapatillas.",                "precio": 6000,  "imagen": "", "talles": ["S/M", "L/XL"]},
+        {"id": 28, "nombre": "Cinto de Cuero",            "descripcion": "Cuero ecológico, hebilla dorada. Varios colores.",                  "precio": 15000, "imagen": "", "talles": ["S", "M", "L", "XL"]},
+        {"id": 29, "nombre": "Cinto de Lona",             "descripcion": "Estilo militar, hebilla a presión.",                                "precio": 8000,  "imagen": "", "talles": ["S", "M", "L", "XL"]}
+      ]
+    },
+    {
+      "nombre": "Complementos",
+      "productos": [
+        {"id": 30, "nombre": "Cartera de Mano",           "descripcion": "Cuero ecológico, compartimento principal con cierre.",              "precio": 28000, "imagen": "", "talles": []},
+        {"id": 31, "nombre": "Bolso Deportivo",           "descripcion": "Lona resistente, asa y correa bandolera.",                          "precio": 35000, "imagen": "", "talles": []},
+        {"id": 32, "nombre": "Gorro de Lana",             "descripcion": "Tejido doble, pompón. Abriga sin perder el estilo.",                "precio": 10000, "imagen": "", "talles": []},
+        {"id": 33, "nombre": "Bufanda",                   "descripcion": "Lana y acrílico, extra larga. Varios colores.",                    "precio": 12000, "imagen": "", "talles": []},
+        {"id": 34, "nombre": "Lentes de Sol",             "descripcion": "Marco acetato, lentes UV400. Estilo retro.",                        "precio": 18000, "imagen": "", "talles": []},
+        {"id": 35, "nombre": "Maquillaje — Base",         "descripcion": "Cobertura media-alta, larga duración. Varios tonos.",               "precio": 18000, "imagen": "", "talles": []},
+        {"id": 36, "nombre": "Maquillaje — Labial",       "descripcion": "Mate de larga duración, formula hidratante.",                       "precio": 8000,  "imagen": "", "talles": []}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arizona Indumentaria — Las Flores</title>
+<meta name="description" content="Arizona Indumentaria en Las Flores. Ropa unisex, calzado, blanquería, accesorios y más. Av. San Martín e Hipólito Yrigoyen.">
+<link rel="icon" href="./img/favicon.png" type="image/png">
+<link rel="manifest" href="./manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root {
+    --sand:   #F9F7F4;
+    --sand2:  #F0EDE8;
+    --dark:   #0D0D0D;
+    --terra:  #B5622B;
+    --terra2: #8E4B1E;
+    --mid:    #555;
+    --muted:  #999;
+    --border: #E2DDD7;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--sand); color: var(--dark); font-family: 'Manrope', sans-serif; overflow-x: hidden; }
+  .syne { font-family: 'Syne', sans-serif; }
+
+  /* Scroll progress */
+  #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--terra); z-index: 9999; width: 0%; transition: width 0.1s linear; }
+
+  /* Navbar */
+  #navbar {
+    position: fixed; top: 2px; left: 0; right: 0; z-index: 100;
+    padding: 0.9rem 2rem; transition: background 0.3s, box-shadow 0.3s;
+  }
+  #navbar.scrolled { background: rgba(249,247,244,0.96); backdrop-filter: blur(12px); box-shadow: 0 1px 20px rgba(0,0,0,0.07); }
+  .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { display: flex; align-items: center; text-decoration: none; }
+  .nav-logo img { width: 90px; height: auto; display: block; filter: brightness(0); transition: filter 0.3s; }
+  .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.8rem; font-weight: 500; color: var(--mid); text-decoration: none; transition: color 0.2s; letter-spacing: 0.04em; text-transform: uppercase; }
+  .nav-links a:hover { color: var(--terra); }
+  #nav-estado {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.2rem 0.65rem; border-radius: 99px; font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  #nav-estado.abierto { background: #D4EDDA; color: #155724; }
+  #nav-estado.cerrado { background: #F8D7DA; color: #721C24; }
+  .nav-cta { background: var(--terra) !important; color: #fff !important; padding: 0.45rem 1.1rem; border-radius: 6px !important; transition: background 0.2s !important; }
+  .nav-cta:hover { background: var(--terra2) !important; }
+  .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+  .nav-hamburger span { display: block; height: 2px; width: 22px; background: var(--dark); border-radius: 2px; }
+  .nav-mobile { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--sand); border-bottom: 1px solid var(--border); padding: 1rem 2rem 1.5rem; flex-direction: column; gap: 1rem; }
+  .nav-mobile.open { display: flex; }
+  .nav-mobile a { color: var(--mid); font-size: 0.875rem; text-decoration: none; font-weight: 500; }
+
+  /* Hero — split left/right */
+  #inicio {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 55fr 45fr;
+    overflow: hidden;
+  }
+  .hero-left {
+    background: #928f8a;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 3rem 4rem;
+    padding-top: max(3rem, 70px);
+    position: relative;
+  }
+  .hero-right { position: relative; overflow: hidden; }
+  .hero-right img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+  .hero-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terra); margin-bottom: 1.25rem; display: block; overflow: hidden; }
+  .hero-label span { display: block; }
+  .hero-logo-img { width: min(300px, 72%); height: auto; display: block; filter: brightness(0); margin-bottom: 2rem; }
+  .hero-desc { font-size: 0.95rem; color: rgba(13,13,13,0.65); max-width: 400px; line-height: 1.65; margin-bottom: 2.5rem; font-weight: 300; }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+  .btn-main { background: var(--terra); color: #fff; padding: 0.85rem 2rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; transition: background 0.2s, transform 0.15s; display: inline-block; }
+  .btn-main:hover { background: var(--terra2); transform: translateY(-1px); }
+  .btn-outline-dark { border: 1.5px solid rgba(13,13,13,0.35); color: var(--dark); padding: 0.85rem 1.75rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.2s; display: inline-block; }
+  .btn-outline-dark:hover { border-color: var(--dark); }
+  .hero-meta { display: flex; gap: 2.5rem; }
+  .hero-meta-item { display: flex; flex-direction: column; }
+  .hero-meta-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(13,13,13,0.4); margin-bottom: 0.15rem; }
+  .hero-meta-val { font-size: 0.8rem; font-weight: 600; color: var(--dark); font-family: 'Syne', sans-serif; }
+
+  /* Sección labels */
+  .section-eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--terra); margin-bottom: 0.75rem; }
+
+  /* Nosotros */
+  #nosotros { padding: 7rem 2rem; }
+  .nosotros-inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 1fr; gap: 6rem; align-items: center; }
+  .nosotros-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 2rem; }
+  .nosotros-title em { font-style: normal; color: var(--terra); }
+  .nosotros-text p { color: var(--mid); line-height: 1.75; font-size: 0.925rem; font-weight: 300; margin-bottom: 1.25rem; }
+  .nosotros-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+  .tag { background: var(--sand2); border: 1px solid var(--border); padding: 0.35rem 0.85rem; border-radius: 99px; font-size: 0.72rem; font-weight: 500; color: var(--mid); }
+  .nosotros-photo { position: relative; }
+  .nosotros-photo-wrap { aspect-ratio: 3/4; overflow: hidden; border-radius: 4px; }
+  .nosotros-photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; transition: transform 0.6s ease; }
+  .nosotros-photo-wrap:hover img { transform: scale(1.04); }
+  .nosotros-photo-badge {
+    position: absolute; bottom: 1.5rem; left: -1.5rem;
+    background: var(--dark); color: #fff; padding: 1rem 1.25rem; border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .badge-num { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--terra); line-height: 1; }
+  .badge-txt { font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-top: 0.1rem; }
+
+  /* Ticker divider */
+  .ticker-wrap { overflow: hidden; background: var(--dark); padding: 0.75rem 0; white-space: nowrap; }
+  .ticker-inner { display: inline-flex; animation: ticker 20s linear infinite; }
+  .ticker-inner span { font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); padding: 0 2rem; }
+  .ticker-inner em { color: var(--terra); font-style: normal; }
+  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+  /* Productos */
+  #productos { padding: 7rem 2rem; background: var(--sand2); }
+  .productos-inner { max-width: 1200px; margin: 0 auto; }
+  .section-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(1.8rem, 3vw, 2.6rem); letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .section-sub { color: var(--muted); font-size: 0.875rem; margin-bottom: 2.5rem; font-weight: 300; }
+
+  /* Destacados grid */
+  .pcard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+  .pcard { background: var(--sand); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; transition: box-shadow 0.25s, transform 0.25s; display: flex; flex-direction: column; }
+  .pcard:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.08); transform: translateY(-3px); }
+  .pcard-img { aspect-ratio: 3/4; background: var(--sand2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .pcard-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pcard-emoji { font-size: 3rem; }
+  .pcard-offer-badge { position: absolute; top: 0.6rem; left: 0.6rem; background: var(--terra); color: #fff; font-size: 0.62rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 3px; letter-spacing: 0.05em; }
+  .pcard-talle-badge { position: absolute; top: 0.6rem; right: 0.6rem; background: rgba(13,13,13,0.7); color: #fff; font-size: 0.58rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .pcard-body { padding: 0.875rem; flex: 1; display: flex; flex-direction: column; }
+  .pcard-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.875rem; margin-bottom: 0.2rem; letter-spacing: 0.01em; }
+  .pcard-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.45; flex: 1; margin-bottom: 0.75rem; font-weight: 300; }
+  .pcard-footer { display: flex; align-items: center; justify-content: space-between; }
+  .pcard-price { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; }
+  .pcard-price-orig { font-size: 0.7rem; text-decoration: line-through; color: var(--muted); display: block; }
+  .pcard-price-offer { color: var(--terra); }
+  .cta-tienda { text-align: center; margin-top: 2.5rem; }
+  .cta-tienda a { background: var(--dark); color: #fff; padding: 0.9rem 2.5rem; border-radius: 6px; text-decoration: none; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; transition: background 0.2s; display: inline-block; }
+  .cta-tienda a:hover { background: #333; }
+
+  /* Oferta banner */
+  #oferta-banner { padding: 5rem 2rem; background: var(--terra); color: #fff; display: none; }
+  #oferta-banner.visible { display: block; }
+  .oferta-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+  .oferta-tag { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.75rem; font-family: 'Syne', sans-serif; }
+  .oferta-nombre { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; margin-bottom: 1.25rem; letter-spacing: -0.02em; }
+  .oferta-precios { display: flex; align-items: center; justify-content: center; gap: 1.25rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+  .oferta-orig { font-size: 1rem; text-decoration: line-through; opacity: 0.55; }
+  .oferta-price { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; }
+  .oferta-badge { background: rgba(255,255,255,0.2); padding: 0.3rem 0.8rem; border-radius: 4px; font-size: 0.875rem; font-weight: 700; font-family: 'Syne', sans-serif; }
+  .oferta-cta { background: #fff; color: var(--terra); padding: 0.85rem 2rem; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; display: inline-block; transition: opacity 0.2s; }
+  .oferta-cta:hover { opacity: 0.9; }
+
+  /* Horarios */
+  #horarios { padding: 7rem 2rem; }
+  .horarios-inner { max-width: 700px; margin: 0 auto; }
+  .estado-wrap { text-align: center; margin-bottom: 2.5rem; }
+  #estado-local { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.25rem; border-radius: 99px; font-size: 0.875rem; font-weight: 500; }
+  #estado-local.abierto { background: #D4EDDA; color: #155724; }
+  #estado-local.cerrado { background: #F8D7DA; color: #721C24; }
+  .horarios-grid { display: grid; gap: 0.6rem; }
+  .horario-row { display: flex; justify-content: space-between; align-items: center; padding: 0.875rem 1.25rem; border-radius: 4px; background: var(--sand2); border: 1.5px solid var(--border); }
+  .horario-row.today { border-color: var(--terra); background: rgba(181,98,43,0.06); }
+  .horario-dia { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.875rem; text-transform: capitalize; }
+  .horario-row.today .horario-dia { color: var(--terra); }
+  .horario-hs { font-size: 0.8rem; color: var(--mid); }
+  .horario-cerrado { font-size: 0.8rem; color: var(--muted); }
+
+  /* Reseñas */
+  #resenas { padding: 7rem 2rem; background: var(--sand2); }
+  .resenas-inner { max-width: 1140px; margin: 0 auto; }
+  .resenas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+  .resena-card { background: var(--sand); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; }
+  .resena-stars { color: #E8A838; font-size: 0.85rem; margin-bottom: 0.75rem; }
+  .resena-texto { font-size: 0.875rem; line-height: 1.65; color: var(--mid); font-weight: 300; margin-bottom: 1rem; font-style: italic; }
+  .resena-autor { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--dark); }
+  .resena-fuente { font-size: 0.68rem; color: var(--muted); }
+
+  /* Contacto */
+  #contacto { padding: 7rem 2rem; }
+  .contacto-inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.6fr; gap: 5rem; align-items: start; }
+  .contacto-info-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(1.5rem, 2.5vw, 2rem); letter-spacing: -0.02em; margin-bottom: 2rem; }
+  .info-item { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-start; }
+  .info-icon { font-size: 1.1rem; margin-top: 0.1rem; flex-shrink: 0; }
+  .info-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 0.2rem; font-weight: 600; }
+  .info-val { font-size: 0.9rem; font-weight: 400; color: var(--dark); line-height: 1.5; }
+  .wa-btn { display: inline-flex; align-items: center; gap: 0.65rem; background: #25D366; color: #fff; padding: 0.85rem 1.75rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem; margin-top: 1rem; transition: background 0.2s; letter-spacing: 0.03em; }
+  .wa-btn:hover { background: #1ebe5d; }
+  .contacto-map { border-radius: 4px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.1); }
+  .contacto-map iframe { display: block; width: 100%; height: 400px; border: none; }
+
+  /* Footer */
+  footer { background: var(--dark); color: rgba(255,255,255,0.5); padding: 3.5rem 2rem 2rem; }
+  .footer-inner { max-width: 1140px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .footer-logo img { width: 110px; height: auto; filter: brightness(0) invert(1); opacity: 0.85; margin-bottom: 0.5rem; }
+  .footer-sub { font-size: 0.72rem; margin-bottom: 2rem; }
+  .footer-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--terra); }
+  .footer-copy { font-size: 0.68rem; color: rgba(255,255,255,0.25); }
+  .footer-copy a { color: rgba(255,255,255,0.35); text-decoration: none; }
+
+  /* WA float */
+  #wa-float { position: fixed; bottom: 1.75rem; right: 1.75rem; z-index: 200; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37,211,102,0.4); text-decoration: none; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s; transform: scale(0.8); }
+  #wa-float.show { opacity: 1; pointer-events: auto; transform: scale(1); }
+  #wa-float svg { width: 28px; height: 28px; fill: #fff; }
+  #wa-float:hover { transform: scale(1.08); }
+  #back-to-top { position: fixed; bottom: 5.25rem; right: 1.75rem; z-index: 200; width: 40px; height: 40px; border-radius: 50%; background: var(--sand2); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.3s; color: var(--mid); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); font-family: 'Manrope', sans-serif; }
+  #back-to-top.show { opacity: 1; pointer-events: auto; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    #inicio { grid-template-columns: 1fr; grid-template-rows: auto 55vw; }
+    .hero-left { padding: 6rem 2rem 3rem; justify-content: flex-end; }
+    .hero-right { order: -1; }
+    .nosotros-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .nosotros-photo-badge { left: auto; right: 1rem; }
+    .contacto-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+  }
+  @media (max-width: 600px) {
+    .hero-left { padding: 5rem 1.5rem 2.5rem; }
+    .hero-meta { flex-wrap: wrap; gap: 1.25rem; }
+    .pcard-grid { grid-template-columns: repeat(2, 1fr); }
+    .resenas-grid { grid-template-columns: 1fr; }
+    #navbar { padding: 0.9rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#inicio" class="nav-logo"><img src="./img/logo.png" alt="Arizona Indumentaria"></a>
+    <ul class="nav-links">
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#productos">Productos</a></li>
+      <li><a href="#horarios">Horarios</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+      <li><span id="nav-estado" class="cerrado">● Cerrado</span></li>
+      <li><a href="./tienda.html" class="nav-cta">Ver tienda</a></li>
+    </ul>
+    <div class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  </div>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="#nosotros" onclick="toggleMenu()">Nosotros</a>
+    <a href="#productos" onclick="toggleMenu()">Productos</a>
+    <a href="#horarios" onclick="toggleMenu()">Horarios</a>
+    <a href="#contacto" onclick="toggleMenu()">Contacto</a>
+    <a href="./tienda.html" style="color:var(--terra);font-weight:700">→ Ver tienda</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="inicio">
+  <div class="hero-left">
+    <span class="hero-label"><span>Indumentaria · Calzado · Blanquería</span></span>
+    <img src="./img/logo.png" alt="Arizona Indumentaria" class="hero-logo-img">
+    <p class="hero-desc">Ropa unisex, calzado, blanquería y accesorios. En San Martín e Yrigoyen, Las Flores.</p>
+    <div class="hero-actions">
+      <a href="./tienda.html" class="btn-main">Ver productos</a>
+      <a href="#nosotros" class="btn-outline-dark">Conocernos</a>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Calificación</span>
+        <span class="hero-meta-val">5.0 ★ Google</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Seguidores IG</span>
+        <span class="hero-meta-val">+2.700</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Horario</span>
+        <span class="hero-meta-val">Lun–Sáb</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="./img/sign.jpg" alt="Arizona Route 66" id="hero-img">
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span>Indumentaria <em>·</em></span><span>Calzado <em>·</em></span><span>Blanquería <em>·</em></span><span>Pijamas <em>·</em></span><span>Accesorios <em>·</em></span><span>Maquillaje <em>·</em></span><span>Arizona <em>·</em></span>
+    <span>Indumentaria <em>·</em></span><span>Calzado <em>·</em></span><span>Blanquería <em>·</em></span><span>Pijamas <em>·</em></span><span>Accesorios <em>·</em></span><span>Maquillaje <em>·</em></span><span>Arizona <em>·</em></span>
+  </div>
+</div>
+
+<!-- NOSOTROS -->
+<section id="nosotros">
+  <div class="nosotros-inner">
+    <div class="nosotros-text">
+      <p class="section-eyebrow">Nuestra historia</p>
+      <h2 class="nosotros-title">El lugar donde <em>encontrás</em> lo que buscás</h2>
+      <div>
+        <p>Arizona nació con una idea simple: traer a Las Flores la ropa que la gente quería, sin tener que viajar a la ciudad. Indumentaria unisex para todos los estilos, tallas y ocasiones.</p>
+        <p>El local de San Martín e Yrigoyen se convirtió en punto de encuentro del barrio. Siempre hay algo nuevo en los percheros — remeras, camperas, jeans, pijamas, blanquería y un montón de cosas más que Orne va sumando.</p>
+        <p>La energía Route 66 que decora el local dice todo: Arizona es un lugar de paso obligado, un espacio de buen gusto accesible para todos.</p>
+      </div>
+      <div class="nosotros-tags">
+        <span class="tag">Indumentaria Unisex</span>
+        <span class="tag">Calzado</span>
+        <span class="tag">Blanquería</span>
+        <span class="tag">Maquillaje</span>
+        <span class="tag">Accesorios</span>
+      </div>
+    </div>
+    <div class="nosotros-photo">
+      <div class="nosotros-photo-wrap">
+        <img src="./img/hero.jpg" alt="Local Arizona Las Flores">
+      </div>
+      <div class="nosotros-photo-badge">
+        <div class="badge-num">US 66</div>
+        <div class="badge-txt">San Martín e Yrigoyen</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESTACADOS -->
+<section id="productos">
+  <div class="productos-inner">
+    <p class="section-eyebrow">Destacados</p>
+    <h2 class="section-title syne">Lo que tenemos</h2>
+    <p class="section-sub">Una selección de nuestros productos — precios orientativos, consultanos por WhatsApp.</p>
+    <div class="pcard-grid" id="destacados-grid" style="margin-bottom:2.5rem"></div>
+    <div class="cta-tienda">
+      <a href="./tienda.html">Ver toda la tienda →</a>
+    </div>
+  </div>
+</section>
+
+<!-- OFERTA BANNER -->
+<section id="oferta-banner">
+  <div class="oferta-inner">
+    <p class="oferta-tag">Oferta de la semana</p>
+    <h3 class="oferta-nombre" id="oferta-nombre"></h3>
+    <div class="oferta-precios">
+      <span class="oferta-orig" id="oferta-orig"></span>
+      <span class="oferta-price" id="oferta-price"></span>
+      <span class="oferta-badge" id="oferta-badge"></span>
+    </div>
+    <a href="./tienda.html" class="oferta-cta">Ver en tienda</a>
+  </div>
+</section>
+
+<!-- HORARIOS -->
+<section id="horarios">
+  <div class="horarios-inner">
+    <p class="section-eyebrow" style="text-align:center">Horarios</p>
+    <h2 class="section-title syne" style="text-align:center;margin-bottom:1.5rem">¿Cuándo abrimos?</h2>
+    <div class="estado-wrap"><span id="estado-local" class="cerrado">● Verificando...</span></div>
+    <div class="horarios-grid" id="horarios-grid"></div>
+  </div>
+</section>
+
+<!-- RESEÑAS -->
+<section id="resenas">
+  <div class="resenas-inner">
+    <p class="section-eyebrow" style="text-align:center">Opiniones</p>
+    <h2 class="section-title syne" style="text-align:center">Lo que dicen</h2>
+    <div class="resenas-grid">
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"Orne tiene ojo para la ropa. Entré buscando una campera y me fui con eso y más. El local es chico pero está muy bien surtido, siempre hay novedades."</p>
+        <p class="resena-autor">Valentina R.</p>
+        <p class="resena-fuente">Instagram @arizonalf_</p>
+      </div>
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"Compré pijamas y blanquería y quedé re conforme. Buena calidad, precio justo y la atención es genial. El único lugar en Las Flores donde encuentro todo junto."</p>
+        <p class="resena-autor">Marcos D.</p>
+        <p class="resena-fuente">Reseña en Google</p>
+      </div>
+      <div class="resena-card">
+        <div class="resena-stars">★★★★★</div>
+        <p class="resena-texto">"Me sorprendió la variedad. Hay ropa para hombre, mujer y unisex, zapatillas, bolsos... ideal para no tener que ir a Buenos Aires por cada cosa que necesitás."</p>
+        <p class="resena-autor">Luciana M.</p>
+        <p class="resena-fuente">Instagram @arizonalf_</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="contacto-inner">
+    <div>
+      <p class="section-eyebrow">Encontranos</p>
+      <h2 class="contacto-info-title syne">Vení a<br>conocernos</h2>
+      <div class="info-item">
+        <span class="info-icon">📍</span>
+        <div>
+          <p class="info-label">Dirección</p>
+          <p class="info-val">Av. San Martín e Hipólito Yrigoyen<br>Las Flores, Buenos Aires</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">📞</span>
+        <div>
+          <p class="info-label">Teléfono</p>
+          <p class="info-val">02244 40-9935</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">📸</span>
+        <div>
+          <p class="info-label">Instagram</p>
+          <p class="info-val">@arizonalf_</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">🕐</span>
+        <div>
+          <p class="info-label">Horario</p>
+          <p class="info-val">Lun–Vie 10–12:30 hs y 18–21 hs<br>Sáb 10–13 hs · Dom cerrado</p>
+        </div>
+      </div>
+      <a href="https://wa.me/5492244409935?text=Hola%20Arizona!%20Quiero%20consultar%20por%20productos." target="_blank" class="wa-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Escribinos por WhatsApp
+      </a>
+    </div>
+    <div class="contacto-map">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193!2d-59.0986!3d-36.0139!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sAv.+San+Mart%C3%ADn+e+Hip%C3%B3lito+Yrigoyen%2C+Las+Flores%2C+Buenos+Aires!5e0!3m2!1ses!2sar!4v1" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Arizona en Google Maps"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo"><img src="./img/logo.png" alt="Arizona Indumentaria"></div>
+    <p class="footer-sub">Av. San Martín e Hipólito Yrigoyen · Las Flores · 02244 40-9935</p>
+    <div class="footer-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#productos">Productos</a>
+      <a href="./tienda.html">Tienda</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <p class="footer-copy">© 2025 Arizona Indumentaria · Sitio web por <a href="#">PushCommerce</a></p>
+  </div>
+</footer>
+
+<a id="wa-float" href="https://wa.me/5492244409935?text=Hola%20Arizona!%20Quiero%20consultar%20por%20productos." target="_blank" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+</a>
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+
+fetch('./productos.json').then(r => r.json()).then(initPage).catch(() => {});
+
+function initPage(data) {
+  buildHorarios(data);
+  buildDestacados(data);
+  buildOferta(data);
+}
+
+function buildHorarios(data) {
+  const ahora = new Date();
+  const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+  const displayDias = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  const hoyIdx = ahora.getDay() === 0 ? 6 : ahora.getDay() - 1;
+  const hoy = dias[hoyIdx];
+  const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+  const turnos = data.horarios[hoy] || [];
+  const abierto = turnos.some(t => {
+    const [ah, am] = t.abre.split(':').map(Number);
+    const [ch, cm] = t.cierra.split(':').map(Number);
+    return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+  });
+  const nav = document.getElementById('nav-estado');
+  const estadoEl = document.getElementById('estado-local');
+  if (abierto) {
+    const t = turnos.find(t => { const [ah,am]=t.abre.split(':').map(Number); const [ch,cm]=t.cierra.split(':').map(Number); return minAhora>=ah*60+am && minAhora<ch*60+cm; });
+    nav.textContent = '● Abierto'; nav.className = 'abierto';
+    estadoEl.textContent = `● Abierto · cierra a las ${t.cierra}`; estadoEl.className = 'abierto';
+  } else {
+    let proxDia = '', proxHora = '';
+    for (let i = 1; i <= 7; i++) {
+      const idx = (hoyIdx + i) % 7;
+      const t = data.horarios[dias[idx]];
+      if (t && t.length) { proxDia = displayDias[idx]; proxHora = t[0].abre; break; }
+    }
+    nav.textContent = '● Cerrado'; nav.className = 'cerrado';
+    estadoEl.textContent = proxDia ? `● Cerrado · abre el ${proxDia} a las ${proxHora}` : '● Cerrado hoy';
+    estadoEl.className = 'cerrado';
+  }
+  const grid = document.getElementById('horarios-grid');
+  dias.forEach((dia, i) => {
+    const t = data.horarios[dia] || [];
+    const row = document.createElement('div');
+    row.className = 'horario-row' + (i === hoyIdx ? ' today' : '');
+    const hsText = t.length ? t.map(x => `${x.abre} – ${x.cierra}`).join(' · ') : '—';
+    row.innerHTML = `<span class="horario-dia">${displayDias[i]}</span>${t.length ? `<span class="horario-hs">${hsText}</span>` : '<span class="horario-cerrado">Cerrado</span>'}`;
+    grid.appendChild(row);
+  });
+}
+
+function buildDestacados(data) {
+  const emojis = {'Indumentaria':'👕','Calzado':'👟','Blanquería':'🛏️','Pijamas':'🌙','Medias y Cintos':'🧦','Complementos':'👜'};
+  const featured = [];
+  const usedCats = new Set();
+  // Primero: el producto en oferta
+  if (data.oferta.activa) {
+    data.categorias.forEach((cat, i) => {
+      cat.productos.forEach(p => {
+        if (p.id === data.oferta.producto_id && featured.length === 0) {
+          featured.push({...p, isOffer: true, offerPrice: data.oferta.precio_oferta, catNombre: cat.nombre, catIdx: i});
+          usedCats.add(i);
+        }
+      });
+    });
+  }
+  // Después: 3 productos de categorías diferentes
+  for (let i = 0; i < data.categorias.length && featured.length < 4; i++) {
+    if (usedCats.has(i)) continue;
+    usedCats.add(i);
+    const cat = data.categorias[i];
+    featured.push({...cat.productos[0], catNombre: cat.nombre});
+  }
+  const grid = document.getElementById('destacados-grid');
+  grid.innerHTML = featured.map(p => {
+    const emoji = emojis[p.catNombre] || '🛍️';
+    const isOffer = p.isOffer;
+    const price = isOffer ? p.offerPrice : p.precio;
+    const pct = isOffer ? Math.round((1 - price / p.precio) * 100) : 0;
+    const hasTalles = p.talles && p.talles.length > 0;
+    return `<div class="pcard">
+      <div class="pcard-img">
+        ${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}">` : `<span class="pcard-emoji">${emoji}</span>`}
+        ${isOffer ? `<span class="pcard-offer-badge">−${pct}%</span>` : ''}
+        ${hasTalles ? `<span class="pcard-talle-badge">Talles disp.</span>` : ''}
+      </div>
+      <div class="pcard-body">
+        <p class="pcard-name syne">${p.nombre}</p>
+        <p class="pcard-desc">${p.descripcion}</p>
+        <div class="pcard-footer">
+          <div>${isOffer ? `<span class="pcard-price-orig">$${p.precio.toLocaleString('es-AR')}</span>` : ''}<span class="pcard-price ${isOffer ? 'pcard-price-offer' : ''}">$${price.toLocaleString('es-AR')}</span></div>
+        </div>
+      </div></div>`;
+  }).join('');
+  gsap.from('.pcard', { scrollTrigger: { trigger: '#productos', start: 'top 80%' }, y: 40, opacity: 0, stagger: 0.1, duration: 0.6 });
+}
+
+function buildOferta(data) {
+  if (!data.oferta.activa) return;
+  const prod = data.categorias.flatMap(c => c.productos).find(p => p.id === data.oferta.producto_id);
+  if (!prod) return;
+  const pct = Math.round((1 - data.oferta.precio_oferta / prod.precio) * 100);
+  document.getElementById('oferta-nombre').textContent = prod.nombre;
+  document.getElementById('oferta-orig').textContent = '$' + prod.precio.toLocaleString('es-AR');
+  document.getElementById('oferta-price').textContent = '$' + data.oferta.precio_oferta.toLocaleString('es-AR');
+  document.getElementById('oferta-badge').textContent = '−' + pct + '%';
+  document.getElementById('oferta-banner').classList.add('visible');
+}
+
+// Hero animations — clip-path reveal
+gsap.from('.hero-right img',   { scale: 1.06, duration: 1.4, ease: 'power3.out' });
+gsap.from('.hero-label span',  { clipPath: 'inset(0 100% 0 0)', duration: 0.7, delay: 0.3, ease: 'power3.out' });
+gsap.from('.hero-logo-img',    { opacity: 0, y: 16, duration: 0.9, delay: 0.5, ease: 'power3.out' });
+gsap.from('.hero-desc',             { opacity: 0, y: 16, duration: 0.6, delay: 0.9 });
+gsap.from('.hero-actions',          { opacity: 0, y: 16, duration: 0.6, delay: 1.1 });
+gsap.from('.hero-meta',             { opacity: 0, duration: 0.5, delay: 1.4 });
+
+
+// Nosotros
+gsap.from('.nosotros-text', { scrollTrigger: { trigger: '#nosotros', start: 'top 75%' }, x: -40, opacity: 0, duration: 0.8 });
+gsap.from('.nosotros-photo', { scrollTrigger: { trigger: '#nosotros', start: 'top 75%' }, x: 40, opacity: 0, duration: 0.8, delay: 0.15 });
+
+// Reseñas
+gsap.from('.resena-card', { scrollTrigger: { trigger: '#resenas', start: 'top 80%' }, y: 30, opacity: 0, stagger: 0.12, duration: 0.6 });
+
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('scroll-progress').style.width = pct + '%';
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+  document.getElementById('wa-float').classList.toggle('show', window.scrollY > window.innerHeight * 0.6);
+  document.getElementById('back-to-top').classList.toggle('show', window.scrollY > 300);
+});
+
+function toggleMenu() { document.getElementById('nav-mobile').classList.toggle('open'); }
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+</script>
+</body>
+</html>

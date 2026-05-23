@@ -1,0 +1,96 @@
+{
+  "negocio": {
+    "nombre": "Panadería y Confitería San Martín",
+    "whatsapp": "5492244468424",
+    "direccion": "Av. San Martín 921, Las Flores",
+    "telefono": "02244 44-1919",
+    "analytics_id": ""
+  },
+  "oferta": {
+    "activa": true,
+    "producto_id": 5,
+    "texto": "Oferta de la semana",
+    "precio_oferta": 1400
+  },
+  "horarios": {
+    "lunes":     [{"abre": "08:00", "cierra": "20:00"}],
+    "martes":    [{"abre": "08:00", "cierra": "20:00"}],
+    "miércoles": [{"abre": "08:00", "cierra": "20:00"}],
+    "jueves":    [{"abre": "08:00", "cierra": "20:00"}],
+    "viernes":   [{"abre": "08:00", "cierra": "20:00"}],
+    "sábado":    [{"abre": "08:00", "cierra": "20:00"}],
+    "domingo":   [{"abre": "08:00", "cierra": "14:00"}, {"abre": "15:30", "cierra": "20:00"}]
+  },
+  "categorias": [
+    {
+      "id": "facturas",
+      "nombre": "Facturas",
+      "emoji": "🥐",
+      "productos": [
+        { "id": 1, "nombre": "Medialunas de manteca (x6)", "descripcion": "Clásicas medialunas de manteca, hojaldradas y tiernas", "precio": 2800 },
+        { "id": 2, "nombre": "Vigilantes (x6)", "descripcion": "Vigilantes rellenos de membrillo y crema pastelera", "precio": 2800 },
+        { "id": 3, "nombre": "Cañoncitos de dulce de leche (x6)", "descripcion": "Masa hojaldrada rellena de dulce de leche artesanal", "precio": 3200 },
+        { "id": 4, "nombre": "Facturas surtidas (x12)", "descripcion": "Selección de la casa: medialunas, vigilantes y cañoncitos", "precio": 5500 }
+      ]
+    },
+    {
+      "id": "panes",
+      "nombre": "Panes",
+      "emoji": "🍞",
+      "productos": [
+        { "id": 5, "nombre": "Pan de campo (400g)", "descripcion": "Pan de campo con corteza crocante, horneado a diario", "precio": 1800 },
+        { "id": 6, "nombre": "Pan lactal artesanal", "descripcion": "Pan de miga suave, sin conservantes, ideal para sándwich", "precio": 2200 },
+        { "id": 7, "nombre": "Baguette", "descripcion": "Baguette crujiente, masa fermentada lentamente", "precio": 1400 },
+        { "id": 8, "nombre": "Pan integral (400g)", "descripcion": "Pan integral con semillas de girasol y lino", "precio": 2000 }
+      ]
+    },
+    {
+      "id": "tortas",
+      "nombre": "Tortas y Postres",
+      "emoji": "🎂",
+      "productos": [
+        { "id": 9,  "nombre": "Torta de crema (6 porciones)", "descripcion": "Torta esponjosa con crema chantilly y azúcar impalpable, firma de la casa", "precio": 9500 },
+        { "id": 10, "nombre": "Mil hojas (8 porciones)", "descripcion": "Capas de hojaldre con crema pastelera y dulce de leche", "precio": 11000 },
+        { "id": 11, "nombre": "Budín de pan", "descripcion": "Budín casero con pasas y nueces, receta de siempre", "precio": 3800 },
+        { "id": 12, "nombre": "Vigilante de membrillo (porción)", "descripcion": "Porción generosa de membrillo con queso, para llevar", "precio": 1800 }
+      ]
+    },
+    {
+      "id": "masas",
+      "nombre": "Masas Finas",
+      "emoji": "🍪",
+      "productos": [
+        { "id": 13, "nombre": "Alfajores de maicena (x6)", "descripcion": "Alfajores artesanales con dulce de leche y coco", "precio": 4200 },
+        { "id": 14, "nombre": "Palmeritas (x12)", "descripcion": "Palmeritas de hojaldre caramelizadas, crocantes y livianas", "precio": 3500 },
+        { "id": 15, "nombre": "Masas variadas (250g)", "descripcion": "Surtido de masas finas: pepas, polvorones y vainillas", "precio": 3800 },
+        { "id": 16, "nombre": "Galletitas de manteca (250g)", "descripcion": "Galletitas de manteca artesanales, receta original de la panadería", "precio": 3200 }
+      ]
+    }
+  ],
+  "resenas": [
+    {
+      "nombre": "María González",
+      "estrellas": 5,
+      "texto": "Las medialunas son las mejores de Las Flores, sin duda. Cada mañana paso antes del trabajo y nunca me defraudaron. La atención es excelente.",
+      "fecha": "hace 2 semanas"
+    },
+    {
+      "nombre": "Carlos Pérez",
+      "estrellas": 5,
+      "texto": "Compré la torta de crema para el cumple de mi hija y fue un éxito total. Hermosa presentación y un sabor que no se consigue en otro lugar.",
+      "fecha": "hace 1 mes"
+    },
+    {
+      "nombre": "Laura Méndez",
+      "estrellas": 5,
+      "texto": "El pan de campo es una cosa seria. Tienen una corteza perfecta y la miga es suave. Lo recomiendo para cualquier momento del día.",
+      "fecha": "hace 3 semanas"
+    },
+    {
+      "nombre": "Roberto Díaz",
+      "estrellas": 4,
+      "texto": "Muy buena panadería, con décadas de historia en el barrio. Los mil hojas son espectaculares. Siempre frescos y a buen precio.",
+      "fecha": "hace 2 meses"
+    }
+  ]
+}

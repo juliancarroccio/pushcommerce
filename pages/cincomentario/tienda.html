@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo — Cincomentario · Las Flores</title>
+  <meta name="description" content="Armá tu pedido de Cincomentario. Quesos, fiambres, congelados y más. Enviamos el pedido por WhatsApp.">
+  <meta property="og:image" content="./494509243_18122239129446348_7279241484691807032_n.jpg">
+  <link rel="icon" href="./favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#C8822E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wood:        '#1A1008',
+            'wood-mid':  '#261808',
+            'wood-light':'#3D2810',
+            tan:         '#C9A87C',
+            amber:       '#C8822E',
+            'amber-lt':  '#E09840',
+            parchment:   '#F2E8D5',
+            charcoal:    '#0C0800',
+            'off-white': '#FDFAF5',
+          },
+          fontFamily: {
+            display: ['Oswald', 'sans-serif'],
+            serif:   ['Cormorant Garamond', 'Georgia', 'serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Grain */
+    .grain {
+      position: fixed; inset: -50%; width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.025;
+      animation: g 0.4s steps(1) infinite;
+    }
+    @keyframes g { 0%{transform:translate(0,0)} 33%{transform:translate(-2%,-2%)} 66%{transform:translate(2%,1%)} }
+
+    /* Cart drawer */
+    #cart-drawer {
+      transform: translateX(100%);
+      transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    }
+    #cart-drawer.open { transform: translateX(0); }
+
+    /* Backdrop */
+    #cart-backdrop {
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    #cart-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    /* Product card hover */
+    .pcard {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .pcard:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.10); }
+
+    /* Qty button */
+    .qty-btn { transition: background 0.15s ease, color 0.15s ease; }
+
+    /* Category pill */
+    .cat-pill {
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+    .cat-pill.active {
+      background: #1A1008; color: #F2E8D5; border-color: #1A1008;
+    }
+
+    /* Add-to-cart animation */
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(0.88); }
+      70%  { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+    .btn-pop { animation: pop 0.3s ease; }
+
+    /* Cart badge bounce */
+    @keyframes badge-bounce {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.35); }
+    }
+    .badge-bounce { animation: badge-bounce 0.3s ease; }
+
+    /* Empty cart message */
+    #cart-empty { transition: opacity 0.2s ease; }
+
+    /* Scrollbar */
+    #cart-items::-webkit-scrollbar { width: 4px; }
+    #cart-items::-webkit-scrollbar-track { background: transparent; }
+    #cart-items::-webkit-scrollbar-thumb { background: rgba(201,168,124,0.3); border-radius: 2px; }
+
+    .hidden-cat { display: none !important; }
+
+    /* Scroll progress */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0;
+      width: 0%; height: 3px;
+      background: #C8822E;
+      z-index: 99999;
+      pointer-events: none;
+      transition: width 0.08s linear;
+    }
+
+    /* Back to top */
+    #back-to-top {
+      opacity: 0; pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #back-to-top.visible {
+      opacity: 1; pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* Search clear button */
+    #search-clear { display: none; }
+    #search-clear.show { display: flex; }
+  </style>
+</head>
+
+<body class="bg-off-white font-sans min-h-screen">
+  <div class="grain" aria-hidden="true"></div>
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- CART BACKDROP -->
+  <div id="cart-backdrop"
+       class="fixed inset-0 bg-charcoal/50 z-40 backdrop-blur-sm"
+       onclick="closeCart()">
+  </div>
+
+  <!-- ═══ CART DRAWER ═══ -->
+  <aside id="cart-drawer"
+         class="fixed top-0 right-0 h-full w-full max-w-sm bg-wood z-50 flex flex-col shadow-2xl">
+
+    <!-- Drawer header -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-tan/15">
+      <div>
+        <h2 class="font-display text-lg tracking-[0.15em] uppercase text-parchment">Tu pedido</h2>
+        <p class="font-serif text-xs italic text-tan/60 mt-0.5">Cincomentario · Las Flores</p>
+      </div>
+      <button onclick="closeCart()" class="text-parchment/40 hover:text-parchment transition-colors p-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Empty state -->
+    <div id="cart-empty" class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+      <p class="text-5xl mb-4">🧺</p>
+      <p class="font-display text-sm tracking-widest uppercase text-tan/50">Tu carrito está vacío</p>
+      <p class="font-serif italic text-parchment/30 text-sm mt-2">Agregá productos para armar tu pedido</p>
+    </div>
+
+    <!-- Cart items -->
+    <div id="cart-items" class="flex-1 overflow-y-auto px-5 py-4 space-y-3 hidden"></div>
+
+    <!-- Footer -->
+    <div id="cart-footer" class="hidden border-t border-tan/15 px-6 py-5">
+      <div class="flex items-center justify-between mb-1">
+        <span class="font-display text-xs tracking-widest uppercase text-tan/60">Total estimado</span>
+        <span id="cart-total" class="font-display text-xl text-parchment font-semibold">$0</span>
+      </div>
+      <p class="text-parchment/25 text-xs mb-4">Precios orientativos · confirmar disponibilidad</p>
+
+      <div class="mb-4">
+        <label for="cart-note" class="font-display text-[9px] tracking-widest uppercase text-tan/50 block mb-1.5">Nota para el pedido</label>
+        <textarea id="cart-note"
+                  placeholder="Ej: sin cebolla, para retirar el sábado..."
+                  rows="2"
+                  class="w-full bg-wood-light border border-tan/15 focus:border-tan/35 outline-none text-parchment/70 placeholder:text-parchment/20 font-serif italic text-sm px-3 py-2 resize-none transition-colors duration-200"></textarea>
+      </div>
+
+      <button onclick="sendToWhatsApp()"
+              class="w-full bg-amber hover:bg-amber-lt text-wood font-display font-semibold tracking-[0.15em] uppercase text-sm py-4 transition-all duration-300 hover:scale-[1.02] active:scale-95">
+        📲 Enviar pedido por WhatsApp
+      </button>
+      <button onclick="clearCart()"
+              class="w-full mt-3 border border-tan/20 hover:border-tan/40 text-parchment/40 hover:text-parchment/70 font-display text-xs tracking-widest uppercase py-3 transition-all duration-300">
+        Vaciar carrito
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="sticky top-0 z-30 bg-off-white/95 backdrop-blur-sm border-b border-wood/8 shadow-sm">
+    <div class="max-w-6xl mx-auto px-5 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <a href="./index.html"
+           class="flex items-center gap-1.5 text-wood/50 hover:text-wood transition-colors font-display text-xs tracking-widest uppercase">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Volver
+        </a>
+        <span class="text-wood/15">|</span>
+        <div class="flex items-center gap-2.5">
+          <img src="./494509243_18122239129446348_7279241484691807032_n.jpg"
+               alt="Cincomentario" class="w-8 h-8 rounded-full object-cover opacity-90">
+          <div>
+            <p class="font-display text-sm tracking-[0.12em] uppercase text-wood leading-none">Cincomentario</p>
+            <p class="font-serif text-[10px] italic text-wood/40 leading-none mt-0.5">Catálogo de productos</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart button -->
+      <button onclick="toggleCart()"
+              class="relative flex items-center gap-2 bg-wood hover:bg-wood-light text-parchment font-display text-xs tracking-widest uppercase px-5 py-2.5 transition-all duration-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        <span>Pedido</span>
+        <span id="cart-badge"
+              class="hidden absolute -top-2 -right-2 bg-amber text-wood text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">
+          0
+        </span>
+      </button>
+    </div>
+
+    <!-- Category filters (rendered from productos.json) -->
+    <div class="border-t border-wood/6 bg-off-white/80">
+      <div id="cat-pills" class="max-w-6xl mx-auto px-5 py-2.5 flex gap-2 overflow-x-auto scrollbar-hide">
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="border-t border-wood/6 bg-off-white/90 px-5 py-2">
+      <div class="max-w-6xl mx-auto relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-wood/25 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+        </svg>
+        <input type="search"
+               id="search-input"
+               placeholder="Buscar productos..."
+               oninput="filterBySearch(this.value)"
+               autocomplete="off"
+               class="w-full bg-transparent border border-wood/12 focus:border-wood/30 outline-none font-serif italic text-wood/70 placeholder:text-wood/25 text-sm pl-8 pr-8 py-2 transition-colors duration-200">
+        <button id="search-clear"
+                onclick="document.getElementById('search-input').value='';filterBySearch('')"
+                aria-label="Borrar búsqueda"
+                class="absolute right-2 top-1/2 -translate-y-1/2 text-wood/25 hover:text-wood/60 transition-colors items-center justify-center">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Status banner (abierto/cerrado) — renderizado por JS desde horarios del JSON -->
+  <div id="status-banner" class="hidden"></div>
+
+  <!-- Oferta banner — se muestra si productos.json tiene oferta.activa: true -->
+  <div id="oferta-banner" class="hidden bg-amber px-6 py-3">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-3 flex-wrap">
+        <span class="font-display text-[10px] tracking-[0.3em] uppercase text-wood/60">⚡ Oferta:</span>
+        <span id="oferta-text" class="font-display text-sm font-semibold text-wood"></span>
+      </div>
+      <span id="oferta-vigencia" class="font-serif italic text-wood/50 text-xs"></span>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUCTS ═══ -->
+  <main class="max-w-6xl mx-auto px-5 py-10">
+
+    <!-- Nota aclaratoria -->
+    <div class="mb-8 bg-amber/10 border border-amber/25 px-5 py-4 flex items-start gap-3">
+      <span class="text-amber text-lg flex-shrink-0 mt-0.5">ⓘ</span>
+      <p class="text-wood/65 text-sm leading-relaxed font-sans">
+        <strong class="font-semibold text-wood">Precios orientativos.</strong>
+        Al enviar tu pedido por WhatsApp, confirmamos disponibilidad, precio final y horario de retiro.
+      </p>
+    </div>
+
+    <!-- Catalog rendered dynamically from productos.json -->
+    <div id="catalog-root"></div>
+
+  </main>
+
+  <!-- Floating cart button (mobile) -->
+  <div id="fab"
+       class="hidden fixed bottom-6 right-6 z-30">
+    <button onclick="toggleCart()"
+            class="relative bg-amber hover:bg-amber-lt text-wood w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg>
+      <span id="fab-badge"
+            class="hidden absolute -top-1.5 -right-1.5 bg-wood text-parchment text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+        0
+      </span>
+    </button>
+  </div>
+
+  <!-- Back to top -->
+  <button id="back-to-top"
+          onclick="window.scrollTo({top:0,behavior:'smooth'})"
+          aria-label="Volver al inicio"
+          class="fixed bottom-6 left-6 z-30 w-11 h-11 bg-wood/80 hover:bg-wood text-tan/70 hover:text-tan flex items-center justify-center border border-tan/15 hover:border-tan/35 transition-colors duration-300 backdrop-blur-sm">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+  </button>
+
+  <!-- Footer -->
+  <footer class="bg-wood mt-10 py-10 px-6">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="./494509243_18122239129446348_7279241484691807032_n.jpg"
+             alt="Cincomentario" class="w-10 h-10 rounded-full opacity-60 object-cover">
+        <div>
+          <p class="font-display text-xs tracking-widest uppercase text-tan/70">Cincomentario</p>
+          <p class="font-serif italic text-parchment/25 text-xs">Las Flores, Buenos Aires</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="./index.html" class="font-display text-[10px] tracking-widest uppercase text-parchment/25 hover:text-tan transition-colors">← Inicio</a>
+        <span class="text-parchment/10">|</span>
+        <div class="flex items-center gap-2">
+          <a href="tel:+5402244444777" title="02244 44-4777"
+             class="w-8 h-8 border border-tan/20 hover:border-tan/50 text-parchment/30 hover:text-tan flex items-center justify-center transition-all duration-300">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+          </a>
+          <a href="https://wa.me/5492244444777" target="_blank" rel="noopener" title="WhatsApp"
+             class="w-8 h-8 border border-tan/20 hover:border-tan/50 text-parchment/30 hover:text-tan flex items-center justify-center transition-all duration-300">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </a>
+          <a href="https://www.facebook.com/RegionalesCincomentario" target="_blank" rel="noopener" title="Facebook"
+             class="w-8 h-8 border border-tan/20 hover:border-tan/50 text-parchment/30 hover:text-tan flex items-center justify-center transition-all duration-300">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/regionalescincomentario/" target="_blank" rel="noopener" title="Instagram"
+             class="w-8 h-8 border border-tan/20 hover:border-tan/50 text-parchment/30 hover:text-tan flex items-center justify-center transition-all duration-300">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <p class="text-parchment/15 text-xs">Desarrollado por <span class="text-tan/40">PushCommerce</span></p>
+    </div>
+  </footer>
+
+  <script>
+  /* ═══════════════════════════════════════════════
+     CATALOG STATE — loaded from productos.json
+     Para editar precios, nombres o agregar productos:
+     modificar productos.json y hacer PR al repo.
+     NOTA: requiere servidor HTTP (no funciona con file://).
+     Local: python3 -m http.server 8000
+  ═══════════════════════════════════════════════ */
+  let catalog   = [];   // [{id, cat, emoji, name, unit, price, originalPrice?, isOffer?}, ...]
+  let catLabels = {};   // { quesos: '🧀 Quesos', ... }
+  let negocio   = {};   // { nombre, whatsapp, saludo }
+  let oferta    = null; // oferta activa o null
+
+  const GRID_COLS = {
+    3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+    4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+  };
+
+  function loadCatalog(data) {
+    negocio = data.negocio;
+    data.categorias.forEach(cat => {
+      catLabels[cat.id] = `${cat.emoji} ${cat.label}`;
+      cat.productos.forEach(p => {
+        catalog.push({ id: p.id, cat: cat.id, emoji: cat.emoji, name: p.nombre, unit: p.unidad, price: p.precio });
+      });
+    });
+    // Parchar precio del producto en oferta
+    if (data.oferta && data.oferta.activa) {
+      oferta = data.oferta;
+      const p = catalog.find(p => p.id === oferta.producto_id);
+      if (p) { p.originalPrice = p.price; p.price = oferta.precio_oferta; p.isOffer = true; }
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     CART STATE
+  ═══════════════════════════════════════════════ */
+  let cart = [];
+  const CART_KEY = 'cart_cincomentario';
+
+  function saveCart() {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart.map(i => ({ id: i.id, qty: i.qty }))));
+  }
+
+  function restoreCart() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+      saved.forEach(({ id, qty }) => {
+        const product = catalog.find(p => p.id === id);
+        if (product) cart.push({ ...product, qty });
+      });
+    } catch(e) { localStorage.removeItem(CART_KEY); }
+  }
+
+  function getCartItem(id) { return cart.find(i => i.id === id); }
+
+  function addToCart(id) {
+    const product = catalog.find(p => p.id === id);
+    const existing = getCartItem(id);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ ...product, qty: 1 });
+    }
+    saveCart();
+    renderCart();
+    updateProductBtn(id);
+    animateBadge();
+    if (window.innerWidth < 768) showFab();
+  }
+
+  function changeQty(id, delta) {
+    const item = getCartItem(id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) {
+      cart = cart.filter(i => i.id !== id);
+      updateProductBtn(id);
+    }
+    saveCart();
+    renderCart();
+    animateBadge();
+  }
+
+  function clearCart() {
+    cart = [];
+    localStorage.removeItem(CART_KEY);
+    catalog.forEach(p => updateProductBtn(p.id));
+    renderCart();
+    hideFab();
+  }
+
+  /* ═══════════════════════════════════════════════
+     RENDER CART DRAWER
+  ═══════════════════════════════════════════════ */
+  function renderCart() {
+    const emptyEl  = document.getElementById('cart-empty');
+    const itemsEl  = document.getElementById('cart-items');
+    const footerEl = document.getElementById('cart-footer');
+    const totalEl  = document.getElementById('cart-total');
+    const badgeEl  = document.getElementById('cart-badge');
+    const fabBadge = document.getElementById('fab-badge');
+
+    const totalQty   = cart.reduce((s, i) => s + i.qty, 0);
+    const totalPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+    if (totalQty > 0) {
+      badgeEl.textContent = totalQty;
+      badgeEl.classList.remove('hidden');
+      fabBadge.textContent = totalQty;
+      fabBadge.classList.remove('hidden');
+    } else {
+      badgeEl.classList.add('hidden');
+      fabBadge.classList.add('hidden');
+    }
+
+    if (cart.length === 0) {
+      emptyEl.classList.remove('hidden');
+      itemsEl.classList.add('hidden');
+      footerEl.classList.add('hidden');
+      return;
+    }
+
+    emptyEl.classList.add('hidden');
+    itemsEl.classList.remove('hidden');
+    footerEl.classList.remove('hidden');
+
+    totalEl.textContent = '$' + totalPrice.toLocaleString('es-AR');
+
+    itemsEl.innerHTML = cart.map(item => `
+      <div class="bg-wood-light border border-tan/12 p-4 rounded-sm">
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex-1 min-w-0">
+            <p class="font-display text-xs tracking-wider uppercase text-parchment leading-tight">${item.name}</p>
+            <p class="font-serif italic text-tan/50 text-xs mt-0.5">${item.unit}</p>
+          </div>
+          <button onclick="changeQty(${item.id}, -99)" class="text-parchment/25 hover:text-red-400 transition-colors p-0.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center border border-tan/20">
+            <button onclick="changeQty(${item.id}, -1)"
+                    class="qty-btn w-8 h-8 flex items-center justify-center text-parchment/60 hover:bg-tan/10 hover:text-parchment font-display text-sm">−</button>
+            <span class="w-8 h-8 flex items-center justify-center font-display text-sm text-parchment border-x border-tan/20">${item.qty}</span>
+            <button onclick="changeQty(${item.id}, 1)"
+                    class="qty-btn w-8 h-8 flex items-center justify-center text-parchment/60 hover:bg-tan/10 hover:text-parchment font-display text-sm">+</button>
+          </div>
+          <p class="font-display text-sm text-amber font-semibold">
+            $${(item.price * item.qty).toLocaleString('es-AR')}
+          </p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ═══════════════════════════════════════════════
+     PRODUCT BUTTON STATE
+  ═══════════════════════════════════════════════ */
+  function updateProductBtn(id) {
+    const btn = document.getElementById(`btn-${id}`);
+    const item = getCartItem(id);
+    if (!btn) return;
+    if (item) {
+      btn.innerHTML = `<span class="text-wood font-semibold">En carrito (${item.qty})</span>`;
+      btn.classList.add('bg-amber');
+      btn.classList.remove('bg-wood');
+    } else {
+      btn.innerHTML = '+ Agregar';
+      btn.classList.remove('bg-amber');
+      btn.classList.add('bg-wood');
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     CART DRAWER OPEN/CLOSE
+  ═══════════════════════════════════════════════ */
+  function openCart() {
+    document.getElementById('cart-drawer').classList.add('open');
+    document.getElementById('cart-backdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCart() {
+    document.getElementById('cart-drawer').classList.remove('open');
+    document.getElementById('cart-backdrop').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function toggleCart() {
+    const isOpen = document.getElementById('cart-drawer').classList.contains('open');
+    isOpen ? closeCart() : openCart();
+  }
+
+  function showFab() { document.getElementById('fab').classList.remove('hidden'); }
+  function hideFab() { document.getElementById('fab').classList.add('hidden'); }
+
+  function animateBadge() {
+    const b = document.getElementById('cart-badge');
+    b.classList.remove('badge-bounce');
+    void b.offsetWidth;
+    b.classList.add('badge-bounce');
+    setTimeout(() => b.classList.remove('badge-bounce'), 300);
+  }
+
+  /* ═══════════════════════════════════════════════
+     WHATSAPP MESSAGE GENERATION
+  ═══════════════════════════════════════════════ */
+  function sendToWhatsApp() {
+    if (cart.length === 0) return;
+
+    const grouped = {};
+    cart.forEach(item => {
+      if (!grouped[item.cat]) grouped[item.cat] = [];
+      grouped[item.cat].push(item);
+    });
+
+    let lines = [negocio.saludo, '', 'Quiero hacer el siguiente pedido:', ''];
+
+    Object.entries(grouped).forEach(([cat, items]) => {
+      lines.push(`*${catLabels[cat] || cat}:*`);
+      items.forEach(item => {
+        lines.push(`• ${item.qty}x ${item.name} (${item.unit}) — $${(item.price * item.qty).toLocaleString('es-AR')}`);
+      });
+      lines.push('');
+    });
+
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    lines.push(`*Total estimado: $${total.toLocaleString('es-AR')}*`);
+    lines.push('');
+    lines.push('¿Me confirman disponibilidad y horario de retiro? ¡Gracias! 😊');
+
+    const note = document.getElementById('cart-note').value.trim();
+    if (note) {
+      lines.push('');
+      lines.push(`📝 *Nota:* ${note}`);
+    }
+
+    const message = lines.join('\n');
+    window.open(`https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+  }
+
+  /* ═══════════════════════════════════════════════
+     RENDER — CATEGORY PILLS
+  ═══════════════════════════════════════════════ */
+  function renderOfertaBanner() {
+    if (!oferta) return;
+    const product = catalog.find(p => p.id === oferta.producto_id);
+    if (!product) return;
+    const pct = Math.round((1 - oferta.precio_oferta / product.originalPrice) * 100);
+    const banner = document.getElementById('oferta-banner');
+    banner.innerHTML = `
+      <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="font-display text-[10px] tracking-[0.3em] uppercase text-wood/60">⚡ ${oferta.titulo}:</span>
+          <span class="font-display text-sm font-semibold text-wood">
+            ${product.name} —
+            <s class="text-wood/35 font-normal">$${product.originalPrice.toLocaleString('es-AR')}</s>
+            <strong class="ml-1">$${oferta.precio_oferta.toLocaleString('es-AR')}</strong>
+            <span class="ml-1 bg-wood text-amber text-[10px] font-display tracking-wider px-2 py-0.5">-${pct}%</span>
+          </span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="font-serif italic text-wood/50 text-xs">${oferta.vigencia}</span>
+          <button onclick="addToCart(${product.id})"
+                  class="bg-wood hover:bg-charcoal text-parchment font-display text-[10px] tracking-widest uppercase px-4 py-2 transition-all duration-200 active:scale-95 whitespace-nowrap">
+            + Agregar
+          </button>
+        </div>
+      </div>
+    `;
+    banner.classList.remove('hidden');
+  }
+
+  function renderCategoryPills(categorias) {
+    const container = document.getElementById('cat-pills');
+    const total = categorias.reduce((s, c) => s + c.productos.length, 0);
+    const allBtn = `<button class="cat-pill active border border-wood/20 font-display text-xs tracking-widest uppercase px-4 py-1.5 whitespace-nowrap text-wood"
+                            onclick="filterCat('all', this)">Todos <span class="opacity-40 font-normal normal-case tracking-normal">(${total})</span></button>`;
+    const pills = categorias.map(cat =>
+      `<button class="cat-pill border border-wood/15 font-display text-xs tracking-widest uppercase px-4 py-1.5 whitespace-nowrap text-wood/60"
+               onclick="filterCat('${cat.id}', this)">${cat.emoji} ${cat.label} <span class="opacity-40 font-normal normal-case tracking-normal">(${cat.productos.length})</span></button>`
+    ).join('');
+    container.innerHTML = allBtn + pills;
+  }
+
+  /* ═══════════════════════════════════════════════
+     RENDER — PRODUCT CATALOG
+  ═══════════════════════════════════════════════ */
+  function renderCatalog(categorias) {
+    const root = document.getElementById('catalog-root');
+    root.innerHTML = categorias.map(cat => {
+      const colsClass = GRID_COLS[cat.cols] || GRID_COLS[4];
+      const cards = cat.productos.map(p => {
+        const cp = catalog.find(c => c.id === p.id);
+        const isOffer = cp && cp.isOffer;
+        const displayPrice = cp ? cp.price : p.precio;
+        const originalPrice = isOffer ? cp.originalPrice : null;
+        const pct = isOffer ? Math.round((1 - displayPrice / originalPrice) * 100) : 0;
+
+        const offerBadge = isOffer
+          ? `<div class="absolute top-2 left-2 z-10 bg-amber text-wood font-display text-[10px] tracking-widest uppercase px-2 py-1 font-bold leading-none">Oferta</div>`
+          : '';
+
+        const media = p.imagen
+          ? `<div class="aspect-[4/3] overflow-hidden bg-parchment/60">
+               <img src="./${p.imagen}" alt="${p.nombre}"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-4xl\\'>${cat.emoji}</div>'">
+             </div>`
+          : `<div class="aspect-[4/3] bg-parchment/60 flex items-center justify-center text-4xl">${cat.emoji}</div>`;
+
+        const priceBlock = isOffer
+          ? `<div class="flex flex-col leading-tight">
+               <span class="font-display text-xs text-wood/35 line-through">$${originalPrice.toLocaleString('es-AR')}</span>
+               <span class="font-display text-base font-bold text-amber">$${displayPrice.toLocaleString('es-AR')}</span>
+             </div>`
+          : `<p class="font-display text-base font-bold text-wood">$${displayPrice.toLocaleString('es-AR')}</p>`;
+
+        return `
+          <div class="pcard group relative bg-white border ${isOffer ? 'border-amber/40' : 'border-wood/8'} flex flex-col overflow-hidden">
+            ${offerBadge}
+            ${media}
+            <div class="p-4 flex flex-col flex-1">
+              <h3 class="font-display text-sm font-semibold uppercase tracking-wider text-wood leading-tight mb-1">${p.nombre}</h3>
+              <p class="font-serif italic text-wood/40 text-xs mb-3">${p.unidad}</p>
+              <div class="mt-auto pt-3 border-t border-wood/6 flex items-center justify-between">
+                ${priceBlock}
+                <button id="btn-${p.id}"
+                        onclick="addToCart(${p.id}); this.classList.add('btn-pop'); setTimeout(()=>this.classList.remove('btn-pop'),300)"
+                        class="bg-wood text-parchment font-display text-xs tracking-widest uppercase px-4 py-2 transition-all duration-200 hover:bg-wood-light active:scale-95">
+                  + Agregar
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <section class="cat-section mb-12" data-cat="${cat.id}">
+          <div class="flex items-center gap-3 mb-6">
+            <h2 class="font-display text-2xl font-semibold uppercase tracking-wider text-wood">${cat.emoji} ${cat.label}</h2>
+            <div class="flex-1 h-px bg-wood/10"></div>
+          </div>
+          <div class="grid ${colsClass} gap-4">${cards}</div>
+        </section>
+      `;
+    }).join('');
+  }
+
+  /* ═══════════════════════════════════════════════
+     CATEGORY FILTER
+  ═══════════════════════════════════════════════ */
+  function filterCat(cat, btn) {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.cat-section').forEach(section => {
+      if (cat === 'all' || section.dataset.cat === cat) {
+        section.classList.remove('hidden-cat');
+      } else {
+        section.classList.add('hidden-cat');
+      }
+    });
+  }
+
+  /* ═══════════════════════════════════════════════
+     SKELETON LOADER
+  ═══════════════════════════════════════════════ */
+  function generateSkeleton() {
+    const card = `
+      <div class="animate-pulse bg-white border border-wood/8 flex flex-col overflow-hidden">
+        <div class="aspect-[4/3] bg-wood/6"></div>
+        <div class="p-4 space-y-2">
+          <div class="h-3 bg-wood/8 w-3/4"></div>
+          <div class="h-2 bg-wood/5 w-1/2"></div>
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-wood/5">
+            <div class="h-4 bg-wood/8 w-14"></div>
+            <div class="h-8 bg-wood/8 w-20"></div>
+          </div>
+        </div>
+      </div>`;
+    const section = (n) => `
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="h-5 bg-wood/8 w-36 animate-pulse"></div>
+          <div class="flex-1 h-px bg-wood/5"></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">${Array(n).fill(card).join('')}</div>
+      </div>`;
+    return section(4) + section(4) + section(3);
+  }
+
+  /* ═══════════════════════════════════════════════
+     STATUS BANNER (ABIERTO / CERRADO)
+  ═══════════════════════════════════════════════ */
+  function getNextOpening(horarios) {
+    const keys   = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+    const labels = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+    const ahora  = new Date();
+    const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+    const diaIdx = ahora.getDay() === 0 ? 6 : ahora.getDay() - 1;
+    for (const t of (horarios[keys[diaIdx]] || [])) {
+      const [h, m] = t.abre.split(':').map(Number);
+      if (h * 60 + m > minAhora) return `hoy a las ${t.abre}`;
+    }
+    for (let d = 1; d <= 7; d++) {
+      const idx = (diaIdx + d) % 7;
+      const ts = horarios[keys[idx]] || [];
+      if (ts.length) {
+        const label = d === 1 ? 'mañana' : labels[idx];
+        return `${label} a las ${ts[0].abre}`;
+      }
+    }
+    return null;
+  }
+
+  function renderStatusBanner(horarios) {
+    if (!horarios) return;
+    const keys = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+    const ahora = new Date();
+    const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+    const diaIdx = ahora.getDay() === 0 ? 6 : ahora.getDay() - 1;
+    const turnos = horarios[keys[diaIdx]] || [];
+    const turnoActual = turnos.find(t => {
+      const [ah, am] = t.abre.split(':').map(Number);
+      const [ch, cm] = t.cierra.split(':').map(Number);
+      return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+    });
+    const banner = document.getElementById('status-banner');
+    if (turnoActual) {
+      banner.className = 'bg-green-50 border-b border-green-100 px-5 py-2.5';
+      banner.innerHTML = `<div class="max-w-6xl mx-auto flex items-center gap-2.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
+        <span class="font-display text-[11px] tracking-wider uppercase text-green-700">Abierto ahora</span>
+        <span class="font-serif italic text-green-600/50 text-xs">· Cerramos a las ${turnoActual.cierra}</span>
+      </div>`;
+    } else {
+      const prox = getNextOpening(horarios);
+      banner.className = 'bg-red-50 border-b border-red-100 px-5 py-2.5';
+      banner.innerHTML = `<div class="max-w-6xl mx-auto flex items-center gap-2.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0"></span>
+        <span class="font-display text-[11px] tracking-wider uppercase text-red-600">Cerrado</span>
+        ${prox ? `<span class="font-serif italic text-red-500/50 text-xs">· Abrimos ${prox}</span>` : ''}
+      </div>`;
+    }
+    banner.classList.remove('hidden');
+  }
+
+  /* ═══════════════════════════════════════════════
+     GOOGLE ANALYTICS GA4
+  ═══════════════════════════════════════════════ */
+  function initGA4(id) {
+    const s = document.createElement('script');
+    s.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+    s.async = true;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', id);
+  }
+
+  /* ═══════════════════════════════════════════════
+     SEARCH
+  ═══════════════════════════════════════════════ */
+  function filterBySearch(query) {
+    const q = query.toLowerCase().trim();
+    const clearBtn = document.getElementById('search-clear');
+    q ? clearBtn.classList.add('show') : clearBtn.classList.remove('show');
+
+    document.querySelectorAll('.cat-section').forEach(section => {
+      let hasVisible = false;
+      section.querySelectorAll('.pcard').forEach(card => {
+        const name = card.querySelector('h3').textContent.toLowerCase();
+        const match = !q || name.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) hasVisible = true;
+      });
+      section.style.display = !q || hasVisible ? '' : 'none';
+    });
+  }
+
+  /* ═══════════════════════════════════════════════
+     INIT — fetch productos.json y renderizar todo
+  ═══════════════════════════════════════════════ */
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('catalog-root').innerHTML = generateSkeleton();
+
+    fetch('./productos.json', { cache: 'no-cache' })
+      .then(r => r.json())
+      .then(data => {
+        loadCatalog(data);
+        renderStatusBanner(data.horarios);
+        if (negocio.analytics_id) initGA4(negocio.analytics_id);
+        renderOfertaBanner();
+        renderCategoryPills(data.categorias);
+        renderCatalog(data.categorias);
+        restoreCart();
+        renderCart();
+        catalog.forEach(p => updateProductBtn(p.id));
+        if (cart.length > 0 && window.innerWidth < 768) showFab();
+
+        gsap.from('.cat-section', { y: 40, opacity: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out', delay: 0.15 });
+        gsap.from('header', { y: -20, opacity: 0, duration: 0.6, ease: 'power3.out' });
+
+        if (cart.length > 0 && window.innerWidth < 768) showFab();
+      })
+      .catch(() => {
+        document.getElementById('catalog-root').innerHTML =
+          '<p class="text-center py-20 text-wood/40 font-display text-sm tracking-widest uppercase">Error cargando el catálogo.<br>Abrí el sitio desde un servidor HTTP.</p>';
+      });
+  });
+
+  /* ── Scroll: progress + back-to-top ── */
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    document.getElementById('scroll-progress').style.width = (total > 0 ? scrolled / total * 100 : 0) + '%';
+
+    const btt = document.getElementById('back-to-top');
+    scrolled > 300 ? btt.classList.add('visible') : btt.classList.remove('visible');
+  }, { passive: true });
+
+  /* ── Service Worker ── */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+  </script>
+</body>
+</html>

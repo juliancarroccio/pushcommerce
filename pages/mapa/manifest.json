@@ -1,0 +1,9 @@
+{
+  "name": "MAPA Espacio de Arte",
+  "short_name": "MAPA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [{ "src": "./img/site/logo.png", "sizes": "any", "type": "image/png" }]
+}

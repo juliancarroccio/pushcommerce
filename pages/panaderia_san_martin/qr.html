@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR — Panadería San Martín</title>
+  <link rel="icon" href="./img/logo.png" sizes="any">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#E6DDC8; color:#2C2A27; font-family:'DM Sans',sans-serif;
+           min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 24px; }
+    .card { background:#F5EFE0; border:1px solid rgba(44,42,39,.12);
+            padding:40px 48px; text-align:center; max-width:360px; width:100%; }
+    .logo { width:72px; height:72px; object-fit:contain; margin:0 auto 20px; display:block; }
+    h1 { font-family:Georgia,serif; font-size:26px; font-weight:700; color:#2C2A27; margin-bottom:2px; }
+    .tagline { font-family:Georgia,serif; font-style:italic; font-size:13px; color:#C4956A; margin-bottom:24px; }
+    #qr-box { margin:0 auto 24px; display:flex; justify-content:center; }
+    .divider { width:3rem; height:1px; background:rgba(44,42,39,.15); margin:0 auto 20px; }
+    .cta { font-size:11px; letter-spacing:.25em; text-transform:uppercase; color:#6B6560; margin-bottom:6px; }
+    .url { font-size:11px; color:#C4956A; word-break:break-all; }
+    .brand { margin-top:24px; font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:rgba(44,42,39,.25); }
+    @media print { body { background:white; padding:0; } .card { border:none; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="./img/logo.png" alt="San Martín" class="logo">
+    <h1>San Martín</h1>
+    <p class="tagline">Panadería y Confitería</p>
+    <div id="qr-box"></div>
+    <div class="divider"></div>
+    <p class="cta">Escaneá para ver nuestros productos</p>
+    <p class="url" id="url-display"></p>
+    <p class="brand">Av. San Martín 921 · Las Flores, Buenos Aires</p>
+  </div>
+  <script>
+    const url = 'https://juliancarroccio.github.io/pushcommerce/pages/panaderia_san_martin/tienda.html';
+    document.getElementById('url-display').textContent = url;
+    new QRCode(document.getElementById('qr-box'), {
+      text: url, width: 220, height: 220,
+      colorDark: '#2C2A27', colorLight: '#F5EFE0',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+</body>
+</html>

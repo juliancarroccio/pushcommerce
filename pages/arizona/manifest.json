@@ -1,0 +1,15 @@
+{
+  "name": "Arizona Indumentaria",
+  "short_name": "Arizona",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F9F7F4",
+  "theme_color": "#B5622B",
+  "icons": [
+    {
+      "src": "./img/favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

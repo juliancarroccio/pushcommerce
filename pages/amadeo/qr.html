@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR — Amadeo Café</title>
+  <link rel="icon" href="./img/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4EFE6;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      max-width: 340px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(28,28,26,0.1);
+    }
+    .logo-wrap { margin-bottom: 1.5rem; display: flex; justify-content: center; }
+    .logo-wrap img { width: 120px; height: auto; filter: brightness(0); }
+    .tagline {
+      font-family: 'Fraunces', serif; font-weight: 900;
+      font-size: 1.05rem; color: #1C1C1A; margin-bottom: 0.3rem;
+      letter-spacing: -0.02em;
+    }
+    .sub { font-size: 0.78rem; color: #6B7A6D; font-weight: 500; margin-bottom: 1.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .divider { height: 1px; background: rgba(107,122,109,0.2); margin: 0 auto 1.8rem; width: 60%; }
+    #qr-box { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+    #qr-box canvas, #qr-box img { border-radius: 8px; }
+    .scan-txt { font-size: 0.82rem; color: #5A5A55; margin-bottom: 0.5rem; font-weight: 500; }
+    .url {
+      font-size: 0.68rem; color: #6B7A6D; word-break: break-all;
+      margin-bottom: 1.5rem; font-weight: 400;
+    }
+    .divider2 { height: 1px; background: rgba(107,122,109,0.15); margin: 0 auto 1.2rem; }
+    .address { font-size: 0.78rem; color: #5A5A55; line-height: 1.5; margin-bottom: 0.5rem; }
+    .powered {
+      font-size: 0.65rem; color: #aaa; margin-top: 1rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    @media print {
+      body { background: white; }
+      .card { border: none; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-wrap">
+      <img src="./img/logo.png" alt="Amadeo Café">
+    </div>
+    <div class="tagline">Amadeo Café</div>
+    <div class="sub">Café de especialidad · Las Flores</div>
+    <div class="divider"></div>
+    <div id="qr-box"></div>
+    <p class="scan-txt">Escaneá para ver nuestro menú</p>
+    <p class="url">juliancarroccio.github.io/pushcommerce/pages/amadeo/tienda.html</p>
+    <div class="divider2"></div>
+    <p class="address">Av. San Martín 519 · Las Flores, Buenos Aires<br>Lun a Dom · 8 a 20 hs · 02244 48-5082</p>
+    <p class="powered">Powered by PushCommerce</p>
+  </div>
+
+  <script>
+    new QRCode(document.getElementById('qr-box'), {
+      text: 'https://juliancarroccio.github.io/pushcommerce/pages/amadeo/tienda.html',
+      width: 220, height: 220,
+      colorDark: '#1C1C1A',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+</body>
+</html>

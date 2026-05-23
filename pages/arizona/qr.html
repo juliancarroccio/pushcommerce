@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR — Arizona Indumentaria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sand:   #F9F7F4;
+      --dark:   #0D0D0D;
+      --terra:  #B5622B;
+      --muted:  #888;
+    }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--sand);
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    }
+
+    .logo-wrap {
+      margin-bottom: 1.5rem;
+    }
+
+    .logo-wrap img {
+      height: 52px;
+      width: auto;
+      display: block;
+      filter: brightness(0);
+    }
+
+    .brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+      color: var(--dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .tagline {
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--terra);
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .divider {
+      width: 48px;
+      height: 2px;
+      background: var(--terra);
+      margin: 0 auto 2rem;
+    }
+
+    #qr-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+    }
+
+    #qr-box img, #qr-box canvas {
+      border-radius: 8px;
+    }
+
+    .scan-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .url {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.7rem;
+      color: var(--terra);
+      word-break: break-all;
+      margin-bottom: 2rem;
+    }
+
+    .divider-dots {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .divider-dots span {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--muted);
+      opacity: 0.4;
+    }
+
+    .address {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    .powered {
+      font-size: 0.65rem;
+      color: var(--muted);
+      opacity: 0.5;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .card { box-shadow: none; border: 1px solid #ddd; border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-wrap">
+      <img src="./img/logo.png" alt="Arizona Indumentaria">
+    </div>
+
+    <p class="brand">Arizona</p>
+    <p class="tagline">Indumentaria · Las Flores</p>
+
+    <div class="divider"></div>
+
+    <div id="qr-box"></div>
+
+    <p class="scan-label">Escaneá para ver nuestros productos</p>
+    <p class="url">juliancarroccio.github.io/pushcommerce/pages/arizona/tienda.html</p>
+
+    <div class="divider-dots">
+      <span></span><span></span><span></span>
+    </div>
+
+    <p class="address">Av. San Martín e Hipólito Yrigoyen<br>Las Flores, Buenos Aires</p>
+
+    <p class="powered">Powered by PushCommerce</p>
+  </div>
+
+  <script>
+    const url = 'https://juliancarroccio.github.io/pushcommerce/pages/arizona/tienda.html';
+    new QRCode(document.getElementById('qr-box'), {
+      text: url,
+      width: 220,
+      height: 220,
+      colorDark: '#B5622B',
+      colorLight: '#FFFFFF',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+</body>
+</html>

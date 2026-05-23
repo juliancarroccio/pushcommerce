@@ -1,0 +1,9 @@
+{
+  "name": "La Redonda — Pizzería",
+  "short_name": "La Redonda",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#B31C22",
+  "icons": [{ "src": "./img/logo.jpg", "sizes": "any", "type": "image/jpeg" }]
+}

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAPA Espacio de Arte — Las Flores, Buenos Aires</title>
+<meta name="description" content="MAPA es un Espacio de Artes Visuales autogestionado. Nace en febrero de 2012 en Las Flores, Provincia de Buenos Aires, Argentina.">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="icon" href="./favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #000;
+    --white: #fff;
+    --gray-100: #f4f4f4;
+    --gray-200: #e0e0e0;
+    --gray-400: #9e9e9e;
+    --gray-600: #555;
+    --gray-800: #222;
+    --font-display: 'Reem Kufi', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--white); color: var(--black); font-family: var(--font-body); font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+
+  /* SCROLL PROGRESS */
+  #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--black); z-index: 9999; transition: width 0.1s linear; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 800; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--gray-200); transition: background 0.3s; }
+  nav.dark { background: rgba(0,0,0,0.92); border-bottom-color: rgba(255,255,255,0.1); }
+  nav.dark .nav-logo, nav.dark .nav-link { color: var(--white); }
+  nav.dark .nav-burger span { background: var(--white); }
+  .nav-logo { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; letter-spacing: 0.15em; text-decoration: none; color: var(--black); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-link { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 0.1em; color: var(--black); text-decoration: none; text-transform: uppercase; transition: opacity 0.2s; }
+  .nav-link:hover { opacity: 0.5; }
+  .nav-burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+  .nav-burger span { display: block; width: 24px; height: 1.5px; background: var(--black); transition: all 0.3s; }
+  @media (max-width: 768px) {
+    .nav-links { display: none; position: fixed; top: 64px; left: 0; right: 0; background: var(--white); flex-direction: column; gap: 0; border-bottom: 1px solid var(--gray-200); }
+    .nav-links.open { display: flex; }
+    .nav-links li { border-top: 1px solid var(--gray-100); }
+    .nav-link { display: block; padding: 1rem 2rem; font-size: 0.85rem; }
+    .nav-burger { display: flex; }
+    nav.dark .nav-links { background: var(--black); border-bottom-color: #333; }
+    nav.dark .nav-links li { border-top-color: #222; }
+  }
+
+  /* HERO */
+  #inicio { position: relative; height: 100vh; width: 100%; max-width: none; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+  .hero-content { position: relative; z-index: 2; padding: 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+  .hero-logo { width: clamp(220px, 38vw, 480px); filter: brightness(0) invert(1); opacity: 0; display: block; }
+  .hero-title { display: none; }
+  .hero-subtitle { font-family: var(--font-display); font-size: 0.75rem; color: rgba(255,255,255,0.35); letter-spacing: 0.25em; text-transform: uppercase; opacity: 0; }
+  .hero-scroll { position: absolute; bottom: 2rem; right: 3rem; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.4); font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  .hero-scroll-line { width: 1px; height: 40px; background: rgba(255,255,255,0.25); animation: line-pulse 2s ease-in-out infinite; }
+  @keyframes line-pulse { 0%,100% { opacity: 0.3; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(1.15); } }
+
+  /* SECTIONS */
+  section { padding: 6rem 3rem; max-width: 1200px; margin: 0 auto; }
+  .section-label { font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 1rem; }
+  .section-title { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; margin-bottom: 2rem; }
+  .divider { width: 100%; height: 1px; background: var(--gray-200); }
+  .divider-full { width: 100%; height: 1px; background: var(--gray-200); }
+
+  /* EL ESPACIO */
+  #espacio { max-width: 100%; padding: 6rem 3rem; background: var(--gray-100); }
+  .espacio-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
+  .espacio-text p { color: var(--gray-600); margin-bottom: 1.5rem; font-size: 1rem; }
+  .espacio-pillars { display: flex; flex-direction: column; gap: 2rem; }
+  .pillar { border-left: 2px solid var(--black); padding-left: 1.5rem; }
+  .pillar-word { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+  .pillar-text { font-size: 0.875rem; color: var(--gray-600); }
+  @media (max-width: 768px) { .espacio-inner { grid-template-columns: 1fr; gap: 3rem; } }
+
+  /* ARTISTAS */
+  #artistas { max-width: 100%; padding: 6rem 3rem; }
+  .artistas-inner { max-width: 1200px; margin: 0 auto; }
+  .artistas-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
+  .ver-todos { font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--black); text-decoration: none; border-bottom: 1px solid var(--black); padding-bottom: 2px; }
+  .artistas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--gray-200); }
+  .artista-card { background: var(--white); overflow: hidden; position: relative; cursor: pointer; }
+  .artista-card a { display: block; text-decoration: none; color: inherit; }
+  .artista-img-wrap { aspect-ratio: 1; overflow: hidden; background: var(--gray-100); }
+  .artista-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: filter 0.5s, transform 0.5s; }
+  .artista-card:hover .artista-img { filter: grayscale(0%); transform: scale(1.03); }
+  .artista-info { padding: 1rem; }
+  .artista-nombre { font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  @media (max-width: 900px) { .artistas-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 600px) { .artistas-grid { grid-template-columns: repeat(2, 1fr); } #artistas { padding: 4rem 1.5rem; } }
+
+  /* EXPOSICIONES */
+  #exposiciones { background: var(--black); color: var(--white); max-width: 100%; padding: 6rem 3rem; }
+  .expo-inner { max-width: 1200px; margin: 0 auto; }
+  .expo-inner .section-label { color: rgba(255,255,255,0.4); }
+  .expo-inner .section-title { color: var(--white); }
+  .expo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem; }
+  .expo-card { border: 1px solid rgba(255,255,255,0.1); padding: 2rem; }
+  .expo-year { font-family: var(--font-display); font-size: 2rem; color: rgba(255,255,255,0.15); margin-bottom: 1rem; }
+  .expo-list { list-style: none; }
+  .expo-list li { font-size: 0.85rem; color: rgba(255,255,255,0.6); padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  @media (max-width: 768px) { .expo-grid { grid-template-columns: 1fr; } #exposiciones { padding: 4rem 1.5rem; } }
+
+  /* SALA VIRTUAL */
+  #sala-virtual { max-width: 100%; padding: 6rem 3rem; background: var(--gray-100); }
+  .sv-inner { max-width: 1200px; margin: 0 auto; }
+  .sv-text { max-width: 600px; font-size: 1rem; color: var(--gray-600); line-height: 1.8; }
+
+  /* PROGRAMAS */
+  #programas { max-width: 1200px; padding: 6rem 3rem; margin: 0 auto; }
+  .programas-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; margin-top: 3rem; }
+  .programa-item { border-top: 2px solid var(--black); padding-top: 1.5rem; }
+  .programa-nombre { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .programa-desc { font-size: 0.875rem; color: var(--gray-600); }
+  @media (max-width: 600px) { .programas-grid { grid-template-columns: 1fr; } }
+
+  /* ASOCIACION */
+  #asociacion { max-width: 100%; padding: 6rem 3rem; background: var(--black); color: var(--white); }
+  .asoc-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+  .asoc-inner .section-label { color: rgba(255,255,255,0.4); }
+  .asoc-inner .section-title { color: var(--white); }
+  .asoc-text { font-size: 1rem; color: rgba(255,255,255,0.7); line-height: 1.8; }
+  .asoc-logos { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+  .asoc-logo-img { width: 100%; max-width: 160px; filter: brightness(0) invert(1); opacity: 0.7; }
+  @media (max-width: 768px) { .asoc-inner { grid-template-columns: 1fr; gap: 3rem; } #asociacion { padding: 4rem 1.5rem; } }
+
+  /* PUNTOS CULTURA */
+  #puntos-cultura { max-width: 1200px; padding: 6rem 3rem; margin: 0 auto; }
+  .pc-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; align-items: start; margin-top: 3rem; }
+  .pc-logo { width: 100%; max-width: 200px; }
+  .pc-text { font-size: 0.95rem; color: var(--gray-600); line-height: 1.8; }
+  @media (max-width: 600px) { .pc-grid { grid-template-columns: 1fr; } }
+
+  /* CONTACTO */
+  #contacto { max-width: 100%; padding: 6rem 3rem; background: var(--gray-100); }
+  .contacto-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; }
+  .contacto-info dt { font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 0.25rem; }
+  .contacto-info dd { font-size: 1rem; color: var(--black); margin-bottom: 1.5rem; }
+  .contacto-info a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--gray-200); }
+  .map-wrap { width: 100%; aspect-ratio: 4/3; background: var(--gray-200); overflow: hidden; border-radius: 2px; }
+  .map-wrap iframe { width: 100%; height: 100%; border: none; filter: grayscale(100%); }
+  @media (max-width: 768px) { .contacto-inner { grid-template-columns: 1fr; } #contacto { padding: 4rem 1.5rem; } }
+
+  /* FOOTER */
+  footer { background: var(--black); color: rgba(255,255,255,0.5); padding: 3rem; font-size: 0.8rem; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-logo { filter: brightness(0) invert(1); opacity: 0.6; height: 32px; }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { color: inherit; text-decoration: none; }
+  .footer-links a:hover { color: var(--white); }
+  .footer-copy { text-align: right; }
+  .footer-copy a { color: rgba(255,255,255,0.3); text-decoration: none; }
+  .footer-copy a:hover { color: rgba(255,255,255,0.6); }
+  @media (max-width: 600px) { .footer-inner { flex-direction: column; text-align: center; } .footer-copy { text-align: center; } }
+
+  /* BACK TO TOP */
+  #back-to-top { position: fixed; bottom: 2rem; right: 2rem; z-index: 700; width: 44px; height: 44px; background: var(--black); color: var(--white); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(20px); transition: opacity 0.3s, transform 0.3s; font-size: 1.2rem; }
+  #back-to-top.visible { opacity: 1; transform: translateY(0); }
+  .nav-logo { display: flex; align-items: center; }
+  .nav-logo-img { height: 40px; display: block; }
+  nav.dark .nav-logo-img { filter: brightness(0) invert(1); }
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<nav id="navbar">
+  <a class="nav-logo" href="./index.html"><img class="nav-logo-img" src="./img/site/logo-transparent.png" alt="MAPA"></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a class="nav-link" href="./espacio.html">El Espacio</a></li>
+    <li><a class="nav-link" href="./artistas.html">Artistas</a></li>
+    <li><a class="nav-link" href="./exposiciones.html">Exposiciones</a></li>
+    <li><a class="nav-link" href="#programas">Programas</a></li>
+    <li><a class="nav-link" href="#asociacion">Asociación</a></li>
+    <li><a class="nav-link" href="#contacto">Contacto</a></li>
+  </ul>
+  <button class="nav-burger" id="nav-burger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="inicio">
+  <div class="hero-content">
+    <img class="hero-logo" src="./img/site/logo.png" alt="MAPA">
+    <h1 class="hero-title">Espacio de Arte</h1>
+    <p class="hero-subtitle">Las Flores, Buenos Aires, Argentina — desde 2012</p>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<div class="divider-full"></div>
+
+<!-- EL ESPACIO -->
+<section id="espacio">
+  <div class="espacio-inner">
+    <div class="espacio-text">
+      <p class="section-label">El Espacio</p>
+      <h2 class="section-title">Un espacio de artes visuales autogestionado</h2>
+      <p>MAPA nace en febrero de 2012 en Las Flores, Provincia de Buenos Aires, Argentina. En 2016 creamos la Asociación Civil Caminos del Mapa para acompañar y fortalecer los proyectos de nuestro espacio.</p>
+      <p>Somos un espacio de exhibición y encuentro que celebra el arte visual en todas sus formas, construyendo puentes entre artistas y comunidad.</p>
+      <p>Nos declaramos a favor de nuevas prácticas, nuevos vínculos y la construcción colectiva del campo artístico.</p>
+    </div>
+    <div class="espacio-pillars">
+      <div class="pillar">
+        <p class="pillar-word">Impulsamos</p>
+        <p class="pillar-text">Un aporte al sector artístico desde la gestión, la creación, la producción y circulación de arte.</p>
+      </div>
+      <div class="pillar">
+        <p class="pillar-word">Realizamos</p>
+        <p class="pillar-text">Muestras individuales y colectivas de artistas, declarándonos a favor de nuevas prácticas y nuevos vínculos.</p>
+      </div>
+      <div class="pillar">
+        <p class="pillar-word">Promovemos</p>
+        <p class="pillar-text">La obra de artistas visuales que viven y trabajan en nuestro pueblo y colaboramos con artistas de distintas regiones.</p>
+      </div>
+      <div class="pillar">
+        <p class="pillar-word">Creamos</p>
+        <p class="pillar-text">Un punto de encuentro entre la comunidad y sus artistas, ofreciendo herramientas para la transformación social.</p>
+      </div>
+      <div class="pillar">
+        <p class="pillar-word">Creemos</p>
+        <p class="pillar-text">En la construcción colectiva del campo artístico y en la solidaridad como motor de cambio cultural.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-full"></div>
+
+<!-- ARTISTAS -->
+<section id="artistas">
+  <div class="artistas-inner">
+    <div class="artistas-header">
+      <div>
+        <p class="section-label">Artistas</p>
+        <h2 class="section-title">Quiénes somos</h2>
+      </div>
+      <a class="ver-todos" href="./artistas.html">Ver todos →</a>
+    </div>
+    <div class="artistas-grid" id="artistas-preview">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<div class="divider-full"></div>
+
+<!-- EXPOSICIONES -->
+<section id="exposiciones">
+  <div class="expo-inner">
+    <p class="section-label">Exposiciones</p>
+    <h2 class="section-title">Archivo de muestras</h2>
+    <div class="expo-grid">
+      <div class="expo-card">
+        <p class="expo-year">2023</p>
+        <ul class="expo-list">
+          <li>Sandra Sarraua — Muestra individual</li>
+          <li>Enriqueta Viegas — Collage y grabado</li>
+          <li>Marina Curci — Pintura contemporánea</li>
+          <li>Martín Heguilistoy — Fotografía</li>
+          <li>Muestra colectiva de fin de año</li>
+        </ul>
+      </div>
+      <div class="expo-card">
+        <p class="expo-year">2022</p>
+        <ul class="expo-list">
+          <li>Sofía Canteli — Estampitas</li>
+          <li>Fátima Deluchi — Muestra individual</li>
+          <li>Pablo Solo Díaz — Pintura</li>
+          <li>Fernanda Piamonti — Obra reciente</li>
+          <li>Exposición colectiva aniversario</li>
+        </ul>
+      </div>
+      <div class="expo-card">
+        <p class="expo-year">2012–2021</p>
+        <ul class="expo-list">
+          <li>Adriana Moracci — Gráfica y escultura</li>
+          <li>Nico Vilela — Obra múltiple</li>
+          <li>Mario Cabrera — Pintura</li>
+          <li>Lucio Stuer — Muestra individual</li>
+          <li>+100 exposiciones desde 2012</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:2.5rem; text-align:center;">
+      <a href="./exposiciones.html" style="font-family:var(--font-display); font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.7); text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.3); padding-bottom:2px;">Ver archivo completo →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SALA VIRTUAL -->
+<section id="sala-virtual">
+  <div class="sv-inner">
+    <p class="section-label">Sala Virtual</p>
+    <h2 class="section-title">El arte sin fronteras</h2>
+    <p class="sv-text">Nuestra sala virtual amplía los límites físicos del espacio, permitiendo que artistas y público de todo el mundo puedan acceder a las obras y propuestas de MAPA. Una extensión digital de nuestro compromiso con la circulación del arte.</p>
+    <br>
+    <a href="./artistas.html" style="display:inline-block; margin-top:1rem; font-family:var(--font-display); font-size:0.8rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--black); text-decoration:none; border-bottom:1px solid var(--black); padding-bottom:2px;">Explorar obras →</a>
+  <a href="./exposiciones.html" style="display:inline-block; margin-top:1rem; margin-left:2rem; font-family:var(--font-display); font-size:0.8rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--black); text-decoration:none; border-bottom:1px solid var(--black); padding-bottom:2px;">Ver exposiciones →</a>
+  </div>
+</section>
+
+<div class="divider-full"></div>
+
+<!-- PROGRAMAS PÚBLICOS -->
+<section id="programas">
+  <p class="section-label">Programas Públicos</p>
+  <h2 class="section-title">Educación y comunidad</h2>
+  <div class="programas-grid">
+    <div class="programa-item">
+      <p class="programa-nombre">Talleres de artes visuales</p>
+      <p class="programa-desc">Talleres abiertos a la comunidad con artistas del espacio. Pintura, grabado, escultura y fotografía para todas las edades.</p>
+    </div>
+    <div class="programa-item">
+      <p class="programa-nombre">Charlas y conversatorios</p>
+      <p class="programa-desc">Encuentros de reflexión sobre arte contemporáneo, gestión cultural y el rol del artista en la comunidad.</p>
+    </div>
+    <div class="programa-item">
+      <p class="programa-nombre">Visitas guiadas</p>
+      <p class="programa-desc">Recorridos por las exposiciones con los artistas o curadores para escuelas, grupos e instituciones.</p>
+    </div>
+    <div class="programa-item">
+      <p class="programa-nombre">Residencias artísticas</p>
+      <p class="programa-desc">Programa de residencias para artistas locales e internacionales. El espacio como laboratorio de creación.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider-full"></div>
+
+<!-- ASOCIACIÓN -->
+<section id="asociacion">
+  <div class="asoc-inner">
+    <div>
+      <p class="section-label">Asociación</p>
+      <h2 class="section-title">Caminos del Mapa</h2>
+      <p class="asoc-text">En 2016 creamos la Asociación Civil <strong style="color:#fff">Caminos del Mapa</strong> para acompañar y fortalecer los proyectos de nuestro espacio. Una estructura que nos permite sostener iniciativas de largo plazo, gestionar fondos y construir redes con otras instituciones culturales.</p>
+    </div>
+    <div class="asoc-logos">
+      <img class="asoc-logo-img" src="./img/site/caminos.png" alt="Caminos del Mapa">
+      <img class="asoc-logo-img" src="./img/site/junta.png" alt="Junta">
+      <img class="asoc-logo-img" src="./img/site/min-cultura.png" alt="Ministerio de Cultura">
+      <img class="asoc-logo-img" src="./img/site/puntos-cultura.png" alt="Puntos de Cultura">
+    </div>
+  </div>
+</section>
+
+<!-- PUNTOS DE CULTURA -->
+<section id="puntos-cultura">
+  <p class="section-label">Puntos de Cultura</p>
+  <h2 class="section-title">Red nacional de cultura</h2>
+  <div class="pc-grid">
+    <div>
+      <img class="pc-logo" src="./img/site/puntos-cultura.png" alt="Puntos de Cultura">
+    </div>
+    <div>
+      <p class="pc-text">MAPA forma parte de la Red de Puntos de Cultura del Ministerio de Cultura de la Nación. Este reconocimiento nos permite articular con otras organizaciones culturales del país, acceder a programas de formación y financiamiento, y fortalecer el tejido cultural de nuestra comunidad.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider-full"></div>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="contacto-inner">
+    <div>
+      <p class="section-label">Contacto</p>
+      <h2 class="section-title">Visitanos</h2>
+      <dl class="contacto-info">
+        <dt>Dirección</dt>
+        <dd>Av. Rivadavia 489<br>Las Flores, Buenos Aires, Argentina</dd>
+        <dt>Instagram</dt>
+        <dd><a href="https://instagram.com/mapa_espacio_de_arte" target="_blank">@Mapa_Espacio_De_Arte</a></dd>
+        <dt>Facebook</dt>
+        <dd><a href="https://facebook.com/mapaespaciodearte" target="_blank">mapaespaciodearte</a></dd>
+        <dt>Obras e inquiries</dt>
+        <dd><a href="./artistas.html">Ver catálogo →</a></dd>
+      </dl>
+    </div>
+    <div class="map-wrap">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3163.5!2d-59.10500!3d-36.01400!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc3c09bc9d19d7%3A0x0!2sAv.+Rivadavia+489%2C+Las+Flores%2C+Buenos+Aires!5e0!3m2!1ses!2sar!4v1748000000000" loading="lazy" title="MAPA Espacio de Arte en el mapa"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <img class="footer-logo" src="./img/site/logo.png" alt="MAPA">
+    <div class="footer-links">
+      <a href="#espacio">El Espacio</a>
+      <a href="./artistas.html">Artistas</a>
+      <a href="#exposiciones">Exposiciones</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <div class="footer-copy">
+      <p>MAPA Espacio de Arte — Las Flores, Buenos Aires</p>
+      <p style="margin-top:0.5rem">Sitio web por <a href="https://github.com/juliancarroccio" target="_blank">PushCommerce</a></p>
+    </div>
+  </div>
+</footer>
+
+<button id="back-to-top" aria-label="Volver arriba">↑</button>
+
+<script>
+// Scroll progress
+const bar = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  bar.style.width = pct + '%';
+  document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 400);
+  document.getElementById('navbar').classList.toggle('dark', window.scrollY < window.innerHeight * 0.6);
+});
+document.getElementById('navbar').classList.add('dark');
+
+// Burger
+document.getElementById('nav-burger').addEventListener('click', () => {
+  document.getElementById('nav-links').classList.toggle('open');
+});
+
+// Back to top
+document.getElementById('back-to-top').addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// GSAP hero entrance
+gsap.registerPlugin(ScrollTrigger);
+gsap.fromTo('.hero-logo',     { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 1.4, delay: 0.2, ease: 'power2.out' });
+gsap.fromTo('.hero-subtitle', { opacity: 0, y: 10 },      { opacity: 1, y: 0,   duration: 1,   delay: 1.0, ease: 'power2.out' });
+
+// Fade out hero text on scroll
+gsap.to('.hero-content', {
+  opacity: 0,
+  y: -30,
+  ease: 'power1.in',
+  scrollTrigger: { trigger: '#inicio', start: '30% top', end: '70% top', scrub: 1 }
+});
+
+// Animate pillars on scroll
+gsap.utils.toArray('.pillar').forEach((el, i) => {
+  gsap.from(el, { opacity: 0, x: -30, duration: 0.8, delay: i * 0.1, scrollTrigger: { trigger: el, start: 'top 85%' } });
+});
+
+// Animate expo cards
+gsap.from('.expo-card', { opacity: 0, y: 40, duration: 0.8, stagger: 0.15, scrollTrigger: { trigger: '.expo-grid', start: 'top 80%' } });
+
+// Animate programa items
+gsap.from('.programa-item', { opacity: 0, y: 30, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '.programas-grid', start: 'top 80%' } });
+
+// Load artistas preview (8 artists)
+fetch('./artistas.json')
+  .then(r => r.json())
+  .then(buildPreview)
+  .catch(() => {});
+
+function buildPreview(data) {
+  const grid = document.getElementById('artistas-preview');
+  const preview = data.artistas.slice(0, 8);
+  grid.innerHTML = preview.map(a => `
+    <div class="artista-card">
+      <a href="./artista.html?slug=${a.slug}">
+        <div class="artista-img-wrap">
+          <img class="artista-img" src="${a.retrato}" alt="${a.nombre}" loading="lazy">
+        </div>
+        <div class="artista-info">
+          <p class="artista-nombre">${a.nombre}</p>
+        </div>
+      </a>
+    </div>
+  `).join('');
+  gsap.from('.artista-card', { opacity: 0, y: 20, duration: 0.6, stagger: 0.07, scrollTrigger: { trigger: '#artistas-preview', start: 'top 85%' } });
+}
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+  "negocio": {
+    "nombre": "Cincomentario",
+    "whatsapp": "5492244000000",
+    "saludo": "¡Hola Cincomentario! 🧀",
+    "analytics_id": ""
+  },
+  "categorias": [
+    {
+      "id": "quesos",
+      "label": "Quesos",
+      "emoji": "🧀",
+      "cols": 4,
+      "productos": [
+        { "id": 1,  "nombre": "Queso Cremoso",   "unidad": "500g",  "precio": 2800, "imagen": "img/productos/queso-cremoso.jpg" },
+        { "id": 2,  "nombre": "Queso Sardo",      "unidad": "250g",  "precio": 3200, "imagen": "img/productos/queso-sardo.jpg" },
+        { "id": 3,  "nombre": "Queso Provolone",  "unidad": "250g",  "precio": 3500, "imagen": "img/productos/queso-provolone.jpg" },
+        { "id": 4,  "nombre": "Queso de Oveja",   "unidad": "200g",  "precio": 4100, "imagen": "img/productos/queso-de-oveja.jpg" },
+         { "id": 30,  "nombre": "Queso tu hermana",   "unidad": "200g",  "precio": 400100, "imagen": "img/productos/queso-de-oveja.jpg" }
+      ]
+    },
+    {
+      "id": "fiambres",
+      "label": "Fiambres",
+      "emoji": "🥩",
+      "cols": 4,
+      "productos": [
+        { "id": 5,  "nombre": "Salame Artesanal", "unidad": "250g",  "precio": 3800, "imagen": "img/productos/salame-artesanal.jpg" },
+        { "id": 6,  "nombre": "Jamón Cocido",     "unidad": "200g",  "precio": 2600, "imagen": "img/productos/jamon-cocido.jpg" },
+        { "id": 7,  "nombre": "Mortadela",        "unidad": "200g",  "precio": 2200, "imagen": "img/productos/mortadela.jpg" },
+        { "id": 8,  "nombre": "Bondiola Curada",  "unidad": "250g",  "precio": 3400, "imagen": "img/productos/bondiola-curada.jpg" }
+      ]
+    },
+    {
+      "id": "congelados",
+      "label": "Congelados",
+      "emoji": "❄️",
+      "cols": 4,
+      "productos": [
+        { "id": 9,  "nombre": "Empanadas de Carne",        "unidad": "12u",  "precio": 3600, "imagen": "img/productos/empanadas-carne.jpg" },
+        { "id": 10, "nombre": "Empanadas Queso y Cebolla", "unidad": "12u",  "precio": 3400, "imagen": "img/productos/empanadas-queso-cebolla.jpg" },
+        { "id": 11, "nombre": "Empanadas Jamón y Queso",   "unidad": "12u",  "precio": 3500, "imagen": "img/productos/empanadas-jamon-queso.jpg" },
+        { "id": 12, "nombre": "Sorrentinos Caseros",       "unidad": "500g", "precio": 4200, "imagen": "img/productos/sorrentinos-caseros.jpg" }
+      ]
+    },
+    {
+      "id": "picadas",
+      "label": "Picadas y Tablas",
+      "emoji": "🫙",
+      "cols": 3,
+      "productos": [
+        { "id": 13, "nombre": "Tabla Chica",    "unidad": "2-4 personas", "precio": 8500,  "imagen": "img/productos/tabla-chica.jpg" },
+        { "id": 14, "nombre": "Tabla Grande",   "unidad": "4-6 personas", "precio": 14000, "imagen": "img/productos/tabla-grande.jpg" },
+        { "id": 15, "nombre": "Tabla Especial", "unidad": "6-8 personas", "precio": 20000, "imagen": "img/productos/tabla-especial.jpg" }
+      ]
+    },
+    {
+      "id": "conservas",
+      "label": "Conservas",
+      "emoji": "🫒",
+      "cols": 4,
+      "productos": [
+        { "id": 16, "nombre": "Aceitunas Verdes",    "unidad": "frasco 400g", "precio": 2100, "imagen": "img/productos/aceitunas-verdes.jpg" },
+        { "id": 17, "nombre": "Antipasto Mixto",     "unidad": "frasco 350g", "precio": 2800, "imagen": "img/productos/antipasto-mixto.jpg" },
+        { "id": 18, "nombre": "Palmitos al Natural", "unidad": "350g",        "precio": 1900, "imagen": "img/productos/palmitos-al-natural.jpg" },
+        { "id": 19, "nombre": "Aceitunas Negras",    "unidad": "frasco 400g", "precio": 2000, "imagen": "img/productos/aceitunas-negras.jpg" }
+      ]
+    }
+  ],
+  "horarios": {
+    "lunes":     [{ "abre": "09:00", "cierra": "14:00" }, { "abre": "17:00", "cierra": "22:00" }],
+    "martes":    [{ "abre": "09:00", "cierra": "14:00" }, { "abre": "17:00", "cierra": "22:00" }],
+    "miercoles": [{ "abre": "09:00", "cierra": "14:00" }, { "abre": "17:00", "cierra": "22:00" }],
+    "jueves":    [{ "abre": "09:00", "cierra": "14:00" }, { "abre": "17:00", "cierra": "22:00" }],
+    "viernes":   [{ "abre": "09:00", "cierra": "14:00" }, { "abre": "17:00", "cierra": "22:00" }],
+    "sabado":    [{ "abre": "09:00", "cierra": "14:00" }, { "abre": "17:00", "cierra": "22:00" }],
+    "domingo":   [{ "abre": "10:00", "cierra": "14:00" }]
+  },
+  "oferta": {
+    "activa": true,
+    "titulo": "Oferta de la semana",
+    "producto_id": 15,
+    "precio_oferta": 16000,
+    "vigencia": "Válido hasta el domingo"
+  }
+}

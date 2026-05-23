@@ -1,0 +1,75 @@
+{
+  "negocio": {
+    "nombre": "Sr. Miga",
+    "whatsapp": "5492244000000",
+    "direccion": "Av. San Martín 858, Las Flores",
+    "telefono": "",
+    "analytics_id": ""
+  },
+  "oferta": {
+    "activa": true,
+    "producto_id": 3,
+    "texto": "Sándwich de la semana",
+    "precio_oferta": 4000
+  },
+  "horarios": {
+    "lunes":     [{"abre": "11:00", "cierra": "15:00"}, {"abre": "19:00", "cierra": "23:00"}],
+    "martes":    [{"abre": "11:00", "cierra": "15:00"}, {"abre": "19:00", "cierra": "23:00"}],
+    "miércoles": [{"abre": "11:00", "cierra": "15:00"}, {"abre": "19:00", "cierra": "23:00"}],
+    "jueves":    [{"abre": "11:00", "cierra": "15:00"}, {"abre": "19:00", "cierra": "23:00"}],
+    "viernes":   [{"abre": "11:00", "cierra": "15:00"}, {"abre": "19:00", "cierra": "23:30"}],
+    "sábado":    [{"abre": "11:00", "cierra": "15:00"}, {"abre": "19:00", "cierra": "23:30"}],
+    "domingo":   []
+  },
+  "categorias": [
+    {
+      "nombre": "Sándwiches de Miga",
+      "productos": [
+        { "id": 1,  "nombre": "Jamón y Queso",              "descripcion": "El clásico de siempre — miga fresca, bien relleno",             "precio": 4500, "emoji": "🥪" },
+        { "id": 2,  "nombre": "Salame y Queso",             "descripcion": "Salame italiano con queso cremoso",                             "precio": 4500, "emoji": "🥪" },
+        { "id": 3,  "nombre": "Matambre y Queso",           "descripcion": "Matambre de res con queso fundido",                             "precio": 5000, "emoji": "🥪" },
+        { "id": 4,  "nombre": "Matambre de Pollo y Queso",  "descripcion": "Matambre de pollo con queso",                                   "precio": 5000, "emoji": "🥪" },
+        { "id": 5,  "nombre": "Jamón, Tomate y Lechuga",    "descripcion": "Con mayonesa casera y vegetales frescos",                       "precio": 4800, "emoji": "🥪" },
+        { "id": 6,  "nombre": "Jamón y Choclo",             "descripcion": "Jamón cocido con choclo",                                       "precio": 4800, "emoji": "🥪" },
+        { "id": 7,  "nombre": "Jamón, Morrón y Aceitunas",  "descripcion": "Un sándwich con personalidad",                                  "precio": 5200, "emoji": "🥪" },
+        { "id": 8,  "nombre": "Jamón y Roquefort",          "descripcion": "Para los que le gustan los sabores intensos",                   "precio": 5200, "emoji": "🥪" },
+        { "id": 9,  "nombre": "Jamón y Atún",               "descripcion": "Clásico combinado de jamón cocido y atún",                      "precio": 5000, "emoji": "🥪" },
+        { "id": 10, "nombre": "Londinola y Queso",          "descripcion": "Londinola con queso en miga fresca",                            "precio": 4800, "emoji": "🥪" },
+        { "id": 11, "nombre": "Queso Panceta",              "descripcion": "Panceta crocante con queso derretido",                          "precio": 5000, "emoji": "🥪" },
+        { "id": 12, "nombre": "Mortadela y Queso",          "descripcion": "Mortadela con queso — simple y rico",                           "precio": 4500, "emoji": "🥪" }
+      ]
+    },
+    {
+      "nombre": "Combos",
+      "productos": [
+        { "id": 13, "nombre": "Tostado + Licuado",          "descripcion": "El combo más pedido del local",                                 "precio": 4500, "emoji": "🥪" },
+        { "id": 14, "nombre": "Sándwich + Gaseosa",         "descripcion": "Sándwich de miga a elección + gaseosa",                        "precio": 6500, "emoji": "🍱" },
+        { "id": 15, "nombre": "Triple + Gaseosa",           "descripcion": "Triple de miga a elección + gaseosa fría",                     "precio": 9500, "emoji": "🍱" },
+        { "id": 16, "nombre": "Sándwich + Licuado",         "descripcion": "Sándwich de miga a elección + licuado de frutas",              "precio": 7500, "emoji": "🍱" }
+      ]
+    },
+    {
+      "nombre": "Bebidas",
+      "productos": [
+        { "id": 17, "nombre": "Licuado",                    "descripcion": "Licuado de frutas del día",                                     "precio": 4100, "emoji": "🥤" },
+        { "id": 18, "nombre": "Gaseosa",                    "descripcion": "Lata fría 354 ml",                                              "precio": 2500, "emoji": "🥤" },
+        { "id": 19, "nombre": "Agua",                       "descripcion": "Mineral 500 ml",                                                "precio": 2000, "emoji": "💧" },
+        { "id": 20, "nombre": "Jugo",                       "descripcion": "De naranja o limón, exprimido",                                 "precio": 3000, "emoji": "🍊" }
+      ]
+    },
+    {
+      "nombre": "Postres y Dulces",
+      "productos": [
+        { "id": 21, "nombre": "Arañitas",                   "descripcion": "Facturas dulces artesanales",                                   "precio": 1500, "emoji": "🍩" },
+        { "id": 22, "nombre": "Porción de Torta",           "descripcion": "Torta del día — consultar disponibilidad",                     "precio": 4000, "emoji": "🍰" },
+        { "id": 23, "nombre": "Tarta Bonbon",               "descripcion": "Postre de la casa, para compartir o llevarte",                  "precio": 5500, "emoji": "🍰" }
+      ]
+    },
+    {
+      "nombre": "Catering",
+      "productos": [
+        { "id": 24, "nombre": "Bandeja Dulce-Salada × 10",  "descripcion": "12 triples · 30 arañitas/facturas · 10 licuados · 10 empanadas · postres y más", "precio": 90000, "emoji": "🎉" }
+      ]
+    }
+  ]
+}

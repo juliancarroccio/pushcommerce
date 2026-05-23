@@ -44,9 +44,9 @@
         },
         {
           "id": 5,
-          "nombre": "Queso tu hermana",
+          "nombre": "Queso Ahumado",
           "unidad": "200g",
-          "precio": 400100,
+          "precio": 5000,
           "imagen": "img/productos/queso-de-oveja.jpg"
         }
       ]

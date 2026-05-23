@@ -184,7 +184,7 @@
           <a href="#horarios" class="nav-link font-sans text-sm text-stone">Horarios</a>
           <a href="#contacto" class="nav-link font-sans text-sm text-stone">Contacto</a>
         </div>
-        <a id="nav-wa" href="#" target="_blank" rel="noopener" class="btn-primary text-[11px] py-2 px-5">Pedir por WhatsApp</a>
+        <a href="./tienda.html" class="btn-primary text-[11px] py-2 px-5">Hacer pedido</a>
       </div>
     </div>
   </nav>
@@ -205,7 +205,7 @@
       </p>
       <div id="hero-cta" class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="./tienda.html" class="btn-primary">Ver catálogo</a>
-        <a id="hero-wa" href="#" target="_blank" rel="noopener" class="btn-outline">Hacer un pedido</a>
+        <a href="./tienda.html" class="btn-outline">Hacer un pedido</a>
       </div>
     </div>
     <a href="#productos" class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-stone/50 hover:text-wheat transition-colors">
@@ -454,8 +454,6 @@
         const negocio = data.negocio;
         const waBase = `https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(negocio.saludo)}`;
 
-        document.getElementById('nav-wa').href = waBase;
-        document.getElementById('hero-wa').href = waBase;
         document.getElementById('contact-wa').href = waBase;
         document.getElementById('contact-wa-btn').href = waBase;
         document.getElementById('footer-wa').href = waBase;

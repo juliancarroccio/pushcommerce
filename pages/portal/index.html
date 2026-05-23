@@ -614,6 +614,7 @@ function updTurno(day, ti, field, val) { horData[day][ti][field] = val; }
 // ── CATÁLOGO FORM ──────────────────────────────────────────────────────────
 function buildCatForm(data) {
   catData = JSON.parse(JSON.stringify(data.categorias || []));
+  catData.forEach(c => { if (!c.nombre) c.nombre = c.label || ''; });
   renderCat();
 }
 

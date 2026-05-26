@@ -205,7 +205,7 @@
                   class="w-full bg-wood-light border border-tan/15 focus:border-tan/35 outline-none text-parchment/70 placeholder:text-parchment/20 font-serif italic text-sm px-3 py-2 resize-none transition-colors duration-200"></textarea>
       </div>
 
-      <button onclick="sendToWhatsApp()"
+      <button id="btn-send" onclick="sendToWhatsApp()"
               class="w-full bg-amber hover:bg-amber-lt text-wood font-display font-semibold tracking-[0.15em] uppercase text-sm py-4 transition-all duration-300 hover:scale-[1.02] active:scale-95">
         📲 Enviar pedido por WhatsApp
       </button>
@@ -595,33 +595,17 @@
   /* ═══════════════════════════════════════════════
      WHATSAPP MESSAGE GENERATION
   ═══════════════════════════════════════════════ */
-  async function sendToWhatsApp() {
+  function sendToWhatsApp() {
     if (cart.length === 0) return;
 
-    const note  = document.getElementById('cart-note').value.trim();
+    const btn  = document.getElementById('btn-send');
+    const note = document.getElementById('cart-note').value.trim();
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
-    // 1. Guardar pedido en Firestore (no bloquea si falla)
-    try {
-      await db.collection('pedidos').add({
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        orden:     Date.now(),
-        estado:    'pendiente',
-        total,
-        nota:      note,
-        items:     cart.map(i => ({
-          id:       i.id,
-          nombre:   i.name,
-          cat:      i.cat,
-          catLabel: catLabels[i.cat] || i.cat,
-          qty:      i.qty,
-          precio:   i.price,
-          unidad:   i.unit || ''
-        }))
-      });
-    } catch (e) {
-      console.warn('Firestore write failed, continuing with WA:', e);
-    }
+    // 1. Feedback inmediato — deshabilitar y mostrar estado
+    btn.disabled = true;
+    btn.textContent = '⏳ Abriendo WhatsApp…';
+    btn.classList.remove('hover:scale-[1.02]');
 
     // 2. Armar mensaje WhatsApp
     const grouped = {};
@@ -629,7 +613,6 @@
       if (!grouped[item.cat]) grouped[item.cat] = [];
       grouped[item.cat].push(item);
     });
-
     let lines = [negocio.saludo, '', 'Quiero hacer el siguiente pedido:', ''];
     Object.entries(grouped).forEach(([cat, items]) => {
       lines.push(`*${catLabels[cat] || cat}:*`);
@@ -643,7 +626,41 @@
     lines.push('¿Me confirman disponibilidad y horario de retiro? ¡Gracias! 😊');
     if (note) { lines.push(''); lines.push(`📝 *Nota:* ${note}`); }
 
+    // 3. Abrir WhatsApp de inmediato — sin esperar Firestore
     window.open(`https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+
+    // 4. Confirmar éxito visual
+    btn.textContent = '✓ Pedido enviado';
+    btn.classList.add('bg-green-600');
+    btn.classList.remove('bg-amber');
+
+    // 5. Escribir en Firestore en background — sin bloquear nada
+    db.collection('pedidos').add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      orden:     Date.now(),
+      estado:    'pendiente',
+      total, nota: note,
+      items: cart.map(i => ({
+        id: i.id, nombre: i.name, cat: i.cat,
+        catLabel: catLabels[i.cat] || i.cat,
+        qty: i.qty, precio: i.price, unidad: i.unit || ''
+      }))
+    }).catch(() => {
+      // Firestore falló: aviso sutil, el pedido ya fue por WA
+      const warn = document.createElement('p');
+      warn.textContent = '⚠️ El pedido se envió por WhatsApp pero no llegó a la cola.';
+      warn.style.cssText = 'font-size:.72rem;color:#fbbf24;text-align:center;margin-top:.5rem;opacity:.8';
+      btn.insertAdjacentElement('afterend', warn);
+      setTimeout(() => warn.remove(), 6000);
+    });
+
+    // 6. Restaurar botón después de 2.5s
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = '📲 Enviar pedido por WhatsApp';
+      btn.classList.remove('bg-green-600');
+      btn.classList.add('bg-amber', 'hover:scale-[1.02]');
+    }, 2500);
   }
 
   /* ═══════════════════════════════════════════════

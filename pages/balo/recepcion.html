@@ -301,25 +301,7 @@
     return false;
   }
 
-  // Para demo: guardar sesión si viene con ?auth=ok en URL
-  const urlP = new URLSearchParams(window.location.search);
-  if (urlP.get('auth') === 'ok') {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now() }));
-    window.history.replaceState({}, '', window.location.pathname);
-  }
-
-  if (checkAuth()) {
-    document.getElementById('s-auth').style.display = 'none';
-    document.getElementById('s-app').style.display = 'flex';
-    initApp();
-  } else {
-    // Mostrar pantalla auth con link al portal
-    document.getElementById('auth-link').href = window.location.pathname + '?auth=ok';
-    document.getElementById('auth-link').textContent = '→ Ingresar al panel (demo)';
-  }
-
   /* ── Firebase ── */
-  // ⚠️ Reemplazar con config real del proyecto Firebase de Balo antes de producción
   const FIREBASE_CONFIG = {
     apiKey: "AIzaSyBHbY2j48U8X5fjAM2EJubXMdynfWULCBs",
     authDomain: "hotel-balo.firebaseapp.com",
@@ -335,6 +317,22 @@
   let allReservas = [];
   let activeTab = 'hoy';
   let historialFilter = 'all';
+
+  // Para demo: guardar sesión si viene con ?auth=ok en URL
+  const urlP = new URLSearchParams(window.location.search);
+  if (urlP.get('auth') === 'ok') {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now() }));
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  if (checkAuth()) {
+    document.getElementById('s-auth').style.display = 'none';
+    document.getElementById('s-app').style.display = 'flex';
+    initApp();
+  } else {
+    document.getElementById('auth-link').href = window.location.pathname + '?auth=ok';
+    document.getElementById('auth-link').textContent = '→ Ingresar al panel (demo)';
+  }
 
   function initApp() {
     try {

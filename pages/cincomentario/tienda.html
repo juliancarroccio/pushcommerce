@@ -17,6 +17,19 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyAE5VW5kjkDUqVjlUgVU30ZsYE0mDhMlig",
+      authDomain: "cincomentariolf.firebaseapp.com",
+      projectId: "cincomentariolf",
+      storageBucket: "cincomentariolf.firebasestorage.app",
+      messagingSenderId: "804138171798",
+      appId: "1:804138171798:web:28fe107506bc61e93631b7"
+    });
+    const db = firebase.firestore();
+  </script>
   <script>
     tailwind.config = {
       theme: {
@@ -582,9 +595,35 @@
   /* ═══════════════════════════════════════════════
      WHATSAPP MESSAGE GENERATION
   ═══════════════════════════════════════════════ */
-  function sendToWhatsApp() {
+  async function sendToWhatsApp() {
     if (cart.length === 0) return;
 
+    const note  = document.getElementById('cart-note').value.trim();
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+    // 1. Guardar pedido en Firestore (no bloquea si falla)
+    try {
+      await db.collection('pedidos').add({
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        orden:     Date.now(),
+        estado:    'pendiente',
+        total,
+        nota:      note,
+        items:     cart.map(i => ({
+          id:       i.id,
+          nombre:   i.name,
+          cat:      i.cat,
+          catLabel: catLabels[i.cat] || i.cat,
+          qty:      i.qty,
+          precio:   i.price,
+          unidad:   i.unit || ''
+        }))
+      });
+    } catch (e) {
+      console.warn('Firestore write failed, continuing with WA:', e);
+    }
+
+    // 2. Armar mensaje WhatsApp
     const grouped = {};
     cart.forEach(item => {
       if (!grouped[item.cat]) grouped[item.cat] = [];
@@ -592,7 +631,6 @@
     });
 
     let lines = [negocio.saludo, '', 'Quiero hacer el siguiente pedido:', ''];
-
     Object.entries(grouped).forEach(([cat, items]) => {
       lines.push(`*${catLabels[cat] || cat}:*`);
       items.forEach(item => {
@@ -600,20 +638,12 @@
       });
       lines.push('');
     });
-
-    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     lines.push(`*Total estimado: $${total.toLocaleString('es-AR')}*`);
     lines.push('');
     lines.push('¿Me confirman disponibilidad y horario de retiro? ¡Gracias! 😊');
+    if (note) { lines.push(''); lines.push(`📝 *Nota:* ${note}`); }
 
-    const note = document.getElementById('cart-note').value.trim();
-    if (note) {
-      lines.push('');
-      lines.push(`📝 *Nota:* ${note}`);
-    }
-
-    const message = lines.join('\n');
-    window.open(`https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
   }
 
   /* ═══════════════════════════════════════════════

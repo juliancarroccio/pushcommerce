@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cola de Pedidos — Cincomentario</title>
+  <link rel="icon" href="./favicon.ico" sizes="any">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --wood:    #1A1008;
+      --wood2:   #241508;
+      --amber:   #C8822E;
+      --amber2:  #D4963F;
+      --tan:     #C9A87C;
+      --parch:   #F2E8D5;
+      --pend:    #EF4444;
+      --prep:    #F59E0B;
+      --listo:   #10B981;
+    }
+    html, body { height: 100%; background: var(--wood); color: var(--parch); font-family: 'Inter', sans-serif; }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--wood2);
+      border-bottom: 1px solid rgba(201,168,124,0.15);
+      padding: 0.75rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .logo { height: 36px; width: auto; filter: brightness(0) invert(1); }
+    header h1 { font-family: 'Oswald', sans-serif; font-size: 1.1rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tan); }
+    .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+    #badge-total {
+      background: var(--amber); color: var(--wood); font-family: 'Oswald', sans-serif;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
+      padding: 0.25rem 0.65rem; border-radius: 20px; min-width: 2rem; text-align: center;
+    }
+    #btn-hoy {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      border: 1px solid rgba(201,168,124,0.3); color: var(--tan); background: none;
+      padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    }
+    #btn-hoy:hover { border-color: var(--amber); color: var(--amber); }
+
+    /* ── COLUMNS ── */
+    main {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 1rem;
+      height: calc(100vh - 57px);
+      overflow: hidden;
+    }
+    @media (max-width: 768px) {
+      main { grid-template-columns: 1fr; height: auto; overflow: visible; }
+    }
+
+    .col {
+      display: flex; flex-direction: column;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201,168,124,0.1);
+      border-radius: 12px; overflow: hidden;
+    }
+    .col-hdr {
+      padding: 0.75rem 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+      border-bottom: 1px solid rgba(201,168,124,0.1);
+      font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      position: sticky; top: 0; background: inherit;
+    }
+    .col-hdr .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .col-hdr .count { margin-left: auto; font-size: 0.75rem; color: var(--tan); opacity: 0.6; }
+    .col[data-estado="pendiente"]  .dot { background: var(--pend); box-shadow: 0 0 6px var(--pend); }
+    .col[data-estado="preparando"] .dot { background: var(--prep); box-shadow: 0 0 6px var(--prep); }
+    .col[data-estado="listo"]      .dot { background: var(--listo); box-shadow: 0 0 6px var(--listo); }
+
+    .col-body { flex: 1; overflow-y: auto; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.65rem; }
+    .col-body::-webkit-scrollbar { width: 3px; }
+    .col-body::-webkit-scrollbar-thumb { background: rgba(201,168,124,0.2); border-radius: 2px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(201,168,124,0.12);
+      border-radius: 10px; padding: 0.9rem;
+      animation: cardIn 0.25s ease;
+      position: relative;
+    }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .card.new-flash { animation: flash 0.6s ease; }
+    @keyframes flash { 0%,100% { border-color: rgba(201,168,124,0.12); } 50% { border-color: var(--amber); box-shadow: 0 0 12px rgba(200,130,46,0.4); } }
+
+    .card-num { font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan); opacity: 0.5; margin-bottom: 0.4rem; }
+    .card-time { font-size: 0.72rem; color: var(--tan); opacity: 0.55; }
+    .card-items { margin: 0.6rem 0; border-top: 1px solid rgba(201,168,124,0.08); padding-top: 0.6rem; }
+    .card-item { font-size: 0.82rem; color: rgba(242,232,213,0.85); padding: 0.15rem 0; display: flex; justify-content: space-between; gap: 0.5rem; }
+    .card-item-name { flex: 1; }
+    .card-item-price { color: var(--tan); font-size: 0.78rem; white-space: nowrap; }
+    .card-cat { font-size: 0.68rem; color: var(--tan); opacity: 0.45; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.5rem; margin-bottom: 0.15rem; }
+    .card-total { font-family: 'Oswald', sans-serif; font-size: 1rem; color: var(--amber); margin-top: 0.5rem; }
+    .card-nota { font-size: 0.78rem; color: rgba(242,232,213,0.55); font-style: italic; margin-top: 0.4rem; padding: 0.4rem 0.6rem; background: rgba(0,0,0,0.15); border-radius: 6px; border-left: 2px solid var(--amber); }
+
+    .card-actions { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.75rem; flex-wrap: wrap; }
+    .btn-next {
+      flex: 1; font-family: 'Oswald', sans-serif; font-size: 0.72rem; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.45rem 0.6rem; border-radius: 6px; border: none;
+      cursor: pointer; transition: all 0.15s; font-weight: 500;
+    }
+    .col[data-estado="pendiente"]  .btn-next { background: var(--prep); color: #1a1008; }
+    .col[data-estado="pendiente"]  .btn-next:hover { background: #fbbf24; }
+    .col[data-estado="preparando"] .btn-next { background: var(--listo); color: #fff; }
+    .col[data-estado="preparando"] .btn-next:hover { background: #059669; }
+
+    .btn-up, .btn-down, .btn-del {
+      width: 30px; height: 30px; border-radius: 6px; border: 1px solid rgba(201,168,124,0.2);
+      background: none; color: var(--tan); cursor: pointer; font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+    }
+    .btn-up:hover, .btn-down:hover { background: rgba(201,168,124,0.1); border-color: var(--tan); }
+    .btn-del { color: #f87171; border-color: rgba(248,113,113,0.2); }
+    .btn-del:hover { background: rgba(248,113,113,0.1); border-color: #f87171; }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.5rem; opacity: 0.3; padding: 2rem;
+    }
+    .empty-icon { font-size: 2rem; }
+    .empty-txt { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Oswald', sans-serif; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(150%);
+      background: var(--amber); color: var(--wood); font-weight: 600; font-size: 0.85rem;
+      padding: 0.65rem 1.4rem; border-radius: 8px; z-index: 999; transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── CONEXIÓN ── */
+    #conn-bar { display: none; background: #dc2626; color: #fff; font-size: 0.75rem; text-align: center; padding: 0.3rem; letter-spacing: 0.05em; }
+    #conn-bar.show { display: block; }
+  </style>
+</head>
+<body>
+
+<div id="conn-bar">Sin conexión — los cambios se sincronizarán al reconectar</div>
+<div id="toast"></div>
+
+<header>
+  <img class="logo" src="./img/logo.png" alt="Cincomentario">
+  <h1>Cola de Pedidos</h1>
+  <div class="hdr-right">
+    <span id="badge-total">0</span>
+    <button id="btn-hoy">Hoy</button>
+  </div>
+</header>
+
+<main>
+  <div class="col" data-estado="pendiente">
+    <div class="col-hdr">
+      <span class="dot"></span> Pendiente
+      <span class="count" id="cnt-pendiente">0</span>
+    </div>
+    <div class="col-body" id="col-pendiente">
+      <div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">Sin pedidos</div></div>
+    </div>
+  </div>
+
+  <div class="col" data-estado="preparando">
+    <div class="col-hdr">
+      <span class="dot"></span> En preparación
+      <span class="count" id="cnt-preparando">0</span>
+    </div>
+    <div class="col-body" id="col-preparando">
+      <div class="empty"><div class="empty-icon">👨‍🍳</div><div class="empty-txt">Vacío</div></div>
+    </div>
+  </div>
+
+  <div class="col" data-estado="listo">
+    <div class="col-hdr">
+      <span class="dot"></span> Listo
+      <span class="count" id="cnt-listo">0</span>
+    </div>
+    <div class="col-body" id="col-listo">
+      <div class="empty"><div class="empty-icon">✅</div><div class="empty-txt">Nada entregado aún</div></div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // ── FIREBASE ────────────────────────────────────────────────────────────────
+  firebase.initializeApp({
+    apiKey: "AIzaSyAE5VW5kjkDUqVjlUgVU30ZsYE0mDhMlig",
+    authDomain: "cincomentariolf.firebaseapp.com",
+    projectId: "cincomentariolf",
+    storageBucket: "cincomentariolf.firebasestorage.app",
+    messagingSenderId: "804138171798",
+    appId: "1:804138171798:web:28fe107506bc61e93631b7"
+  });
+  const db = firebase.firestore();
+
+  // ── ESTADO LOCAL ─────────────────────────────────────────────────────────────
+  let orders = {};       // { id: {...pedido} }
+  let todayOnly = true;
+  let dayCounter = 0;    // contador diario de pedidos
+  let knownIds = new Set();
+
+  // ── AUDIO ──────────────────────────────────────────────────────────────────
+  let audioCtx;
+  function playBeep() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      o.type = 'sine'; o.frequency.setValueAtTime(880, audioCtx.currentTime);
+      g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+      o.start(); o.stop(audioCtx.currentTime + 0.4);
+    } catch (_) {}
+  }
+
+  // ── TOAST ──────────────────────────────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ── TIEMPO RELATIVO ────────────────────────────────────────────────────────
+  function timeAgo(ts) {
+    if (!ts) return '';
+    const diff = Math.floor((Date.now() - ts.toMillis()) / 1000);
+    if (diff < 60) return `hace ${diff}s`;
+    if (diff < 3600) return `hace ${Math.floor(diff/60)}min`;
+    return ts.toDate().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  // ── RENDER CARD ─────────────────────────────────────────────────────────────
+  function renderCard(id, p, estado) {
+    const isNew = !knownIds.has(id);
+
+    // Agrupar items por categoría
+    const groups = {};
+    (p.items || []).forEach(i => {
+      const k = i.catLabel || i.cat || 'Otros';
+      if (!groups[k]) groups[k] = [];
+      groups[k].push(i);
+    });
+
+    const itemsHtml = Object.entries(groups).map(([cat, items]) => `
+      <div class="card-cat">${cat}</div>
+      ${items.map(i => `
+        <div class="card-item">
+          <span class="card-item-name">${i.qty}× ${i.nombre}${i.unidad ? ` <span style="opacity:.45">(${i.unidad})</span>` : ''}</span>
+          <span class="card-item-price">$${(i.precio * i.qty).toLocaleString('es-AR')}</span>
+        </div>
+      `).join('')}
+    `).join('');
+
+    const reorderBtns = estado === 'pendiente' ? `
+      <button class="btn-up"   onclick="moveCard('${id}', -1)" title="Subir">↑</button>
+      <button class="btn-down" onclick="moveCard('${id}',  1)" title="Bajar">↓</button>
+    ` : '';
+
+    const nextLabel = estado === 'pendiente' ? '→ Preparando' : estado === 'preparando' ? '→ Listo' : '';
+    const nextBtn   = nextLabel ? `<button class="btn-next" onclick="advance('${id}')">${nextLabel}</button>` : '';
+
+    const div = document.createElement('div');
+    div.className = 'card' + (isNew ? ' new-flash' : '');
+    div.id = 'card-' + id;
+    div.dataset.orden = p.orden || 0;
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="card-num">#${p.numDia || '—'}</div>
+        <div class="card-time">${timeAgo(p.timestamp)}</div>
+      </div>
+      <div class="card-items">${itemsHtml}</div>
+      <div class="card-total">$${(p.total||0).toLocaleString('es-AR')}</div>
+      ${p.nota ? `<div class="card-nota">📝 ${p.nota}</div>` : ''}
+      <div class="card-actions">
+        ${nextBtn}
+        ${reorderBtns}
+        <button class="btn-del" onclick="deleteOrder('${id}')" title="Eliminar">🗑</button>
+      </div>
+    `;
+    return div;
+  }
+
+  // ── RENDER COLUMNS ──────────────────────────────────────────────────────────
+  function render() {
+    const cols = { pendiente: [], preparando: [], listo: [] };
+    const start = startOfToday();
+
+    Object.entries(orders).forEach(([id, p]) => {
+      if (todayOnly && p.timestamp && p.timestamp.toMillis() < start) return;
+      if (cols[p.estado]) cols[p.estado].push({ id, ...p });
+    });
+
+    cols.pendiente.sort((a, b) => (a.orden||0) - (b.orden||0));
+    cols.preparando.sort((a, b) => (a.orden||0) - (b.orden||0));
+    cols.listo.sort((a, b) => (b.orden||0) - (a.orden||0));
+
+    const pendTotal = cols.pendiente.length + cols.preparando.length;
+    document.getElementById('badge-total').textContent = pendTotal;
+    document.title = pendTotal > 0 ? `(${pendTotal}) Cola — Cincomentario` : 'Cola de Pedidos — Cincomentario';
+
+    ['pendiente','preparando','listo'].forEach(estado => {
+      const body = document.getElementById('col-' + estado);
+      document.getElementById('cnt-' + estado).textContent = cols[estado].length;
+      body.innerHTML = '';
+      if (cols[estado].length === 0) {
+        const icons = { pendiente:'📭', preparando:'👨‍🍳', listo:'✅' };
+        const txts  = { pendiente:'Sin pedidos', preparando:'Vacío', listo:'Nada aún' };
+        body.innerHTML = `<div class="empty"><div class="empty-icon">${icons[estado]}</div><div class="empty-txt">${txts[estado]}</div></div>`;
+        return;
+      }
+      cols[estado].forEach(p => body.appendChild(renderCard(p.id, p, estado)));
+    });
+  }
+
+  // ── ACCIONES ─────────────────────────────────────────────────────────────────
+  function advance(id) {
+    const p = orders[id]; if (!p) return;
+    const next = p.estado === 'pendiente' ? 'preparando' : p.estado === 'preparando' ? 'listo' : null;
+    if (!next) return;
+    db.collection('pedidos').doc(id).update({ estado: next, orden: Date.now() })
+      .then(() => showToast(next === 'preparando' ? '👨‍🍳 En preparación' : '✅ Marcado como listo'));
+  }
+
+  function deleteOrder(id) {
+    if (!confirm('¿Eliminar este pedido?')) return;
+    db.collection('pedidos').doc(id).delete()
+      .then(() => showToast('Pedido eliminado'));
+  }
+
+  function moveCard(id, dir) {
+    const p = orders[id]; if (!p || p.estado !== 'pendiente') return;
+    const pendList = Object.entries(orders)
+      .filter(([, v]) => v.estado === 'pendiente')
+      .sort(([,a],[,b]) => (a.orden||0) - (b.orden||0));
+    const idx = pendList.findIndex(([i]) => i === id);
+    const swapIdx = idx + dir;
+    if (swapIdx < 0 || swapIdx >= pendList.length) return;
+
+    const [swapId, swapP] = pendList[swapIdx];
+    const myOrden   = p.orden    || 0;
+    const swapOrden = swapP.orden || 0;
+
+    const batch = db.batch();
+    batch.update(db.collection('pedidos').doc(id),     { orden: swapOrden });
+    batch.update(db.collection('pedidos').doc(swapId), { orden: myOrden   });
+    batch.commit();
+  }
+
+  // ── HELPER: inicio del día ──────────────────────────────────────────────────
+  function startOfToday() {
+    const d = new Date(); d.setHours(0,0,0,0); return d.getTime();
+  }
+
+  // ── LISTENER FIRESTORE ────────────────────────────────────────────────────────
+  let query = db.collection('pedidos').orderBy('timestamp', 'desc').limit(200);
+
+  query.onSnapshot(snap => {
+    snap.docChanges().forEach(change => {
+      const id = change.doc.id;
+      const data = change.doc.data();
+
+      if (change.type === 'added') {
+        // Asignar número diario si es de hoy
+        if (!data.numDia) {
+          const ts = data.timestamp ? data.timestamp.toMillis() : 0;
+          if (ts >= startOfToday()) {
+            dayCounter++;
+            db.collection('pedidos').doc(id).update({ numDia: dayCounter }).catch(() => {});
+            data.numDia = dayCounter;
+          }
+        }
+
+        if (!knownIds.has(id) && knownIds.size > 0) {
+          // Pedido nuevo mientras la página estaba abierta
+          playBeep();
+          showToast('🛎 Nuevo pedido!');
+          document.title = '🛎 ¡Pedido nuevo! — Cola';
+          setTimeout(() => render(), 100);
+        }
+        knownIds.add(id);
+        orders[id] = { id, ...data };
+      }
+
+      if (change.type === 'modified') {
+        orders[id] = { id, ...data };
+      }
+
+      if (change.type === 'removed') {
+        delete orders[id];
+        knownIds.delete(id);
+      }
+    });
+
+    render();
+  }, err => {
+    console.error(err);
+    document.getElementById('conn-bar').classList.add('show');
+  });
+
+  // ── TOGGLE HOY / TODO ─────────────────────────────────────────────────────
+  document.getElementById('btn-hoy').addEventListener('click', () => {
+    todayOnly = !todayOnly;
+    document.getElementById('btn-hoy').textContent = todayOnly ? 'Hoy' : 'Todo';
+    render();
+  });
+
+  // ── REFRESH TIEMPO ────────────────────────────────────────────────────────
+  setInterval(render, 30000);
+</script>
+</body>
+</html>

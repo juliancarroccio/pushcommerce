@@ -12,19 +12,22 @@ Servicio de landing pages + e-commerce para pequeños negocios de **Las Flores, 
 
 ---
 
-## Modelo de negocio (X = $80 USD)
+## Modelo de negocio — pago único, sin membresías
 
 | Plan | Precio | Incluye |
 |---|---|---|
-| Presencia | $80 USD | Landing + hosting gratis + 1 update/mes gratis |
-| Comercio | $150 USD | + Tienda WhatsApp + SEO |
-| Completo | $200 USD | + Google Business Profile + QR + Reseñas |
+| Landing | $80 USD | Landing profesional + hosting + URL + mobile |
+| Tienda | $80 USD | Tienda → WhatsApp + catálogo + 1 cambio/mes |
+| Landing + Tienda | $130 USD | Ambos + 1 cambio/mes |
+| Landing + Tienda + Panel ⭐ | $150 USD | Todo + panel de autoadministración |
 
-**Diferenciador central:** GitHub Pages = $0/mes para siempre. Ningún Wix/WordPress puede decir eso.
+**Siempre gratis:** SEO básico, Google Analytics, QR code.
+**Extras fijos:** cambio extra $10 USD · tickera/cola $20 USD.
+**Diferenciador central:** pago único. Sin Menuya, Pency ni Milocal. GitHub Pages = $0/mes para siempre.
 
-**Pitch de cierre:** "Una sola mesa nueva por mes, o un pedido extra por semana, paga los $80 el primer mes."
+**Pitch de cierre:** "Un solo pedido extra por semana paga los $80 USD el primer mes. De ahí en más, es pura ganancia."
 
-**La update mensual gratis** no es generosidad — es retención. Mantiene el canal abierto para upsells. Con el pipeline automatizado toma ~15 min por cliente.
+Ver playbook completo en `PLAYBOOK.md`.
 
 El playbook completo está en `PLAYBOOK.md`.
 

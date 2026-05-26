@@ -8,8 +8,13 @@
 ### La propuesta central
 Llegar a un negocio local con su página **ya hecha y subida online**, mostrarles el alcance que pueden tener, y recién ahí cobrar. El cliente no imagina nada — lo ve.
 
+### Objetivo de negocio actualizado
+Soluciones digitales para que los negocios de **Las Flores** crezcan: vendé fuera de la ciudad, digitalizá tu menú con QR para tu café o restaurante, y agilizá pedidos con ticketing y cola de atención.
+
+Todo con **pago único** — sin membresías como Menuya, Pency o Milocal.
+
 ### El diferenciador técnico
-> "Tu página no tiene costo mensual. El hosting es gratis para siempre. Pagás una vez, y yo te mantengo el sitio actualizado."
+> "Pago único. Sin membresías. El hosting es gratis para siempre — ningún Wix ni WordPress puede decir lo mismo."
 
 Esto es **técnicamente verdad** y ninguna agencia puede decirlo:
 
@@ -22,15 +27,15 @@ Esto es **técnicamente verdad** y ninguna agencia puede decirlo:
 | URL .github.io | $0 |
 | Dominio propio (.com.ar) | ~$1,25 USD/mes (opcional) |
 
-Comparado con WordPress ($15-50/mes), Wix ($15-30/mes) o Tiendanube ($20-40/mes), el argumento se vende solo.
+Comparado con Menuya, Pency o Milocal (membresías mensuales) o WordPress/Wix ($15-50/mes), el argumento de pago único se vende solo.
 
 ---
 
 ## 2. El modelo de negocio
 
-### Precio base: X = $80 USD
+### Precio base: $80 USD — pago único
 
-La landing page es la puerta de entrada. Todo lo demás es upsell.
+La landing es la puerta de entrada. Todo lo demás es upsell. El diferenciador central es el **pago único**: sin cuotas, sin sorpresas.
 
 **El argumento de cierre:**
 > "Un solo pedido extra por semana, o una sola mesa nueva por mes, paga los $80 USD el primer mes. De ahí en más, es pura ganancia."
@@ -39,52 +44,65 @@ La landing page es la puerta de entrada. Todo lo demás es upsell.
 
 ## 3. Planes
 
-| | Plan Presencia | Plan Comercio | Plan Completo |
-|---|---|---|---|
-| **Precio** | **$80 USD** | **$150 USD** | **$200 USD** |
-| Landing page profesional | ✅ | ✅ | ✅ |
-| Hosting gratuito para siempre | ✅ | ✅ | ✅ |
-| URL propia (negocio.github.io) | ✅ | ✅ | ✅ |
-| 1 actualización/mes gratis | ✅ | ✅ | ✅ |
-| Paleta de colores de su marca | ✅ | ✅ | ✅ |
-| SEO básico + indexado en Google | ❌ | ✅ | ✅ |
-| Tienda + carrito → WhatsApp | ❌ | ✅ | ✅ |
-| Google Business Profile setup | ❌ | ❌ | ✅ |
-| QR code para el local físico | ❌ | ❌ | ✅ |
-| Sección reseñas Google | ❌ | ❌ | ✅ |
+Todos los planes son **pago único**. Sin membresías. Hosting GitHub Pages: **$0 por mes, para siempre.**
+
+### Incluidos gratis en todos los planes
+- SEO básico + indexado en Google
+- Google Analytics
+- Código QR (para el local o el menú)
+
+---
+
+| | Landing | Tienda | Landing + Tienda | Landing + Tienda + Panel ⭐ |
+|---|---|---|---|---|
+| **Precio** | **$80 USD** | **$80 USD** | **$130 USD** | **$150 USD** |
+| Landing page profesional | ✅ | ❌ | ✅ | ✅ |
+| Diseño con logo y colores | ✅ | ✅ | ✅ | ✅ |
+| Tienda carrito → WhatsApp | ❌ | ✅ | ✅ | ✅ |
+| Catálogo de productos con precios | ❌ | ✅ | ✅ | ✅ |
+| Panel de autoadministración | ❌ | ❌ | ❌ | ✅ |
+| Hosting gratuito para siempre | ✅ | ✅ | ✅ | ✅ |
+| URL propia (negocio.github.io) | ✅ | ✅ | ✅ | ✅ |
+| Optimizado para mobile | ✅ | ✅ | ✅ | ✅ |
+| 1 cambio gratis por mes | ❌ | ✅ | ✅ | ❌ |
+
+> El plan **Landing + Tienda + Panel** es el más completo: el cliente puede editar precios, horarios, ofertas y catálogo sin depender de vos.
 
 ---
 
 ## 4. Servicios adicionales (extras)
 
-| Servicio | Precio | Notas |
-|---|---|---|
-| Dominio propio (.com.ar) | +$15 USD/año | ~$1,25/mes. Lo gestionás vos. |
-| Tienda + carrito WhatsApp | +$80 USD | Si no viene en el plan |
-| MercadoPago en tienda | +$50 USD | Links de pago por producto, sin backend |
-| Segunda página (menú, portfolio) | +$40 USD | Misma estética, nueva sección |
-| Galería de fotos | +$25 USD | El cliente provee las fotos |
-| Sección de reseñas Google | +$20 USD | 3-4 reseñas reales, diseñadas |
-| Google Business Profile | +$30 USD | Alta palanca para búsquedas locales |
-| QR code imprimible | +$10 USD | PNG/PDF listo para imprimir |
-| Actualización extra (fuera del mes) | +$10 USD/cambio | Fuera de la cuota mensual |
+### Precio fijo (por servicio)
+
+| Servicio | Precio |
+|---|---|
+| Cambio extra de mantenimiento | $10 USD |
+| Tickera o cola de pedidos (Firebase) | $20 USD |
+
+### A medida (variable)
+
+| Servicio | Precio |
+|---|---|
+| Funcionalidad personalizada | $5–$20 USD según complejidad |
+| Dominio personalizado | desarrollo gratis — dominio se paga anualmente (costo real) |
 
 ---
 
-## 5. Por qué la actualización mensual gratis es estratégica
+## 5. Por qué el cambio mensual gratis en los planes con tienda es estratégico
 
 No es generosidad — es retención y upsell.
 
 **Para el cliente:**
 - Elimina el miedo de "me hacen la página y me abandonan"
-- El sitio siempre está vigente (precios, horarios, fotos nuevas)
+- El catálogo siempre está vigente (precios, stock, ofertas nuevas)
 - Cero fricción para decir que sí
 
 **Para Julian:**
 - Mantiene el canal abierto con cada cliente activo
-- Cada "cambiame el horario" es contacto directo → oportunidad de ofrecer más
+- Cada "cambiame el precio" es contacto directo → oportunidad de ofrecer más
 - Con el pipeline automatizado: un cambio lleva ~10-15 minutos
 - 20 clientes × 15 min = **5 horas/mes** para mantener toda la cartera activa
+- El plan Panel elimina incluso ese trabajo — el cliente se autogestiona
 
 ---
 
@@ -144,20 +162,22 @@ Asunto: [Nombre del negocio] — Te hicimos una página web
 
 Hola [Nombre],
 
-Soy Julian Carroccio, desarrollador de Las Flores. Trabajo ayudando a negocios locales a tener presencia online sin costos mensuales.
+Soy Julian Carroccio, desarrollador de Las Flores. Ayudo a negocios locales 
+a tener presencia online con pago único — sin membresías ni cuotas mensuales.
 
 Te preparé una página para [Nombre del negocio] y ya está online:
 👉 [URL de la demo]
 
-La construí con tu información pública (dirección, teléfono, lo que encontré) y tu identidad visual. Si algo no está bien o querés ajustar algo, lo cambiamos.
+La construí con tu información pública y tu identidad visual. Si algo no está 
+bien o querés ajustar algo, lo cambiamos.
 
 Lo que incluye:
 - Página profesional con tu marca
-- Botón de pedidos por WhatsApp
-- Hosting gratuito para siempre (sin cuota mensual)
-- 1 actualización por mes, gratis
+- [Tienda con carrito directo a WhatsApp / Menú digital con QR] (según caso)
+- SEO básico + Google Analytics
+- Hosting gratuito para siempre — sin cuota mensual
 
-El costo único es $80 USD. Sin sorpresas, sin mensualidades.
+El precio es $80 USD — pago único. Sin sorpresas, sin Menuya, sin Pency.
 
 ¿Te interesa? Podemos hablar cuando quieras.
 
@@ -172,12 +192,12 @@ PushCommerce
 
 ```
 Hola [Nombre]! Soy Julian, de Las Flores. 
-Trabajo haciendo páginas web para negocios locales.
+Hago páginas web para negocios locales, pago único sin mensualidades.
 
-Te hice una para [Nombre del negocio], ya está online:
+Te hice una para [Nombre del negocio], ya está en vivo:
 👉 [URL de la demo]
 
-Sin costo mensual, $80 USD único. 
+$80 USD único, hosting gratis para siempre.
 ¿Les interesa verla?
 ```
 
@@ -189,8 +209,8 @@ Sin costo mensual, $80 USD único.
 2. **Demo inmediata:** Abrir el celular con la página ya cargada. "Les hice esto para el negocio."
 3. **Silencio.** Dejar que lo vean. No explicar nada todavía.
 4. **Pregunta:** "¿Qué les parece? ¿Cambiarían algo?"
-5. **Precio solo si preguntan:** "$80 USD, una sola vez. Sin cuota mensual, hosting gratis para siempre."
-6. **Objeción más común:** "¿Y qué pasa si quiero cambiar algo?" → "Me mandás un WhatsApp y lo cambio. Eso está incluido."
+5. **Precio solo si preguntan:** "$80 USD, una sola vez. Sin cuota mensual, hosting gratis para siempre. No es Menuya, no es Pency — no hay suscripción."
+6. **Objeción más común:** "¿Y qué pasa si quiero cambiar algo?" → "Me mandás un WhatsApp y lo cambio. O si preferís manejarlo vos, hay un panel para editarlo desde el celular."
 
 ---
 
@@ -199,10 +219,11 @@ Sin costo mensual, $80 USD único.
 | Objeción | Respuesta |
 |---|---|
 | "No tengo presupuesto ahora" | "Te lo dejo publicado de todas formas. Cuando puedas, me avisás." |
-| "¿Qué pasa si quiero hacer cambios?" | "Un cambio por mes está incluido, para siempre. Extra son $10 USD." |
-| "¿Y el hosting cuánto me cuesta?" | "Cero. GitHub Pages es gratuito. No hay cuota mensual." |
-| "No sé si mis clientes compran por internet" | "No vendés por internet — usás WhatsApp como siempre. Solo tenés más alcance." |
+| "¿Qué pasa si quiero hacer cambios?" | "Un cambio por mes está incluido en los planes con tienda. Extra son $10 USD. O tomás el plan con panel y lo editás vos." |
+| "¿Y el hosting cuánto me cuesta?" | "Cero. GitHub Pages es gratuito. No hay cuota mensual, a diferencia de Menuya o Pency." |
+| "No sé si mis clientes compran por internet" | "No vendés por internet — usás WhatsApp como siempre. Solo tenés más alcance y el pedido llega organizado." |
 | "Tenemos Instagram y nos alcanza" | "Instagram depende del algoritmo. La página es tuya, siempre aparece en Google." |
+| "Ya usamos Menuya / Pency / Milocal" | "Está bien. Cuando te cansen las cuotas mensuales, esto existe. Un pago, para siempre." |
 | "¿Y si cierro el negocio?" | "La página simplemente deja de existir. No hay contrato, no hay multa." |
 
 ---

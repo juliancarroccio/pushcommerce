@@ -53,7 +53,8 @@
       background: none; color: rgba(201,168,124,0.5); cursor: pointer; transition: all 0.15s;
     }
     .hdr-tab:first-child { border-radius: 6px 0 0 6px; }
-    .hdr-tab:last-child  { border-radius: 0 6px 6px 0; border-left: none; }
+    .hdr-tab:last-child  { border-radius: 0 6px 6px 0; }
+    .hdr-tab:not(:first-child) { border-left: none; }
     .hdr-tab.active { background: var(--amber); color: var(--wood); border-color: var(--amber); }
     .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
     #badge-pend {
@@ -155,7 +156,19 @@
     .empty-txt  { font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
 
     /* ── HISTORIAL ── */
-    #view-historial { flex: 1; overflow-y: auto; padding: 1rem; display: none; }
+    #view-historial { flex: 1; overflow-y: auto; display: none; flex-direction: column; }
+    #hist-toolbar {
+      position: sticky; top: 0; z-index: 10; padding: 0.4rem 0.875rem;
+      background: var(--wood); border-bottom: 1px solid rgba(201,168,124,0.08);
+      display: flex; justify-content: flex-end; flex-shrink: 0;
+    }
+    #btn-export-csv {
+      font-family: 'Oswald', sans-serif; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(200,130,46,0.1); border: 1px solid rgba(200,130,46,0.3); color: var(--amber);
+      padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; transition: all 0.15s;
+    }
+    #btn-export-csv:hover { background: var(--amber); color: var(--wood); }
+    #hist-content { padding: 1rem; }
     .hist-day { margin-bottom: 1.25rem; }
     .hist-day-hdr {
       font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
@@ -253,6 +266,29 @@
 
     #conn-bar { background: #dc2626; color: #fff; font-size: 0.72rem; text-align: center; padding: 0.25rem; letter-spacing: 0.04em; display: none; }
     #conn-bar.on { display: block; }
+
+    /* ── MÉTRICAS ── */
+    #view-metricas { flex: 1; overflow-y: auto; padding: 1rem; display: none; }
+    .metr-grid { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+    .metr-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,124,0.1);
+      border-radius: 10px; padding: 1rem 1.125rem; display: flex; flex-direction: column; gap: 0.625rem;
+    }
+    .metr-title { font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tan); opacity: 0.6; }
+    .metr-big { font-family: 'Oswald', sans-serif; font-size: 1.75rem; color: var(--amber); line-height: 1; }
+    .metr-sub { font-size: 0.75rem; color: rgba(242,232,213,0.35); }
+    .metr-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .metr-badge { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .metr-empty { font-size: 0.78rem; color: rgba(242,232,213,0.25); font-style: italic; }
+    .metr-bar-row { display: flex; align-items: center; gap: 0.625rem; }
+    .metr-bar-label { font-size: 0.78rem; color: rgba(242,232,213,0.7); width: 140px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .metr-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .metr-bar-fill { height: 100%; background: var(--amber); border-radius: 3px; transition: width 0.6s ease; }
+    .metr-bar-val { font-family: 'Oswald', sans-serif; font-size: 0.75rem; color: var(--tan); opacity: 0.7; width: 2.5rem; text-align: right; flex-shrink: 0; }
+    .metr-hourly { display: flex; align-items: flex-end; gap: 2px; height: 80px; }
+    .metr-h-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+    .metr-h-bar { width: 100%; background: var(--amber); border-radius: 2px 2px 0 0; min-height: 2px; opacity: 0.7; }
+    .metr-h-lbl { font-size: 0.52rem; color: var(--tan); opacity: 0.4; margin-top: 3px; white-space: nowrap; line-height: 1; }
   </style>
 </head>
 <body>
@@ -276,6 +312,7 @@
     <div class="hdr-tabs">
       <button class="hdr-tab active" onclick="switchView('kanban')">En curso</button>
       <button class="hdr-tab" onclick="switchView('historial')">Historial</button>
+      <button class="hdr-tab" onclick="switchView('metricas')">Métricas</button>
     </div>
     <div class="hdr-right">
       <span id="badge-pend"></span>
@@ -303,7 +340,14 @@
     </div>
   </div>
 
-  <div id="view-historial"></div>
+  <div id="view-historial">
+    <div id="hist-toolbar">
+      <button id="btn-export-csv" onclick="exportCSV()">↓ Exportar CSV</button>
+    </div>
+    <div id="hist-content"></div>
+  </div>
+
+  <div id="view-metricas"></div>
 </div>
 
 <!-- ── MODAL AGREGAR PEDIDO ───────────────────────────────────────────────── -->
@@ -395,10 +439,14 @@ function toast(msg) {
 
 // ── VIEW ─────────────────────────────────────────────────────────────────────
 function switchView(v) {
-  document.getElementById('view-kanban').style.display     = v === 'kanban'    ? 'grid' : 'none';
-  document.getElementById('view-historial').style.display  = v === 'historial' ? 'block' : 'none';
-  document.querySelectorAll('.hdr-tab').forEach((el, i) => el.classList.toggle('active', (i===0) === (v==='kanban')));
+  document.getElementById('view-kanban').style.display    = v === 'kanban'    ? 'grid'  : 'none';
+  document.getElementById('view-historial').style.display = v === 'historial' ? 'flex'  : 'none';
+  document.getElementById('view-metricas').style.display  = v === 'metricas'  ? 'block' : 'none';
+  document.querySelectorAll('.hdr-tab').forEach((el, i) => {
+    el.classList.toggle('active', (v==='kanban' && i===0) || (v==='historial' && i===1) || (v==='metricas' && i===2));
+  });
   if (v === 'historial') renderHistorial();
+  if (v === 'metricas')  renderMetricas();
 }
 
 function goPortal() {
@@ -516,7 +564,7 @@ function renderHistorial() {
   const sorted = Object.entries(days).sort(([a],[b]) => Number(b) - Number(a));
   const est_lbl = { pendiente:'Pendiente', preparando:'En preparación', pendiente_envio:'Pendiente de envío', enviado:'Enviado/Recibido' };
 
-  const hist = document.getElementById('view-historial');
+  const hist = document.getElementById('hist-content');
   if (!sorted.length) { hist.innerHTML = '<p style="text-align:center;opacity:.3;padding:3rem;font-family:Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:.8rem">Sin historial</p>'; return; }
 
   hist.innerHTML = sorted.map(([key, {date, list}]) => {
@@ -545,6 +593,108 @@ function renderHistorial() {
       <div class="hist-day-body">${rows}</div>
     </div>`;
   }).join('');
+}
+
+// ── EXPORTAR CSV ─────────────────────────────────────────────────────────────
+function exportCSV() {
+  const est_lbl = { pendiente:'Pendiente', preparando:'En preparación', pendiente_envio:'Pendiente de envío', enviado:'Enviado/Recibido' };
+  const rows = [['Fecha','Hora','#Pedido','Productos','Total','Nota','Estado']];
+  Object.values(orders)
+    .filter(p => p.timestamp)
+    .sort((a,b) => a.timestamp.toMillis() - b.timestamp.toMillis())
+    .forEach(p => {
+      const d = p.timestamp.toDate();
+      const items = (p.items||[]).map(i => `${i.qty}x ${i.nombre}`).join(' | ');
+      rows.push([
+        d.toLocaleDateString('es-AR'),
+        d.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'}),
+        p.numDia || '',
+        items,
+        p.total || 0,
+        p.nota || '',
+        est_lbl[p.estado] || p.estado
+      ]);
+    });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `cincomentario-pedidos-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('✅ CSV descargado');
+}
+
+// ── MÉTRICAS ──────────────────────────────────────────────────────────────────
+function renderMetricas() {
+  const today   = startOfDay();
+  const all     = Object.values(orders).filter(p => p.timestamp);
+  const todayOr = all.filter(p => p.timestamp.toMillis() >= today);
+  const todayT  = todayOr.reduce((s,p) => s + (p.total||0), 0);
+  const todayC  = { pendiente:0, preparando:0, pendiente_envio:0, enviado:0 };
+  todayOr.forEach(p => { if (todayC[p.estado] !== undefined) todayC[p.estado]++; });
+
+  const prodCounts = {};
+  all.forEach(p => {
+    (p.items||[]).forEach(i => {
+      const k = i.nombre;
+      if (!prodCounts[k]) prodCounts[k] = { nombre: k, qty: 0 };
+      prodCounts[k].qty += i.qty || 1;
+    });
+  });
+  const topProds = Object.values(prodCounts).sort((a,b) => b.qty - a.qty).slice(0, 8);
+  const maxQty   = topProds.length ? topProds[0].qty : 1;
+
+  const byHour = Array(24).fill(0);
+  all.forEach(p => { byHour[p.timestamp.toDate().getHours()]++; });
+  const maxH = Math.max(...byHour, 1);
+
+  const stateColor = {
+    pendiente:      'rgba(239,68,68,',
+    preparando:     'rgba(245,158,11,',
+    pendiente_envio:'rgba(59,130,246,',
+    enviado:        'rgba(16,185,129,'
+  };
+  const stateLabel = { pendiente:'Pendiente', preparando:'Preparando', pendiente_envio:'En envío', enviado:'Enviado' };
+
+  document.getElementById('view-metricas').innerHTML = `
+    <div class="metr-grid">
+      <div class="metr-card">
+        <div class="metr-title">Hoy · ${todayOr.length} pedido${todayOr.length!==1?'s':''}</div>
+        <div class="metr-big">$${todayT.toLocaleString('es-AR')}</div>
+        <div class="metr-row">
+          ${Object.entries(todayC).map(([k,v]) => `
+            <div class="metr-badge" style="background:${stateColor[k]}0.15);color:${stateColor[k]}0.85)">${v} ${stateLabel[k]}</div>`).join('')}
+        </div>
+      </div>
+
+      <div class="metr-card">
+        <div class="metr-title">Productos más pedidos · todos los tiempos</div>
+        ${!topProds.length ? '<div class="metr-empty">Sin datos aún</div>' :
+          topProds.map(p => `
+            <div class="metr-bar-row">
+              <div class="metr-bar-label" title="${p.nombre}">${p.nombre}</div>
+              <div class="metr-bar-track"><div class="metr-bar-fill" style="width:${(p.qty/maxQty*100).toFixed(1)}%"></div></div>
+              <div class="metr-bar-val">${p.qty}×</div>
+            </div>`).join('')}
+      </div>
+
+      <div class="metr-card">
+        <div class="metr-title">Distribución horaria · todos los pedidos</div>
+        <div class="metr-hourly">
+          ${byHour.map((c,h) => `
+            <div class="metr-h-col" title="${c} pedido${c!==1?'s':''} · ${String(h).padStart(2,'0')}:00hs">
+              <div class="metr-h-bar" style="height:${Math.max(c>0?3:0, Math.round(c/maxH*56))}px"></div>
+              <div class="metr-h-lbl">${h%4===0?h:''}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="metr-card">
+        <div class="metr-title">Acumulado total</div>
+        <div class="metr-big">$${all.reduce((s,p)=>s+(p.total||0),0).toLocaleString('es-AR')}</div>
+        <div class="metr-sub">${all.length} pedido${all.length!==1?'s':''} registrados</div>
+      </div>
+    </div>`;
 }
 
 // ── ACCIONES ──────────────────────────────────────────────────────────────────

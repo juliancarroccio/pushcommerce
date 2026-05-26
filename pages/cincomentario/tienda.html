@@ -456,6 +456,10 @@
     updateProductBtn(id);
     animateBadge();
     if (window.innerWidth < 768) showFab();
+    if (window.gtag) window.gtag('event', 'add_to_cart', {
+      currency: 'ARS', value: product.price,
+      items: [{ item_id: String(id), item_name: product.name, item_category: product.cat, price: product.price, quantity: 1 }]
+    });
   }
 
   function changeQty(id, delta) {
@@ -570,6 +574,10 @@
     document.getElementById('cart-drawer').classList.add('open');
     document.getElementById('cart-backdrop').classList.add('open');
     document.body.style.overflow = 'hidden';
+    if (cart.length > 0 && window.gtag) window.gtag('event', 'begin_checkout', {
+      currency: 'ARS', value: cart.reduce((s, i) => s + i.price * i.qty, 0),
+      items: cart.map(i => ({ item_id: String(i.id), item_name: i.name, item_category: i.cat, price: i.price, quantity: i.qty }))
+    });
   }
   function closeCart() {
     document.getElementById('cart-drawer').classList.remove('open');
@@ -628,6 +636,12 @@
 
     // 3. Abrir WhatsApp de inmediato — sin esperar Firestore
     window.open(`https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+
+    if (window.gtag) window.gtag('event', 'purchase', {
+      transaction_id: 'wa_' + Date.now(),
+      currency: 'ARS', value: total,
+      items: cart.map(i => ({ item_id: String(i.id), item_name: i.name, item_category: i.cat, price: i.price, quantity: i.qty }))
+    });
 
     // 4. Confirmar éxito visual
     btn.textContent = '✓ Pedido enviado';
@@ -884,6 +898,29 @@
     window.gtag('config', id);
   }
 
+  function observeProductViews() {
+    if (!window.gtag || !window.IntersectionObserver) return;
+    const seen = new Set();
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const btn = e.target.querySelector('[id^="btn-"]');
+        if (!btn) return;
+        const id = parseInt(btn.id.replace('btn-', ''), 10);
+        if (seen.has(id)) return;
+        seen.add(id);
+        obs.unobserve(e.target);
+        const p = catalog.find(c => c.id === id);
+        if (!p) return;
+        window.gtag('event', 'view_item', {
+          currency: 'ARS', value: p.price,
+          items: [{ item_id: String(id), item_name: p.name, item_category: p.cat, price: p.price, quantity: 1 }]
+        });
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.pcard').forEach(c => obs.observe(c));
+  }
+
   /* ═══════════════════════════════════════════════
      SEARCH
   ═══════════════════════════════════════════════ */
@@ -919,6 +956,7 @@
         renderOfertaBanner();
         renderCategoryPills(data.categorias);
         renderCatalog(data.categorias);
+        observeProductViews();
         restoreCart();
         renderCart();
         catalog.forEach(p => updateProductBtn(p.id));

@@ -212,7 +212,7 @@
 <nav id="navbar">
   <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
     <a href="#inicio" style="display:inline-flex; align-items:center; text-decoration:none;">
-      <img src="./img/logo.png" alt="Hotel Balo" style="max-height:38px; width:auto; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.4));" />
+      <img src="./img/logo.png" alt="Hotel Balo" style="max-height:38px; width:auto; filter:drop-shadow(0 0 8px rgba(255,255,255,0.35)) drop-shadow(0 1px 4px rgba(0,0,0,0.5));" />
     </a>
     <div style="display:flex; align-items:center; gap:2rem;" id="nav-links">
       <a href="#habitaciones" class="nav-link" style="display:none;" id="nl-hab">Habitaciones</a>
@@ -243,15 +243,12 @@
   <div id="hero-bg"></div>
   <div id="hero-overlay"></div>
   <div id="hero-content">
-    <div id="hero-logo" style="margin:0 auto 1.5rem; opacity:0;">
-      <img src="./img/logo.png" alt="Hotel Balo" style="max-height:clamp(80px,14vw,130px); width:auto; filter:drop-shadow(0 2px 12px rgba(0,0,0,0.5));" />
-    </div>
-    <p id="hero-tag" style="font-family:'Outfit',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--terra); margin:0 0 0.75rem; opacity:0;">
+    <p id="hero-tag" style="font-family:'Outfit',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--terra); margin:0 0 1.25rem; opacity:0;">
       Las Flores · Buenos Aires
     </p>
-    <h1 id="hero-title" style="font-family:'DM Serif Display',serif; font-size:clamp(3rem,8vw,5.5rem); color:#fff; margin:0 0 1rem; line-height:1.05; opacity:0;">
-      Hotel Balo
-    </h1>
+    <div id="hero-title" style="margin:0 0 1.25rem; opacity:0;">
+      <img src="./img/logo.png" alt="Hotel Balo" style="max-height:clamp(90px,16vw,160px); width:auto; filter:drop-shadow(0 0 12px rgba(255,255,255,0.25)) drop-shadow(0 3px 20px rgba(0,0,0,0.8));" />
+    </div>
     <p id="hero-sub" style="font-size:clamp(1.1rem,2.5vw,1.4rem); color:rgba(255,255,255,0.88); margin:0 0 2.5rem; max-width:540px; font-weight:300; opacity:0;">
       El mejor hotel para alojarse en Las Flores.<br>34 habitaciones, desayuno buffet incluido.
     </p>
@@ -560,9 +557,8 @@
   /* ── Hero GSAP ── */
   const heroTl = gsap.timeline({ delay: 0.2 });
   heroTl
-    .fromTo('#hero-logo', { opacity:0, scale:0.88 }, { opacity:1, scale:1, duration:0.9, ease:'power2.out' })
-    .to('#hero-tag',    { opacity:1, y:0, duration:0.7, ease:'power2.out', from:{ y:20 } }, '-=0.4')
-    .to('#hero-title',  { opacity:1, y:0, duration:0.8, ease:'power2.out', from:{ y:30 } }, '-=0.4')
+    .to('#hero-tag',    { opacity:1, duration:0.6, ease:'power2.out' })
+    .fromTo('#hero-title', { opacity:0, scale:0.92 }, { opacity:1, scale:1, duration:0.9, ease:'power2.out' }, '-=0.2')
     .to('#hero-sub',    { opacity:1, y:0, duration:0.7, ease:'power2.out', from:{ y:20 } }, '-=0.4')
     .to('#hero-ctas',   { opacity:1, y:0, duration:0.6, ease:'power2.out', from:{ y:20 } }, '-=0.3')
     .to('#hero-scroll', { opacity:1, duration:0.5 }, '-=0.2');

@@ -7,6 +7,7 @@
   <meta name="description" content="El mejor hotel para alojarse en Las Flores. 34 habitaciones, desayuno buffet, WiFi gratuito, estacionamiento gratis. Ruta 3 Km 186.900." />
   <meta name="theme-color" content="#2580C8" />
   <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./img/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -210,8 +211,8 @@
 <!-- Nav -->
 <nav id="navbar">
   <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
-    <a href="#inicio" style="font-family:'DM Serif Display',serif; font-size:1.4rem; color:#fff; text-decoration:none; letter-spacing:-0.01em;">
-      Hotel Balo
+    <a href="#inicio" style="display:inline-flex; align-items:center; text-decoration:none;">
+      <img src="./img/logo.png" alt="Hotel Balo" style="max-height:38px; width:auto; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.4));" />
     </a>
     <div style="display:flex; align-items:center; gap:2rem;" id="nav-links">
       <a href="#habitaciones" class="nav-link" style="display:none;" id="nl-hab">Habitaciones</a>
@@ -242,6 +243,9 @@
   <div id="hero-bg"></div>
   <div id="hero-overlay"></div>
   <div id="hero-content">
+    <div id="hero-logo" style="margin:0 auto 1.5rem; opacity:0;">
+      <img src="./img/logo.png" alt="Hotel Balo" style="max-height:clamp(80px,14vw,130px); width:auto; filter:drop-shadow(0 2px 12px rgba(0,0,0,0.5));" />
+    </div>
     <p id="hero-tag" style="font-family:'Outfit',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--terra); margin:0 0 0.75rem; opacity:0;">
       Las Flores · Buenos Aires
     </p>
@@ -454,7 +458,7 @@
 <footer style="background:var(--navy); color:rgba(255,255,255,0.7); padding:3rem 2rem;">
   <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr 1fr; gap:2rem; align-items:start;">
     <div>
-      <h3 style="font-family:'DM Serif Display',serif; font-size:1.5rem; color:#fff; margin:0 0 0.75rem;">Hotel Balo</h3>
+      <img src="./img/logo.png" alt="Hotel Balo" style="display:block; max-height:52px; width:auto; margin-bottom:0.75rem; filter:brightness(0) invert(1);" />
       <p style="font-size:0.875rem; line-height:1.6; margin:0 0 1rem;">El mejor hotel para alojarse en Las Flores.</p>
       <a href="https://www.facebook.com/hotel.balo" target="_blank" rel="noopener"
          style="color:rgba(255,255,255,0.6); font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
@@ -556,7 +560,8 @@
   /* ── Hero GSAP ── */
   const heroTl = gsap.timeline({ delay: 0.2 });
   heroTl
-    .to('#hero-tag',    { opacity:1, y:0, duration:0.7, ease:'power2.out', from:{ y:20 } })
+    .fromTo('#hero-logo', { opacity:0, scale:0.88 }, { opacity:1, scale:1, duration:0.9, ease:'power2.out' })
+    .to('#hero-tag',    { opacity:1, y:0, duration:0.7, ease:'power2.out', from:{ y:20 } }, '-=0.4')
     .to('#hero-title',  { opacity:1, y:0, duration:0.8, ease:'power2.out', from:{ y:30 } }, '-=0.4')
     .to('#hero-sub',    { opacity:1, y:0, duration:0.7, ease:'power2.out', from:{ y:20 } }, '-=0.4')
     .to('#hero-ctas',   { opacity:1, y:0, duration:0.6, ease:'power2.out', from:{ y:20 } }, '-=0.3')

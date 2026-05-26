@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recepción — Hotel Balo</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase compat SDK v10.12.2 -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --wood:    #1A1008;
+      --amber:   #C8822E;
+      --amber-lt:#D99848;
+      --parch:   #F2E8D5;
+      --tan:     #C9A87C;
+      --cream:   #F5F2EE;
+      --navy:    #15202E;
+      --sky:     #2580C8;
+      --terra:   #C4804A;
+      --text:    #2A3540;
+      --text-mid:#5E7080;
+      --green:   #38a169;
+      --red:     #e53e3e;
+      --orange:  #dd6b20;
+      --purple:  #805ad5;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; margin: 0; background: var(--wood); color: var(--parch); min-height: 100vh; }
+
+    /* Auth screen */
+    #s-auth {
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 2rem;
+    }
+
+    /* App screen */
+    #s-app { display: none; flex-direction: column; height: 100vh; }
+
+    /* Header */
+    #app-header {
+      background: rgba(26,16,8,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(200,130,46,0.2);
+      padding: 0.875rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      flex-shrink: 0; flex-wrap: wrap;
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    /* Tabs */
+    .tab-btn {
+      padding: 0.5rem 1rem; border-radius: 0.5rem;
+      border: 1px solid rgba(200,130,46,0.3);
+      background: transparent; color: rgba(242,232,213,0.6);
+      font-family: 'Outfit', sans-serif; font-size: 0.875rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; position: relative;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { background: rgba(200,130,46,0.1); color: var(--parch); }
+    .tab-btn.active { background: var(--amber); color: var(--wood); border-color: var(--amber); font-weight: 700; }
+    .badge {
+      position: absolute; top: -6px; right: -6px;
+      background: var(--red); color: #fff;
+      font-size: 0.7rem; font-weight: 700; min-width: 18px; height: 18px;
+      border-radius: 9px; display: flex; align-items: center; justify-content: center;
+      padding: 0 4px;
+    }
+
+    /* Content area */
+    #tab-content { flex: 1; overflow-y: auto; padding: 1.5rem; }
+
+    /* Cards */
+    .res-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(200,130,46,0.15);
+      border-radius: 0.875rem;
+      padding: 1.25rem;
+      margin-bottom: 0.875rem;
+      transition: border-color 0.2s;
+    }
+    .res-card:hover { border-color: rgba(200,130,46,0.3); }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.2rem 0.6rem; border-radius: 2rem;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .s-pendiente  { background: rgba(221,107,32,0.2); color: var(--orange); border: 1px solid rgba(221,107,32,0.3); }
+    .s-confirmada { background: rgba(56,161,105,0.2); color: var(--green);  border: 1px solid rgba(56,161,105,0.3); }
+    .s-hospedado  { background: rgba(37,128,200,0.2); color: var(--sky);    border: 1px solid rgba(37,128,200,0.3); }
+    .s-completada { background: rgba(128,90,213,0.2); color: var(--purple); border: 1px solid rgba(128,90,213,0.3); }
+    .s-cancelada  { background: rgba(229,62,62,0.2);  color: var(--red);    border: 1px solid rgba(229,62,62,0.3); }
+
+    /* Action buttons */
+    .act-btn {
+      padding: 0.4rem 0.875rem; border-radius: 0.5rem;
+      font-family: 'Outfit', sans-serif; font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; border: none; transition: opacity 0.15s, transform 0.15s;
+    }
+    .act-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .act-confirmar { background: var(--green); color: #fff; }
+    .act-cancelar  { background: var(--red);   color: #fff; }
+    .act-checkin   { background: var(--sky);   color: #fff; }
+    .act-checkout  { background: var(--purple); color: #fff; }
+
+    /* Section titles (hoy) */
+    .col-title {
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.4rem 0.875rem; border-radius: 0.375rem; margin-bottom: 0.875rem; display: inline-block;
+    }
+    .col-title.in  { background: rgba(56,161,105,0.15); color: var(--green); }
+    .col-title.out { background: rgba(229,62,62,0.15);  color: var(--red); }
+
+    /* Date group */
+    .date-group-title {
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--amber); margin: 1.5rem 0 0.75rem; padding-bottom: 0.4rem;
+      border-bottom: 1px solid rgba(200,130,46,0.2);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 3rem 1rem;
+      color: rgba(242,232,213,0.4); font-size: 0.95rem;
+    }
+
+    /* Modal */
+    #modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 500;
+      display: none; align-items: center; justify-content: center; padding: 1rem;
+    }
+    #modal-bg.open { display: flex; }
+    #modal {
+      background: #241709; border: 1px solid rgba(200,130,46,0.3);
+      border-radius: 1rem; padding: 2rem; width: 100%; max-width: 500px;
+      max-height: 90vh; overflow-y: auto;
+    }
+
+    .modal-input {
+      width: 100%; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(200,130,46,0.25); border-radius: 0.5rem;
+      padding: 0.625rem 0.875rem; font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem; color: var(--parch); outline: none;
+      transition: border-color 0.2s;
+    }
+    .modal-input:focus { border-color: var(--amber); }
+    .modal-input option { background: #241709; }
+    .modal-label {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      color: var(--tan); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    /* Filter pills (historial) */
+    .pill {
+      padding: 0.35rem 0.875rem; border-radius: 2rem;
+      border: 1px solid rgba(200,130,46,0.2);
+      background: transparent; color: rgba(242,232,213,0.6);
+      font-family: 'Outfit', sans-serif; font-size: 0.8rem; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .pill.active { background: var(--amber); color: var(--wood); border-color: var(--amber); font-weight: 700; }
+
+    /* Export btn */
+    .btn-export {
+      padding: 0.5rem 1rem; border-radius: 0.5rem;
+      background: rgba(200,130,46,0.15); color: var(--amber);
+      border: 1px solid rgba(200,130,46,0.3);
+      font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-export:hover { background: rgba(200,130,46,0.25); }
+
+    /* Scrollbar custom */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+    ::-webkit-scrollbar-thumb { background: rgba(200,130,46,0.3); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- Auth screen -->
+<div id="s-auth">
+  <div style="width:72px; height:72px; border-radius:50%; background:var(--amber); display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:2rem;">🏨</div>
+  <h1 style="font-family:'DM Serif Display',serif; font-size:1.75rem; margin:0 0 0.5rem; color:var(--parch);">Hotel Balo</h1>
+  <p style="color:var(--tan); margin:0 0 2rem; font-size:1rem;">Panel de Recepción</p>
+  <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(200,130,46,0.2); border-radius:1rem; padding:2rem; max-width:380px; width:100%;">
+    <p style="color:rgba(242,232,213,0.7); margin:0 0 1.25rem; font-size:0.95rem;">Acceso requerido para el personal del hotel.</p>
+    <a id="auth-link" href="#" style="display:block; text-align:center; background:var(--amber); color:var(--wood); padding:0.875rem; border-radius:0.625rem; font-weight:700; text-decoration:none; font-size:1rem;">
+      → Ir al panel de acceso
+    </a>
+  </div>
+</div>
+
+<!-- App screen -->
+<div id="s-app">
+
+  <!-- Header -->
+  <div id="app-header">
+    <img src="./img/hotel-balo1.jpg" alt="Hotel Balo"
+         style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid var(--amber); flex-shrink:0;" />
+    <span style="font-family:'DM Serif Display',serif; font-size:1.1rem; color:var(--parch); white-space:nowrap;">Recepción — Hotel Balo</span>
+    <div style="flex:1;"></div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+      <button class="tab-btn active" data-tab="hoy">Hoy</button>
+      <button class="tab-btn" data-tab="pendientes" id="tab-pendientes-btn">
+        Pendientes
+        <span class="badge" id="badge-pendientes" style="display:none;">0</span>
+      </button>
+      <button class="tab-btn" data-tab="proximas">Próximas</button>
+      <button class="tab-btn" data-tab="historial">Historial</button>
+    </div>
+    <div style="display:flex; gap:0.5rem; margin-left:auto; flex-shrink:0;">
+      <button id="btn-agregar" style="background:var(--amber); color:var(--wood); border:none; border-radius:0.5rem; padding:0.5rem 1rem; font-family:'Outfit',sans-serif; font-size:0.875rem; font-weight:700; cursor:pointer;">
+        + Agregar
+      </button>
+      <a href="./index.html" style="background:rgba(255,255,255,0.06); color:var(--tan); border:1px solid rgba(200,130,46,0.2); border-radius:0.5rem; padding:0.5rem 0.875rem; font-size:0.85rem; text-decoration:none; display:flex; align-items:center;">
+        ← Panel
+      </a>
+    </div>
+  </div>
+
+  <!-- Tab content -->
+  <div id="tab-content"></div>
+
+</div>
+
+<!-- Modal -->
+<div id="modal-bg">
+  <div id="modal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <h2 style="font-family:'DM Serif Display',serif; font-size:1.35rem; color:var(--parch); margin:0;">Nueva Reserva</h2>
+      <button id="modal-close" style="background:none; border:none; color:var(--tan); font-size:1.5rem; cursor:pointer; line-height:1;">×</button>
+    </div>
+    <form id="modal-form" novalidate>
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        <div>
+          <label class="modal-label">Nombre completo *</label>
+          <input type="text" id="m-nombre" class="modal-input" placeholder="Juan García" required />
+        </div>
+        <div>
+          <label class="modal-label">Teléfono / WhatsApp *</label>
+          <input type="tel" id="m-telefono" class="modal-input" placeholder="221 123-4567" required />
+        </div>
+        <div>
+          <label class="modal-label">Tipo de habitación *</label>
+          <select id="m-hab" class="modal-input" required>
+            <option value="">Seleccionar...</option>
+            <option value="1|Simple">Simple — 1 persona</option>
+            <option value="2|Doble">Doble — hasta 2 personas</option>
+            <option value="3|Doble Superior">Doble Superior — hasta 3 personas</option>
+          </select>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <div>
+            <label class="modal-label">Check-in *</label>
+            <input type="date" id="m-checkin" class="modal-input" required />
+          </div>
+          <div>
+            <label class="modal-label">Check-out *</label>
+            <input type="date" id="m-checkout" class="modal-input" required />
+          </div>
+        </div>
+        <div>
+          <label class="modal-label">Huéspedes</label>
+          <input type="number" id="m-huespedes" class="modal-input" value="1" min="1" max="4" />
+        </div>
+        <div>
+          <label class="modal-label">Nota</label>
+          <textarea id="m-nota" class="modal-input" rows="2" placeholder="Llegada tarde, cuna, etc."></textarea>
+        </div>
+        <button type="submit" style="background:var(--amber); color:var(--wood); border:none; border-radius:0.625rem; padding:0.875rem; font-family:'Outfit',sans-serif; font-size:1rem; font-weight:700; cursor:pointer;">
+          Guardar reserva
+        </button>
+        <p id="modal-err" style="color:var(--red); font-size:0.85rem; margin:0; display:none; text-align:center;">Completá todos los campos obligatorios.</p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  /* ── Auth ── */
+  const SESSION_KEY = 'pc_recep_balo';
+  const SESSION_HOURS = 8;
+
+  function checkAuth() {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (raw) {
+      try {
+        const { ts } = JSON.parse(raw);
+        if (Date.now() - ts < SESSION_HOURS * 3600000) return true;
+      } catch(e) {}
+    }
+    return false;
+  }
+
+  // Para demo: guardar sesión si viene con ?auth=ok en URL
+  const urlP = new URLSearchParams(window.location.search);
+  if (urlP.get('auth') === 'ok') {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now() }));
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  if (checkAuth()) {
+    document.getElementById('s-auth').style.display = 'none';
+    document.getElementById('s-app').style.display = 'flex';
+    initApp();
+  } else {
+    // Mostrar pantalla auth con link al portal
+    document.getElementById('auth-link').href = window.location.pathname + '?auth=ok';
+    document.getElementById('auth-link').textContent = '→ Ingresar al panel (demo)';
+  }
+
+  /* ── Firebase ── */
+  // ⚠️ Reemplazar con config real del proyecto Firebase de Balo antes de producción
+  const FIREBASE_CONFIG = {
+    apiKey: "FIREBASE_API_KEY",
+    authDomain: "hotelbalo.firebaseapp.com",
+    projectId: "hotelbalo",
+    storageBucket: "hotelbalo.firebasestorage.app",
+    messagingSenderId: "FIREBASE_SENDER_ID",
+    appId: "FIREBASE_APP_ID"
+  };
+
+  let db = null;
+
+  function initApp() {
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      startListener();
+    } catch(e) {
+      renderOfflineDemo();
+    }
+
+    setupTabs();
+    setupModal();
+  }
+
+  /* ── State ── */
+  let allReservas = [];
+  let activeTab = 'hoy';
+  let historialFilter = 'all';
+
+  /* ── Demo data (si no hay Firebase) ── */
+  function renderOfflineDemo() {
+    allReservas = [
+      { id: 'demo1', nombre: 'Carlos Pérez', telefono: '2244123456', habitacion_id: 2, habitacion_tipo: 'Doble', checkin: new Date().toISOString().split('T')[0], checkout: new Date(Date.now()+86400000).toISOString().split('T')[0], noches: 1, huespedes: 2, nota: 'Llegada a las 15hs', estado: 'confirmada', timestamp: new Date() },
+      { id: 'demo2', nombre: 'Ana López', telefono: '2244654321', habitacion_id: 1, habitacion_tipo: 'Simple', checkin: new Date().toISOString().split('T')[0], checkout: new Date(Date.now()+2*86400000).toISOString().split('T')[0], noches: 2, huespedes: 1, nota: '', estado: 'pendiente', timestamp: new Date(Date.now()-3600000) },
+    ];
+    renderTab(activeTab);
+    updateBadge();
+  }
+
+  /* ── Firestore listener ── */
+  function startListener() {
+    if (!db) return;
+    db.collection('reservas').orderBy('timestamp', 'desc').limit(200)
+      .onSnapshot(snap => {
+        allReservas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderTab(activeTab);
+        updateBadge();
+      }, () => renderOfflineDemo());
+  }
+
+  /* ── Tabs ── */
+  function setupTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeTab = btn.dataset.tab;
+        renderTab(activeTab);
+      });
+    });
+  }
+
+  function updateBadge() {
+    const pendientes = allReservas.filter(r => r.estado === 'pendiente').length;
+    const badge = document.getElementById('badge-pendientes');
+    if (pendientes > 0) { badge.style.display = 'flex'; badge.textContent = pendientes; }
+    else { badge.style.display = 'none'; }
+  }
+
+  function renderTab(tab) {
+    const today = new Date().toISOString().split('T')[0];
+    const cont = document.getElementById('tab-content');
+    if (tab === 'hoy') renderHoy(cont, today);
+    else if (tab === 'pendientes') renderPendientes(cont);
+    else if (tab === 'proximas') renderProximas(cont, today);
+    else if (tab === 'historial') renderHistorial(cont);
+  }
+
+  /* ── Format fecha ── */
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const [y,m,d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  /* ── Card HTML ── */
+  function actionBtns(r) {
+    let btns = '';
+    if (r.estado === 'pendiente') {
+      btns = `<button class="act-btn act-confirmar" onclick="cambiarEstado('${r.id}','confirmada')">✅ Confirmar</button>
+              <button class="act-btn act-cancelar" onclick="cambiarEstado('${r.id}','cancelada')">❌ Cancelar</button>`;
+    } else if (r.estado === 'confirmada') {
+      btns = `<button class="act-btn act-checkin" onclick="cambiarEstado('${r.id}','hospedado')">🏨 Check-in</button>
+              <button class="act-btn act-cancelar" onclick="cambiarEstado('${r.id}','cancelada')">❌ Cancelar</button>`;
+    } else if (r.estado === 'hospedado') {
+      btns = `<button class="act-btn act-checkout" onclick="cambiarEstado('${r.id}','completada')">🚪 Check-out</button>`;
+    }
+    return btns ? `<div style="display:flex; gap:0.5rem; margin-top:0.875rem; flex-wrap:wrap;">${btns}</div>` : '';
+  }
+
+  function cardHTML(r, showStatus = true) {
+    const statusMap = { pendiente:'s-pendiente', confirmada:'s-confirmada', hospedado:'s-hospedado', completada:'s-completada', cancelada:'s-cancelada' };
+    const statusLabel = { pendiente:'⏳ Pendiente', confirmada:'✅ Confirmada', hospedado:'🏨 Hospedado', completada:'✓ Completada', cancelada:'✗ Cancelada' };
+    return `
+      <div class="res-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem; flex-wrap:wrap;">
+          <div>
+            <p style="font-weight:700; color:var(--parch); margin:0 0 0.2rem; font-size:1rem;">${r.nombre}</p>
+            <p style="color:var(--tan); font-size:0.85rem; margin:0;">📱 ${r.telefono}</p>
+          </div>
+          ${showStatus ? `<span class="status-badge ${statusMap[r.estado] || ''}">${statusLabel[r.estado] || r.estado}</span>` : ''}
+        </div>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.75rem;">
+          <span style="font-size:0.85rem; color:var(--tan);">🛏️ ${r.habitacion_tipo || '—'}</span>
+          <span style="font-size:0.85rem; color:var(--tan);">📅 ${fmtDate(r.checkin)} → ${fmtDate(r.checkout)}</span>
+          <span style="font-size:0.85rem; color:var(--tan);">🌙 ${r.noches || '?'} noche(s)</span>
+          <span style="font-size:0.85rem; color:var(--tan);">👤 ${r.huespedes || 1} hués.</span>
+        </div>
+        ${r.nota ? `<p style="font-size:0.8rem; color:rgba(242,232,213,0.5); margin:0.5rem 0 0; font-style:italic;">💬 ${r.nota}</p>` : ''}
+        ${actionBtns(r)}
+      </div>`;
+  }
+
+  /* ── Hoy ── */
+  function renderHoy(cont, today) {
+    const checkins  = allReservas.filter(r => r.checkin  === today && ['pendiente','confirmada'].includes(r.estado));
+    const checkouts = allReservas.filter(r => r.checkout === today && r.estado === 'hospedado');
+    cont.innerHTML = `
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:1000px; margin:0 auto;">
+        <div>
+          <div class="col-title in">Check-in hoy (${checkins.length})</div>
+          ${checkins.length ? checkins.map(r => cardHTML(r)).join('') : '<div class="empty-state">Sin check-ins hoy</div>'}
+        </div>
+        <div>
+          <div class="col-title out">Check-out hoy (${checkouts.length})</div>
+          ${checkouts.length ? checkouts.map(r => cardHTML(r)).join('') : '<div class="empty-state">Sin check-outs hoy</div>'}
+        </div>
+      </div>`;
+    applyResponsiveGrid(cont);
+  }
+
+  function applyResponsiveGrid(cont) {
+    const grid = cont.querySelector('div[style*="grid-template-columns:1fr 1fr"]');
+    if (grid && window.innerWidth < 640) grid.style.gridTemplateColumns = '1fr';
+    window.addEventListener('resize', () => {
+      if (grid) grid.style.gridTemplateColumns = window.innerWidth < 640 ? '1fr' : '1fr 1fr';
+    });
+  }
+
+  /* ── Pendientes ── */
+  function renderPendientes(cont) {
+    const pend = allReservas.filter(r => r.estado === 'pendiente');
+    if (!pend.length) { cont.innerHTML = '<div class="empty-state">No hay reservas pendientes</div>'; return; }
+    cont.innerHTML = `<div style="max-width:680px; margin:0 auto;">${pend.map(r => cardHTML(r)).join('')}</div>`;
+  }
+
+  /* ── Próximas (14 días) ── */
+  function renderProximas(cont, today) {
+    const limit = new Date(); limit.setDate(limit.getDate() + 14);
+    const limISO = limit.toISOString().split('T')[0];
+    const prox = allReservas.filter(r => r.estado === 'confirmada' && r.checkin > today && r.checkin <= limISO)
+      .sort((a,b) => a.checkin.localeCompare(b.checkin));
+
+    if (!prox.length) { cont.innerHTML = '<div class="empty-state">Sin reservas confirmadas en los próximos 14 días</div>'; return; }
+
+    const grouped = {};
+    prox.forEach(r => { if (!grouped[r.checkin]) grouped[r.checkin] = []; grouped[r.checkin].push(r); });
+    let html = '<div style="max-width:680px; margin:0 auto;">';
+    Object.keys(grouped).sort().forEach(date => {
+      html += `<p class="date-group-title">📅 ${fmtDate(date)}</p>`;
+      html += grouped[date].map(r => cardHTML(r, false)).join('');
+    });
+    html += '</div>';
+    cont.innerHTML = html;
+  }
+
+  /* ── Historial ── */
+  function renderHistorial(cont) {
+    const hist = allReservas.filter(r => ['completada','cancelada'].includes(r.estado));
+    const filtered = historialFilter === 'all' ? hist : hist.filter(r => r.estado === historialFilter);
+
+    cont.innerHTML = `
+      <div style="max-width:680px; margin:0 auto;">
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:1.25rem;">
+          <button class="btn-export" onclick="exportCSV()">↓ Exportar CSV</button>
+          <button class="pill ${historialFilter==='all'?'active':''}" onclick="setFilter('all')">Todos</button>
+          <button class="pill ${historialFilter==='completada'?'active':''}" onclick="setFilter('completada')">Completadas</button>
+          <button class="pill ${historialFilter==='cancelada'?'active':''}" onclick="setFilter('cancelada')">Canceladas</button>
+        </div>
+        ${filtered.length ? filtered.map(r => cardHTML(r)).join('') : '<div class="empty-state">Sin reservas en el historial</div>'}
+      </div>`;
+  }
+
+  window.setFilter = function(f) {
+    historialFilter = f;
+    renderHistorial(document.getElementById('tab-content'));
+  };
+
+  /* ── Cambiar estado ── */
+  window.cambiarEstado = function(id, nuevoEstado) {
+    if (!db) {
+      // Demo mode
+      const r = allReservas.find(x => x.id === id);
+      if (r) { r.estado = nuevoEstado; renderTab(activeTab); updateBadge(); }
+      return;
+    }
+    db.collection('reservas').doc(id).update({ estado: nuevoEstado })
+      .catch(() => alert('Error al actualizar la reserva.'));
+  };
+
+  /* ── Modal ── */
+  function setupModal() {
+    const todayISO = new Date().toISOString().split('T')[0];
+    document.getElementById('m-checkin').min = todayISO;
+    document.getElementById('m-checkout').min = todayISO;
+
+    document.getElementById('btn-agregar').addEventListener('click', () => {
+      document.getElementById('modal-bg').classList.add('open');
+    });
+    document.getElementById('modal-close').addEventListener('click', () => {
+      document.getElementById('modal-bg').classList.remove('open');
+    });
+    document.getElementById('modal-bg').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+
+    document.getElementById('modal-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('modal-err').style.display = 'none';
+
+      const nombre   = document.getElementById('m-nombre').value.trim();
+      const telefono = document.getElementById('m-telefono').value.trim();
+      const habVal   = document.getElementById('m-hab').value;
+      const ci       = document.getElementById('m-checkin').value;
+      const co       = document.getElementById('m-checkout').value;
+      const huespedes = parseInt(document.getElementById('m-huespedes').value) || 1;
+      const nota     = document.getElementById('m-nota').value.trim();
+
+      if (!nombre || !telefono || !habVal || !ci || !co) {
+        document.getElementById('modal-err').style.display = 'block';
+        return;
+      }
+
+      const [habId, habTipo] = habVal.split('|');
+      const noches = Math.round((new Date(co) - new Date(ci)) / 86400000);
+      if (noches <= 0) { document.getElementById('modal-err').textContent = 'El check-out debe ser posterior al check-in.'; document.getElementById('modal-err').style.display = 'block'; return; }
+
+      const doc = {
+        timestamp: db ? firebase.firestore.FieldValue.serverTimestamp() : new Date(),
+        estado: 'pendiente',
+        nombre, telefono,
+        habitacion_id: parseInt(habId),
+        habitacion_tipo: habTipo,
+        checkin: ci, checkout: co,
+        noches, huespedes,
+        nota: nota || '',
+        orden: Date.now()
+      };
+
+      if (db) {
+        db.collection('reservas').add(doc)
+          .then(() => {
+            document.getElementById('modal-bg').classList.remove('open');
+            this.reset();
+          })
+          .catch(() => { document.getElementById('modal-err').textContent = 'Error al guardar. Intentá de nuevo.'; document.getElementById('modal-err').style.display = 'block'; });
+      } else {
+        allReservas.unshift({ id: 'local-' + Date.now(), ...doc });
+        renderTab(activeTab);
+        updateBadge();
+        document.getElementById('modal-bg').classList.remove('open');
+        this.reset();
+      }
+    });
+  }
+
+  /* ── Export CSV ── */
+  window.exportCSV = function() {
+    const headers = ['Fecha reserva','Nombre','Teléfono','Habitación','Check-in','Check-out','Noches','Huéspedes','Nota','Estado'];
+    const rows = allReservas.map(r => [
+      r.timestamp && r.timestamp.toDate ? r.timestamp.toDate().toLocaleDateString('es-AR') : '—',
+      r.nombre, r.telefono, r.habitacion_tipo || '—',
+      fmtDate(r.checkin), fmtDate(r.checkout),
+      r.noches || '—', r.huespedes || '—',
+      (r.nota || '').replace(/,/g,' '), r.estado
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'reservas-hotel-balo.csv';
+    a.click();
+  };
+</script>
+</body>
+</html>

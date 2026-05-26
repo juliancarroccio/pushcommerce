@@ -1,0 +1,49 @@
+{
+  "negocio": {
+    "nombre": "Hotel Balo",
+    "whatsapp": "5492244454027",
+    "telefono": "02244 45-4027",
+    "direccion": "Ruta 3 Km 186.900, Las Flores, Buenos Aires B7200",
+    "facebook": "hotel.balo",
+    "analytics_id": ""
+  },
+  "habitaciones": [
+    {
+      "id": 1,
+      "tipo": "Simple",
+      "emoji": "🛏️",
+      "descripcion": "Habitación cómoda y luminosa, ideal para viajeros solos. Cuenta con cama individual, baño privado, TV por cable, WiFi gratuito y vista al jardín.",
+      "capacidad": 1
+    },
+    {
+      "id": 2,
+      "tipo": "Doble",
+      "emoji": "🛏️🛏️",
+      "descripcion": "Amplia habitación con dos camas individuales o cama matrimonial. Perfecta para parejas o viajeros que comparten. Baño privado, TV por cable y WiFi.",
+      "capacidad": 2
+    },
+    {
+      "id": 3,
+      "tipo": "Doble Superior",
+      "emoji": "✨",
+      "descripcion": "Nuestra habitación más completa. Cama matrimonial, zona de estar, baño privado con amenities, TV por cable y WiFi. Ideal para estadías más largas o hasta 3 personas.",
+      "capacidad": 3
+    }
+  ],
+  "servicios": [
+    { "icono": "☕", "nombre": "Desayuno buffet", "detalle": "7:00 a 10:00 hs — medialunas, tostadas, jugos, frutas y café" },
+    { "icono": "📶", "nombre": "WiFi gratuito", "detalle": "Conexión de alta velocidad en todas las habitaciones y espacios comunes" },
+    { "icono": "📺", "nombre": "TV por cable", "detalle": "Canales nacionales e internacionales en todas las habitaciones" },
+    { "icono": "🚗", "nombre": "Estacionamiento", "detalle": "Estacionamiento privado gratuito dentro del predio del hotel" },
+    { "icono": "🔥", "nombre": "Salón con chimenea", "detalle": "Salón compartido con chimenea y TV para momentos de descanso" },
+    { "icono": "🕐", "nombre": "Recepción 24 hs", "detalle": "Atención permanente al huésped durante todo el día y la noche" },
+    { "icono": "🍽️", "nombre": "Servicio a la habitación", "detalle": "Pedidos y atención directamente en tu habitación" },
+    { "icono": "🗺️", "nombre": "Organización de excursiones", "detalle": "Te ayudamos a conocer Las Flores y la región con paseos organizados" }
+  ],
+  "horarios": {
+    "check_in": "14:00",
+    "check_out": "11:00",
+    "desayuno_desde": "07:00",
+    "desayuno_hasta": "10:00"
+  }
+}

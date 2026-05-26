@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hotel Balo — Las Flores, Buenos Aires</title>
+  <meta name="description" content="El mejor hotel para alojarse en Las Flores. 34 habitaciones, desayuno buffet, WiFi gratuito, estacionamiento gratis. Ruta 3 Km 186.900." />
+  <meta name="theme-color" content="#2580C8" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --navy:       #15202E;
+      --sky:        #2580C8;
+      --sky-lt:     #3A94DC;
+      --terra:      #C4804A;
+      --cream:      #F5F2EE;
+      --warm-white: #FDFAF6;
+      --text:       #2A3540;
+      --text-mid:   #5E7080;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; color: var(--text); background: var(--warm-white); margin: 0; }
+    h1, h2, h3 { font-family: 'DM Serif Display', serif; }
+
+    /* Scroll progress */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: var(--sky); z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* Nav */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      padding: 1.25rem 2rem;
+      transition: background 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease;
+    }
+    #navbar.scrolled {
+      background: var(--navy);
+      padding: 0.75rem 2rem;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .nav-link {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: #fff; }
+
+    /* Hero */
+    #inicio {
+      height: 100vh; min-height: 600px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #hero-bg {
+      position: absolute; inset: 0;
+      background: url('./img/hotel-balo1.jpg') center center / cover no-repeat;
+    }
+    #hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(21,32,46,0.72) 0%,
+        rgba(21,32,46,0.55) 50%,
+        rgba(21,32,46,0.80) 100%
+      );
+    }
+    #hero-content { position: relative; z-index: 2; text-align: center; padding: 0 1.5rem; }
+
+    /* Dividers */
+    .divider-sky {
+      height: 4px;
+      background: linear-gradient(90deg, var(--terra), var(--sky), var(--terra));
+    }
+
+    /* Section headings */
+    .section-tag {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--sky);
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: var(--navy); line-height: 1.2;
+      margin: 0.5rem 0 1rem;
+    }
+    .section-title.light { color: #fff; }
+
+    /* Clip reveal images */
+    .clip-reveal {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    /* Habitacion cards */
+    .hab-card {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      border: 1px solid rgba(37,128,200,0.12);
+      box-shadow: 0 4px 24px rgba(21,32,46,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hab-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(21,32,46,0.12);
+    }
+
+    /* Servicio cards */
+    .serv-card {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.25rem;
+      background: #fff;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(37,128,200,0.1);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .serv-card:hover {
+      border-color: var(--sky);
+      box-shadow: 0 4px 16px rgba(37,128,200,0.1);
+    }
+
+    /* Gallery */
+    .gallery-item { overflow: hidden; border-radius: 0.5rem; aspect-ratio: 4/3; }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.06); }
+
+    /* WA float */
+    #wa-float {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 800;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      text-decoration: none;
+    }
+    #wa-float.visible { opacity: 1; pointer-events: auto; }
+    #wa-float:hover { transform: scale(1.1); }
+    #wa-float svg { width: 28px; height: 28px; fill: #fff; }
+
+    /* Back to top */
+    #back-to-top {
+      position: fixed; bottom: 5.5rem; right: 1.5rem; z-index: 800;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--navy); color: #fff;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      box-shadow: 0 2px 12px rgba(21,32,46,0.3);
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; }
+    #back-to-top:hover { transform: translateY(-2px); }
+
+    /* Maps iframe */
+    #maps-iframe { border: none; width: 100%; height: 320px; border-radius: 0.75rem; }
+
+    /* CTA buttons */
+    .btn-sky {
+      display: inline-block;
+      background: var(--sky); color: #fff;
+      padding: 0.875rem 2rem; border-radius: 0.5rem;
+      font-weight: 600; font-size: 1rem;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-sky:hover { background: var(--sky-lt); transform: translateY(-1px); }
+    .btn-terra {
+      display: inline-block;
+      background: var(--terra); color: #fff;
+      padding: 0.875rem 2rem; border-radius: 0.5rem;
+      font-weight: 600; font-size: 1rem;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-terra:hover { background: #d4905a; transform: translateY(-1px); }
+    .btn-outline {
+      display: inline-block;
+      background: transparent; color: #fff;
+      padding: 0.875rem 2rem; border-radius: 0.5rem;
+      font-weight: 600; font-size: 1rem;
+      text-decoration: none; cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.6);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+  </style>
+</head>
+<body>
+
+<!-- Scroll progress -->
+<div id="scroll-progress"></div>
+
+<!-- Nav -->
+<nav id="navbar">
+  <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;">
+    <a href="#inicio" style="font-family:'DM Serif Display',serif; font-size:1.4rem; color:#fff; text-decoration:none; letter-spacing:-0.01em;">
+      Hotel Balo
+    </a>
+    <div style="display:flex; align-items:center; gap:2rem;" id="nav-links">
+      <a href="#habitaciones" class="nav-link" style="display:none;" id="nl-hab">Habitaciones</a>
+      <a href="#servicios" class="nav-link" style="display:none;" id="nl-serv">Servicios</a>
+      <a href="#galeria" class="nav-link" style="display:none;" id="nl-gal">Galería</a>
+      <a href="#contacto" class="nav-link" style="display:none;" id="nl-cont">Contacto</a>
+      <a href="./reservas.html" class="btn-terra" style="font-size:0.875rem; padding:0.5rem 1.25rem; border-radius:0.375rem;">Reservar</a>
+    </div>
+    <!-- Mobile menu button -->
+    <button id="mob-menu-btn" style="display:none; background:none; border:none; cursor:pointer; padding:4px;" aria-label="Menú">
+      <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <!-- Mobile dropdown -->
+  <div id="mob-menu" style="display:none; background:var(--navy); padding:1rem 2rem; border-top:1px solid rgba(255,255,255,0.1); margin-top:0.5rem;">
+    <a href="#habitaciones" class="nav-link" style="display:block; padding:0.5rem 0;">Habitaciones</a>
+    <a href="#servicios" class="nav-link" style="display:block; padding:0.5rem 0;">Servicios</a>
+    <a href="#galeria" class="nav-link" style="display:block; padding:0.5rem 0;">Galería</a>
+    <a href="#contacto" class="nav-link" style="display:block; padding:0.5rem 0;">Contacto</a>
+    <a href="./reservas.html" class="btn-terra" style="display:block; text-align:center; margin-top:0.75rem;">Reservar</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="inicio">
+  <div id="hero-bg"></div>
+  <div id="hero-overlay"></div>
+  <div id="hero-content">
+    <p id="hero-tag" style="font-family:'Outfit',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--terra); margin:0 0 0.75rem; opacity:0;">
+      Las Flores · Buenos Aires
+    </p>
+    <h1 id="hero-title" style="font-family:'DM Serif Display',serif; font-size:clamp(3rem,8vw,5.5rem); color:#fff; margin:0 0 1rem; line-height:1.05; opacity:0;">
+      Hotel Balo
+    </h1>
+    <p id="hero-sub" style="font-size:clamp(1.1rem,2.5vw,1.4rem); color:rgba(255,255,255,0.88); margin:0 0 2.5rem; max-width:540px; font-weight:300; opacity:0;">
+      El mejor hotel para alojarse en Las Flores.<br>34 habitaciones, desayuno buffet incluido.
+    </p>
+    <div id="hero-ctas" style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; opacity:0;">
+      <a href="./reservas.html" class="btn-sky">Consultar disponibilidad →</a>
+      <a href="#nosotros" class="btn-outline">Conocer el hotel</a>
+    </div>
+    <!-- Scroll indicator -->
+    <div id="hero-scroll" style="position:absolute; bottom:2.5rem; left:50%; transform:translateX(-50%); opacity:0;">
+      <svg width="24" height="36" viewBox="0 0 24 36" fill="none">
+        <rect x="1" y="1" width="22" height="34" rx="11" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <circle id="scroll-dot" cx="12" cy="9" r="3" fill="rgba(255,255,255,0.7)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="divider-sky"></div>
+
+<!-- Nosotros -->
+<section id="nosotros" style="background:var(--cream); padding:6rem 2rem;">
+  <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center;">
+    <div id="nosotros-text">
+      <p class="section-tag">Sobre nosotros</p>
+      <h2 class="section-title">Un lugar donde sentirse en casa</h2>
+      <p style="color:var(--text-mid); line-height:1.8; margin-bottom:1.25rem;">
+        Hotel Balo nació para dar respuesta a quienes visitan Las Flores buscando confort, tranquilidad y
+        atención personalizada. Ubicados sobre la histórica Ruta 3, somos la puerta de entrada
+        a una ciudad con identidad propia en el corazón de la provincia de Buenos Aires.
+      </p>
+      <p style="color:var(--text-mid); line-height:1.8; margin-bottom:1.25rem;">
+        Contamos con <strong style="color:var(--navy);">34 habitaciones</strong> pensadas para distintos tipos de viajeros:
+        desde el ejecutivo en tránsito hasta las familias que quieren explorar la región con calma.
+        Cada espacio fue diseñado para que el descanso sea el protagonista.
+      </p>
+      <p style="color:var(--text-mid); line-height:1.8; margin-bottom:2rem;">
+        Nuestro desayuno buffet es el momento favorito de los huéspedes: abundante, casero y servido
+        en un salón luminoso con chimenea. Una manera perfecta de comenzar el día en Las Flores.
+      </p>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+        <div style="text-align:center; padding:1rem 1.5rem; background:#fff; border-radius:0.75rem; border:1px solid rgba(37,128,200,0.15);">
+          <div style="font-family:'DM Serif Display',serif; font-size:2rem; color:var(--sky);">34</div>
+          <div style="font-size:0.8rem; color:var(--text-mid); font-weight:500;">habitaciones</div>
+        </div>
+        <div style="text-align:center; padding:1rem 1.5rem; background:#fff; border-radius:0.75rem; border:1px solid rgba(37,128,200,0.15);">
+          <div style="font-family:'DM Serif Display',serif; font-size:2rem; color:var(--sky);">24 hs</div>
+          <div style="font-size:0.8rem; color:var(--text-mid); font-weight:500;">recepción</div>
+        </div>
+        <div style="text-align:center; padding:1rem 1.5rem; background:#fff; border-radius:0.75rem; border:1px solid rgba(37,128,200,0.15);">
+          <div style="font-family:'DM Serif Display',serif; font-size:2rem; color:var(--terra);">Ruta 3</div>
+          <div style="font-size:0.8rem; color:var(--text-mid); font-weight:500;">Km 186.900</div>
+        </div>
+      </div>
+    </div>
+    <div id="nosotros-img" class="clip-reveal">
+      <img src="./img/hotel-balo2.jpg" alt="Salón comedor del Hotel Balo"
+           style="width:100%; height:420px; object-fit:cover; border-radius:1rem; box-shadow:0 20px 60px rgba(21,32,46,0.15);" />
+    </div>
+  </div>
+</section>
+
+<!-- Habitaciones -->
+<section id="habitaciones" style="background:var(--warm-white); padding:6rem 2rem;">
+  <div style="max-width:1100px; margin:0 auto;">
+    <div style="text-align:center; margin-bottom:3.5rem;">
+      <p class="section-tag">Alojamiento</p>
+      <h2 class="section-title">Nuestras habitaciones</h2>
+      <p style="color:var(--text-mid); max-width:560px; margin:0 auto; line-height:1.7;">
+        Tres tipos de habitación para adaptarse a cada necesidad. Todas con baño privado, TV por cable y WiFi gratuito.
+      </p>
+    </div>
+    <div id="hab-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:1.5rem;"></div>
+  </div>
+</section>
+
+<!-- Desayuno banner -->
+<section id="desayuno" style="position:relative; overflow:hidden; min-height:380px; display:flex; align-items:center; justify-content:center;">
+  <div style="position:absolute; inset:0; background:url('./img/hotel-balo4.jpg') center center/cover no-repeat;"></div>
+  <div style="position:absolute; inset:0; background:linear-gradient(rgba(21,32,46,0.75), rgba(21,32,46,0.65));"></div>
+  <div style="position:relative; z-index:2; text-align:center; padding:4rem 2rem;" id="desayuno-content">
+    <span style="font-size:3rem; display:block; margin-bottom:1rem;">☕</span>
+    <h2 class="section-title light">Desayuno buffet todos los días</h2>
+    <p style="color:rgba(255,255,255,0.85); font-size:1.1rem; max-width:520px; margin:0 auto 1.5rem; line-height:1.7;">
+      Medialunas, tostadas, jugos naturales, frutas frescas y café de calidad.
+      De <strong style="color:var(--terra);">7:00 a 10:00 hs</strong> en nuestro salón con chimenea.
+    </p>
+    <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; letter-spacing:0.05em; text-transform:uppercase; font-weight:500;">
+      Incluido en todas las habitaciones
+    </p>
+  </div>
+</section>
+
+<!-- Servicios -->
+<section id="servicios" style="background:var(--cream); padding:6rem 2rem;">
+  <div style="max-width:1100px; margin:0 auto;">
+    <div style="text-align:center; margin-bottom:3.5rem;">
+      <p class="section-tag">Lo que incluye</p>
+      <h2 class="section-title">Servicios del hotel</h2>
+    </div>
+    <div id="serv-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1rem;"></div>
+  </div>
+</section>
+
+<!-- Reserva CTA -->
+<section id="reservas-cta" style="background:var(--navy); padding:6rem 2rem; text-align:center;">
+  <div style="max-width:640px; margin:0 auto;" id="cta-content">
+    <p class="section-tag" style="color:var(--terra);">Reservas</p>
+    <h2 class="section-title light" style="margin-bottom:1rem;">¿Listo para reservar?</h2>
+    <p style="color:rgba(255,255,255,0.75); line-height:1.8; margin-bottom:2.5rem; font-size:1.05rem;">
+      Consultá disponibilidad y te respondemos por WhatsApp en minutos.
+      Check-in desde las 14:00 hs · Check-out hasta las 11:00 hs.
+    </p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <a href="./reservas.html" class="btn-sky">Ver disponibilidad</a>
+      <a href="tel:02244454027" class="btn-outline">Llamanos</a>
+    </div>
+  </div>
+</section>
+
+<!-- Galería -->
+<section id="galeria" style="background:var(--warm-white); padding:6rem 2rem;">
+  <div style="max-width:1100px; margin:0 auto;">
+    <div style="text-align:center; margin-bottom:3rem;">
+      <p class="section-tag">Fotos</p>
+      <h2 class="section-title">Galería</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1rem;">
+      <div class="gallery-item">
+        <img src="./img/hotel-balo1.jpg" alt="Exterior del Hotel Balo" />
+      </div>
+      <div class="gallery-item">
+        <img src="./img/hotel-balo2.jpg" alt="Salón comedor del Hotel Balo" />
+      </div>
+      <div class="gallery-item">
+        <img src="./img/hotel-balo3.jpg" alt="Ambiente interior del Hotel Balo" />
+      </div>
+      <div class="gallery-item">
+        <img src="./img/hotel-balo4.jpg" alt="Desayuno buffet en Hotel Balo" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contacto -->
+<section id="contacto" style="background:var(--cream); padding:6rem 2rem;">
+  <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:start;">
+    <div id="contacto-info">
+      <p class="section-tag">Contacto</p>
+      <h2 class="section-title">Cómo encontrarnos</h2>
+      <div style="display:flex; flex-direction:column; gap:1.25rem; margin-top:1.5rem;">
+        <div style="display:flex; gap:0.875rem; align-items:flex-start;">
+          <span style="font-size:1.25rem; margin-top:2px;">📍</span>
+          <div>
+            <p style="font-weight:600; margin:0 0 0.25rem; color:var(--navy);">Dirección</p>
+            <p style="color:var(--text-mid); margin:0; line-height:1.6;">Ruta 3 Km 186.900<br>Las Flores, Buenos Aires B7200</p>
+          </div>
+        </div>
+        <div style="display:flex; gap:0.875rem; align-items:flex-start;">
+          <span style="font-size:1.25rem; margin-top:2px;">📞</span>
+          <div>
+            <p style="font-weight:600; margin:0 0 0.25rem; color:var(--navy);">Teléfono</p>
+            <a href="tel:02244454027" style="color:var(--sky); text-decoration:none; font-size:1rem;">02244 45-4027</a>
+          </div>
+        </div>
+        <div style="display:flex; gap:0.875rem; align-items:flex-start;">
+          <span style="font-size:1.25rem; margin-top:2px;">🕐</span>
+          <div>
+            <p style="font-weight:600; margin:0 0 0.25rem; color:var(--navy);">Horarios</p>
+            <p style="color:var(--text-mid); margin:0; line-height:1.7;">
+              Check-in: <strong style="color:var(--text);">14:00 hs</strong><br>
+              Check-out: <strong style="color:var(--text);">11:00 hs</strong><br>
+              Desayuno: <strong style="color:var(--text);">7:00 a 10:00 hs</strong><br>
+              Recepción: <strong style="color:var(--text);">24 horas</strong>
+            </p>
+          </div>
+        </div>
+        <div style="display:flex; gap:0.875rem; align-items:flex-start;">
+          <span style="font-size:1.25rem; margin-top:2px;">💬</span>
+          <div>
+            <p style="font-weight:600; margin:0 0 0.5rem; color:var(--navy);">WhatsApp</p>
+            <a href="https://wa.me/5492244454027?text=Hola!%20Quiero%20consultar%20disponibilidad%20en%20el%20Hotel%20Balo."
+               target="_blank" rel="noopener"
+               style="display:inline-flex; align-items:center; gap:0.5rem; background:#25D366; color:#fff; padding:0.625rem 1.25rem; border-radius:0.5rem; text-decoration:none; font-weight:600; font-size:0.9rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Consultar por WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="contacto-map">
+      <iframe id="maps-iframe"
+        src="https://maps.google.com/maps?q=Hotel+Balo+Las+Flores+Buenos+Aires&output=embed"
+        title="Ubicación Hotel Balo"
+        allowfullscreen
+        loading="lazy">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="background:var(--navy); color:rgba(255,255,255,0.7); padding:3rem 2rem;">
+  <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr 1fr; gap:2rem; align-items:start;">
+    <div>
+      <h3 style="font-family:'DM Serif Display',serif; font-size:1.5rem; color:#fff; margin:0 0 0.75rem;">Hotel Balo</h3>
+      <p style="font-size:0.875rem; line-height:1.6; margin:0 0 1rem;">El mejor hotel para alojarse en Las Flores.</p>
+      <a href="https://www.facebook.com/hotel.balo" target="_blank" rel="noopener"
+         style="color:rgba(255,255,255,0.6); font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        @hotel.balo
+      </a>
+    </div>
+    <div>
+      <h4 style="color:#fff; font-weight:600; margin:0 0 0.75rem; font-size:0.9rem; letter-spacing:0.05em; text-transform:uppercase;">Información</h4>
+      <p style="font-size:0.875rem; line-height:1.8; margin:0;">
+        Ruta 3 Km 186.900<br>
+        Las Flores, Buenos Aires<br>
+        B7200, Argentina
+      </p>
+      <p style="font-size:0.875rem; margin:0.75rem 0 0;">
+        <a href="tel:02244454027" style="color:rgba(255,255,255,0.7); text-decoration:none;">02244 45-4027</a>
+      </p>
+    </div>
+    <div>
+      <h4 style="color:#fff; font-weight:600; margin:0 0 0.75rem; font-size:0.9rem; letter-spacing:0.05em; text-transform:uppercase;">Horarios</h4>
+      <p style="font-size:0.875rem; line-height:1.8; margin:0;">
+        Check-in: 14:00 hs<br>
+        Check-out: 11:00 hs<br>
+        Desayuno: 7:00–10:00 hs<br>
+        Recepción: 24 horas
+      </p>
+    </div>
+  </div>
+  <div style="max-width:1100px; margin:2rem auto 0; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+    <p style="font-size:0.8rem; margin:0; color:rgba(255,255,255,0.4);">© 2026 Hotel Balo. Todos los derechos reservados.</p>
+    <a href="https://juliancarroccio.github.io/pushcommerce" target="_blank" rel="noopener"
+       style="font-size:0.8rem; color:rgba(255,255,255,0.4); text-decoration:none;">
+      Desarrollado por <strong style="color:rgba(255,255,255,0.6);">PushCommerce</strong>
+    </a>
+  </div>
+</footer>
+
+<!-- WhatsApp flotante -->
+<a id="wa-float" href="https://wa.me/5492244454027?text=Hola!%20Quiero%20consultar%20disponibilidad%20en%20el%20Hotel%20Balo." target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- Volver arriba -->
+<button id="back-to-top" aria-label="Volver al inicio">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <path d="M18 15l-6-6-6 6"/>
+  </svg>
+</button>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ── Responsive nav ── */
+  function applyNavResponsive() {
+    const w = window.innerWidth;
+    const links = ['nl-hab','nl-serv','nl-gal','nl-cont'];
+    if (w >= 768) {
+      links.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'inline'; });
+      document.getElementById('mob-menu-btn').style.display = 'none';
+      document.getElementById('mob-menu').style.display = 'none';
+    } else {
+      links.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+      document.getElementById('mob-menu-btn').style.display = 'block';
+    }
+  }
+  applyNavResponsive();
+  window.addEventListener('resize', applyNavResponsive);
+  document.getElementById('mob-menu-btn').addEventListener('click', function() {
+    const m = document.getElementById('mob-menu');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  });
+  document.querySelectorAll('#mob-menu a').forEach(a => {
+    a.addEventListener('click', () => { document.getElementById('mob-menu').style.display = 'none'; });
+  });
+
+  /* ── Nav scroll ── */
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  }, { passive: true });
+
+  /* ── Scroll progress ── */
+  const bar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+
+  /* ── WA float & back-to-top ── */
+  const waFloat = document.getElementById('wa-float');
+  const btt = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) { waFloat.classList.add('visible'); btt.classList.add('visible'); }
+    else { waFloat.classList.remove('visible'); btt.classList.remove('visible'); }
+  }, { passive: true });
+  btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  /* ── Hero GSAP ── */
+  const heroTl = gsap.timeline({ delay: 0.2 });
+  heroTl
+    .to('#hero-tag',    { opacity:1, y:0, duration:0.7, ease:'power2.out', from:{ y:20 } })
+    .to('#hero-title',  { opacity:1, y:0, duration:0.8, ease:'power2.out', from:{ y:30 } }, '-=0.4')
+    .to('#hero-sub',    { opacity:1, y:0, duration:0.7, ease:'power2.out', from:{ y:20 } }, '-=0.4')
+    .to('#hero-ctas',   { opacity:1, y:0, duration:0.6, ease:'power2.out', from:{ y:20 } }, '-=0.3')
+    .to('#hero-scroll', { opacity:1, duration:0.5 }, '-=0.2');
+
+  /* Animate scroll dot */
+  gsap.to('#scroll-dot', { cy: 22, duration: 1.2, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 1.5 });
+
+  /* ── Nosotros clip reveal ── */
+  gsap.to('#nosotros-img', {
+    clipPath: 'inset(0 0% 0 0)',
+    duration: 1.2,
+    ease: 'power3.inOut',
+    scrollTrigger: { trigger: '#nosotros-img', start: 'top 75%' }
+  });
+  gsap.from('#nosotros-text', {
+    x: -40, opacity: 0, duration: 0.9, ease: 'power2.out',
+    scrollTrigger: { trigger: '#nosotros-text', start: 'top 78%' }
+  });
+
+  /* ── Desayuno ── */
+  gsap.from('#desayuno-content', {
+    y: 30, opacity: 0, duration: 0.8, ease: 'power2.out',
+    scrollTrigger: { trigger: '#desayuno', start: 'top 70%' }
+  });
+
+  /* ── Reservas CTA ── */
+  gsap.from('#cta-content', {
+    y: 30, opacity: 0, duration: 0.8, ease: 'power2.out',
+    scrollTrigger: { trigger: '#reservas-cta', start: 'top 75%' }
+  });
+
+  /* ── Gallery ── */
+  gsap.from('.gallery-item', {
+    y: 40, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out',
+    scrollTrigger: { trigger: '#galeria', start: 'top 75%' }
+  });
+
+  /* ── Contacto ── */
+  gsap.from('#contacto-info', {
+    x: -30, opacity: 0, duration: 0.8, ease: 'power2.out',
+    scrollTrigger: { trigger: '#contacto', start: 'top 78%' }
+  });
+  gsap.from('#contacto-map', {
+    x: 30, opacity: 0, duration: 0.8, ease: 'power2.out',
+    scrollTrigger: { trigger: '#contacto', start: 'top 78%' }
+  });
+
+  /* ── Data loading ── */
+  const FALLBACK = {
+    negocio: { nombre: 'Hotel Balo', whatsapp: '5492244454027', telefono: '02244 45-4027', direccion: 'Ruta 3 Km 186.900, Las Flores, Buenos Aires B7200', facebook: 'hotel.balo', analytics_id: '' },
+    habitaciones: [
+      { id: 1, tipo: 'Simple', emoji: '🛏️', descripcion: 'Habitación cómoda y luminosa, ideal para viajeros solos. Cama individual, baño privado, TV por cable, WiFi gratuito y vista al jardín.', capacidad: 1 },
+      { id: 2, tipo: 'Doble', emoji: '🛏️🛏️', descripcion: 'Amplia habitación con dos camas individuales o cama matrimonial. Perfecta para parejas. Baño privado, TV por cable y WiFi.', capacidad: 2 },
+      { id: 3, tipo: 'Doble Superior', emoji: '✨', descripcion: 'Nuestra habitación más completa. Cama matrimonial, zona de estar, baño privado con amenities, TV y WiFi. Ideal para hasta 3 personas.', capacidad: 3 }
+    ],
+    servicios: [
+      { icono: '☕', nombre: 'Desayuno buffet', detalle: '7:00 a 10:00 hs — medialunas, tostadas, jugos, frutas y café' },
+      { icono: '📶', nombre: 'WiFi gratuito', detalle: 'Conexión de alta velocidad en todas las habitaciones y espacios comunes' },
+      { icono: '📺', nombre: 'TV por cable', detalle: 'Canales nacionales e internacionales en todas las habitaciones' },
+      { icono: '🚗', nombre: 'Estacionamiento', detalle: 'Estacionamiento privado gratuito dentro del predio del hotel' },
+      { icono: '🔥', nombre: 'Salón con chimenea', detalle: 'Salón compartido con chimenea y TV para momentos de descanso' },
+      { icono: '🕐', nombre: 'Recepción 24 hs', detalle: 'Atención permanente al huésped durante todo el día y la noche' },
+      { icono: '🍽️', nombre: 'Servicio a la habitación', detalle: 'Pedidos y atención directamente en tu habitación' },
+      { icono: '🗺️', nombre: 'Organización de excursiones', detalle: 'Te ayudamos a conocer Las Flores y la región con paseos organizados' }
+    ],
+    horarios: { check_in: '14:00', check_out: '11:00', desayuno_desde: '07:00', desayuno_hasta: '10:00' }
+  };
+
+  function buildHabitaciones(data) {
+    const grid = document.getElementById('hab-grid');
+    if (!grid || !data.habitaciones) return;
+    grid.innerHTML = data.habitaciones.map(h => `
+      <div class="hab-card">
+        <div style="font-size:2.5rem; margin-bottom:1rem;">${h.emoji}</div>
+        <h3 style="font-family:'DM Serif Display',serif; font-size:1.5rem; color:var(--navy); margin:0 0 0.5rem;">${h.tipo}</h3>
+        <div style="display:inline-flex; align-items:center; gap:0.35rem; background:rgba(37,128,200,0.08); color:var(--sky); font-size:0.8rem; font-weight:600; padding:0.25rem 0.75rem; border-radius:2rem; margin-bottom:1rem;">
+          ${Array(h.capacidad).fill('👤').join('')} hasta ${h.capacidad} persona${h.capacidad > 1 ? 's' : ''}
+        </div>
+        <p style="color:var(--text-mid); line-height:1.7; font-size:0.95rem; margin:0 0 1.5rem;">${h.descripcion}</p>
+        <a href="./reservas.html?hab=${h.id}" class="btn-sky" style="font-size:0.875rem; padding:0.625rem 1.25rem; width:100%; text-align:center; display:block; box-sizing:border-box;">
+          Consultar disponibilidad
+        </a>
+      </div>
+    `).join('');
+
+    gsap.from('.hab-card', {
+      y: 40, opacity: 0, duration: 0.7, stagger: 0.15, ease: 'power2.out',
+      scrollTrigger: { trigger: '#hab-grid', start: 'top 78%' }
+    });
+  }
+
+  function buildServicios(data) {
+    const grid = document.getElementById('serv-grid');
+    if (!grid || !data.servicios) return;
+    grid.innerHTML = data.servicios.map(s => `
+      <div class="serv-card">
+        <span style="font-size:1.75rem; flex-shrink:0;">${s.icono}</span>
+        <div>
+          <p style="font-weight:600; color:var(--navy); margin:0 0 0.25rem;">${s.nombre}</p>
+          <p style="font-size:0.875rem; color:var(--text-mid); margin:0; line-height:1.5;">${s.detalle}</p>
+        </div>
+      </div>
+    `).join('');
+
+    gsap.from('.serv-card', {
+      y: 30, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'power2.out',
+      scrollTrigger: { trigger: '#serv-grid', start: 'top 80%' }
+    });
+  }
+
+  function initPage(data) {
+    buildHabitaciones(data);
+    buildServicios(data);
+    if (data.negocio && data.negocio.analytics_id) {
+      initGA4(data.negocio.analytics_id);
+    }
+  }
+
+  function initGA4(id) {
+    const s = document.createElement('script');
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+    s.async = true;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', id);
+  }
+
+  fetch('./hotel.json')
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .catch(() => FALLBACK)
+    .then(initPage);
+
+  /* ── Smooth scroll for anchor links ── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  /* ── Service Worker ── */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+
+  /* ── Responsive grid fixes ── */
+  function applyResponsiveGrids() {
+    const w = window.innerWidth;
+    const nosotrosGrid = document.querySelector('#nosotros > div');
+    const contactoGrid = document.querySelector('#contacto > div');
+    if (nosotrosGrid) nosotrosGrid.style.gridTemplateColumns = w < 768 ? '1fr' : '1fr 1fr';
+    if (contactoGrid) contactoGrid.style.gridTemplateColumns = w < 768 ? '1fr' : '1fr 1fr';
+    const footerGrid = document.querySelector('footer > div:first-child');
+    if (footerGrid) footerGrid.style.gridTemplateColumns = w < 640 ? '1fr' : '1fr 1fr 1fr';
+  }
+  applyResponsiveGrids();
+  window.addEventListener('resize', applyResponsiveGrids);
+</script>
+</body>
+</html>

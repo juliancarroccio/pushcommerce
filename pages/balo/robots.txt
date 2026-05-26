@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /recepcion.html
+
+Sitemap: https://juliancarroccio.github.io/pushcommerce/pages/balo/sitemap.xml

@@ -1,0 +1,19 @@
+{
+  "name": "Hotel Balo",
+  "short_name": "Balo",
+  "description": "El mejor hotel para alojarse en Las Flores, Buenos Aires.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#15202E",
+  "theme_color": "#2580C8",
+  "icons": [
+    {
+      "src": "./img/hotel-balo1.jpg",
+      "sizes": "any",
+      "type": "image/jpeg"
+    }
+  ],
+  "categories": ["travel", "business"],
+  "lang": "es"
+}

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservas — Hotel Balo</title>
+  <meta name="description" content="Consultá disponibilidad en Hotel Balo, Las Flores. Te respondemos por WhatsApp en minutos." />
+  <meta name="theme-color" content="#2580C8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase compat SDK v10.12.2 -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --navy:   #15202E;
+      --sky:    #2580C8;
+      --sky-lt: #3A94DC;
+      --terra:  #C4804A;
+      --cream:  #F5F2EE;
+      --warm-white: #FDFAF6;
+      --text:   #2A3540;
+      --text-mid: #5E7080;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--cream); color: var(--text); margin: 0; min-height: 100vh; }
+
+    /* Header */
+    .res-header {
+      background: var(--navy);
+      padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* Step labels */
+    .step-label {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-weight: 600; color: var(--navy); margin-bottom: 1.25rem; font-size: 1.05rem;
+    }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--sky); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* Hab radio cards */
+    .hab-radio { display: none; }
+    .hab-card-label {
+      display: block; cursor: pointer;
+      border: 2px solid #e5e0d8;
+      border-radius: 0.875rem;
+      padding: 1.5rem;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      user-select: none;
+    }
+    .hab-card-label:hover {
+      border-color: var(--sky-lt);
+      box-shadow: 0 4px 16px rgba(37,128,200,0.1);
+    }
+    .hab-radio:checked + .hab-card-label {
+      border-color: var(--sky);
+      background: rgba(37,128,200,0.04);
+      box-shadow: 0 0 0 3px rgba(37,128,200,0.15);
+      transform: translateY(-2px);
+    }
+
+    /* Stepper */
+    .stepper-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2px solid var(--sky); background: #fff; cursor: pointer;
+      color: var(--sky); font-size: 1.2rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .stepper-btn:hover { background: var(--sky); color: #fff; }
+    .stepper-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Form inputs */
+    .form-input {
+      width: 100%;
+      border: 1.5px solid #d4cfc7;
+      border-radius: 0.625rem;
+      padding: 0.75rem 1rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      color: var(--text);
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--sky);
+      box-shadow: 0 0 0 3px rgba(37,128,200,0.12);
+    }
+    .form-input::placeholder { color: var(--text-mid); }
+    label.field-label {
+      display: block; font-weight: 600; font-size: 0.875rem;
+      color: var(--navy); margin-bottom: 0.4rem;
+    }
+
+    /* Submit */
+    .btn-submit {
+      width: 100%; padding: 1rem;
+      background: var(--sky); color: #fff;
+      border: none; border-radius: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.01em;
+      transition: background 0.2s, transform 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .btn-submit:hover { background: var(--sky-lt); transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      background: var(--navy); color: #fff;
+      padding: 0.875rem 1.75rem; border-radius: 2rem;
+      font-size: 0.95rem; font-weight: 500;
+      opacity: 0; transition: opacity 0.3s;
+      pointer-events: none; z-index: 9999;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
+    /* Nights badge */
+    #nights-display {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(37,128,200,0.1); color: var(--sky);
+      padding: 0.35rem 0.875rem; border-radius: 2rem;
+      font-size: 0.85rem; font-weight: 600;
+      margin-top: 0.5rem; opacity: 0; transition: opacity 0.2s;
+    }
+    #nights-display.visible { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="res-header">
+  <a href="./index.html" style="color:rgba(255,255,255,0.75); text-decoration:none; font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; transition:color 0.2s;"
+     onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.75)'">
+    ← Volver al inicio
+  </a>
+  <span style="font-family:'DM Serif Display',serif; font-size:1.35rem; color:#fff;">Hotel Balo</span>
+  <div style="width:80px;"></div><!-- spacer -->
+</header>
+
+<!-- Main -->
+<main style="max-width:640px; margin:0 auto; padding:2.5rem 1.5rem 4rem;">
+
+  <!-- Intro -->
+  <div style="text-align:center; margin-bottom:2.5rem;">
+    <h1 style="font-family:'DM Serif Display',serif; font-size:2.25rem; color:var(--navy); margin:0 0 0.75rem; line-height:1.2;">
+      Consultá disponibilidad
+    </h1>
+    <p style="color:var(--text-mid); font-size:1.05rem; margin:0; line-height:1.6;">
+      Completá el formulario y te respondemos por WhatsApp en minutos.
+    </p>
+  </div>
+
+  <form id="reserva-form" novalidate>
+
+    <!-- Card contenedor general -->
+    <div style="background:#fff; border-radius:1.25rem; box-shadow:0 4px 32px rgba(21,32,46,0.08); padding:2rem; display:flex; flex-direction:column; gap:2rem;">
+
+      <!-- Paso 1: Habitación -->
+      <div>
+        <div class="step-label">
+          <div class="step-num">1</div>
+          Elegí tu habitación
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.875rem;" id="hab-options">
+
+          <div>
+            <input type="radio" class="hab-radio" name="habitacion" id="hab1" value="1" data-tipo="Simple" data-capacidad="1">
+            <label class="hab-card-label" for="hab1">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+                <span style="font-size:1.75rem;">🛏️</span>
+                <div>
+                  <p style="font-weight:700; color:var(--navy); margin:0; font-size:1.05rem;">Simple</p>
+                  <p style="font-size:0.8rem; color:var(--sky); margin:0; font-weight:500;">👤 1 persona</p>
+                </div>
+              </div>
+              <p style="font-size:0.875rem; color:var(--text-mid); margin:0; line-height:1.5;">
+                Habitación cómoda e ideal para viajeros solos. Baño privado, TV cable, WiFi.
+              </p>
+            </label>
+          </div>
+
+          <div>
+            <input type="radio" class="hab-radio" name="habitacion" id="hab2" value="2" data-tipo="Doble" data-capacidad="2">
+            <label class="hab-card-label" for="hab2">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+                <span style="font-size:1.75rem;">🛏️🛏️</span>
+                <div>
+                  <p style="font-weight:700; color:var(--navy); margin:0; font-size:1.05rem;">Doble</p>
+                  <p style="font-size:0.8rem; color:var(--sky); margin:0; font-weight:500;">👤👤 hasta 2 personas</p>
+                </div>
+              </div>
+              <p style="font-size:0.875rem; color:var(--text-mid); margin:0; line-height:1.5;">
+                Dos camas individuales o matrimonial. Baño privado, TV cable, WiFi.
+              </p>
+            </label>
+          </div>
+
+          <div>
+            <input type="radio" class="hab-radio" name="habitacion" id="hab3" value="3" data-tipo="Doble Superior" data-capacidad="3">
+            <label class="hab-card-label" for="hab3">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+                <span style="font-size:1.75rem;">✨</span>
+                <div>
+                  <p style="font-weight:700; color:var(--navy); margin:0; font-size:1.05rem;">Doble Superior</p>
+                  <p style="font-size:0.8rem; color:var(--terra); margin:0; font-weight:500;">👤👤👤 hasta 3 personas</p>
+                </div>
+              </div>
+              <p style="font-size:0.875rem; color:var(--text-mid); margin:0; line-height:1.5;">
+                Matrimonial + zona de estar, amenities, baño privado. La más completa.
+              </p>
+            </label>
+          </div>
+
+        </div>
+        <p id="err-hab" style="color:#e53e3e; font-size:0.85rem; margin:0.5rem 0 0; display:none;">Por favor elegí un tipo de habitación.</p>
+      </div>
+
+      <!-- Paso 2: Fechas y huéspedes -->
+      <div>
+        <div class="step-label">
+          <div class="step-num">2</div>
+          Fechas y huéspedes
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:0.75rem;">
+          <div>
+            <label class="field-label" for="checkin">Check-in</label>
+            <input type="date" id="checkin" class="form-input" required />
+          </div>
+          <div>
+            <label class="field-label" for="checkout">Check-out</label>
+            <input type="date" id="checkout" class="form-input" required />
+          </div>
+        </div>
+        <div id="nights-display">🌙 <span id="nights-count">0</span> noche<span id="nights-plural">s</span></div>
+        <p id="err-fechas" style="color:#e53e3e; font-size:0.85rem; margin:0.5rem 0 0; display:none;">Las fechas no son válidas. Check-out debe ser posterior al check-in.</p>
+
+        <div style="margin-top:1.25rem;">
+          <label class="field-label">Huéspedes</label>
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <button type="button" class="stepper-btn" id="btn-minus" disabled>−</button>
+            <span id="huespedes-val" style="font-size:1.25rem; font-weight:700; color:var(--navy); min-width:24px; text-align:center;">1</span>
+            <button type="button" class="stepper-btn" id="btn-plus">+</button>
+            <span style="font-size:0.85rem; color:var(--text-mid);">persona(s)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 3: Datos -->
+      <div>
+        <div class="step-label">
+          <div class="step-num">3</div>
+          Tus datos
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          <div>
+            <label class="field-label" for="nombre">Nombre completo *</label>
+            <input type="text" id="nombre" class="form-input" placeholder="Juan García" required />
+            <p id="err-nombre" style="color:#e53e3e; font-size:0.85rem; margin:0.35rem 0 0; display:none;">Ingresá tu nombre completo.</p>
+          </div>
+          <div>
+            <label class="field-label" for="telefono">Teléfono / WhatsApp *</label>
+            <input type="tel" id="telefono" class="form-input" placeholder="221 123-4567" required />
+            <p id="err-telefono" style="color:#e53e3e; font-size:0.85rem; margin:0.35rem 0 0; display:none;">Ingresá tu teléfono o WhatsApp.</p>
+          </div>
+          <div>
+            <label class="field-label" for="nota">Nota (opcional)</label>
+            <textarea id="nota" class="form-input" rows="3" placeholder="Llegamos tarde, necesitamos cuna, etc." style="resize:vertical;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-submit">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Consultar disponibilidad por WhatsApp
+      </button>
+
+      <p style="font-size:0.8rem; color:var(--text-mid); text-align:center; margin:0;">
+        Tu consulta se enviará por WhatsApp al hotel. Te confirmamos disponibilidad y precio en minutos.
+      </p>
+
+    </div>
+  </form>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  // ⚠️ Reemplazar con config real del proyecto Firebase de Balo antes de pasar a producción
+  const FIREBASE_CONFIG = {
+    apiKey: "FIREBASE_API_KEY",
+    authDomain: "hotelbalo.firebaseapp.com",
+    projectId: "hotelbalo",
+    storageBucket: "hotelbalo.firebasestorage.app",
+    messagingSenderId: "FIREBASE_SENDER_ID",
+    appId: "FIREBASE_APP_ID"
+  };
+
+  let db = null;
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+  } catch(e) {
+    // Firebase no configurado aún — modo sin persistencia
+  }
+
+  /* ── Fecha mínima: hoy ── */
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('checkin').min = today;
+  document.getElementById('checkout').min = today;
+
+  /* Pre-seleccionar habitación si viene por querystring */
+  const urlParams = new URLSearchParams(window.location.search);
+  const habParam = urlParams.get('hab');
+  if (habParam) {
+    const radio = document.getElementById('hab' + habParam);
+    if (radio) radio.checked = true;
+  }
+
+  /* ── Cálculo de noches ── */
+  function calcNights() {
+    const ci = document.getElementById('checkin').value;
+    const co = document.getElementById('checkout').value;
+    const display = document.getElementById('nights-display');
+    if (!ci || !co) { display.classList.remove('visible'); return 0; }
+    const diff = (new Date(co) - new Date(ci)) / 86400000;
+    if (diff <= 0) { display.classList.remove('visible'); return 0; }
+    document.getElementById('nights-count').textContent = diff;
+    document.getElementById('nights-plural').textContent = diff === 1 ? '' : 's';
+    display.classList.add('visible');
+    return diff;
+  }
+
+  document.getElementById('checkin').addEventListener('change', function() {
+    const co = document.getElementById('checkout');
+    const minCO = new Date(this.value);
+    minCO.setDate(minCO.getDate() + 1);
+    co.min = minCO.toISOString().split('T')[0];
+    if (co.value && co.value <= this.value) co.value = '';
+    calcNights();
+  });
+  document.getElementById('checkout').addEventListener('change', calcNights);
+
+  /* ── Stepper huéspedes ── */
+  let huespedes = 1;
+  const btnMinus = document.getElementById('btn-minus');
+  const btnPlus  = document.getElementById('btn-plus');
+  const hVal     = document.getElementById('huespedes-val');
+
+  btnMinus.addEventListener('click', () => {
+    if (huespedes > 1) { huespedes--; hVal.textContent = huespedes; btnMinus.disabled = huespedes <= 1; btnPlus.disabled = false; }
+  });
+  btnPlus.addEventListener('click', () => {
+    if (huespedes < 4) { huespedes++; hVal.textContent = huespedes; btnPlus.disabled = huespedes >= 4; btnMinus.disabled = false; }
+  });
+
+  /* ── Toast ── */
+  function showToast(msg, duration = 3000) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+  }
+
+  /* ── Validación y submit ── */
+  function clearErrors() {
+    ['err-hab','err-fechas','err-nombre','err-telefono'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  document.getElementById('reserva-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    clearErrors();
+
+    let valid = true;
+
+    const habRadio = document.querySelector('input[name="habitacion"]:checked');
+    if (!habRadio) { document.getElementById('err-hab').style.display = 'block'; valid = false; }
+
+    const ci = document.getElementById('checkin').value;
+    const co = document.getElementById('checkout').value;
+    const noches = calcNights();
+    if (!ci || !co || noches <= 0) { document.getElementById('err-fechas').style.display = 'block'; valid = false; }
+
+    const nombre = document.getElementById('nombre').value.trim();
+    if (!nombre) { document.getElementById('err-nombre').style.display = 'block'; valid = false; }
+
+    const telefono = document.getElementById('telefono').value.trim();
+    if (!telefono) { document.getElementById('err-telefono').style.display = 'block'; valid = false; }
+
+    if (!valid) return;
+
+    const habTipo     = habRadio.dataset.tipo;
+    const habId       = parseInt(habRadio.value);
+    const nota        = document.getElementById('nota').value.trim();
+
+    /* ── Guardar en Firestore (no-blocking) ── */
+    if (db) {
+      db.collection('reservas').add({
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        estado: 'pendiente',
+        nombre,
+        telefono,
+        habitacion_id: habId,
+        habitacion_tipo: habTipo,
+        checkin: ci,
+        checkout: co,
+        noches,
+        huespedes,
+        nota: nota || '',
+        orden: Date.now()
+      }).catch(() => {
+        // falla silenciosa — el WA ya se abrió
+      });
+    }
+
+    /* ── Construir mensaje WhatsApp ── */
+    let lines = [
+      'Hola! Quiero consultar disponibilidad en el Hotel Balo.',
+      '',
+      '📋 Detalle de la reserva:',
+      `• Habitación: ${habTipo}`,
+      `• Check-in: ${formatDate(ci)}`,
+      `• Check-out: ${formatDate(co)}`,
+      `• Noches: ${noches}`,
+      `• Huéspedes: ${huespedes}`,
+      `• Nombre: ${nombre}`,
+      `• Teléfono: ${telefono}`,
+    ];
+    if (nota) lines.push(`• Nota: ${nota}`);
+    lines.push('', '¿Tienen disponibilidad? ¡Muchas gracias! 🙏');
+
+    const msg = lines.join('\n');
+    const waUrl = 'https://wa.me/5492244454027?text=' + encodeURIComponent(msg);
+    window.open(waUrl, '_blank');
+
+    showToast('✓ Abriendo WhatsApp...', 3500);
+  });
+</script>
+</body>
+</html>

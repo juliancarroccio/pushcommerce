@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR — Hotel Balo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --navy:  #15202E;
+      --sky:   #2580C8;
+      --terra: #C4804A;
+      --cream: #F5F2EE;
+      --warm-white: #FDFAF6;
+      --text:  #2A3540;
+      --text-mid: #5E7080;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      margin: 0;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 48px rgba(21,32,46,0.12);
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .logo-area {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+      font-size: 2rem;
+    }
+
+    .hotel-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--navy);
+      margin: 0 0 0.35rem;
+      line-height: 1.1;
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      margin: 0 0 0.25rem;
+    }
+
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, var(--terra), var(--sky), var(--terra));
+      border-radius: 1px;
+      margin: 1.5rem auto;
+      width: 80%;
+    }
+
+    #qr-box {
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    #qr-box canvas, #qr-box img { border-radius: 0.75rem; }
+
+    .scan-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin: 0 0 0.5rem;
+    }
+
+    .url-text {
+      font-size: 0.75rem;
+      color: var(--text-mid);
+      word-break: break-all;
+      margin: 0 0 1.5rem;
+      font-family: monospace;
+    }
+
+    .address {
+      font-size: 0.875rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .powered {
+      font-size: 0.75rem;
+      color: var(--text-mid);
+      margin: 1.5rem 0 0;
+      opacity: 0.6;
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .card { box-shadow: none; border: 1px solid #eee; border-radius: 0.5rem; }
+      .powered { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- Logo -->
+  <div class="logo-area">🏨</div>
+
+  <!-- Nombre -->
+  <h1 class="hotel-name">Hotel Balo</h1>
+  <p class="tagline">El mejor hotel para alojarse en Las Flores</p>
+  <p style="font-size:0.8rem; color:var(--text-mid); margin:0.2rem 0 0; font-weight:500;">Las Flores · Buenos Aires</p>
+
+  <!-- Divider -->
+  <div class="divider"></div>
+
+  <!-- QR -->
+  <div id="qr-box"></div>
+
+  <!-- Texto -->
+  <p class="scan-text">Consultá disponibilidad</p>
+  <p style="font-size:0.875rem; color:var(--text-mid); margin:0 0 0.75rem;">Escaneá el código para enviar<br>tu consulta por WhatsApp</p>
+  <p class="url-text">juliancarroccio.github.io/pushcommerce/pages/balo/reservas.html</p>
+
+  <!-- Divider -->
+  <div class="divider"></div>
+
+  <!-- Datos -->
+  <p class="address">
+    📍 Ruta 3 Km 186.900, Las Flores B7200<br>
+    📞 02244 45-4027<br>
+    🕐 Check-in: 14:00 hs · Check-out: 11:00 hs<br>
+    ☕ Desayuno buffet: 7:00–10:00 hs
+  </p>
+
+  <!-- Powered -->
+  <p class="powered">Desarrollado por PushCommerce · Julian Carroccio</p>
+</div>
+
+<script>
+  const url = 'https://juliancarroccio.github.io/pushcommerce/pages/balo/reservas.html';
+  new QRCode(document.getElementById('qr-box'), {
+    text: url,
+    width: 220,
+    height: 220,
+    colorDark: '#15202E',
+    colorLight: '#FDFAF6',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+</body>
+</html>

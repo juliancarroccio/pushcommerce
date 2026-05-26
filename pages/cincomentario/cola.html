@@ -4,422 +4,704 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cola de Pedidos — Cincomentario</title>
-  <link rel="icon" href="./favicon.ico" sizes="any">
+  <link rel="icon" href="./img/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --wood:    #1A1008;
-      --wood2:   #241508;
-      --amber:   #C8822E;
-      --amber2:  #D4963F;
-      --tan:     #C9A87C;
-      --parch:   #F2E8D5;
-      --pend:    #EF4444;
-      --prep:    #F59E0B;
-      --listo:   #10B981;
+      --wood:   #1A1008;
+      --wood2:  #221308;
+      --amber:  #C8822E;
+      --tan:    #C9A87C;
+      --parch:  #F2E8D5;
+      --c-pend: #EF4444;
+      --c-prep: #F59E0B;
+      --c-ship: #3B82F6;
+      --c-done: #10B981;
     }
     html, body { height: 100%; background: var(--wood); color: var(--parch); font-family: 'Inter', sans-serif; }
 
+    /* ── AUTH SCREEN ── */
+    #s-auth {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.25rem; padding: 2rem;
+    }
+    #s-auth img { width: 64px; opacity: 0.7; }
+    #s-auth h2 { font-family: 'Oswald', sans-serif; font-size: 1.1rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--tan); }
+    #s-auth p  { font-size: 0.85rem; color: rgba(242,232,213,0.45); text-align: center; max-width: 280px; }
+    #s-auth a  { display: inline-block; margin-top: 0.5rem; background: var(--amber); color: var(--wood); font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 1.4rem; border-radius: 6px; text-decoration: none; }
+
+    /* ── APP (hidden until auth) ── */
+    #s-app { display: none; flex-direction: column; height: 100vh; }
+
     /* ── HEADER ── */
     header {
-      background: var(--wood2);
-      border-bottom: 1px solid rgba(201,168,124,0.15);
-      padding: 0.75rem 1.25rem;
-      display: flex; align-items: center; gap: 1rem;
-      position: sticky; top: 0; z-index: 50;
+      background: var(--wood2); border-bottom: 1px solid rgba(201,168,124,0.12);
+      padding: 0 1rem; height: 52px;
+      display: flex; align-items: center; gap: 0.875rem;
+      position: sticky; top: 0; z-index: 100; flex-shrink: 0;
     }
-    .logo { height: 36px; width: auto; filter: brightness(0) invert(1); }
-    header h1 { font-family: 'Oswald', sans-serif; font-size: 1.1rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tan); }
-    .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
-    #badge-total {
-      background: var(--amber); color: var(--wood); font-family: 'Oswald', sans-serif;
-      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
-      padding: 0.25rem 0.65rem; border-radius: 20px; min-width: 2rem; text-align: center;
+    .hdr-logo { height: 32px; width: 32px; border-radius: 50%; object-fit: cover; opacity: 0.9; }
+    .hdr-title { font-family: 'Oswald', sans-serif; font-size: 0.95rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tan); }
+    .hdr-tabs { display: flex; gap: 0; margin-left: 1rem; }
+    .hdr-tab {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.3rem 0.9rem; border: 1px solid rgba(201,168,124,0.18);
+      background: none; color: rgba(201,168,124,0.5); cursor: pointer; transition: all 0.15s;
     }
-    #btn-hoy {
-      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-      border: 1px solid rgba(201,168,124,0.3); color: var(--tan); background: none;
+    .hdr-tab:first-child { border-radius: 6px 0 0 6px; }
+    .hdr-tab:last-child  { border-radius: 0 6px 6px 0; border-left: none; }
+    .hdr-tab.active { background: var(--amber); color: var(--wood); border-color: var(--amber); }
+    .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
+    #badge-pend {
+      background: var(--c-pend); color: #fff; font-family: 'Oswald', sans-serif;
+      font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 20px; min-width: 1.6rem; text-align: center;
+      display: none;
+    }
+    #btn-add {
+      font-family: 'Oswald', sans-serif; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(200,130,46,0.15); border: 1px solid rgba(200,130,46,0.4); color: var(--amber);
       padding: 0.35rem 0.8rem; border-radius: 6px; cursor: pointer; transition: all 0.15s;
     }
-    #btn-hoy:hover { border-color: var(--amber); color: var(--amber); }
+    #btn-add:hover { background: var(--amber); color: var(--wood); }
+    #btn-portal {
+      font-size: 0.7rem; color: rgba(201,168,124,0.4); background: none; border: none; cursor: pointer;
+      transition: color 0.15s; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    #btn-portal:hover { color: var(--tan); }
 
-    /* ── COLUMNS ── */
-    main {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      padding: 1rem;
-      height: calc(100vh - 57px);
+    /* ── KANBAN ── */
+    #view-kanban {
+      flex: 1; display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem; padding: 0.75rem;
       overflow: hidden;
     }
-    @media (max-width: 768px) {
-      main { grid-template-columns: 1fr; height: auto; overflow: visible; }
+    @media (max-width: 900px) {
+      #view-kanban { grid-template-columns: repeat(2, 1fr); overflow-y: auto; }
+    }
+    @media (max-width: 540px) {
+      #view-kanban { grid-template-columns: 1fr; }
     }
 
     .col {
       display: flex; flex-direction: column;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(201,168,124,0.1);
-      border-radius: 12px; overflow: hidden;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(201,168,124,0.08);
+      border-radius: 10px; overflow: hidden; min-height: 0;
     }
     .col-hdr {
-      padding: 0.75rem 1rem;
-      display: flex; align-items: center; gap: 0.6rem;
-      border-bottom: 1px solid rgba(201,168,124,0.1);
-      font-family: 'Oswald', sans-serif; font-size: 0.85rem;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      position: sticky; top: 0; background: inherit;
+      padding: 0.6rem 0.875rem; display: flex; align-items: center; gap: 0.5rem;
+      border-bottom: 1px solid rgba(201,168,124,0.08);
+      font-family: 'Oswald', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+      flex-shrink: 0;
     }
-    .col-hdr .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .col-hdr .count { margin-left: auto; font-size: 0.75rem; color: var(--tan); opacity: 0.6; }
-    .col[data-estado="pendiente"]  .dot { background: var(--pend); box-shadow: 0 0 6px var(--pend); }
-    .col[data-estado="preparando"] .dot { background: var(--prep); box-shadow: 0 0 6px var(--prep); }
-    .col[data-estado="listo"]      .dot { background: var(--listo); box-shadow: 0 0 6px var(--listo); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .col[data-s="pendiente"]      .dot { background: var(--c-pend); box-shadow: 0 0 5px var(--c-pend); }
+    .col[data-s="preparando"]     .dot { background: var(--c-prep); box-shadow: 0 0 5px var(--c-prep); }
+    .col[data-s="pendiente_envio"].dot { background: var(--c-ship); box-shadow: 0 0 5px var(--c-ship); }
+    .col[data-s="enviado"]        .dot { background: var(--c-done); box-shadow: 0 0 5px var(--c-done); }
+    .col-count { margin-left: auto; color: var(--tan); opacity: 0.4; font-size: 0.7rem; }
 
-    .col-body { flex: 1; overflow-y: auto; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.65rem; }
+    .col-body { flex: 1; overflow-y: auto; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; min-height: 0; }
     .col-body::-webkit-scrollbar { width: 3px; }
-    .col-body::-webkit-scrollbar-thumb { background: rgba(201,168,124,0.2); border-radius: 2px; }
+    .col-body::-webkit-scrollbar-thumb { background: rgba(201,168,124,0.15); border-radius: 2px; }
 
     /* ── CARDS ── */
     .card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(201,168,124,0.12);
-      border-radius: 10px; padding: 0.9rem;
-      animation: cardIn 0.25s ease;
-      position: relative;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,124,0.1);
+      border-radius: 8px; padding: 0.75rem;
+      animation: fadeIn 0.2s ease;
     }
-    @keyframes cardIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    .card.new-flash { animation: flash 0.6s ease; }
-    @keyframes flash { 0%,100% { border-color: rgba(201,168,124,0.12); } 50% { border-color: var(--amber); box-shadow: 0 0 12px rgba(200,130,46,0.4); } }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-6px) } to { opacity:1; transform:none } }
+    .card.flash { animation: flash 0.7s ease; }
+    @keyframes flash { 0%,100%{border-color:rgba(201,168,124,0.1)} 40%{border-color:var(--amber);box-shadow:0 0 10px rgba(200,130,46,0.35)} }
 
-    .card-num { font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan); opacity: 0.5; margin-bottom: 0.4rem; }
-    .card-time { font-size: 0.72rem; color: var(--tan); opacity: 0.55; }
-    .card-items { margin: 0.6rem 0; border-top: 1px solid rgba(201,168,124,0.08); padding-top: 0.6rem; }
-    .card-item { font-size: 0.82rem; color: rgba(242,232,213,0.85); padding: 0.15rem 0; display: flex; justify-content: space-between; gap: 0.5rem; }
-    .card-item-name { flex: 1; }
-    .card-item-price { color: var(--tan); font-size: 0.78rem; white-space: nowrap; }
-    .card-cat { font-size: 0.68rem; color: var(--tan); opacity: 0.45; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.5rem; margin-bottom: 0.15rem; }
-    .card-total { font-family: 'Oswald', sans-serif; font-size: 1rem; color: var(--amber); margin-top: 0.5rem; }
-    .card-nota { font-size: 0.78rem; color: rgba(242,232,213,0.55); font-style: italic; margin-top: 0.4rem; padding: 0.4rem 0.6rem; background: rgba(0,0,0,0.15); border-radius: 6px; border-left: 2px solid var(--amber); }
+    .card-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem; }
+    .card-num  { font-family: 'Oswald', sans-serif; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--tan); opacity: 0.5; }
+    .card-time { font-size: 0.65rem; color: var(--tan); opacity: 0.4; }
+    .card-cat  { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--tan); opacity: 0.35; margin: 0.45rem 0 0.1rem; }
+    .card-item { font-size: 0.78rem; color: rgba(242,232,213,0.8); padding: 0.1rem 0; display: flex; justify-content: space-between; gap: 0.4rem; }
+    .card-item-p { color: var(--tan); font-size: 0.72rem; white-space: nowrap; opacity: 0.7; }
+    .card-sep  { border: none; border-top: 1px solid rgba(201,168,124,0.07); margin: 0.5rem 0; }
+    .card-total { font-family: 'Oswald', sans-serif; font-size: 0.95rem; color: var(--amber); }
+    .card-nota { font-size: 0.72rem; color: rgba(242,232,213,0.45); font-style: italic; margin-top: 0.4rem; padding: 0.35rem 0.5rem; background: rgba(0,0,0,0.12); border-radius: 5px; border-left: 2px solid rgba(200,130,46,0.4); }
 
-    .card-actions { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.75rem; flex-wrap: wrap; }
-    .btn-next {
-      flex: 1; font-family: 'Oswald', sans-serif; font-size: 0.72rem; letter-spacing: 0.08em;
-      text-transform: uppercase; padding: 0.45rem 0.6rem; border-radius: 6px; border: none;
-      cursor: pointer; transition: all 0.15s; font-weight: 500;
+    .card-actions { display: flex; gap: 0.35rem; margin-top: 0.65rem; flex-wrap: wrap; }
+    .btn-adv {
+      flex: 1; font-family: 'Oswald', sans-serif; font-size: 0.65rem; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.4rem 0.5rem; border-radius: 5px; border: none; cursor: pointer; font-weight: 600; transition: all 0.15s;
+      white-space: nowrap;
     }
-    .col[data-estado="pendiente"]  .btn-next { background: var(--prep); color: #1a1008; }
-    .col[data-estado="pendiente"]  .btn-next:hover { background: #fbbf24; }
-    .col[data-estado="preparando"] .btn-next { background: var(--listo); color: #fff; }
-    .col[data-estado="preparando"] .btn-next:hover { background: #059669; }
+    .col[data-s="pendiente"]       .btn-adv { background: var(--c-prep); color: #1a1008; }
+    .col[data-s="preparando"]      .btn-adv { background: var(--c-ship); color: #fff; }
+    .col[data-s="pendiente_envio"] .btn-adv { background: var(--c-done); color: #fff; }
+    .btn-adv:hover { filter: brightness(1.1); }
 
-    .btn-up, .btn-down, .btn-del {
-      width: 30px; height: 30px; border-radius: 6px; border: 1px solid rgba(201,168,124,0.2);
-      background: none; color: var(--tan); cursor: pointer; font-size: 0.85rem;
-      display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+    .btn-icon {
+      width: 28px; height: 28px; border-radius: 5px; border: 1px solid rgba(201,168,124,0.15);
+      background: none; color: var(--tan); cursor: pointer; font-size: 0.78rem;
+      display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0;
     }
-    .btn-up:hover, .btn-down:hover { background: rgba(201,168,124,0.1); border-color: var(--tan); }
-    .btn-del { color: #f87171; border-color: rgba(248,113,113,0.2); }
+    .btn-icon:hover { background: rgba(201,168,124,0.08); border-color: var(--tan); }
+    .btn-del { color: #f87171; border-color: rgba(248,113,113,0.15); }
     .btn-del:hover { background: rgba(248,113,113,0.1); border-color: #f87171; }
 
-    /* ── EMPTY STATE ── */
-    .empty {
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 0.5rem; opacity: 0.3; padding: 2rem;
+    .empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; opacity: 0.25; padding: 1.5rem; }
+    .empty-icon { font-size: 1.6rem; }
+    .empty-txt  { font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── HISTORIAL ── */
+    #view-historial { flex: 1; overflow-y: auto; padding: 1rem; display: none; }
+    .hist-day { margin-bottom: 1.25rem; }
+    .hist-day-hdr {
+      font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--tan); padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(201,168,124,0.12);
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer;
     }
-    .empty-icon { font-size: 2rem; }
-    .empty-txt { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Oswald', sans-serif; }
+    .hist-day-body { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.5rem 0; }
+    .hist-row {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,124,0.07);
+      border-radius: 7px; padding: 0.65rem 0.875rem;
+      display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.8rem;
+    }
+    .hist-num { font-family: 'Oswald', sans-serif; font-size: 0.65rem; color: var(--tan); opacity: 0.5; width: 2rem; flex-shrink: 0; padding-top: 0.1rem; }
+    .hist-items { flex: 1; color: rgba(242,232,213,0.7); line-height: 1.5; }
+    .hist-total { font-family: 'Oswald', sans-serif; font-size: 0.85rem; color: var(--amber); white-space: nowrap; }
+    .hist-estado { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; padding: 0.15rem 0.4rem; border-radius: 4px; white-space: nowrap; margin-top: 0.2rem; }
+    .hist-estado.pendiente       { background: rgba(239,68,68,0.15);  color: #f87171; }
+    .hist-estado.preparando      { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .hist-estado.pendiente_envio { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .hist-estado.enviado         { background: rgba(16,185,129,0.15); color: #34d399; }
+    .hist-nota { font-size: 0.7rem; color: rgba(242,232,213,0.35); font-style: italic; margin-top: 0.25rem; }
+    .hist-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; flex-shrink: 0; }
+
+    /* ── MODAL AGREGAR ── */
+    #modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+      display: none; align-items: flex-end; justify-content: center;
+    }
+    #modal-bg.open { display: flex; }
+    #modal {
+      background: var(--wood2); border: 1px solid rgba(201,168,124,0.15);
+      border-radius: 16px 16px 0 0; padding: 1.25rem;
+      width: 100%; max-width: 560px; max-height: 90vh;
+      display: flex; flex-direction: column; gap: 0.875rem;
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%) } to { transform: none } }
+
+    .modal-hdr { display: flex; align-items: center; justify-content: space-between; }
+    .modal-hdr h3 { font-family: 'Oswald', sans-serif; font-size: 1rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tan); }
+    .btn-close { background: none; border: none; color: rgba(201,168,124,0.4); font-size: 1.2rem; cursor: pointer; transition: color 0.15s; }
+    .btn-close:hover { color: var(--tan); }
+
+    #modal-search {
+      width: 100%; padding: 0.6rem 0.875rem; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(201,168,124,0.2); border-radius: 7px; color: var(--parch);
+      font-size: 0.875rem; outline: none; transition: border-color 0.15s;
+    }
+    #modal-search:focus { border-color: var(--amber); }
+    #modal-search::placeholder { color: rgba(201,168,124,0.3); }
+
+    #modal-results { overflow-y: auto; max-height: 30vh; display: flex; flex-direction: column; gap: 0.25rem; }
+    .prod-opt {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer;
+      background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: all 0.12s;
+    }
+    .prod-opt:hover { background: rgba(201,168,124,0.07); border-color: rgba(201,168,124,0.15); }
+    .prod-opt-emoji { font-size: 1rem; width: 1.5rem; text-align: center; }
+    .prod-opt-name  { flex: 1; font-size: 0.82rem; color: var(--parch); }
+    .prod-opt-unit  { font-size: 0.7rem; color: rgba(201,168,124,0.45); }
+    .prod-opt-price { font-family: 'Oswald', sans-serif; font-size: 0.82rem; color: var(--amber); }
+
+    #modal-cart { border-top: 1px solid rgba(201,168,124,0.1); padding-top: 0.75rem; display: flex; flex-direction: column; gap: 0.35rem; }
+    .cart-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; }
+    .cart-name { flex: 1; color: rgba(242,232,213,0.8); }
+    .cart-qty  { display: flex; align-items: center; gap: 0.25rem; }
+    .btn-qty   { width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(201,168,124,0.25); background: none; color: var(--tan); cursor: pointer; font-size: 0.9rem; line-height: 1; display: flex; align-items: center; justify-content: center; transition: all 0.12s; }
+    .btn-qty:hover { background: rgba(201,168,124,0.1); }
+    .cart-qty-num { font-family: 'Oswald', sans-serif; font-size: 0.85rem; color: var(--parch); min-width: 1rem; text-align: center; }
+    .cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem; padding-top: 0.5rem; border-top: 1px solid rgba(201,168,124,0.08); }
+    .cart-total-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--tan); opacity: 0.5; }
+    .cart-total-val { font-family: 'Oswald', sans-serif; font-size: 1.05rem; color: var(--amber); }
+
+    #modal-nota { width: 100%; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,124,0.15); border-radius: 7px; color: var(--parch); font-size: 0.8rem; font-style: italic; outline: none; resize: none; }
+    #modal-nota::placeholder { color: rgba(201,168,124,0.25); }
+    #modal-nota:focus { border-color: rgba(200,130,46,0.4); }
+
+    #btn-submit-order {
+      font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--amber); color: var(--wood); font-weight: 700;
+      padding: 0.75rem; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; width: 100%;
+    }
+    #btn-submit-order:hover { background: #d4963f; }
+    #btn-submit-order:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* ── TOAST ── */
     #toast {
-      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(150%);
-      background: var(--amber); color: var(--wood); font-weight: 600; font-size: 0.85rem;
-      padding: 0.65rem 1.4rem; border-radius: 8px; z-index: 999; transition: transform 0.3s ease;
-      white-space: nowrap;
+      position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%) translateY(150%);
+      background: var(--amber); color: var(--wood); font-weight: 600; font-size: 0.82rem;
+      padding: 0.6rem 1.25rem; border-radius: 8px; z-index: 999; transition: transform 0.25s ease;
+      white-space: nowrap; pointer-events: none;
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
 
-    /* ── CONEXIÓN ── */
-    #conn-bar { display: none; background: #dc2626; color: #fff; font-size: 0.75rem; text-align: center; padding: 0.3rem; letter-spacing: 0.05em; }
-    #conn-bar.show { display: block; }
+    #conn-bar { background: #dc2626; color: #fff; font-size: 0.72rem; text-align: center; padding: 0.25rem; letter-spacing: 0.04em; display: none; }
+    #conn-bar.on { display: block; }
   </style>
 </head>
 <body>
 
-<div id="conn-bar">Sin conexión — los cambios se sincronizarán al reconectar</div>
-<div id="toast"></div>
+<!-- ── AUTH REQUIRED ─────────────────────────────────────────────────────── -->
+<div id="s-auth" style="display:none">
+  <img src="./img/icon-192.png" alt="">
+  <h2>Acceso requerido</h2>
+  <p>Esta sección solo está disponible desde el panel de administración.</p>
+  <a href="../portal/index.html">Ir al panel →</a>
+</div>
 
-<header>
-  <img class="logo" src="./img/logo.png" alt="Cincomentario">
-  <h1>Cola de Pedidos</h1>
-  <div class="hdr-right">
-    <span id="badge-total">0</span>
-    <button id="btn-hoy">Hoy</button>
-  </div>
-</header>
+<!-- ── APP ────────────────────────────────────────────────────────────────── -->
+<div id="s-app">
+  <div id="conn-bar">Sin conexión — sincronizando cuando vuelva la red</div>
+  <div id="toast"></div>
 
-<main>
-  <div class="col" data-estado="pendiente">
-    <div class="col-hdr">
-      <span class="dot"></span> Pendiente
-      <span class="count" id="cnt-pendiente">0</span>
+  <header>
+    <img class="hdr-logo" src="./img/icon-192.png" alt="Cincomentario">
+    <span class="hdr-title">Cola de Pedidos</span>
+    <div class="hdr-tabs">
+      <button class="hdr-tab active" onclick="switchView('kanban')">En curso</button>
+      <button class="hdr-tab" onclick="switchView('historial')">Historial</button>
     </div>
-    <div class="col-body" id="col-pendiente">
-      <div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">Sin pedidos</div></div>
+    <div class="hdr-right">
+      <span id="badge-pend"></span>
+      <button id="btn-add" onclick="openModal()">+ Agregar</button>
+      <button id="btn-portal" onclick="goPortal()">← Panel</button>
+    </div>
+  </header>
+
+  <div id="view-kanban">
+    <div class="col" data-s="pendiente">
+      <div class="col-hdr"><span class="dot"></span>Pendiente<span class="col-count" id="cnt-pendiente">0</span></div>
+      <div class="col-body" id="col-pendiente"></div>
+    </div>
+    <div class="col" data-s="preparando">
+      <div class="col-hdr"><span class="dot"></span>En preparación<span class="col-count" id="cnt-preparando">0</span></div>
+      <div class="col-body" id="col-preparando"></div>
+    </div>
+    <div class="col" data-s="pendiente_envio">
+      <div class="col-hdr"><span class="dot"></span>Pendiente de envío<span class="col-count" id="cnt-pendiente_envio">0</span></div>
+      <div class="col-body" id="col-pendiente_envio"></div>
+    </div>
+    <div class="col" data-s="enviado">
+      <div class="col-hdr"><span class="dot"></span>Enviado / Recibido<span class="col-count" id="cnt-enviado">0</span></div>
+      <div class="col-body" id="col-enviado"></div>
     </div>
   </div>
 
-  <div class="col" data-estado="preparando">
-    <div class="col-hdr">
-      <span class="dot"></span> En preparación
-      <span class="count" id="cnt-preparando">0</span>
-    </div>
-    <div class="col-body" id="col-preparando">
-      <div class="empty"><div class="empty-icon">👨‍🍳</div><div class="empty-txt">Vacío</div></div>
-    </div>
-  </div>
+  <div id="view-historial"></div>
+</div>
 
-  <div class="col" data-estado="listo">
-    <div class="col-hdr">
-      <span class="dot"></span> Listo
-      <span class="count" id="cnt-listo">0</span>
+<!-- ── MODAL AGREGAR PEDIDO ───────────────────────────────────────────────── -->
+<div id="modal-bg" onclick="handleBgClick(event)">
+  <div id="modal">
+    <div class="modal-hdr">
+      <h3>Agregar pedido</h3>
+      <button class="btn-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="col-body" id="col-listo">
-      <div class="empty"><div class="empty-icon">✅</div><div class="empty-txt">Nada entregado aún</div></div>
+
+    <input id="modal-search" type="search" placeholder="Buscar producto…" oninput="filterProds(this.value)" autocomplete="off">
+
+    <div id="modal-results"></div>
+
+    <div id="modal-cart" style="display:none">
+      <div id="cart-items-modal"></div>
+      <div class="cart-total-row">
+        <span class="cart-total-label">Total estimado</span>
+        <span class="cart-total-val" id="modal-total">$0</span>
+      </div>
     </div>
+
+    <textarea id="modal-nota" rows="2" placeholder="Nota (opcional)…"></textarea>
+
+    <button id="btn-submit-order" disabled onclick="submitManualOrder()">Agregar a pendiente</button>
   </div>
-</main>
+</div>
 
 <script>
-  // ── FIREBASE ────────────────────────────────────────────────────────────────
-  firebase.initializeApp({
-    apiKey: "AIzaSyAE5VW5kjkDUqVjlUgVU30ZsYE0mDhMlig",
-    authDomain: "cincomentariolf.firebaseapp.com",
-    projectId: "cincomentariolf",
-    storageBucket: "cincomentariolf.firebasestorage.app",
-    messagingSenderId: "804138171798",
-    appId: "1:804138171798:web:28fe107506bc61e93631b7"
-  });
-  const db = firebase.firestore();
-
-  // ── ESTADO LOCAL ─────────────────────────────────────────────────────────────
-  let orders = {};       // { id: {...pedido} }
-  let todayOnly = true;
-  let dayCounter = 0;    // contador diario de pedidos
-  let knownIds = new Set();
-
-  // ── AUDIO ──────────────────────────────────────────────────────────────────
-  let audioCtx;
-  function playBeep() {
+// ── AUTH ─────────────────────────────────────────────────────────────────────
+(function() {
+  const raw = sessionStorage.getItem('pc_cola');
+  let ok = false;
+  if (raw) {
     try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.connect(g); g.connect(audioCtx.destination);
-      o.type = 'sine'; o.frequency.setValueAtTime(880, audioCtx.currentTime);
-      g.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-      o.start(); o.stop(audioCtx.currentTime + 0.4);
+      const { ts } = JSON.parse(raw);
+      ok = (Date.now() - ts) < 8 * 60 * 60 * 1000; // 8 horas
     } catch (_) {}
   }
-
-  // ── TOAST ──────────────────────────────────────────────────────────────────
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
+  if (ok) {
+    document.getElementById('s-app').style.display = 'flex';
+  } else {
+    document.getElementById('s-auth').style.display = 'flex';
   }
+})();
 
-  // ── TIEMPO RELATIVO ────────────────────────────────────────────────────────
-  function timeAgo(ts) {
-    if (!ts) return '';
-    const diff = Math.floor((Date.now() - ts.toMillis()) / 1000);
-    if (diff < 60) return `hace ${diff}s`;
-    if (diff < 3600) return `hace ${Math.floor(diff/60)}min`;
-    return ts.toDate().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
-  }
+// ── FIREBASE ─────────────────────────────────────────────────────────────────
+firebase.initializeApp({
+  apiKey: "AIzaSyAE5VW5kjkDUqVjlUgVU30ZsYE0mDhMlig",
+  authDomain: "cincomentariolf.firebaseapp.com",
+  projectId: "cincomentariolf",
+  storageBucket: "cincomentariolf.firebasestorage.app",
+  messagingSenderId: "804138171798",
+  appId: "1:804138171798:web:28fe107506bc61e93631b7"
+});
+const db = firebase.firestore();
 
-  // ── RENDER CARD ─────────────────────────────────────────────────────────────
-  function renderCard(id, p, estado) {
-    const isNew = !knownIds.has(id);
+// ── ESTADO ───────────────────────────────────────────────────────────────────
+let orders    = {};
+let knownIds  = new Set();
+let catalog   = [];   // [{emoji, nombre, unidad, precio, catLabel}]
+let manualCart = [];  // [{...prod, qty}]
+let dayCounter = 0;
+const ESTADOS  = ['pendiente','preparando','pendiente_envio','enviado'];
+const NEXT_LBL = { pendiente:'→ Preparando', preparando:'→ Envío', pendiente_envio:'→ Enviado' };
 
-    // Agrupar items por categoría
-    const groups = {};
-    (p.items || []).forEach(i => {
-      const k = i.catLabel || i.cat || 'Otros';
-      if (!groups[k]) groups[k] = [];
-      groups[k].push(i);
-    });
+// ── AUDIO ─────────────────────────────────────────────────────────────────────
+let _ctx;
+function beep() {
+  try {
+    if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = _ctx.createOscillator(), g = _ctx.createGain();
+    o.connect(g); g.connect(_ctx.destination);
+    o.type = 'sine'; o.frequency.value = 880;
+    g.gain.setValueAtTime(0.25, _ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, _ctx.currentTime + 0.4);
+    o.start(); o.stop(_ctx.currentTime + 0.4);
+  } catch(_) {}
+}
 
-    const itemsHtml = Object.entries(groups).map(([cat, items]) => `
-      <div class="card-cat">${cat}</div>
-      ${items.map(i => `
-        <div class="card-item">
-          <span class="card-item-name">${i.qty}× ${i.nombre}${i.unidad ? ` <span style="opacity:.45">(${i.unidad})</span>` : ''}</span>
-          <span class="card-item-price">$${(i.precio * i.qty).toLocaleString('es-AR')}</span>
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let _toastTimer;
+function toast(msg) {
+  clearTimeout(_toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── VIEW ─────────────────────────────────────────────────────────────────────
+function switchView(v) {
+  document.getElementById('view-kanban').style.display     = v === 'kanban'    ? 'grid' : 'none';
+  document.getElementById('view-historial').style.display  = v === 'historial' ? 'block' : 'none';
+  document.querySelectorAll('.hdr-tab').forEach((el, i) => el.classList.toggle('active', (i===0) === (v==='kanban')));
+  if (v === 'historial') renderHistorial();
+}
+
+function goPortal() {
+  window.location.href = '../portal/index.html';
+}
+
+// ── TIEMPO RELATIVO ───────────────────────────────────────────────────────────
+function timeAgo(ts) {
+  if (!ts) return '';
+  const s = Math.floor((Date.now() - ts.toMillis()) / 1000);
+  if (s < 60)   return `hace ${s}s`;
+  if (s < 3600) return `hace ${Math.floor(s/60)}min`;
+  return ts.toDate().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+}
+function fmtDate(d) {
+  return d.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long' });
+}
+function startOfDay(d = new Date()) {
+  const c = new Date(d); c.setHours(0,0,0,0); return c.getTime();
+}
+
+// ── RENDER CARD ──────────────────────────────────────────────────────────────
+function mkCard(id, p, estado) {
+  const groups = {};
+  (p.items||[]).forEach(i => {
+    const k = i.catLabel || i.cat || 'Productos';
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(i);
+  });
+  const itemsHtml = Object.entries(groups).map(([cat, items]) => `
+    <div class="card-cat">${cat}</div>
+    ${items.map(i => `
+      <div class="card-item">
+        <span>${i.qty}× ${i.nombre}${i.unidad ? ` <span style="opacity:.38">(${i.unidad})</span>` : ''}</span>
+        <span class="card-item-p">$${(i.precio * i.qty).toLocaleString('es-AR')}</span>
+      </div>`).join('')}
+  `).join('');
+
+  const reorderBtns = estado === 'pendiente' ? `
+    <button class="btn-icon" onclick="move('${id}',-1)" title="Subir en cola">↑</button>
+    <button class="btn-icon" onclick="move('${id}', 1)" title="Bajar en cola">↓</button>
+  ` : '';
+  const nextBtn = NEXT_LBL[estado] ? `<button class="btn-adv" onclick="advance('${id}')">${NEXT_LBL[estado]}</button>` : '';
+
+  const el = document.createElement('div');
+  el.className = 'card'; el.id = 'card-' + id;
+  el.dataset.orden = p.orden || 0;
+  el.innerHTML = `
+    <div class="card-meta">
+      <span class="card-num">#${p.numDia || '—'}</span>
+      <span class="card-time">${timeAgo(p.timestamp)}</span>
+    </div>
+    <div>${itemsHtml}</div>
+    <hr class="card-sep">
+    <div class="card-total">$${(p.total||0).toLocaleString('es-AR')}</div>
+    ${p.nota ? `<div class="card-nota">📝 ${p.nota}</div>` : ''}
+    <div class="card-actions">
+      ${nextBtn}${reorderBtns}
+      <button class="btn-icon btn-del" onclick="del('${id}')" title="Eliminar">🗑</button>
+    </div>`;
+  return el;
+}
+
+// ── RENDER KANBAN ─────────────────────────────────────────────────────────────
+function render() {
+  const today = startOfDay();
+  const cols  = { pendiente:[], preparando:[], pendiente_envio:[], enviado:[] };
+
+  Object.values(orders).forEach(p => {
+    const ts = p.timestamp ? p.timestamp.toMillis() : 0;
+    const isToday = ts >= today;
+    const s = p.estado;
+    if (!cols[s]) return;
+    if (s === 'enviado' && !isToday) return; // enviados de otros días van solo al historial
+    cols[s].push(p);
+  });
+
+  cols.pendiente.sort((a,b) => (a.orden||0) - (b.orden||0));
+  cols.preparando.sort((a,b) => (a.orden||0) - (b.orden||0));
+  cols.pendiente_envio.sort((a,b) => (a.orden||0) - (b.orden||0));
+  cols.enviado.sort((a,b) => (b.orden||0) - (a.orden||0));
+
+  const active = cols.pendiente.length + cols.preparando.length + cols.pendiente_envio.length;
+  const badge  = document.getElementById('badge-pend');
+  badge.textContent = active;
+  badge.style.display = active > 0 ? 'inline-block' : 'none';
+  document.title = active > 0 ? `(${active}) Cola — Cincomentario` : 'Cola de Pedidos — Cincomentario';
+
+  ESTADOS.forEach(s => {
+    const body = document.getElementById('col-' + s);
+    document.getElementById('cnt-' + s).textContent = cols[s].length;
+    body.innerHTML = '';
+    if (!cols[s].length) {
+      const icons = { pendiente:'📭', preparando:'👨‍🍳', pendiente_envio:'🚚', enviado:'✅' };
+      const txts  = { pendiente:'Sin pedidos', preparando:'Vacío', pendiente_envio:'Ninguno', enviado:'Nada aún' };
+      body.innerHTML = `<div class="empty"><div class="empty-icon">${icons[s]}</div><div class="empty-txt">${txts[s]}</div></div>`;
+      return;
+    }
+    cols[s].forEach(p => body.appendChild(mkCard(p.id, p, s)));
+  });
+}
+
+// ── RENDER HISTORIAL ──────────────────────────────────────────────────────────
+function renderHistorial() {
+  const days = {};
+  Object.values(orders).forEach(p => {
+    if (!p.timestamp) return;
+    const d = p.timestamp.toDate();
+    d.setHours(0,0,0,0);
+    const key = d.getTime();
+    if (!days[key]) days[key] = { date: new Date(d), list: [] };
+    days[key].list.push(p);
+  });
+
+  const sorted = Object.entries(days).sort(([a],[b]) => Number(b) - Number(a));
+  const est_lbl = { pendiente:'Pendiente', preparando:'En preparación', pendiente_envio:'Pendiente de envío', enviado:'Enviado/Recibido' };
+
+  const hist = document.getElementById('view-historial');
+  if (!sorted.length) { hist.innerHTML = '<p style="text-align:center;opacity:.3;padding:3rem;font-family:Oswald,sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:.8rem">Sin historial</p>'; return; }
+
+  hist.innerHTML = sorted.map(([key, {date, list}]) => {
+    const isToday = startOfDay() === Number(key);
+    const total   = list.reduce((s, p) => s + (p.total||0), 0);
+    const rows    = list.sort((a,b)=> (a.numDia||0)-(b.numDia||0)).map(p => {
+      const items_txt = (p.items||[]).map(i => `${i.qty}× ${i.nombre}`).join(', ');
+      return `<div class="hist-row">
+        <div class="hist-num">#${p.numDia||'—'}</div>
+        <div class="hist-items">
+          ${items_txt}
+          ${p.nota ? `<div class="hist-nota">📝 ${p.nota}</div>` : ''}
         </div>
-      `).join('')}
-    `).join('');
+        <div class="hist-right">
+          <div class="hist-total">$${(p.total||0).toLocaleString('es-AR')}</div>
+          <div class="hist-estado ${p.estado}">${est_lbl[p.estado]||p.estado}</div>
+        </div>
+      </div>`;
+    }).join('');
 
-    const reorderBtns = estado === 'pendiente' ? `
-      <button class="btn-up"   onclick="moveCard('${id}', -1)" title="Subir">↑</button>
-      <button class="btn-down" onclick="moveCard('${id}',  1)" title="Bajar">↓</button>
-    ` : '';
-
-    const nextLabel = estado === 'pendiente' ? '→ Preparando' : estado === 'preparando' ? '→ Listo' : '';
-    const nextBtn   = nextLabel ? `<button class="btn-next" onclick="advance('${id}')">${nextLabel}</button>` : '';
-
-    const div = document.createElement('div');
-    div.className = 'card' + (isNew ? ' new-flash' : '');
-    div.id = 'card-' + id;
-    div.dataset.orden = p.orden || 0;
-    div.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div class="card-num">#${p.numDia || '—'}</div>
-        <div class="card-time">${timeAgo(p.timestamp)}</div>
+    return `<div class="hist-day">
+      <div class="hist-day-hdr">
+        <span>${isToday ? 'Hoy' : fmtDate(date)}</span>
+        <span style="opacity:.4;font-size:.7rem">${list.length} pedido${list.length!==1?'s':''} · $${total.toLocaleString('es-AR')}</span>
       </div>
-      <div class="card-items">${itemsHtml}</div>
-      <div class="card-total">$${(p.total||0).toLocaleString('es-AR')}</div>
-      ${p.nota ? `<div class="card-nota">📝 ${p.nota}</div>` : ''}
-      <div class="card-actions">
-        ${nextBtn}
-        ${reorderBtns}
-        <button class="btn-del" onclick="deleteOrder('${id}')" title="Eliminar">🗑</button>
-      </div>
-    `;
-    return div;
-  }
+      <div class="hist-day-body">${rows}</div>
+    </div>`;
+  }).join('');
+}
 
-  // ── RENDER COLUMNS ──────────────────────────────────────────────────────────
-  function render() {
-    const cols = { pendiente: [], preparando: [], listo: [] };
-    const start = startOfToday();
+// ── ACCIONES ──────────────────────────────────────────────────────────────────
+function advance(id) {
+  const p = orders[id]; if (!p) return;
+  const idx  = ESTADOS.indexOf(p.estado);
+  const next = ESTADOS[idx + 1];
+  if (!next) return;
+  db.collection('pedidos').doc(id).update({ estado: next, orden: Date.now() })
+    .then(() => toast({ preparando:'👨‍🍳 En preparación', pendiente_envio:'🚚 Listo para envío', enviado:'✅ Enviado/Recibido' }[next] || 'Actualizado'));
+}
 
-    Object.entries(orders).forEach(([id, p]) => {
-      if (todayOnly && p.timestamp && p.timestamp.toMillis() < start) return;
-      if (cols[p.estado]) cols[p.estado].push({ id, ...p });
-    });
+function del(id) {
+  if (!confirm('¿Eliminar este pedido de la cola?')) return;
+  db.collection('pedidos').doc(id).delete().then(() => toast('Pedido eliminado'));
+}
 
-    cols.pendiente.sort((a, b) => (a.orden||0) - (b.orden||0));
-    cols.preparando.sort((a, b) => (a.orden||0) - (b.orden||0));
-    cols.listo.sort((a, b) => (b.orden||0) - (a.orden||0));
+function move(id, dir) {
+  const p = orders[id]; if (!p || p.estado !== 'pendiente') return;
+  const pend = Object.values(orders).filter(o => o.estado === 'pendiente').sort((a,b) => (a.orden||0)-(b.orden||0));
+  const idx  = pend.findIndex(o => o.id === id);
+  const si   = idx + dir;
+  if (si < 0 || si >= pend.length) return;
+  const swap = pend[si];
+  const batch = db.batch();
+  batch.update(db.collection('pedidos').doc(id),     { orden: swap.orden || 0 });
+  batch.update(db.collection('pedidos').doc(swap.id), { orden: p.orden    || 0 });
+  batch.commit();
+}
 
-    const pendTotal = cols.pendiente.length + cols.preparando.length;
-    document.getElementById('badge-total').textContent = pendTotal;
-    document.title = pendTotal > 0 ? `(${pendTotal}) Cola — Cincomentario` : 'Cola de Pedidos — Cincomentario';
-
-    ['pendiente','preparando','listo'].forEach(estado => {
-      const body = document.getElementById('col-' + estado);
-      document.getElementById('cnt-' + estado).textContent = cols[estado].length;
-      body.innerHTML = '';
-      if (cols[estado].length === 0) {
-        const icons = { pendiente:'📭', preparando:'👨‍🍳', listo:'✅' };
-        const txts  = { pendiente:'Sin pedidos', preparando:'Vacío', listo:'Nada aún' };
-        body.innerHTML = `<div class="empty"><div class="empty-icon">${icons[estado]}</div><div class="empty-txt">${txts[estado]}</div></div>`;
-        return;
-      }
-      cols[estado].forEach(p => body.appendChild(renderCard(p.id, p, estado)));
-    });
-  }
-
-  // ── ACCIONES ─────────────────────────────────────────────────────────────────
-  function advance(id) {
-    const p = orders[id]; if (!p) return;
-    const next = p.estado === 'pendiente' ? 'preparando' : p.estado === 'preparando' ? 'listo' : null;
-    if (!next) return;
-    db.collection('pedidos').doc(id).update({ estado: next, orden: Date.now() })
-      .then(() => showToast(next === 'preparando' ? '👨‍🍳 En preparación' : '✅ Marcado como listo'));
-  }
-
-  function deleteOrder(id) {
-    if (!confirm('¿Eliminar este pedido?')) return;
-    db.collection('pedidos').doc(id).delete()
-      .then(() => showToast('Pedido eliminado'));
-  }
-
-  function moveCard(id, dir) {
-    const p = orders[id]; if (!p || p.estado !== 'pendiente') return;
-    const pendList = Object.entries(orders)
-      .filter(([, v]) => v.estado === 'pendiente')
-      .sort(([,a],[,b]) => (a.orden||0) - (b.orden||0));
-    const idx = pendList.findIndex(([i]) => i === id);
-    const swapIdx = idx + dir;
-    if (swapIdx < 0 || swapIdx >= pendList.length) return;
-
-    const [swapId, swapP] = pendList[swapIdx];
-    const myOrden   = p.orden    || 0;
-    const swapOrden = swapP.orden || 0;
-
-    const batch = db.batch();
-    batch.update(db.collection('pedidos').doc(id),     { orden: swapOrden });
-    batch.update(db.collection('pedidos').doc(swapId), { orden: myOrden   });
-    batch.commit();
-  }
-
-  // ── HELPER: inicio del día ──────────────────────────────────────────────────
-  function startOfToday() {
-    const d = new Date(); d.setHours(0,0,0,0); return d.getTime();
-  }
-
-  // ── LISTENER FIRESTORE ────────────────────────────────────────────────────────
-  let query = db.collection('pedidos').orderBy('timestamp', 'desc').limit(200);
-
-  query.onSnapshot(snap => {
-    snap.docChanges().forEach(change => {
-      const id = change.doc.id;
-      const data = change.doc.data();
-
-      if (change.type === 'added') {
-        // Asignar número diario si es de hoy
+// ── LISTENER ──────────────────────────────────────────────────────────────────
+db.collection('pedidos').orderBy('timestamp','desc').limit(500)
+  .onSnapshot(snap => {
+    snap.docChanges().forEach(ch => {
+      const id = ch.doc.id, data = { id, ...ch.doc.data() };
+      if (ch.type === 'added') {
         if (!data.numDia) {
           const ts = data.timestamp ? data.timestamp.toMillis() : 0;
-          if (ts >= startOfToday()) {
+          if (ts >= startOfDay()) {
             dayCounter++;
-            db.collection('pedidos').doc(id).update({ numDia: dayCounter }).catch(() => {});
+            db.collection('pedidos').doc(id).update({ numDia: dayCounter }).catch(()=>{});
             data.numDia = dayCounter;
           }
         }
-
         if (!knownIds.has(id) && knownIds.size > 0) {
-          // Pedido nuevo mientras la página estaba abierta
-          playBeep();
-          showToast('🛎 Nuevo pedido!');
-          document.title = '🛎 ¡Pedido nuevo! — Cola';
-          setTimeout(() => render(), 100);
+          beep();
+          toast('🛎 Nuevo pedido recibido!');
+          document.title = '🛎 Nuevo pedido! — Cola';
+          setTimeout(() => render(), 50);
         }
         knownIds.add(id);
-        orders[id] = { id, ...data };
       }
-
-      if (change.type === 'modified') {
-        orders[id] = { id, ...data };
-      }
-
-      if (change.type === 'removed') {
-        delete orders[id];
-        knownIds.delete(id);
-      }
+      if (ch.type === 'removed') { delete orders[id]; knownIds.delete(id); }
+      else orders[id] = data;
     });
-
     render();
-  }, err => {
-    console.error(err);
-    document.getElementById('conn-bar').classList.add('show');
-  });
+  }, () => document.getElementById('conn-bar').classList.add('on'));
 
-  // ── TOGGLE HOY / TODO ─────────────────────────────────────────────────────
-  document.getElementById('btn-hoy').addEventListener('click', () => {
-    todayOnly = !todayOnly;
-    document.getElementById('btn-hoy').textContent = todayOnly ? 'Hoy' : 'Todo';
-    render();
-  });
+// ── MODAL AGREGAR ─────────────────────────────────────────────────────────────
+fetch('./productos.json')
+  .then(r => r.json())
+  .then(d => {
+    d.categorias.forEach(cat => {
+      (cat.productos||[]).forEach(p => {
+        catalog.push({ emoji: cat.emoji||'', nombre: p.nombre, unidad: p.unidad||'', precio: p.precio||0, catLabel: `${cat.emoji} ${cat.label}`, catId: cat.id });
+      });
+    });
+    filterProds('');
+  }).catch(() => {});
 
-  // ── REFRESH TIEMPO ────────────────────────────────────────────────────────
-  setInterval(render, 30000);
+function filterProds(q) {
+  const res = document.getElementById('modal-results');
+  const filtered = q.trim() ? catalog.filter(p => p.nombre.toLowerCase().includes(q.toLowerCase())) : catalog;
+  if (!filtered.length) { res.innerHTML = '<div style="font-size:.78rem;opacity:.3;padding:.5rem .75rem">Sin resultados</div>'; return; }
+  res.innerHTML = '';
+  filtered.slice(0,12).forEach(p => {
+    const d = document.createElement('div');
+    d.className = 'prod-opt';
+    d.innerHTML = `<span class="prod-opt-emoji">${p.emoji}</span><span class="prod-opt-name">${p.nombre}</span><span class="prod-opt-unit">${p.unidad}</span><span class="prod-opt-price">$${p.precio.toLocaleString('es-AR')}</span>`;
+    d.onclick = () => addToManualCart(p);
+    res.appendChild(d);
+  });
+}
+
+function addToManualCart(p) {
+  const ex = manualCart.find(i => i.nombre === p.nombre);
+  if (ex) { ex.qty++; }
+  else     { manualCart.push({ ...p, qty: 1 }); }
+  renderManualCart();
+}
+
+function renderManualCart() {
+  const cart = document.getElementById('modal-cart');
+  const items = document.getElementById('cart-items-modal');
+  const total = document.getElementById('modal-total');
+  const btn   = document.getElementById('btn-submit-order');
+
+  if (!manualCart.length) { cart.style.display = 'none'; btn.disabled = true; return; }
+  cart.style.display = 'flex';
+  btn.disabled = false;
+
+  items.innerHTML = manualCart.map((i,idx) => `
+    <div class="cart-row">
+      <span class="cart-name">${i.nombre}</span>
+      <div class="cart-qty">
+        <button class="btn-qty" onclick="qtyChange(${idx},-1)">−</button>
+        <span class="cart-qty-num">${i.qty}</span>
+        <button class="btn-qty" onclick="qtyChange(${idx}, 1)">+</button>
+      </div>
+      <span style="font-family:Oswald,sans-serif;font-size:.8rem;color:var(--amber);min-width:4rem;text-align:right">$${(i.precio*i.qty).toLocaleString('es-AR')}</span>
+    </div>`).join('');
+
+  const t = manualCart.reduce((s,i) => s + i.precio*i.qty, 0);
+  total.textContent = '$' + t.toLocaleString('es-AR');
+}
+
+function qtyChange(idx, d) {
+  manualCart[idx].qty += d;
+  if (manualCart[idx].qty <= 0) manualCart.splice(idx, 1);
+  renderManualCart();
+}
+
+async function submitManualOrder() {
+  if (!manualCart.length) return;
+  const nota  = document.getElementById('modal-nota').value.trim();
+  const total = manualCart.reduce((s,i) => s + i.precio*i.qty, 0);
+  document.getElementById('btn-submit-order').disabled = true;
+  try {
+    await db.collection('pedidos').add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      orden:     Date.now(),
+      estado:    'pendiente',
+      total, nota,
+      manual:    true,
+      items:     manualCart.map(i => ({ nombre:i.nombre, catLabel:i.catLabel, cat:i.catId, qty:i.qty, precio:i.precio, unidad:i.unidad }))
+    });
+    toast('✅ Pedido agregado a la cola');
+    closeModal();
+  } catch(e) {
+    toast('Error al guardar: ' + e.message);
+    document.getElementById('btn-submit-order').disabled = false;
+  }
+}
+
+function openModal() {
+  manualCart = [];
+  document.getElementById('modal-nota').value = '';
+  document.getElementById('modal-search').value = '';
+  filterProds('');
+  renderManualCart();
+  document.getElementById('modal-bg').classList.add('open');
+  setTimeout(() => document.getElementById('modal-search').focus(), 100);
+}
+function closeModal() { document.getElementById('modal-bg').classList.remove('open'); }
+function handleBgClick(e) { if (e.target === document.getElementById('modal-bg')) closeModal(); }
+
+setInterval(render, 30000);
 </script>
 </body>
 </html>

@@ -283,7 +283,7 @@
 const GH = { owner: 'juliancarroccio', repo: 'pushcommerce', branch: 'main' };
 const LS  = 'pc_epat';
 const CLIENTS = [
-  { n: 'Cincomentario',        p: 'pages/cincomentario/productos.json',        e: '🧀' },
+  { n: 'Cincomentario',        p: 'pages/cincomentario/productos.json',        e: '🧀', cola: '../cincomentario/cola.html' },
   { n: 'Sr. Miga',             p: 'pages/sr_miga/productos.json',               e: '🥪' },
   { n: 'Amadeo Café',          p: 'pages/amadeo/productos.json',                e: '☕' },
   { n: 'La Redonda',           p: 'pages/la_redonda/productos.json',            e: '🍕' },
@@ -427,6 +427,12 @@ function doLogout() {
 }
 
 // ── CLIENT LIST ────────────────────────────────────────────────────────────
+function openCola(url, e) {
+  e.stopPropagation();
+  sessionStorage.setItem('pc_cola', JSON.stringify({ ts: Date.now() }));
+  window.location.href = url;
+}
+
 function showClients() {
   showScreen('s-clients');
   $('cli-grid').innerHTML = CLIENTS.map((c, i) => `
@@ -434,6 +440,7 @@ function showClients() {
       <div class="text-3xl mb-2">${c.e}</div>
       <div class="font-semibold text-slate-800 text-sm">${c.n}</div>
       <div class="text-xs text-slate-400 mt-0.5 truncate">${c.p}</div>
+      ${c.cola ? `<div onclick="openCola('${c.cola}', event)" class="mt-2 text-xs text-indigo-500 hover:text-indigo-700 font-semibold border border-indigo-200 rounded px-2 py-0.5 inline-block transition-colors">Cola de pedidos →</div>` : ''}
     </button>
   `).join('');
 }

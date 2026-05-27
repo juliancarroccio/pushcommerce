@@ -478,10 +478,10 @@
   function renderProximas(cont, today) {
     const limit = new Date(); limit.setDate(limit.getDate() + 14);
     const limISO = limit.toISOString().split('T')[0];
-    const prox = allReservas.filter(r => r.estado === 'confirmada' && r.checkin > today && r.checkin <= limISO)
+    const prox = allReservas.filter(r => ['pendiente','confirmada'].includes(r.estado) && r.checkin > today && r.checkin <= limISO)
       .sort((a,b) => a.checkin.localeCompare(b.checkin));
 
-    if (!prox.length) { cont.innerHTML = '<div class="empty-state">Sin reservas confirmadas en los próximos 14 días</div>'; return; }
+    if (!prox.length) { cont.innerHTML = '<div class="empty-state">Sin reservas en los próximos 14 días</div>'; return; }
 
     const grouped = {};
     prox.forEach(r => { if (!grouped[r.checkin]) grouped[r.checkin] = []; grouped[r.checkin].push(r); });
@@ -496,18 +496,21 @@
 
   /* ── Historial ── */
   function renderHistorial(cont) {
-    const hist = allReservas.filter(r => ['completada','cancelada'].includes(r.estado));
-    const filtered = historialFilter === 'all' ? hist : hist.filter(r => r.estado === historialFilter);
+    const filtered = historialFilter === 'all'
+      ? allReservas
+      : allReservas.filter(r => r.estado === historialFilter);
 
     cont.innerHTML = `
       <div style="max-width:680px; margin:0 auto;">
         <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:1.25rem;">
           <button class="btn-export" onclick="exportCSV()">↓ Exportar CSV</button>
-          <button class="pill ${historialFilter==='all'?'active':''}" onclick="setFilter('all')">Todos</button>
+          <button class="pill ${historialFilter==='all'?'active':''}" onclick="setFilter('all')">Todas</button>
+          <button class="pill ${historialFilter==='pendiente'?'active':''}" onclick="setFilter('pendiente')">Pendientes</button>
+          <button class="pill ${historialFilter==='confirmada'?'active':''}" onclick="setFilter('confirmada')">Confirmadas</button>
           <button class="pill ${historialFilter==='completada'?'active':''}" onclick="setFilter('completada')">Completadas</button>
           <button class="pill ${historialFilter==='cancelada'?'active':''}" onclick="setFilter('cancelada')">Canceladas</button>
         </div>
-        ${filtered.length ? filtered.map(r => cardHTML(r)).join('') : '<div class="empty-state">Sin reservas en el historial</div>'}
+        ${filtered.length ? filtered.map(r => cardHTML(r)).join('') : '<div class="empty-state">Sin reservas</div>'}
       </div>`;
   }
 

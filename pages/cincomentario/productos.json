@@ -18,7 +18,7 @@
           "id": 1,
           "nombre": "Queso Cremoso",
           "unidad": "500g",
-          "precio": 2800,
+          "precio": 400,
           "imagen": "img/productos/queso-cremoso.jpg"
         },
         {
@@ -49,7 +49,8 @@
           "precio": 5000,
           "imagen": "img/productos/queso-de-oveja.jpg"
         }
-      ]
+      ],
+      "nombre": "Quesos"
     },
     {
       "id": "fiambres",
@@ -85,7 +86,8 @@
           "precio": 3400,
           "imagen": "img/productos/bondiola-curada.jpg"
         }
-      ]
+      ],
+      "nombre": "Fiambres"
     },
     {
       "id": "congelados",
@@ -121,7 +123,8 @@
           "precio": 4200,
           "imagen": "img/productos/sorrentinos-caseros.jpg"
         }
-      ]
+      ],
+      "nombre": "Congelados"
     },
     {
       "id": "picadas",
@@ -150,7 +153,8 @@
           "precio": 20000,
           "imagen": "img/productos/tabla-especial.jpg"
         }
-      ]
+      ],
+      "nombre": "Picadas y Tablas"
     },
     {
       "id": "conservas",
@@ -186,7 +190,8 @@
           "precio": 2000,
           "imagen": "img/productos/aceitunas-negras.jpg"
         }
-      ]
+      ],
+      "nombre": "Conservas"
     }
   ],
   "horarios": {
@@ -261,7 +266,7 @@
     "activa": true,
     "titulo": "Oferta de la semana",
     "producto_id": 15,
-    "precio_oferta": 16000,
+    "precio_oferta": 12000,
     "vigencia": "Válido hasta el domingo",
     "texto": "Oferta de la semana"
   }

@@ -214,6 +214,9 @@
         Pendientes
         <span class="badge" id="badge-pendientes" style="display:none;">0</span>
       </button>
+      <button class="tab-btn" data-tab="hospedados" id="tab-hospedados-btn">
+        Hospedados <span class="badge" id="badge-hospedados" style="display:none;">0</span>
+      </button>
       <button class="tab-btn" data-tab="proximas">Próximas</button>
       <button class="tab-btn" data-tab="historial">Historial</button>
     </div>
@@ -382,9 +385,14 @@
 
   function updateBadge() {
     const pendientes = allReservas.filter(r => r.estado === 'pendiente').length;
-    const badge = document.getElementById('badge-pendientes');
-    if (pendientes > 0) { badge.style.display = 'flex'; badge.textContent = pendientes; }
-    else { badge.style.display = 'none'; }
+    const bp = document.getElementById('badge-pendientes');
+    if (pendientes > 0) { bp.style.display = 'flex'; bp.textContent = pendientes; }
+    else { bp.style.display = 'none'; }
+
+    const hospedados = allReservas.filter(r => r.estado === 'hospedado').length;
+    const bh = document.getElementById('badge-hospedados');
+    if (hospedados > 0) { bh.style.display = 'flex'; bh.textContent = hospedados; }
+    else { bh.style.display = 'none'; }
   }
 
   function renderTab(tab) {
@@ -392,6 +400,7 @@
     const cont = document.getElementById('tab-content');
     if (tab === 'hoy') renderHoy(cont, today);
     else if (tab === 'pendientes') renderPendientes(cont);
+    else if (tab === 'hospedados') renderHospedados(cont, today);
     else if (tab === 'proximas') renderProximas(cont, today);
     else if (tab === 'historial') renderHistorial(cont);
   }
@@ -472,6 +481,64 @@
     const pend = allReservas.filter(r => r.estado === 'pendiente');
     if (!pend.length) { cont.innerHTML = '<div class="empty-state">No hay reservas pendientes</div>'; return; }
     cont.innerHTML = `<div style="max-width:680px; margin:0 auto;">${pend.map(r => cardHTML(r)).join('')}</div>`;
+  }
+
+  /* ── Hospedados ── */
+  function renderHospedados(cont, today) {
+    const hosp = allReservas
+      .filter(r => r.estado === 'hospedado')
+      .sort((a, b) => a.checkout.localeCompare(b.checkout));
+
+    if (!hosp.length) {
+      cont.innerHTML = '<div class="empty-state">No hay huéspedes hospedados en este momento</div>';
+      return;
+    }
+
+    const checkoutHoy  = hosp.filter(r => r.checkout === today);
+    const checkoutRest = hosp.filter(r => r.checkout !== today);
+
+    let html = '<div style="max-width:680px; margin:0 auto;">';
+
+    if (checkoutHoy.length) {
+      html += `<p class="date-group-title" style="color:var(--red);">🚪 Check-out hoy (${checkoutHoy.length})</p>`;
+      html += checkoutHoy.map(r => hospCard(r, today)).join('');
+    }
+    if (checkoutRest.length) {
+      html += `<p class="date-group-title" style="margin-top:${checkoutHoy.length ? '1.5rem' : '0'};">🏨 En el hotel (${checkoutRest.length})</p>`;
+      html += checkoutRest.map(r => hospCard(r, today)).join('');
+    }
+
+    html += '</div>';
+    cont.innerHTML = html;
+  }
+
+  function hospCard(r, today) {
+    const msLeft  = new Date(r.checkout + 'T12:00:00') - new Date(today + 'T12:00:00');
+    const daysLeft = Math.round(msLeft / 86400000);
+    const badge = daysLeft === 0
+      ? `<span style="background:rgba(229,62,62,0.2); color:var(--red); padding:0.2rem 0.6rem; border-radius:2rem; font-size:0.75rem; font-weight:700;">Sale hoy</span>`
+      : `<span style="background:rgba(37,128,200,0.15); color:var(--sky); padding:0.2rem 0.6rem; border-radius:2rem; font-size:0.75rem; font-weight:700;">${daysLeft} día${daysLeft !== 1 ? 's' : ''} restante${daysLeft !== 1 ? 's' : ''}</span>`;
+    return `
+      <div class="res-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem; flex-wrap:wrap;">
+          <div>
+            <p style="font-weight:700; color:var(--parch); margin:0 0 0.2rem; font-size:1rem;">${r.nombre}</p>
+            <p style="color:var(--tan); font-size:0.85rem; margin:0;">📱 ${r.telefono}</p>
+          </div>
+          ${badge}
+        </div>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.75rem;">
+          <span style="font-size:0.85rem; color:var(--tan);">🛏️ ${r.habitacion_tipo || '—'}</span>
+          <span style="font-size:0.85rem; color:var(--tan);">📅 Check-in: ${fmtDate(r.checkin)}</span>
+          <span style="font-size:0.85rem; color:var(--tan);">🚪 Check-out: ${fmtDate(r.checkout)}</span>
+          <span style="font-size:0.85rem; color:var(--tan);">🌙 ${r.noches || '?'} noche(s)</span>
+          <span style="font-size:0.85rem; color:var(--tan);">👤 ${r.huespedes || 1} hués.</span>
+        </div>
+        ${r.nota ? `<p style="font-size:0.8rem; color:rgba(242,232,213,0.5); margin:0.5rem 0 0; font-style:italic;">💬 ${r.nota}</p>` : ''}
+        <div style="display:flex; gap:0.5rem; margin-top:0.875rem; flex-wrap:wrap;">
+          <button class="act-btn act-checkout" onclick="cambiarEstado('${r.id}','completada')">🚪 Registrar check-out</button>
+        </div>
+      </div>`;
   }
 
   /* ── Próximas (14 días) ── */

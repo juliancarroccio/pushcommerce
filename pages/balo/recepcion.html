@@ -597,6 +597,18 @@
     });
   }
 
+  /* ── Debug (temporal) ── */
+  window.debugReservas = function() {
+    const today = new Date().toISOString().slice(0, 10);
+    console.log('=== allReservas ===', JSON.stringify(allReservas.map(r => ({
+      id: r.id, nombre: r.nombre, estado: r.estado,
+      checkin: r.checkin, checkout: r.checkout,
+      checkin_type: typeof r.checkin,
+      checkin_gt_today: r.checkin > today
+    })), null, 2));
+    console.log('today:', today);
+  };
+
   /* ── Export CSV ── */
   window.exportCSV = function() {
     const headers = ['Fecha reserva','Nombre','Teléfono','Habitación','Check-in','Check-out','Noches','Huéspedes','Nota','Estado'];

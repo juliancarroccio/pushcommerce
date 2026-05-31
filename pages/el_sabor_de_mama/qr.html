@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR — El Sabor de Mamá</title>
+  <link rel="icon" href="./img/logo.jpg" type="image/jpeg" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root { --noir:#0C0C0C; --gold:#F4BD4D; --cream:#F0EAD8; --muted:#7A7060; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background: var(--cream); margin: 0; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;
+    }
+    .card {
+      background: #fff; border-radius: 1.5rem;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.1);
+      padding: 3rem 2.5rem; max-width: 420px; width: 100%; text-align: center;
+    }
+    .card img { max-height: 72px; width: auto; border-radius: 6px; margin: 0 auto 1.25rem; display: block; }
+    .tagline { font-size: 0.9rem; color: var(--muted); margin: 0 0 0.25rem; }
+    .sub { font-size: 0.8rem; color: var(--muted); margin: 0 0 0; font-weight: 500; }
+    .divider {
+      height: 2px; width: 80%; margin: 1.5rem auto;
+      background: linear-gradient(90deg, var(--gold), var(--noir), var(--gold));
+      border-radius: 1px;
+    }
+    #qr-box { display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+    #qr-box canvas, #qr-box img { border-radius: 10px; }
+    .scan-text { font-size: 1.05rem; font-weight: 700; color: var(--noir); margin: 0 0 0.4rem; }
+    .scan-sub { font-size: 0.875rem; color: var(--muted); margin: 0 0 0.75rem; }
+    .url-text { font-size: 0.7rem; color: var(--muted); word-break: break-all; margin: 0 0 1.5rem; font-family: monospace; }
+    .address { font-size: 0.875rem; color: var(--muted); line-height: 1.7; margin: 0; }
+    .powered { font-size: 0.72rem; color: var(--muted); margin: 1.5rem 0 0; opacity: 0.6; }
+    @media print {
+      body { background: white; padding: 0; }
+      .card { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <img src="./img/logo.jpg" alt="El Sabor de Mamá" />
+  <p class="tagline">Empanadas artesanales con amor</p>
+  <p class="sub">Las Flores · Buenos Aires</p>
+  <div class="divider"></div>
+  <div id="qr-box"></div>
+  <p class="scan-text">Hacé tu pedido</p>
+  <p class="scan-sub">Escaneá el código para ver el menú<br>y elegir tus sabores</p>
+  <p class="url-text">elsabordemama.github.io/tienda.html</p>
+  <div class="divider"></div>
+  <p class="address">
+    📍 Av. D. F. Sarmiento 545, Las Flores B7200<br>
+    📱 02244 47-5575<br>
+    🥟 $1.500 c/u · Docena $16.000<br>
+    📸 @empanadas_elsabordemama
+  </p>
+  <p class="powered">Desarrollado por PushCommerce · Julian Carroccio</p>
+</div>
+<script>
+  const url = 'https://elsabordemama.github.io/tienda.html';
+  new QRCode(document.getElementById('qr-box'), {
+    text: url, width: 220, height: 220,
+    colorDark: '#0C0C0C', colorLight: '#FFFFFF',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+</body>
+</html>

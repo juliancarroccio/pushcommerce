@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://elsabordemama.github.io/sitemap.xml

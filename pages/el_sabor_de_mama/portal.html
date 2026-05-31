@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal — El Sabor de Mamá</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="./img/logo.jpg" type="image/jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Firebase compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --noir: #0C0C0C;
+      --slate: #161618;
+      --card: #1E1E20;
+      --border: #2A2A2E;
+      --gold: #F4BD4D;
+      --gold-dark: #C4952A;
+      --cream: #F0EAD8;
+      --muted: #7A7060;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--noir); color: var(--cream);
+      margin: 0; min-height: 100vh;
+    }
+    h1,h2,h3 { font-family: 'Syne', sans-serif; margin: 0; }
+    input, textarea, select {
+      font-family: 'Manrope', sans-serif;
+      background: var(--noir); border: 1px solid var(--border);
+      color: var(--cream); border-radius: 8px; padding: 0.625rem 0.875rem;
+      font-size: 0.9rem; outline: none; width: 100%;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+    button {
+      font-family: 'Syne', sans-serif; cursor: pointer; border: none;
+    }
+
+    /* Login */
+    #login-screen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .login-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 400px;
+      text-align: center;
+    }
+    .login-card img { height: 48px; border-radius: 4px; margin-bottom: 1.5rem; }
+    .login-card h2 { font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem; }
+    .login-card p { font-size: 0.85rem; color: var(--muted); margin-bottom: 2rem; }
+    .login-card input { margin-bottom: 1rem; text-align: center; letter-spacing: 0.1em; }
+    #btn-login {
+      width: 100%; background: var(--gold); color: var(--noir);
+      font-weight: 700; font-size: 1rem; padding: 0.875rem;
+      border-radius: 10px; transition: background 0.2s;
+    }
+    #btn-login:hover { background: var(--gold-dark); }
+    #login-error {
+      margin-top: 0.75rem; font-size: 0.8rem; color: #f87171; display: none;
+    }
+
+    /* App */
+    #app { display: none; }
+
+    /* Header */
+    .portal-header {
+      background: rgba(12,12,12,0.95); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100;
+      padding: 0 1.5rem; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .portal-header .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .portal-header img { height: 32px; border-radius: 3px; }
+    .portal-header span { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; }
+    .portal-header .pill-portal {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+      background: rgba(244,189,77,0.15); color: var(--gold);
+      padding: 0.25rem 0.75rem; border-radius: 99px;
+    }
+    #btn-logout {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.8rem; padding: 0.4rem 0.875rem;
+      border-radius: 6px; transition: all 0.2s;
+    }
+    #btn-logout:hover { border-color: #f87171; color: #f87171; }
+
+    /* Main */
+    .portal-body { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* Firebase status */
+    #fb-status {
+      padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem;
+      font-size: 0.85rem; font-weight: 600;
+    }
+    #fb-status.ok { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.25); }
+    #fb-status.error { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
+    #fb-status.loading { background: rgba(244,189,77,0.1); color: var(--gold); border: 1px solid rgba(244,189,77,0.25); }
+
+    /* Section cards */
+    .section-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; margin-bottom: 1.5rem; overflow: hidden;
+    }
+    .section-head {
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-head h3 { font-size: 1rem; font-weight: 700; color: #fff; }
+    .section-body { padding: 1.5rem; }
+
+    /* Horarios */
+    .hor-row {
+      display: grid; grid-template-columns: 120px 1fr 1fr; gap: 0.75rem;
+      align-items: center; margin-bottom: 0.75rem;
+    }
+    .hor-row label { font-size: 0.85rem; font-weight: 600; color: var(--cream); }
+    .hor-row input { font-size: 0.85rem; }
+    .hor-row input[type="time"] { max-width: 100px; }
+    .turno-row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .turno-row span { font-size: 0.75rem; color: var(--muted); }
+
+    /* Toggle */
+    .toggle-wrap { display: flex; align-items: center; gap: 1rem; }
+    .toggle {
+      width: 48px; height: 26px; border-radius: 99px;
+      background: var(--border); border: none;
+      position: relative; cursor: pointer; transition: background 0.2s;
+    }
+    .toggle::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 20px; height: 20px; border-radius: 50%; background: #fff;
+      transition: transform 0.2s;
+    }
+    .toggle.on { background: var(--gold); }
+    .toggle.on::after { transform: translateX(22px); }
+    .toggle-label { font-size: 0.9rem; color: var(--cream); }
+
+    /* Buttons */
+    .btn-save {
+      background: var(--gold); color: var(--noir);
+      font-weight: 700; font-size: 0.9rem;
+      padding: 0.625rem 1.5rem; border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--gold-dark); }
+    .save-msg {
+      font-size: 0.8rem; color: #4ade80; margin-left: 0.75rem;
+      opacity: 0; transition: opacity 0.3s;
+    }
+
+    /* Precios */
+    .precios-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field-group label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--muted); display: block; margin-bottom: 0.4rem; text-transform: uppercase; }
+    .input-prefix { position: relative; }
+    .input-prefix span {
+      position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 0.9rem;
+    }
+    .input-prefix input { padding-left: 1.75rem; }
+
+    /* Oferta */
+    .oferta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+    #oferta-fields { margin-top: 1rem; }
+
+    /* Links section */
+    .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .link-card {
+      background: var(--slate); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+      text-decoration: none; transition: border-color 0.2s;
+    }
+    .link-card:hover { border-color: var(--gold); }
+    .link-card .lc-icon { font-size: 1.5rem; }
+    .link-card .lc-text strong { display: block; font-size: 0.9rem; color: #fff; font-weight: 700; }
+    .link-card .lc-text span { font-size: 0.75rem; color: var(--muted); }
+
+    @media (max-width: 600px) {
+      .precios-grid, .oferta-grid, .links-grid { grid-template-columns: 1fr; }
+      .hor-row { grid-template-columns: 100px 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-card">
+    <img src="./img/logo.jpg" alt="El Sabor de Mamá" />
+    <h2>Portal de Gestión</h2>
+    <p>Ingresá la contraseña para continuar</p>
+    <input type="password" id="pass-input" placeholder="Contraseña" />
+    <button id="btn-login" onclick="doLogin()">Entrar</button>
+    <p id="login-error">Contraseña incorrecta</p>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <header class="portal-header">
+    <div class="brand">
+      <img src="./img/logo.jpg" alt="" />
+      <span>El Sabor de Mamá</span>
+      <span class="pill-portal">PORTAL</span>
+    </div>
+    <button id="btn-logout" onclick="doLogout()">Salir</button>
+  </header>
+
+  <div class="portal-body">
+    <div id="fb-status" class="loading">⏳ Conectando con Firebase…</div>
+
+    <!-- Links rápidos -->
+    <div class="section-card">
+      <div class="section-head"><h3>🔗 Páginas del sitio</h3></div>
+      <div class="section-body">
+        <div class="links-grid">
+          <a href="./index.html" target="_blank" class="link-card">
+            <span class="lc-icon">🏠</span>
+            <div class="lc-text"><strong>Landing</strong><span>Página principal</span></div>
+          </a>
+          <a href="./tienda.html" target="_blank" class="link-card">
+            <span class="lc-icon">🥟</span>
+            <div class="lc-text"><strong>Tienda</strong><span>Catálogo y pedidos</span></div>
+          </a>
+          <a href="./pedidos.html" target="_blank" class="link-card">
+            <span class="lc-icon">🔢</span>
+            <div class="lc-text"><strong>Cola de pedidos</strong><span>Sistema de turnos</span></div>
+          </a>
+          <a href="./qr.html" target="_blank" class="link-card">
+            <span class="lc-icon">📱</span>
+            <div class="lc-text"><strong>QR</strong><span>Para imprimir</span></div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Precios -->
+    <div class="section-card">
+      <div class="section-head">
+        <h3>💰 Precios</h3>
+        <div><button class="btn-save" onclick="savePrecios()">Guardar</button><span class="save-msg" id="msg-precios">✓ Guardado</span></div>
+      </div>
+      <div class="section-body">
+        <div class="precios-grid">
+          <div class="field-group">
+            <label>Precio unitario</label>
+            <div class="input-prefix"><span>$</span><input type="number" id="precio-unit" value="1500" min="0" step="100" /></div>
+          </div>
+          <div class="field-group">
+            <label>Precio docena (12 unidades)</label>
+            <div class="input-prefix"><span>$</span><input type="number" id="precio-docena" value="16000" min="0" step="500" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Oferta -->
+    <div class="section-card">
+      <div class="section-head">
+        <h3>🏷️ Oferta especial</h3>
+        <div><button class="btn-save" onclick="saveOferta()">Guardar</button><span class="save-msg" id="msg-oferta">✓ Guardado</span></div>
+      </div>
+      <div class="section-body">
+        <div class="toggle-wrap">
+          <button class="toggle" id="toggle-oferta" onclick="toggleOferta()"></button>
+          <span class="toggle-label" id="toggle-oferta-label">Oferta desactivada</span>
+        </div>
+        <div id="oferta-fields" style="display:none">
+          <div class="oferta-grid">
+            <div class="field-group">
+              <label>Texto de la oferta</label>
+              <input type="text" id="oferta-texto" placeholder="Ej: Oferta del finde" />
+            </div>
+            <div class="field-group">
+              <label>Precio especial</label>
+              <div class="input-prefix"><span>$</span><input type="number" id="oferta-precio" value="0" min="0" step="100" /></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horarios -->
+    <div class="section-card">
+      <div class="section-head">
+        <h3>🕐 Horarios</h3>
+        <div><button class="btn-save" onclick="saveHorarios()">Guardar</button><span class="save-msg" id="msg-horarios">✓ Guardado</span></div>
+      </div>
+      <div class="section-body">
+        <p style="font-size:0.8rem;color:var(--muted);margin:0 0 1.25rem">Si el negocio tiene descanso al mediodía, completá ambos turnos. Si trabaja sin corte, dejá el 2° turno en blanco. Si está cerrado ese día, dejá todo vacío.</p>
+        <div id="hor-editor"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Auth ────────────────────────────────────────────────────────────
+const PASS = 'mama2024'; // Cambiar por la contraseña deseada
+const SESSION_KEY = 'esm_portal';
+
+function checkAuth() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+    return s && (Date.now() - s.ts < 8 * 3600 * 1000);
+  } catch { return false; }
+}
+
+function doLogin() {
+  const val = document.getElementById('pass-input').value;
+  if (val === PASS) {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now() }));
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = '';
+    initApp();
+  } else {
+    document.getElementById('login-error').style.display = '';
+    document.getElementById('pass-input').value = '';
+    document.getElementById('pass-input').focus();
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+document.getElementById('pass-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+if (checkAuth()) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = '';
+  initApp();
+}
+
+// ── Firebase ─────────────────────────────────────────────────────────
+const FIREBASE_CONFIG = {
+  // ⚠️ Reemplazar con tu configuración de Firebase (ver instrucciones de deploy)
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROJECT.firebaseapp.com",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_PROJECT.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+
+let db = null;
+
+// ── Horarios config ─────────────────────────────────────────────────
+const DIAS = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+const DIAS_LABEL = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+
+const DEFAULT_HORARIOS = {
+  lunes:     [{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:00'}],
+  martes:    [{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:00'}],
+  'miércoles':[{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:00'}],
+  jueves:    [{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:00'}],
+  viernes:   [{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:30'}],
+  'sábado':  [{abre:'11:00',cierra:'14:30'},{abre:'19:00',cierra:'23:30'}],
+  domingo:   [{abre:'19:00',cierra:'23:00'}]
+};
+
+// ── Oferta toggle ──────────────────────────────────────────────────
+let ofertaActiva = false;
+function toggleOferta() {
+  ofertaActiva = !ofertaActiva;
+  const btn = document.getElementById('toggle-oferta');
+  const label = document.getElementById('toggle-oferta-label');
+  const fields = document.getElementById('oferta-fields');
+  btn.classList.toggle('on', ofertaActiva);
+  label.textContent = ofertaActiva ? 'Oferta activada' : 'Oferta desactivada';
+  fields.style.display = ofertaActiva ? '' : 'none';
+}
+
+// ── Save helpers ──────────────────────────────────────────────────
+function showSaveMsg(id) {
+  const el = document.getElementById(id);
+  el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 2000);
+}
+
+async function saveToFirebase(data) {
+  if (!db) throw new Error('Firebase no conectado');
+  await db.collection('config').doc('datos').set(data, { merge: true });
+}
+
+// ── Save functions ─────────────────────────────────────────────────
+async function savePrecios() {
+  const unit = parseInt(document.getElementById('precio-unit').value) || 1500;
+  const docena = parseInt(document.getElementById('precio-docena').value) || 16000;
+  try {
+    await saveToFirebase({ precios: { empanada_unit: unit, docena, docena_cantidad: 12 } });
+    showSaveMsg('msg-precios');
+  } catch (e) {
+    alert('Error al guardar: ' + e.message);
+  }
+}
+
+async function saveOferta() {
+  const activa = ofertaActiva;
+  const texto = document.getElementById('oferta-texto').value.trim();
+  const precio = parseInt(document.getElementById('oferta-precio').value) || 0;
+  try {
+    await saveToFirebase({ oferta: { activa, texto, precio_oferta: precio } });
+    showSaveMsg('msg-oferta');
+  } catch (e) {
+    alert('Error al guardar: ' + e.message);
+  }
+}
+
+async function saveHorarios() {
+  const horarios = {};
+  DIAS.forEach(dia => {
+    const t1a = document.getElementById(`${dia}-t1a`)?.value;
+    const t1c = document.getElementById(`${dia}-t1c`)?.value;
+    const t2a = document.getElementById(`${dia}-t2a`)?.value;
+    const t2c = document.getElementById(`${dia}-t2c`)?.value;
+    const turnos = [];
+    if (t1a && t1c) turnos.push({ abre: t1a, cierra: t1c });
+    if (t2a && t2c) turnos.push({ abre: t2a, cierra: t2c });
+    horarios[dia] = turnos;
+  });
+  try {
+    await saveToFirebase({ horarios });
+    showSaveMsg('msg-horarios');
+  } catch (e) {
+    alert('Error al guardar: ' + e.message);
+  }
+}
+
+// ── Build horario editor ──────────────────────────────────────────
+function buildHorEditor(horarios) {
+  const h = horarios || DEFAULT_HORARIOS;
+  const editor = document.getElementById('hor-editor');
+  editor.innerHTML = DIAS.map((dia, i) => {
+    const ts = h[dia] || [];
+    const t1 = ts[0] || { abre: '', cierra: '' };
+    const t2 = ts[1] || { abre: '', cierra: '' };
+    return `<div class="hor-row">
+      <label>${DIAS_LABEL[i]}</label>
+      <div class="turno-row">
+        <span>1er turno</span>
+        <input type="time" id="${dia}-t1a" value="${t1.abre}" style="width:100px" />
+        <span>–</span>
+        <input type="time" id="${dia}-t1c" value="${t1.cierra}" style="width:100px" />
+      </div>
+      <div class="turno-row">
+        <span>2do turno</span>
+        <input type="time" id="${dia}-t2a" value="${t2.abre}" style="width:100px" />
+        <span>–</span>
+        <input type="time" id="${dia}-t2c" value="${t2.cierra}" style="width:100px" />
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+function initApp() {
+  buildHorEditor(null);
+
+  const fbStatus = document.getElementById('fb-status');
+
+  // Try Firebase
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+
+    db.collection('config').doc('datos').get()
+      .then(doc => {
+        fbStatus.className = 'ok';
+        fbStatus.textContent = '✅ Conectado a Firebase — cambios se guardan en tiempo real';
+
+        if (doc.exists) {
+          const data = doc.data();
+          if (data.precios) {
+            document.getElementById('precio-unit').value = data.precios.empanada_unit || 1500;
+            document.getElementById('precio-docena').value = data.precios.docena || 16000;
+          }
+          if (data.oferta) {
+            ofertaActiva = data.oferta.activa || false;
+            document.getElementById('toggle-oferta').classList.toggle('on', ofertaActiva);
+            document.getElementById('toggle-oferta-label').textContent = ofertaActiva ? 'Oferta activada' : 'Oferta desactivada';
+            document.getElementById('oferta-fields').style.display = ofertaActiva ? '' : 'none';
+            document.getElementById('oferta-texto').value = data.oferta.texto || '';
+            document.getElementById('oferta-precio').value = data.oferta.precio_oferta || '';
+          }
+          if (data.horarios) buildHorEditor(data.horarios);
+        }
+      })
+      .catch(() => {
+        fbStatus.className = 'error';
+        fbStatus.textContent = '⚠️ Firebase conectado pero error al leer — verificá las reglas de Firestore';
+      });
+  } catch (e) {
+    fbStatus.className = 'error';
+    fbStatus.textContent = '⚠️ Firebase no configurado — reemplazá FIREBASE_CONFIG con tus credenciales';
+    db = null;
+  }
+}
+</script>
+</body>
+</html>

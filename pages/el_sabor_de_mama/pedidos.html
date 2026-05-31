@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cola de Pedidos — El Sabor de Mamá</title>
+  <link rel="icon" href="./img/logo.jpg" type="image/jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --noir: #0C0C0C;
+      --slate: #161618;
+      --card: #1E1E20;
+      --border: #2A2A2E;
+      --gold: #F4BD4D;
+      --gold-dark: #C4952A;
+      --cream: #F0EAD8;
+      --muted: #7A7060;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--noir); color: var(--cream);
+      margin: 0; min-height: 100vh;
+    }
+    h1,h2,h3 { font-family: 'Syne', sans-serif; margin: 0; }
+    button { font-family: 'Syne', sans-serif; cursor: pointer; border: none; }
+    input { font-family: 'Manrope', sans-serif; }
+
+    /* Header */
+    .cola-header {
+      background: rgba(12,12,12,0.95); border-bottom: 1px solid var(--border);
+      padding: 0 1.25rem; height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px);
+    }
+    .cola-header .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .cola-header img { height: 30px; border-radius: 3px; }
+    .cola-header h1 { font-size: 0.9rem; font-weight: 700; color: #fff; }
+    #btn-admin-toggle {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.75rem; padding: 0.35rem 0.875rem;
+      border-radius: 6px; transition: all 0.2s;
+    }
+    #btn-admin-toggle:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Firebase error banner */
+    #fb-error {
+      background: rgba(248,113,113,0.1); color: #f87171;
+      border: 1px solid rgba(248,113,113,0.25);
+      margin: 1rem; padding: 0.875rem 1rem; border-radius: 8px;
+      font-size: 0.85rem; display: none;
+    }
+
+    /* ── CLIENTE VIEW ── */
+    #cliente-view {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 2rem 1.5rem; max-width: 480px; margin: 0 auto;
+    }
+
+    /* Número sirviendo (grande) */
+    .sirviendo-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem;
+      text-align: center; width: 100%; margin-bottom: 1.5rem;
+    }
+    .sirviendo-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 1rem;
+    }
+    #num-sirviendo {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(5rem, 20vw, 9rem);
+      font-weight: 800; color: var(--gold); line-height: 1;
+    }
+    .sirviendo-sub { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+
+    /* Queue info */
+    .queue-info {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+      width: 100%; margin-bottom: 1.5rem;
+    }
+    .qi-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem; text-align: center;
+    }
+    .qi-num { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--cream); }
+    .qi-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+
+    /* Mi turno box */
+    #mi-turno-box {
+      background: rgba(244,189,77,0.1); border: 1px solid rgba(244,189,77,0.3);
+      border-radius: 12px; padding: 1.25rem; text-align: center;
+      width: 100%; margin-bottom: 1.5rem; display: none;
+    }
+    #mi-turno-box .mt-label { font-size: 0.75rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; }
+    #mi-turno-num { font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800; color: var(--gold); line-height: 1; }
+    #mi-turno-estado { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+
+    /* Take turn form */
+    #tomar-turno-box { width: 100%; }
+    #tomar-turno-box h2 { font-size: 1.25rem; color: #fff; margin-bottom: 0.5rem; }
+    #tomar-turno-box p { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.25rem; }
+    #nombre-input {
+      width: 100%; background: var(--card); border: 1px solid var(--border);
+      color: var(--cream); font-size: 1rem; padding: 0.875rem 1rem;
+      border-radius: 10px; outline: none; margin-bottom: 0.875rem;
+      transition: border-color 0.2s;
+    }
+    #nombre-input:focus { border-color: var(--gold); }
+    #nombre-input::placeholder { color: var(--muted); }
+    #btn-tomar-turno {
+      width: 100%; background: var(--gold); color: var(--noir);
+      font-weight: 800; font-size: 1.05rem; padding: 1rem;
+      border-radius: 10px; transition: background 0.2s, transform 0.15s;
+    }
+    #btn-tomar-turno:hover { background: var(--gold-dark); }
+    #btn-tomar-turno:active { transform: scale(0.98); }
+    #btn-tomar-turno:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── ADMIN VIEW ── */
+    #admin-view {
+      display: none; max-width: 700px; margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* Admin auth */
+    #admin-auth {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 1.5rem;
+    }
+    #admin-auth h2 { font-size: 1.2rem; color: #fff; margin-bottom: 1rem; }
+    #admin-pass {
+      background: var(--noir); border: 1px solid var(--border);
+      color: var(--cream); font-size: 0.95rem; padding: 0.75rem 1rem;
+      border-radius: 8px; outline: none; margin-bottom: 0.75rem;
+      width: 100%; transition: border-color 0.2s; text-align: center;
+    }
+    #admin-pass:focus { border-color: var(--gold); }
+    #btn-admin-login {
+      background: var(--gold); color: var(--noir);
+      font-weight: 700; font-size: 0.9rem; padding: 0.75rem 2rem;
+      border-radius: 8px; transition: background 0.2s;
+    }
+    #btn-admin-login:hover { background: var(--gold-dark); }
+
+    /* Admin panel */
+    #admin-panel { display: none; }
+    .admin-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .astat {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem; text-align: center;
+    }
+    .astat-num { font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--gold); line-height: 1; }
+    .astat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.25rem; }
+    .admin-actions {
+      display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .btn-llamar {
+      flex: 1; background: var(--gold); color: var(--noir);
+      font-weight: 800; font-size: 1rem; padding: 1rem;
+      border-radius: 10px; transition: background 0.2s; min-width: 160px;
+    }
+    .btn-llamar:hover { background: var(--gold-dark); }
+    .btn-resetear {
+      background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
+      color: #f87171; font-weight: 700; font-size: 0.85rem;
+      padding: 0.875rem 1.25rem; border-radius: 10px; transition: all 0.2s;
+    }
+    .btn-resetear:hover { background: rgba(248,113,113,0.2); }
+    .queue-list { }
+    .queue-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.875rem 1rem;
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .queue-item.activo { border-color: var(--gold); background: rgba(244,189,77,0.07); }
+    .qi-numero {
+      font-family: 'Syne', sans-serif; font-size: 1.5rem;
+      font-weight: 800; color: var(--gold); min-width: 40px;
+    }
+    .qi-nombre { flex: 1; font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .qi-hora { font-size: 0.75rem; color: var(--muted); }
+    .btn-completar {
+      background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.25);
+      color: #4ade80; font-size: 0.75rem; font-weight: 700;
+      padding: 0.375rem 0.75rem; border-radius: 6px; transition: all 0.2s;
+    }
+    .btn-completar:hover { background: rgba(74,222,128,0.2); }
+    .empty-queue { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<header class="cola-header">
+  <div class="brand">
+    <img src="./img/logo.jpg" alt="El Sabor de Mamá" />
+    <h1>Cola de Pedidos</h1>
+  </div>
+  <button id="btn-admin-toggle" onclick="toggleAdmin()">Panel Admin</button>
+</header>
+
+<div id="fb-error">⚠️ Sin conexión a Firebase. Configurá las credenciales en el código.</div>
+
+<!-- Cliente View -->
+<div id="cliente-view">
+  <div class="sirviendo-box">
+    <div class="sirviendo-label">🔊 Atendiendo ahora</div>
+    <div id="num-sirviendo">—</div>
+    <div class="sirviendo-sub">Seguí tu número para saber cuándo es tu turno</div>
+  </div>
+
+  <div class="queue-info">
+    <div class="qi-card">
+      <div class="qi-num" id="total-en-cola">—</div>
+      <div class="qi-label">En la cola</div>
+    </div>
+    <div class="qi-card">
+      <div class="qi-num" id="espera-est">—</div>
+      <div class="qi-label">Min. aprox.</div>
+    </div>
+  </div>
+
+  <div id="mi-turno-box">
+    <div class="mt-label">Tu número</div>
+    <div id="mi-turno-num">—</div>
+    <div id="mi-turno-estado">Esperá que llamen tu número</div>
+  </div>
+
+  <div id="tomar-turno-box">
+    <h2>¿Querés sacar un turno?</h2>
+    <p>Ingresá tu nombre y te avisamos cuando estén listos tus pedidos.</p>
+    <input type="text" id="nombre-input" placeholder="Tu nombre" maxlength="30" />
+    <button id="btn-tomar-turno" onclick="tomarTurno()">Sacar turno</button>
+  </div>
+</div>
+
+<!-- Admin View -->
+<div id="admin-view">
+  <div id="admin-auth">
+    <h2>🔒 Acceso Admin</h2>
+    <input type="password" id="admin-pass" placeholder="Contraseña" />
+    <br><br>
+    <button id="btn-admin-login" onclick="adminLogin()">Entrar</button>
+  </div>
+  <div id="admin-panel">
+    <div class="admin-stats">
+      <div class="astat"><div class="astat-num" id="a-sirviendo">—</div><div class="astat-label">Sirviendo</div></div>
+      <div class="astat"><div class="astat-num" id="a-en-cola">0</div><div class="astat-label">En cola</div></div>
+      <div class="astat"><div class="astat-num" id="a-completados">0</div><div class="astat-label">Completados</div></div>
+    </div>
+    <div class="admin-actions">
+      <button class="btn-llamar" onclick="llamarSiguiente()">📣 Llamar siguiente</button>
+      <button class="btn-resetear" onclick="resetearCola()">↺ Resetear cola</button>
+    </div>
+    <div class="queue-list" id="queue-list">
+      <div class="empty-queue">No hay pedidos en la cola</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const FIREBASE_CONFIG = {
+  // ⚠️ Reemplazar con tu configuración de Firebase
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROJECT.firebaseapp.com",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_PROJECT.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+
+const ADMIN_PASS = 'mama2024'; // Misma contraseña del portal
+const TURNO_KEY = 'esm_mi_turno';
+
+let db = null;
+let adminAuthed = false;
+let estadoActual = { sirviendo: 0, ultimo_turno: 0 };
+let turnos = [];
+
+// ── Firebase init ──────────────────────────────────────────────────
+try {
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.firestore();
+  startListeners();
+} catch (e) {
+  document.getElementById('fb-error').style.display = '';
+}
+
+function startListeners() {
+  // Escuchar estado de la cola
+  db.collection('cola').doc('estado').onSnapshot(doc => {
+    if (doc.exists) {
+      estadoActual = doc.data();
+    } else {
+      estadoActual = { sirviendo: 0, ultimo_turno: 0 };
+    }
+    updateClienteView();
+    if (adminAuthed) updateAdminView();
+  }, () => { document.getElementById('fb-error').style.display = ''; });
+
+  // Escuchar turnos activos
+  db.collection('cola').doc('estado').collection('turnos')
+    .where('estado', '==', 'esperando')
+    .orderBy('numero')
+    .onSnapshot(snap => {
+      turnos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      updateClienteView();
+      if (adminAuthed) updateAdminView();
+    }, () => {});
+}
+
+// ── Cliente view ───────────────────────────────────────────────────
+function updateClienteView() {
+  const sirviendo = estadoActual.sirviendo || 0;
+  document.getElementById('num-sirviendo').textContent = sirviendo > 0 ? sirviendo : '—';
+  document.getElementById('total-en-cola').textContent = turnos.length;
+  const espera = Math.max(0, turnos.length) * 5; // ~5 min per order
+  document.getElementById('espera-est').textContent = espera > 0 ? espera : '< 5';
+
+  // Mi turno
+  const miTurno = JSON.parse(localStorage.getItem(TURNO_KEY) || 'null');
+  if (miTurno) {
+    document.getElementById('mi-turno-box').style.display = '';
+    document.getElementById('tomar-turno-box').querySelector('h2').textContent = '¿Querés otro turno?';
+    document.getElementById('mi-turno-num').textContent = miTurno.numero;
+    const pos = turnos.findIndex(t => t.numero === miTurno.numero);
+    if (miTurno.numero === sirviendo) {
+      document.getElementById('mi-turno-estado').innerHTML = '<span style="color:#4ade80;font-weight:700">✅ ¡Listo! Pasá a buscar tu pedido</span>';
+    } else if (pos >= 0) {
+      document.getElementById('mi-turno-estado').textContent = `Posición en cola: ${pos + 1}`;
+    } else {
+      document.getElementById('mi-turno-estado').textContent = 'Turno completado';
+    }
+  }
+}
+
+async function tomarTurno() {
+  const nombre = document.getElementById('nombre-input').value.trim();
+  if (!nombre) { alert('Ingresá tu nombre'); return; }
+  if (!db) { alert('Sin conexión a Firebase'); return; }
+
+  const btn = document.getElementById('btn-tomar-turno');
+  btn.disabled = true; btn.textContent = 'Procesando…';
+
+  try {
+    const nuevoNumero = (estadoActual.ultimo_turno || 0) + 1;
+    const batch = db.batch();
+    batch.set(db.collection('cola').doc('estado'), {
+      ultimo_turno: nuevoNumero,
+      sirviendo: estadoActual.sirviendo || 0
+    }, { merge: true });
+    batch.set(db.collection('cola').doc('estado').collection('turnos').doc(), {
+      numero: nuevoNumero,
+      nombre,
+      estado: 'esperando',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await batch.commit();
+    localStorage.setItem(TURNO_KEY, JSON.stringify({ numero: nuevoNumero, nombre }));
+    document.getElementById('nombre-input').value = '';
+  } catch (e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sacar turno';
+  }
+}
+
+// ── Admin view ─────────────────────────────────────────────────────
+function toggleAdmin() {
+  const av = document.getElementById('admin-view');
+  const cv = document.getElementById('cliente-view');
+  const isAdmin = av.style.display !== 'none';
+  av.style.display = isAdmin ? 'none' : '';
+  cv.style.display = isAdmin ? '' : 'none';
+  document.getElementById('btn-admin-toggle').textContent = isAdmin ? 'Panel Admin' : 'Vista Cliente';
+}
+
+function adminLogin() {
+  const pass = document.getElementById('admin-pass').value;
+  if (pass === ADMIN_PASS) {
+    adminAuthed = true;
+    document.getElementById('admin-auth').style.display = 'none';
+    document.getElementById('admin-panel').style.display = '';
+    updateAdminView();
+  } else {
+    alert('Contraseña incorrecta');
+  }
+}
+
+document.getElementById('admin-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') adminLogin();
+});
+
+function updateAdminView() {
+  const sirviendo = estadoActual.sirviendo || 0;
+  document.getElementById('a-sirviendo').textContent = sirviendo > 0 ? sirviendo : '—';
+  document.getElementById('a-en-cola').textContent = turnos.length;
+
+  const list = document.getElementById('queue-list');
+  if (turnos.length === 0) {
+    list.innerHTML = '<div class="empty-queue">No hay pedidos en espera 🥟</div>';
+    return;
+  }
+  list.innerHTML = turnos.map(t => {
+    const hora = t.timestamp?.toDate ? t.timestamp.toDate().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
+    const activo = t.numero === sirviendo;
+    return `<div class="queue-item ${activo ? 'activo' : ''}">
+      <div class="qi-numero">#${t.numero}</div>
+      <div class="qi-nombre">${t.nombre}</div>
+      <div class="qi-hora">${hora}</div>
+      <button class="btn-completar" onclick="completarTurno('${t.id}', ${t.numero})">✓ Listo</button>
+    </div>`;
+  }).join('');
+}
+
+async function llamarSiguiente() {
+  if (!db) return;
+  if (turnos.length === 0) { alert('No hay turnos en espera'); return; }
+  const siguiente = turnos[0];
+  await db.collection('cola').doc('estado').set({ sirviendo: siguiente.numero }, { merge: true });
+}
+
+async function completarTurno(id, numero) {
+  if (!db) return;
+  await db.collection('cola').doc('estado').collection('turnos').doc(id).update({ estado: 'completado' });
+}
+
+async function resetearCola() {
+  if (!db) return;
+  if (!confirm('¿Resetear toda la cola? Esto eliminará todos los turnos activos.')) return;
+  const snap = await db.collection('cola').doc('estado').collection('turnos').where('estado', '==', 'esperando').get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  batch.set(db.collection('cola').doc('estado'), { sirviendo: 0, ultimo_turno: 0 }, { merge: true });
+  await batch.commit();
+}
+</script>
+</body>
+</html>

@@ -16,7 +16,7 @@
     },
     {
       "id": 1780685021843,
-      "activa": false,
+      "activa": true,
       "producto_id": 2,
       "texto": "Oferta de la semana",
       "precio_oferta": 10000

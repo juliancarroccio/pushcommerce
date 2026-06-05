@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal — Cani Ventas</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="./img/logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --noir:  #080C14;
+      --slate: #0D1820;
+      --card:  #101C2C;
+      --card2: #152232;
+      --brd:   rgba(86,188,109,0.14);
+      --brd2:  rgba(86,188,109,0.07);
+      --gold:  #56BC6D;
+      --gold2: #3FA855;
+      --cream: #EDF5EE;
+      --muted: rgba(237,245,238,0.38);
+      --red:   #f87171;
+      --green: #4ade80;
+    }
+    html, body { height: 100%; background: var(--noir); color: var(--cream); font-family: 'Manrope', sans-serif; }
+    .lbl { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 0.4rem; }
+    .inp { width: 100%; padding: 0.6rem 0.875rem; border: 1.5px solid var(--brd2); border-radius: 8px; font-size: 0.875rem; color: var(--cream); background: var(--card2); outline: none; transition: border-color 0.15s; font-family: 'Manrope', sans-serif; }
+    .inp:focus { border-color: var(--gold); }
+    .inp::placeholder { color: var(--muted); }
+    select.inp option { background: var(--card2); }
+    .mb4 { margin-bottom: 1rem; }
+    .mb2 { margin-bottom: 0.5rem; }
+    .tog { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .tog input { opacity: 0; width: 0; height: 0; }
+    .tog-sl { position: absolute; inset: 0; background: rgba(255,255,255,0.06); border-radius: 24px; cursor: pointer; transition: 0.2s; border: 1px solid var(--brd2); }
+    .tog-sl::before { content:''; position: absolute; height: 18px; width: 18px; left: 2px; bottom: 2px; background: var(--muted); border-radius: 50%; transition: 0.2s; }
+    .tog input:checked + .tog-sl { background: rgba(86,188,109,0.18); border-color: rgba(86,188,109,0.45); }
+    .tog input:checked + .tog-sl::before { transform: translateX(20px); background: var(--gold); }
+    .btn-p { background: var(--gold); color: var(--noir); font-weight: 700; font-size: 0.875rem; padding: 0.75rem 1.5rem; border-radius: 10px; border: none; cursor: pointer; transition: all 0.15s; font-family: 'Manrope', sans-serif; width: 100%; }
+    .btn-p:hover { background: var(--gold2); }
+    .btn-p:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-s { background: transparent; color: var(--muted); font-weight: 500; font-size: 0.82rem; padding: 0.45rem 0.9rem; border-radius: 7px; border: 1px solid var(--brd2); cursor: pointer; transition: all 0.15s; font-family: 'Manrope', sans-serif; }
+    .btn-s:hover { border-color: var(--brd); color: var(--cream); }
+    .btn-ghost { background: none; border: none; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 4px; transition: background 0.15s; font-family: 'Manrope', sans-serif; color: var(--red); font-size: 0.78rem; }
+    .btn-ghost:hover { background: rgba(248,113,113,0.1); }
+    .card { background: var(--card); border-radius: 12px; border: 1px solid var(--brd2); padding: 1.5rem; margin-bottom: 1rem; }
+    .card-title { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); opacity: 0.65; margin-bottom: 1.25rem; }
+    .tab-btn { padding: 0.6rem 1.1rem; font-size: 0.8rem; font-weight: 600; border-bottom: 2px solid transparent; color: var(--muted); transition: all 0.15s; cursor: pointer; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; font-family: 'Manrope', sans-serif; }
+    .tab-btn.active { border-bottom-color: var(--gold); color: var(--gold); }
+    .tab-btn:hover:not(.active) { color: var(--cream); }
+    #toast { position: fixed; bottom: 5rem; left: 50%; transform: translateX(-50%) translateY(150%); background: var(--card); color: var(--cream); border: 1px solid var(--brd); padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.85rem; font-weight: 500; z-index: 9999; transition: transform 0.3s ease; white-space: nowrap; pointer-events: none; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.ok  { background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.3); color: var(--green); }
+    #toast.err { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.3); color: var(--red); }
+    #s-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .login-card { background: var(--card); border: 1px solid var(--brd); border-radius: 20px; width: 100%; max-width: 400px; padding: 2.5rem 2rem; }
+    .login-logo { text-align: center; margin-bottom: 2rem; }
+    .login-logo img { max-height: 64px; width: auto; }
+    .login-logo .lt { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; margin-top: 0.75rem; }
+    .login-logo .ls { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+    #login-err { color: var(--red); font-size: 0.82rem; text-align: center; margin-top: 0.75rem; min-height: 1.2em; }
+    #s-editor { display: none; flex-direction: column; height: 100vh; }
+    .ed-hdr { background: var(--slate); border-bottom: 1px solid var(--brd2); padding: 0 1rem; height: 52px; display: flex; align-items: center; gap: 0.75rem; position: sticky; top: 0; z-index: 100; flex-shrink: 0; }
+    .hdr-logo { height: 28px; width: auto; }
+    .hdr-name { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--cream); }
+    #ed-status { font-size: 0.72rem; color: var(--muted); margin-left: 0.25rem; }
+    .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; }
+    #btn-cola { font-size: 0.7rem; font-weight: 600; padding: 0.3rem 0.75rem; background: rgba(86,188,109,0.1); border: 1px solid rgba(86,188,109,0.3); color: var(--gold); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: 'Manrope', sans-serif; }
+    #btn-cola:hover { background: rgba(86,188,109,0.2); }
+    #btn-save-hdr { font-family: 'Syne', sans-serif; font-size: 0.75rem; letter-spacing: 0.05em; background: var(--gold); color: var(--noir); font-weight: 700; padding: 0.38rem 1rem; border-radius: 7px; border: none; cursor: pointer; transition: all 0.15s; }
+    #btn-save-hdr:hover { background: var(--gold2); }
+    #btn-save-hdr:disabled { opacity: 0.4; cursor: not-allowed; }
+    #btn-logout { font-size: 0.7rem; color: var(--muted); background: none; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; transition: color 0.15s; }
+    #btn-logout:hover { color: var(--red); }
+    .tab-bar { background: var(--slate); border-bottom: 1px solid var(--brd2); display: flex; overflow-x: auto; position: sticky; top: 52px; z-index: 99; flex-shrink: 0; scrollbar-width: none; }
+    .tab-bar::-webkit-scrollbar { display: none; }
+    .ed-body { flex: 1; overflow-y: auto; padding-bottom: 6rem; }
+    .tab-panel { display: none; max-width: 580px; margin: 0 auto; padding: 1.25rem; }
+    .tab-panel.wide { max-width: 900px; }
+    .tab-panel.active { display: block; }
+    .day-row { padding: 0.875rem 0; border-top: 1px solid var(--brd2); }
+    .day-row:first-child { border-top: none; }
+    .turno-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.6rem; flex-wrap: wrap; }
+    .cat-block { background: var(--card); border-radius: 12px; border: 1px solid var(--brd2); margin-bottom: 0.75rem; overflow: hidden; }
+    .cat-hdr { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.25rem; background: var(--slate); border-bottom: 1px solid var(--brd2); }
+    .cat-hdr-name { flex: 1; font-weight: 600; color: var(--cream); font-size: 0.9rem; background: transparent; border: none; outline: none; min-width: 0; font-family: 'Manrope', sans-serif; }
+    .cat-hdr-name:focus { background: var(--card2); border-radius: 4px; padding: 0.15rem 0.4rem; }
+    .prod-grid { display: grid; grid-template-columns: 3.5rem 1fr 2fr 7rem 1.8rem; gap: 0.5rem; }
+    .prod-row { padding: 0.5rem 1.25rem; border-bottom: 1px solid var(--brd2); }
+    .prod-row:last-child { border-bottom: none; }
+    @media (max-width: 600px) { .prod-grid { grid-template-columns: 3rem 1fr 6rem 1.5rem; } .prod-col-desc { display: none; } }
+    .prod-media { display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; }
+    .prod-thumb { width: 3rem; height: 3rem; object-fit: cover; border-radius: 6px; display: block; }
+    .prod-thumb-rm { position: absolute; top: -5px; right: -5px; background: #f87171; color: #fff; border: none; border-radius: 50%; width: 17px; height: 17px; font-size: 10px; cursor: pointer; line-height: 1; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .prod-cam-btn { font-size: 0.6rem; color: var(--muted); cursor: pointer; line-height: 1.3; text-align: center; }
+    .prod-cam-btn:hover { color: var(--gold); }
+    .oferta-card { background: var(--card2); border-radius: 10px; border: 1px solid var(--brd2); padding: 1rem; margin-bottom: 0.75rem; }
+    .stock-cat-hdr { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 1rem 0 .5rem; padding-bottom: .3rem; border-bottom: 1px solid var(--brd2); }
+    .stock-cat-hdr:first-child { margin-top: 0; }
+    .stock-item { display: flex; align-items: center; gap: .75rem; padding: .5rem .75rem; background: var(--card2); border-radius: 8px; margin-bottom: .3rem; cursor: pointer; transition: background .12s; }
+    .stock-item:hover { background: var(--brd); }
+    .stock-item input[type=checkbox] { accent-color: var(--gold); width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+    .stock-item-name { font-size: .88rem; flex: 1; }
+    .stock-badge-off { font-size: .65rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #f87171; background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.2); padding: .15rem .45rem; border-radius: 4px; }
+    .save-bar-mob { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--slate); border-top: 1px solid var(--brd); padding: 0.875rem; z-index: 50; }
+    @media (max-width: 640px) { .save-bar-mob { display: block; } }
+    .flex { display: flex; } .items-center { align-items: center; } .justify-between { justify-content: space-between; } .gap2 { gap: 0.5rem; }
+    .pb4 { padding-bottom: 1rem; border-bottom: 1px solid var(--brd2); margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div id="s-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="./img/logo.png" alt="Cani Ventas">
+      <div class="lt">Cani Ventas</div>
+      <div class="ls">Portal de autogestión</div>
+    </div>
+    <div id="frm-setup">
+      <p style="font-size:.8rem;color:var(--muted);text-align:center;margin-bottom:1.25rem;line-height:1.55">Primera configuración. Tu token se guardará cifrado en este dispositivo.</p>
+      <div class="mb4">
+        <label class="lbl">Token de GitHub</label>
+        <div style="position:relative">
+          <input type="password" id="i-pat" class="inp" placeholder="ghp_… o github_pat_…" autocomplete="off" spellcheck="false" style="padding-right:3.5rem">
+          <button type="button" tabindex="-1" onclick="toggleVis('i-pat',this)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);font-size:.72rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:Manrope,sans-serif">Ver</button>
+        </div>
+        <p style="font-size:.7rem;color:var(--muted);margin-top:.35rem">Fine-grained PAT del repositorio · Contents: Read &amp; Write</p>
+      </div>
+      <div class="mb4">
+        <label class="lbl">Contraseña maestra</label>
+        <input type="password" id="i-pwd1" class="inp" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+      </div>
+      <div class="mb4">
+        <label class="lbl">Confirmar contraseña</label>
+        <input type="password" id="i-pwd2" class="inp" placeholder="Repetí la contraseña" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSetup()">
+      </div>
+      <button onclick="doSetup()" class="btn-p" style="margin-top:.25rem">Configurar acceso</button>
+      <button id="btn-ya-tengo" onclick="showReturn()" class="btn-s" style="width:100%;margin-top:.625rem;display:none">Ya tengo acceso configurado</button>
+    </div>
+    <div id="frm-return" style="display:none">
+      <p style="font-size:.8rem;color:var(--muted);text-align:center;margin-bottom:1.25rem">Ingresá tu contraseña para acceder.</p>
+      <div class="mb4">
+        <label class="lbl">Contraseña maestra</label>
+        <input type="password" id="i-pwd-r" class="inp" placeholder="Tu contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button onclick="doLogin()" class="btn-p">Acceder</button>
+      <button onclick="doReset()" style="background:none;border:none;cursor:pointer;width:100%;text-align:center;font-size:.75rem;color:var(--muted);margin-top:.875rem;font-family:Manrope,sans-serif;transition:color .15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">Cambiar token de acceso</button>
+    </div>
+    <p id="login-err"></p>
+  </div>
+</div>
+
+<!-- EDITOR -->
+<div id="s-editor">
+  <header class="ed-hdr">
+    <img class="hdr-logo" src="./img/logo.png" alt="">
+    <span class="hdr-name">Cani Ventas</span>
+    <span id="ed-status"></span>
+    <div class="hdr-right">
+      <button id="btn-cola" onclick="goCola()">Cola de pedidos →</button>
+      <button id="btn-save-hdr" onclick="doSave()">Guardar</button>
+      <button id="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+  <nav class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('negocio',this)">Negocio</button>
+    <button class="tab-btn" onclick="showTab('oferta',this)">Oferta</button>
+    <button class="tab-btn" onclick="showTab('horarios',this)">Horarios</button>
+    <button class="tab-btn" onclick="showTab('catalogo',this)">Catálogo</button>
+    <button class="tab-btn" onclick="showTab('stock',this)">Stock</button>
+  </nav>
+  <div class="ed-body">
+
+    <!-- NEGOCIO -->
+    <div id="tab-negocio" class="tab-panel active">
+      <div class="card">
+        <div class="card-title">Datos del local</div>
+        <div class="mb4">
+          <label class="lbl">Nombre del negocio</label>
+          <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem .875rem;background:var(--slate);border-radius:8px;border:1px solid var(--brd2)">
+            <span id="disp-nombre" style="font-weight:600;font-size:.875rem;flex:1"></span>
+            <span style="font-size:.7rem;color:var(--muted)">No editable</span>
+          </div>
+        </div>
+        <div class="mb4">
+          <label class="lbl">WhatsApp <span style="font-weight:400;text-transform:none;font-size:.7rem">(con código de país, sin +)</span></label>
+          <input type="tel" id="f-wa" class="inp" placeholder="5492244429964">
+        </div>
+        <div class="mb4">
+          <label class="lbl">Dirección</label>
+          <input type="text" id="f-dir" class="inp" placeholder="Gral. Paz 517, Las Flores">
+        </div>
+        <div class="mb4">
+          <label class="lbl">Teléfono</label>
+          <input type="tel" id="f-tel" class="inp" placeholder="2244 42-9964">
+        </div>
+        <div>
+          <label class="lbl">Google Analytics ID <span style="font-weight:400;text-transform:none;font-size:.7rem">(opcional)</span></label>
+          <input type="text" id="f-ga" class="inp" placeholder="G-XXXXXXXXXX">
+        </div>
+      </div>
+    </div>
+
+    <!-- OFERTA -->
+    <div id="tab-oferta" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Ofertas activas</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5">Cada oferta se muestra como banner en la tienda y la landing. Podés tener cero, una o varias. Solo las marcadas como activas son visibles.</p>
+        <div id="ofertas-list"></div>
+        <button onclick="addOferta()"
+          style="width:100%;padding:.875rem;border:2px dashed var(--brd2);color:var(--muted);border-radius:10px;background:none;cursor:pointer;font-size:.85rem;font-weight:600;font-family:Manrope,sans-serif;transition:all .15s;margin-top:.25rem"
+          onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
+          onmouseout="this.style.borderColor='var(--brd2)';this.style.color='var(--muted)'"
+        >+ Nueva oferta</button>
+      </div>
+    </div>
+
+    <!-- HORARIOS -->
+    <div id="tab-horarios" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Horarios de atención</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5">Cada día puede tener dos turnos (mañana y tarde). Desactivá los días cerrados con el toggle.</p>
+        <div id="hor-list"></div>
+      </div>
+    </div>
+
+    <!-- CATÁLOGO -->
+    <div id="tab-catalogo" class="tab-panel wide">
+      <div id="cat-list"></div>
+      <button onclick="addCat()"
+        style="width:100%;padding:1rem;border:2px dashed var(--brd2);color:var(--muted);border-radius:12px;background:none;cursor:pointer;font-size:.85rem;font-weight:600;font-family:Manrope,sans-serif;transition:all .15s;margin-top:.25rem"
+        onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
+        onmouseout="this.style.borderColor='var(--brd2)';this.style.color='var(--muted)'"
+      >+ Nueva categoría</button>
+    </div>
+
+    <!-- STOCK -->
+    <div id="tab-stock" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Stock de productos</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5">Los productos sin tilde aparecen como "Sin stock" en la tienda y no se pueden agregar al carrito.</p>
+        <div id="stock-list"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="save-bar-mob">
+    <button onclick="doSave()" class="btn-p">Guardar cambios</button>
+  </div>
+</div>
+
+<script>
+const GH        = { owner:'juliancarroccio', repo:'pushcommerce', branch:'main' };
+const FILE_PATH = 'pages/cani_ventas/productos.json';
+const IMG_PATH  = 'pages/cani_ventas/img/';
+const LS        = 'pc_epat_cani';
+const DAYS      = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+const D_LBLS    = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+
+let pat = null, raw = null, catData = [], horData = {}, ofertasData = [];
+
+const enc = new TextEncoder(), dec = new TextDecoder();
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const $   = id => document.getElementById(id);
+
+async function deriveKey(pwd, salt) {
+  const km = await crypto.subtle.importKey('raw', enc.encode(pwd), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name:'PBKDF2', salt, iterations:200000, hash:'SHA-256' }, km, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
+}
+const toB64 = u8 => btoa(String.fromCharCode(...u8));
+const frB64 = b  => Uint8Array.from(atob(b), c => c.charCodeAt(0));
+
+async function encryptPAT(token, pwd) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const key  = await deriveKey(pwd, salt);
+  const data = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, enc.encode(token));
+  return JSON.stringify({ s: toB64(salt), i: toB64(iv), d: toB64(new Uint8Array(data)) });
+}
+async function decryptPAT(stored, pwd) {
+  const { s, i, d } = JSON.parse(stored);
+  const key = await deriveKey(pwd, frB64(s));
+  const pt  = await crypto.subtle.decrypt({name:'AES-GCM', iv: frB64(i)}, key, frB64(d));
+  return dec.decode(pt);
+}
+
+async function ghGet(path) {
+  const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`, {
+    headers: { Authorization:`Bearer ${pat}`, Accept:'application/vnd.github+json' }
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+  return r.json();
+}
+async function ghPut(path, sha, content, msg) {
+  const bytes = enc.encode(content);
+  let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+  const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`, {
+    method:'PUT',
+    headers: { Authorization:`Bearer ${pat}`, 'Content-Type':'application/json', Accept:'application/vnd.github+json' },
+    body: JSON.stringify({ message: msg, content: btoa(bin), sha, branch: GH.branch })
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+  return r.json();
+}
+
+let _tt;
+function toast(msg, type='') {
+  clearTimeout(_tt);
+  const t = $('toast');
+  t.textContent = msg; t.className = 'show' + (type ? ' '+type : '');
+  _tt = setTimeout(() => t.className = '', 3500);
+}
+function setStatus(msg, color) {
+  const el = $('ed-status'); el.textContent = msg; el.style.color = color || 'var(--muted)';
+}
+function showEditor() { $('s-login').style.display = 'none'; $('s-editor').style.display = 'flex'; }
+function showLogin()  { $('s-login').style.display = 'flex'; $('s-editor').style.display = 'none'; }
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  $('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'stock')  renderStock();
+  if (name === 'oferta') renderOfertas();
+}
+function goCola() {
+  sessionStorage.setItem('pc_cola_cani', JSON.stringify({ ts: Date.now() }));
+  window.location.href = './pedidos.html';
+}
+function toggleVis(id, btn) {
+  const el = $(id); el.type = el.type === 'password' ? 'text' : 'password';
+  btn.textContent = el.type === 'password' ? 'Ver' : 'Ocultar';
+}
+function showReturn() { $('frm-setup').style.display='none'; $('frm-return').style.display='block'; setTimeout(()=>$('i-pwd-r').focus(), 50); }
+function showSetup()  { $('frm-setup').style.display='block'; $('frm-return').style.display='none'; }
+function setErr(msg)  { $('login-err').textContent = msg; }
+
+async function doSetup() {
+  setErr('');
+  const token = $('i-pat').value.trim(), pwd = $('i-pwd1').value, conf = $('i-pwd2').value;
+  if (!token) return setErr('Ingresá el token de GitHub.');
+  if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) return setErr('El token debe empezar con ghp_ o github_pat_');
+  if (pwd.length < 8) return setErr('La contraseña debe tener al menos 8 caracteres.');
+  if (pwd !== conf)   return setErr('Las contraseñas no coinciden.');
+  try {
+    localStorage.setItem(LS, await encryptPAT(token, pwd));
+    pat = token; showEditor(); loadFile();
+  } catch(e) { setErr('Error al cifrar: ' + e.message); }
+}
+async function doLogin() {
+  setErr('');
+  const pwd = $('i-pwd-r').value;
+  if (!pwd) return setErr('Ingresá tu contraseña.');
+  const stored = localStorage.getItem(LS);
+  if (!stored) return showSetup();
+  try { pat = await decryptPAT(stored, pwd); showEditor(); loadFile(); }
+  catch { setErr('Contraseña incorrecta.'); }
+}
+function doReset() {
+  if (!confirm('¿Reconfigurar el token? Se borrará el acceso guardado en este dispositivo.')) return;
+  localStorage.removeItem(LS);
+  $('i-pat').value = $('i-pwd1').value = $('i-pwd2').value = '';
+  showSetup(); setErr('');
+}
+function doLogout() {
+  pat = null; raw = null; showLogin();
+  if (localStorage.getItem(LS)) showReturn(); else showSetup();
+}
+
+async function loadFile() {
+  setStatus('Cargando…');
+  try {
+    const file  = await ghGet(FILE_PATH);
+    const bytes = Uint8Array.from(atob(file.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+    raw = JSON.parse(dec.decode(bytes));
+    buildNegForm(raw); buildOfForm(raw); buildHorForm(raw); buildCatForm(raw);
+    setStatus('');
+  } catch(e) { setStatus('Error al cargar', 'var(--red)'); toast('Error: ' + e.message, 'err'); }
+}
+
+function buildNegForm(data) {
+  const n = data.negocio || {};
+  $('disp-nombre').textContent = n.nombre || '';
+  $('f-wa').value  = n.whatsapp     || '';
+  $('f-dir').value = n.direccion    || '';
+  $('f-tel').value = n.telefono     || '';
+  $('f-ga').value  = n.analytics_id || '';
+}
+function collectNeg() {
+  return { ...raw.negocio,
+    whatsapp:     $('f-wa').value.trim(),
+    direccion:    $('f-dir').value.trim(),
+    telefono:     $('f-tel').value.trim(),
+    analytics_id: $('f-ga').value.trim(),
+  };
+}
+
+function buildOfForm(data) {
+  ofertasData = JSON.parse(JSON.stringify(data.ofertas || []));
+}
+function getAllProds() {
+  const result = [];
+  catData.forEach(cat => cat.productos.forEach(p => {
+    result.push({ id: p.id, label: `${esc(cat.emoji||'')} ${esc(cat.nombre)} › ${esc(p.nombre)}` });
+  }));
+  return result;
+}
+function renderOfertas() {
+  const container = $('ofertas-list');
+  if (!ofertasData.length) {
+    container.innerHTML = '<p style="font-size:.8rem;color:var(--muted);text-align:center;padding:1.5rem 0">Sin ofertas configuradas. Agregá una debajo.</p>';
+    return;
+  }
+  const allProds = getAllProds();
+  container.innerHTML = ofertasData.map((o, i) => `
+    <div class="oferta-card">
+      <div class="flex items-center justify-between" style="margin-bottom:.875rem">
+        <div>
+          <div style="font-weight:600;font-size:.875rem">Oferta #${i+1}</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.15rem">${o.activa ? '🟢 Activa' : '⚫ Inactiva'}</div>
+        </div>
+        <div class="flex items-center gap2">
+          <label class="tog"><input type="checkbox" ${o.activa?'checked':''} onchange="ofertasData[${i}].activa=this.checked;renderOfertas()"><span class="tog-sl"></span></label>
+          <button class="btn-ghost" onclick="delOferta(${i})" title="Eliminar" style="margin-left:.25rem;font-size:1rem">✕</button>
+        </div>
+      </div>
+      <div class="mb2">
+        <label class="lbl">Texto del banner</label>
+        <input type="text" value="${esc(o.texto||'')}" class="inp" style="font-size:.82rem" placeholder="Oferta de la semana" onchange="ofertasData[${i}].texto=this.value">
+      </div>
+      <div class="mb2">
+        <label class="lbl">Producto</label>
+        <select class="inp" style="font-size:.82rem" onchange="ofertasData[${i}].producto_id=parseInt(this.value)||null">
+          <option value="">— Elegir producto —</option>
+          ${allProds.map(p => `<option value="${p.id}" ${o.producto_id===p.id?'selected':''}>${p.label}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Precio en oferta ($)</label>
+        <input type="number" value="${o.precio_oferta||0}" min="0" class="inp" style="font-size:.82rem" onchange="ofertasData[${i}].precio_oferta=parseInt(this.value)||0">
+      </div>
+    </div>
+  `).join('');
+}
+function addOferta() {
+  ofertasData.push({ id: Date.now(), activa: false, producto_id: null, texto: 'Oferta de la semana', precio_oferta: 0 });
+  renderOfertas();
+}
+function delOferta(i) {
+  if (!confirm('¿Eliminar esta oferta?')) return;
+  ofertasData.splice(i, 1); renderOfertas();
+}
+
+function buildHorForm(data) { horData = JSON.parse(JSON.stringify(data.horarios || {})); renderHor(); }
+function renderHor() {
+  $('hor-list').innerHTML = DAYS.map((day, di) => {
+    const ts = horData[day] || [], open = ts.length > 0;
+    return `
+      <div class="day-row">
+        <div class="flex items-center justify-between">
+          <span style="font-weight:600;font-size:.875rem">${D_LBLS[di]}</span>
+          <div class="flex items-center gap2">
+            <span style="font-size:.75rem;color:var(--muted)">${open?'Abierto':'Cerrado'}</span>
+            <label class="tog"><input type="checkbox" ${open?'checked':''} onchange="togDay('${day}',this.checked)"><span class="tog-sl"></span></label>
+          </div>
+        </div>
+        ${open ? `<div style="margin-top:.75rem;padding-left:.25rem">
+          ${ts.map((t,ti) => `<div class="turno-row">
+            <span style="font-size:.7rem;color:var(--muted);width:2.5rem;flex-shrink:0">Abre</span>
+            <input type="time" value="${t.abre}" class="inp" style="width:8rem;font-size:.85rem" onchange="updTurno('${day}',${ti},'abre',this.value)">
+            <span style="font-size:.7rem;color:var(--muted);flex-shrink:0">Cierra</span>
+            <input type="time" value="${t.cierra}" class="inp" style="width:8rem;font-size:.85rem" onchange="updTurno('${day}',${ti},'cierra',this.value)">
+            ${ts.length>1?`<button class="btn-ghost" style="font-size:1.1rem;line-height:1" onclick="delTurno('${day}',${ti})">×</button>`:''}
+          </div>`).join('')}
+          <button onclick="addTurno('${day}')" style="font-size:.73rem;color:var(--gold);background:none;border:none;cursor:pointer;font-family:Manrope,sans-serif;font-weight:600;margin-top:.5rem">+ Turno</button>
+        </div>` : ''}
+      </div>`;
+  }).join('');
+}
+function togDay(day, open)  { horData[day] = open ? [{abre:'09:00',cierra:'13:00'},{abre:'16:00',cierra:'20:00'}] : []; renderHor(); }
+function addTurno(day)       { (horData[day]=horData[day]||[]).push({abre:'09:00',cierra:'18:00'}); renderHor(); }
+function delTurno(day, ti)   { horData[day].splice(ti,1); renderHor(); }
+function updTurno(d,ti,f,v)  { horData[d][ti][f] = v; }
+
+async function ghUploadImage(filename, base64) {
+  let sha;
+  try { const f = await ghGet(IMG_PATH + filename); sha = f.sha; } catch(_) {}
+  const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${IMG_PATH}${filename}`, {
+    method:'PUT',
+    headers: { Authorization:`Bearer ${pat}`, 'Content-Type':'application/json', Accept:'application/vnd.github+json' },
+    body: JSON.stringify({ message:`portal: foto ${filename}`, content: base64, sha, branch: GH.branch })
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+  return r.json();
+}
+function uploadProductImg(event, ci, pi) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    const base64 = e.target.result.split(',')[1];
+    const ext = file.name.split('.').pop().toLowerCase().replace('jpeg','jpg');
+    const prod = catData[ci].productos[pi];
+    const filename = `prod-${prod.id || Date.now()}.${ext}`;
+    setStatus('Subiendo imagen…');
+    try {
+      await ghUploadImage(filename, base64);
+      if (!catData[ci].productos[pi].imagenes) catData[ci].productos[pi].imagenes = [];
+      catData[ci].productos[pi].imagenes.unshift(filename);
+      renderCat(); setStatus('Imagen subida ✓', 'var(--green)');
+    } catch(err) { setStatus('Error al subir: ' + err.message, '#f87171'); }
+  };
+  reader.readAsDataURL(file);
+}
+function clearImg(ci, pi) {
+  const imgs = catData[ci].productos[pi].imagenes || [];
+  catData[ci].productos[pi].imagenes = imgs.slice(1);
+  renderCat();
+}
+
+function renderStock() {
+  $('stock-list').innerHTML = catData.map((cat, ci) => `
+    <div class="stock-cat-hdr">${esc(cat.emoji||'')} ${esc(cat.nombre||'')}</div>
+    ${cat.productos.map((p, pi) => `
+      <label class="stock-item">
+        <input type="checkbox" ${p.disponible !== false ? 'checked' : ''}
+          onchange="catData[${ci}].productos[${pi}].disponible=this.checked;renderStock()">
+        <span class="stock-item-name">${esc(p.nombre||'Sin nombre')}</span>
+        ${p.disponible === false ? '<span class="stock-badge-off">Sin stock</span>' : ''}
+      </label>`).join('')}
+  `).join('');
+}
+
+function buildCatForm(data) { catData = JSON.parse(JSON.stringify(data.categorias || [])); renderCat(); }
+function renderCat() {
+  $('cat-list').innerHTML = catData.map((cat, ci) => `
+    <div class="cat-block">
+      <div class="cat-hdr">
+        <input value="${esc(cat.emoji||'')}" maxlength="2" class="inp" style="text-align:center;font-size:1rem;padding:.2rem .1rem;width:2.8rem;flex-shrink:0" onchange="catData[${ci}].emoji=this.value">
+        <input class="cat-hdr-name" value="${esc(cat.nombre||'')}" placeholder="Nombre de categoría" onchange="catData[${ci}].nombre=this.value">
+        <span style="font-size:.7rem;color:var(--muted);flex-shrink:0">${cat.productos.length} prod.</span>
+        <button class="btn-ghost" onclick="delCat(${ci})">Eliminar cat.</button>
+      </div>
+      <div>
+        <div class="prod-grid prod-row" style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--brd2)">
+          <span>Foto</span><span>Nombre</span><span class="prod-col-desc">Descripción</span><span>Precio $</span><span></span>
+        </div>
+        ${cat.productos.map((p,pi) => {
+          const firstImg = p.imagenes?.[0];
+          return `<div class="prod-row prod-grid">
+            <div class="prod-media">
+              ${firstImg
+                ? `<img src="./img/${esc(firstImg)}" class="prod-thumb" alt="">
+                   <button class="prod-thumb-rm" onclick="clearImg(${ci},${pi})" title="Quitar foto">×</button>`
+                : `<label class="prod-cam-btn" title="Subir foto">📷
+                     <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadProductImg(event,${ci},${pi})">
+                   </label>`}
+            </div>
+            <input value="${esc(p.nombre||'')}" placeholder="Nombre" class="inp" style="font-size:.82rem" onchange="catData[${ci}].productos[${pi}].nombre=this.value">
+            <input value="${esc(p.descripcion||'')}" placeholder="Descripción" class="inp prod-col-desc" style="font-size:.82rem" onchange="catData[${ci}].productos[${pi}].descripcion=this.value">
+            <input type="number" value="${p.precio||0}" min="0" class="inp" style="font-size:.82rem" onchange="catData[${ci}].productos[${pi}].precio=parseInt(this.value)||0">
+            <button class="btn-ghost" style="font-size:1rem;line-height:1;padding:.2rem" onclick="delProd(${ci},${pi})">×</button>
+          </div>`;
+        }).join('')}
+        <div style="padding:.625rem 1.25rem">
+          <button onclick="addProd(${ci})" style="font-size:.73rem;color:var(--gold);background:none;border:none;cursor:pointer;font-family:Manrope,sans-serif;font-weight:600">+ Agregar producto</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function addProd(ci) {
+  catData[ci].productos.push({ id: Date.now(), nombre:'', descripcion:'', precio:0, imagenes:[], specs:[] });
+  renderCat();
+}
+function delProd(ci, pi) {
+  if (!confirm(`¿Eliminar "${catData[ci].productos[pi].nombre||'este producto'}"?`)) return;
+  catData[ci].productos.splice(pi,1); renderCat();
+}
+function addCat() {
+  catData.push({ id:'cat-'+Date.now(), nombre:'Nueva categoría', emoji:'🆕', productos:[] });
+  renderCat();
+}
+function delCat(ci) {
+  if (!confirm(`¿Eliminar categoría "${catData[ci].nombre}" y todos sus productos?`)) return;
+  catData.splice(ci,1); renderCat();
+}
+
+function collectAll() {
+  let nextId = 1;
+  const categorias = catData.map(cat => ({
+    ...cat, nombre: cat.nombre || '',
+    productos: cat.productos.map(p => ({ ...p, id: nextId++ }))
+  }));
+  return { ...raw, negocio: collectNeg(), ofertas: ofertasData, horarios: horData, categorias };
+}
+
+async function doSave() {
+  const data = collectAll();
+  $('btn-save-hdr').disabled = true;
+  setStatus('Guardando…');
+  try {
+    const file = await ghGet(FILE_PATH);
+    await ghPut(FILE_PATH, file.sha, JSON.stringify(data, null, 2), `portal: Cani Ventas — ${new Date().toLocaleString('es-AR')}`);
+    raw = data;
+    setStatus('Guardado ✓', 'var(--green)');
+    toast('Publicado. La página se actualiza en ~30 segundos.', 'ok');
+    setTimeout(() => setStatus(''), 5000);
+  } catch(e) {
+    setStatus('Error al guardar', 'var(--red)'); toast('Error: ' + e.message, 'err');
+  } finally { $('btn-save-hdr').disabled = false; }
+}
+
+(function() {
+  const stored = localStorage.getItem(LS);
+  if (stored) showReturn(); else showSetup();
+  window.addEventListener('beforeunload', e => { if (pat) { e.preventDefault(); e.returnValue=''; } });
+})();
+</script>
+</body>
+</html>

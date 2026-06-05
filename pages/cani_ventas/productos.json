@@ -4,15 +4,17 @@
     "whatsapp": "5492244429964",
     "direccion": "Gral. Paz 517, Las Flores",
     "telefono": "2244 42-9964",
-    "analytics_id": "",
-    "product_modal": true
+    "analytics_id": ""
   },
-  "oferta": {
-    "activa": true,
-    "producto_id": 6,
-    "texto": "Oferta de la semana",
-    "precio_oferta": 55000
-  },
+  "ofertas": [
+    {
+      "id": 1,
+      "activa": true,
+      "producto_id": 6,
+      "texto": "Oferta de la semana",
+      "precio_oferta": 55000
+    }
+  ],
   "horarios": {
     "lunes":     [{"abre": "09:00", "cierra": "13:00"}, {"abre": "16:00", "cierra": "20:00"}],
     "martes":    [{"abre": "09:00", "cierra": "13:00"}, {"abre": "16:00", "cierra": "20:00"}],
@@ -33,6 +35,7 @@
           "nombre": "Microondas digital 20L",
           "descripcion": "Panel digital, 700W, interior antiadherente",
           "precio": 85000,
+          "imagenes": ["micro-1.jpg", "micro-2.jpg"],
           "specs": ["Potencia: 700W", "Capacidad: 20 litros", "Panel de control digital con display LED", "Interior antiadherente de fácil limpieza", "Timer programable hasta 30 minutos", "Puerta con ventana y luz interior", "Función descongelación automática", "Color: Gris inoxidable"]
         },
         {

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Producto — Cani Ventas</title>
+  <meta name="description" id="page-desc" content="Ver producto en Cani Ventas, Las Flores.">
+  <meta property="og:site_name" content="Cani Ventas">
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="Cani Ventas — Electrodomésticos y más">
+  <meta property="og:description" content="Tecnología, hogar, camping y más en Las Flores, Buenos Aires.">
+  <meta property="og:image" content="./img/logo.png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./img/logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark:  '#080C14',
+            navy:  '#0D1820',
+            card:  '#101C2C',
+            green: '#56BC6D',
+            lime:  '#94D769',
+            text:  '#EDF5EE',
+            muted: '#8AA89A',
+          },
+          fontFamily: {
+            syne:   ['Syne', 'sans-serif'],
+            manrope:['Manrope', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Manrope', sans-serif; background: #080C14; color: #EDF5EE; margin: 0; }
+
+    /* ── HEADER ── */
+    #main-header {
+      position: sticky; top: 0; z-index: 600;
+      background: rgba(8,12,20,0.97); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(86,188,109,0.1);
+    }
+
+    /* ── BREADCRUMB ── */
+    #breadcrumb a:hover { color: #56BC6D; }
+
+    /* ── GALLERY BOX ── */
+    #gallery-box { display: flex; gap: 8px; }
+
+    /* Vertical thumbs strip */
+    #thumbs-vert {
+      display: flex; flex-direction: column; gap: 6px;
+      width: 56px; flex-shrink: 0;
+      max-height: min(85vw, 440px); overflow-y: auto;
+      scrollbar-width: none;
+    }
+    #thumbs-vert::-webkit-scrollbar { display: none; }
+    .thumb-v {
+      width: 56px; height: 56px; border-radius: 8px; overflow: hidden;
+      border: 2px solid transparent; cursor: pointer;
+      background: #101C2C; flex-shrink: 0;
+      transition: border-color 0.15s, opacity 0.15s;
+    }
+    .thumb-v.active { border-color: #56BC6D; }
+    .thumb-v:not(.active) { opacity: 0.4; }
+    .thumb-v img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Main image */
+    #gallery-main {
+      flex: 1; position: relative; overflow: hidden;
+      border-radius: 12px; background: #101C2C;
+      aspect-ratio: 1 / 1;
+    }
+    #gallery-main img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: opacity 0.2s ease;
+    }
+    .g-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 32px; height: 32px;
+      background: rgba(8,12,20,0.8); border: 1px solid rgba(86,188,109,0.25);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s; color: #EDF5EE; z-index: 2;
+    }
+    .g-arrow:hover { background: rgba(86,188,109,0.3); }
+    .g-arrow.prev { left: 8px; }
+    .g-arrow.next { right: 8px; }
+    #img-counter {
+      position: absolute; bottom: 8px; right: 10px;
+      background: rgba(8,12,20,0.7); color: rgba(237,245,238,0.75);
+      font-size: 11px; font-family: 'Manrope', sans-serif; font-weight: 600;
+      padding: 2px 7px; border-radius: 20px; pointer-events: none;
+    }
+
+    /* ── PRODUCT LAYOUT — 2-col on md+ ── */
+    #product-layout {
+      max-width: 1100px; margin: 0 auto;
+      padding: 20px 16px 0;
+    }
+    @media (min-width: 768px) {
+      #product-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+        padding: 28px 24px 0;
+      }
+    }
+
+    /* ── SPECS ── */
+    .spec-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid rgba(86,188,109,0.07);
+    }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #56BC6D; flex-shrink: 0; margin-top: 8px;
+    }
+
+    /* ── INLINE CTA (desktop) ── */
+    #cta-inline {
+      display: none;
+    }
+    @media (min-width: 768px) {
+      #cta-inline { display: block; }
+      #sticky-footer { display: none !important; }
+    }
+
+    /* ── STICKY FOOTER (mobile) ── */
+    #sticky-footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(8,12,20,0.98); backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(86,188,109,0.15);
+      padding: 12px 16px; z-index: 500;
+    }
+
+    /* ── QTY ── */
+    .qty-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(86,188,109,0.1); border: 1px solid rgba(86,188,109,0.25);
+      color: #56BC6D; font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .qty-btn:hover { background: rgba(86,188,109,0.25); }
+    .qty-btn:disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
+    /* ── RECOMMENDED CARDS ── */
+    .rec-card {
+      background: #101C2C; border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(86,188,109,0.08); cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .rec-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(86,188,109,0.1); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; top: 70px; left: 50%;
+      transform: translateX(-50%) translateY(-12px);
+      background: #0D1820; border: 1px solid rgba(86,188,109,0.35);
+      border-radius: 16px; padding: 14px 18px;
+      min-width: 280px; max-width: calc(100vw - 32px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 700;
+    }
+    #toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+
+    /* ── SKELETON ── */
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position:  400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #101C2C 25%, #152230 50%, #101C2C 75%);
+      background-size: 800px 100%; animation: shimmer 1.4s infinite; border-radius: 8px;
+    }
+  </style>
+</head>
+<body class="pb-24 md:pb-0">
+
+<!-- ── HEADER ─────────────────────────────────────────────────────── -->
+<header id="main-header">
+  <div class="flex items-center gap-3 px-4 py-3 max-w-6xl mx-auto">
+    <a href="./tienda.html" class="flex items-center gap-1.5 text-muted hover:text-green transition-colors text-sm font-manrope font-medium shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+      </svg>
+      Catálogo
+    </a>
+    <div class="flex items-center gap-2 flex-1 min-w-0 justify-center">
+      <img src="./img/logo.png" alt="Cani Ventas" class="h-8 w-auto object-contain">
+      <span class="font-syne font-extrabold text-text text-base tracking-wide truncate">Cani Ventas</span>
+    </div>
+    <a href="./tienda.html?cart=open"
+       class="relative flex items-center gap-1.5 bg-green/15 hover:bg-green/25 border border-green/30 text-green px-3 py-2 rounded-lg text-sm font-manrope font-semibold transition-colors shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+      </svg>
+      Pedido
+      <span id="cart-badge" class="hidden absolute -top-2 -right-2 bg-green text-dark text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+    </a>
+  </div>
+</header>
+
+<!-- ── BREADCRUMB ─────────────────────────────────────────────────── -->
+<nav id="breadcrumb" class="px-4 py-2.5 max-w-6xl mx-auto text-xs font-manrope text-muted flex items-center gap-1.5 flex-wrap">
+  <a href="./tienda.html" class="hover:text-green transition-colors">Catálogo</a>
+  <span class="opacity-40">›</span>
+  <a id="bc-cat" href="./tienda.html" class="hover:text-green transition-colors"></a>
+  <span class="opacity-40">›</span>
+  <span id="bc-name" class="text-text/60 truncate max-w-[160px]"></span>
+</nav>
+
+<!-- ── MAIN PRODUCT LAYOUT ────────────────────────────────────────── -->
+<div id="product-layout">
+
+  <!-- ── LEFT: GALLERY ── -->
+  <div id="gallery-col">
+    <div id="gallery-box">
+      <!-- Vertical thumbs (injected by JS if >1 image) -->
+      <div id="thumbs-vert" class="hidden"></div>
+      <!-- Main image -->
+      <div id="gallery-main">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT: INFO ── -->
+  <div id="info-col" class="mt-5 md:mt-0">
+
+    <!-- Category pill -->
+    <p id="prod-category" class="text-green text-xs font-manrope font-semibold uppercase tracking-widest mb-3"></p>
+
+    <!-- Name -->
+    <h1 id="prod-name" class="font-syne font-extrabold text-text text-xl md:text-2xl leading-snug mb-4"></h1>
+
+    <!-- Price -->
+    <div id="prod-price-row" class="flex items-baseline flex-wrap gap-2 mb-2"></div>
+    <p id="prod-price-note" class="hidden text-muted text-xs font-manrope mb-5"></p>
+
+    <!-- Divider -->
+    <div class="border-t border-green/10 mb-5"></div>
+
+    <!-- Description -->
+    <p id="prod-desc" class="text-muted font-manrope text-sm leading-relaxed mb-5"></p>
+
+    <!-- Specs: "Lo que tenés que saber" -->
+    <div id="specs-section" class="hidden mb-6">
+      <p class="text-text/50 text-xs font-manrope uppercase tracking-widest font-semibold mb-3">Lo que tenés que saber</p>
+      <div id="specs-list"></div>
+    </div>
+
+    <!-- Inline CTA — desktop only -->
+    <div id="cta-inline" class="mt-6 p-4 bg-navy rounded-2xl border border-green/10">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-muted text-sm font-manrope">Cantidad:</span>
+        <div class="flex items-center gap-2">
+          <button class="qty-btn" id="qty-dec-d" onclick="changeQty(-1)">−</button>
+          <span id="qty-display-d" class="font-syne font-bold text-text text-lg w-8 text-center">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+      <button id="add-btn-d" onclick="addToCart()"
+        class="w-full bg-green hover:bg-lime active:scale-95 text-dark font-syne font-extrabold py-3.5 rounded-xl transition-all text-sm">
+        + Agregar al carrito
+      </button>
+      <a href="./tienda.html" class="mt-2.5 flex items-center justify-center text-muted hover:text-text text-xs font-manrope transition-colors">
+        Ver todos los productos →
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── RECOMMENDED ───────────────────────────────────────────────── -->
+<div id="recommended-section" class="hidden max-w-6xl mx-auto px-4 mt-10 pb-10 md:pb-8">
+  <div class="border-t border-green/10 pt-8">
+    <p id="rec-title" class="font-syne font-extrabold text-text text-base mb-5 uppercase tracking-wide"></p>
+    <div id="rec-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+  </div>
+</div>
+
+<!-- ── TOAST ─────────────────────────────────────────────────────── -->
+<div id="toast">
+  <div class="flex items-start justify-between gap-3 mb-3">
+    <div>
+      <p class="font-syne font-bold text-green text-sm">✓ Agregado al carrito</p>
+      <p id="toast-detail" class="text-muted text-xs font-manrope mt-0.5"></p>
+    </div>
+    <button onclick="hideToast()" class="text-muted hover:text-text transition-colors shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="flex gap-2">
+    <button onclick="hideToast()"
+      class="flex-1 border border-green/20 hover:border-green/40 text-muted hover:text-text font-manrope text-xs py-2.5 rounded-lg transition-colors">
+      Seguir comprando
+    </button>
+    <a href="./tienda.html?cart=open"
+       class="flex-1 bg-green hover:bg-lime text-dark font-syne font-bold text-xs py-2.5 rounded-lg transition-colors text-center">
+      Ver pedido →
+    </a>
+  </div>
+</div>
+
+<!-- ── STICKY FOOTER (mobile) ────────────────────────────────────── -->
+<div id="sticky-footer">
+  <div class="flex items-center gap-3 max-w-xl mx-auto">
+    <div class="flex items-center gap-2 shrink-0">
+      <button class="qty-btn" id="qty-dec-m" onclick="changeQty(-1)">−</button>
+      <span id="qty-display-m" class="font-syne font-bold text-text text-lg w-8 text-center">1</span>
+      <button class="qty-btn" onclick="changeQty(1)">+</button>
+    </div>
+    <button id="add-btn-m" onclick="addToCart()"
+      class="flex-1 bg-green hover:bg-lime active:scale-95 text-dark font-syne font-extrabold py-3 rounded-xl transition-all text-sm">
+      + Agregar al carrito
+    </button>
+  </div>
+</div>
+
+<!-- ── SCRIPTS ────────────────────────────────────────────────────── -->
+<script>
+const CART_KEY   = 'cart_caniventas';
+let _data        = null;
+let _prod        = null;
+let _cat         = null;
+let _precio      = 0;
+let _precioOrig  = 0;
+let _qty         = 1;
+let _currentImg  = 0;
+let _imgs        = [];
+let _toastTimer  = null;
+let _sinStock    = false;
+
+function fmt(n) { return '$' + n.toLocaleString('es-AR'); }
+
+// ── INIT ──────────────────────────────────────────────────────────
+const _prodId = parseInt(new URLSearchParams(location.search).get('id'), 10);
+
+fetch('./productos.json', { cache: 'no-cache' })
+  .then(r => r.json())
+  .then(d => { _data = d; initProduct(); })
+  .catch(showError);
+
+function initProduct() {
+  if (!_prodId) { showError(); return; }
+
+  for (const cat of _data.categorias) {
+    const p = cat.productos.find(x => x.id === _prodId);
+    if (p) { _prod = p; _cat = cat; break; }
+  }
+  if (!_prod) { showError(); return; }
+
+  const o = (_data.ofertas || []).find(of => of.activa && of.producto_id === _prod.id);
+  const isOffer   = !!o;
+  _precio         = isOffer ? o.precio_oferta : _prod.precio;
+  _precioOrig     = _prod.precio;
+  _sinStock       = _prod.disponible === false;
+
+  // Page title & meta
+  document.getElementById('page-title').textContent = `${_prod.nombre} — Cani Ventas`;
+
+  // Breadcrumb
+  const bcCat = document.getElementById('bc-cat');
+  bcCat.textContent = _cat.nombre;
+  bcCat.href = `./tienda.html`;
+  document.getElementById('bc-name').textContent = _prod.nombre;
+
+  buildGallery();
+  document.getElementById('prod-category').textContent = `${_cat.emoji}  ${_cat.nombre}`;
+  document.getElementById('prod-name').textContent = _prod.nombre;
+  buildPrice(isOffer, o);
+  document.getElementById('prod-desc').textContent = _prod.descripcion;
+  buildSpecs();
+  buildRecommended();
+  updateCartBadge();
+  renderAddBtns();
+}
+
+// ── GALLERY ───────────────────────────────────────────────────────
+function buildGallery() {
+  _imgs = _prod.imagenes || [];
+  const mainEl  = document.getElementById('gallery-main');
+  const thumbsEl = document.getElementById('thumbs-vert');
+
+  if (_imgs.length === 0) {
+    mainEl.innerHTML = `
+      <div class="w-full h-full flex items-center justify-center">
+        <span class="text-8xl opacity-15">${_cat.emoji}</span>
+      </div>`;
+    return;
+  }
+
+  // Main image
+  mainEl.innerHTML = `
+    <img id="main-img" src="./img/${_imgs[0]}" alt="${_prod.nombre}">
+    ${_imgs.length > 1 ? `
+      <button class="g-arrow prev" onclick="prevImg()" aria-label="Anterior">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+      </button>
+      <button class="g-arrow next" onclick="nextImg()" aria-label="Siguiente">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+      </button>
+      <span id="img-counter">1 / ${_imgs.length}</span>
+    ` : ''}
+  `;
+
+  // Vertical thumbs (only if multiple images)
+  if (_imgs.length > 1) {
+    thumbsEl.innerHTML = _imgs.map((img, i) => `
+      <div class="thumb-v ${i === 0 ? 'active' : ''}" onclick="setImage(${i})">
+        <img src="./img/${img}" alt="Foto ${i + 1}" loading="lazy">
+      </div>
+    `).join('');
+    thumbsEl.classList.remove('hidden');
+  }
+
+  // Touch swipe
+  let touchX = 0;
+  mainEl.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  mainEl.addEventListener('touchend', e => {
+    const d = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(d) > 45) d > 0 ? nextImg() : prevImg();
+  });
+}
+
+function setImage(idx) {
+  _currentImg = idx;
+  const img = document.getElementById('main-img');
+  if (!img) return;
+  img.style.opacity = '0';
+  setTimeout(() => { img.src = `./img/${_imgs[idx]}`; img.style.opacity = '1'; }, 150);
+  document.querySelectorAll('.thumb-v').forEach((t, i) => t.classList.toggle('active', i === idx));
+  const counter = document.getElementById('img-counter');
+  if (counter) counter.textContent = `${idx + 1} / ${_imgs.length}`;
+}
+
+function prevImg() { setImage((_currentImg - 1 + _imgs.length) % _imgs.length); }
+function nextImg() { setImage((_currentImg + 1) % _imgs.length); }
+
+// ── PRICE ─────────────────────────────────────────────────────────
+function buildPrice(isOffer, o) {
+  const row = document.getElementById('prod-price-row');
+  if (isOffer) {
+    const pct = Math.round((1 - _precio / _precioOrig) * 100);
+    row.innerHTML = `
+      <span class="font-syne font-extrabold text-text text-3xl">${fmt(_precio)}</span>
+      <span class="bg-green/20 text-green text-sm font-syne font-bold px-2.5 py-0.5 rounded-lg">${pct}% OFF</span>
+    `;
+    const note = document.getElementById('prod-price-note');
+    note.textContent = `Precio sin descuento: ${fmt(_precioOrig)}`;
+    note.classList.remove('hidden');
+  } else {
+    row.innerHTML = `<span class="font-syne font-extrabold text-text text-3xl">${fmt(_precio)}</span>`;
+  }
+}
+
+// ── SPECS ─────────────────────────────────────────────────────────
+function buildSpecs() {
+  if (!_prod.specs?.length) return;
+  const list = document.getElementById('specs-list');
+  list.innerHTML = _prod.specs.map(s => `
+    <div class="spec-row">
+      <div class="spec-dot"></div>
+      <p class="text-text/70 text-sm font-manrope flex-1 leading-relaxed">${s}</p>
+    </div>
+  `).join('');
+  document.getElementById('specs-section').classList.remove('hidden');
+}
+
+// ── RECOMMENDED ───────────────────────────────────────────────────
+function buildRecommended() {
+  const recs = _cat.productos.filter(p => p.id !== _prod.id);
+  if (!recs.length) return;
+
+  const section = document.getElementById('recommended-section');
+  document.getElementById('rec-title').textContent = `Más en ${_cat.nombre}`;
+  const grid = document.getElementById('rec-grid');
+
+  grid.innerHTML = recs.map(p => {
+    const o       = (_data.ofertas || []).find(of => of.activa && of.producto_id === p.id);
+    const isOffer = !!o;
+    const precio  = isOffer ? o.precio_oferta : p.precio;
+    const firstImg = p.imagenes?.[0];
+    return `
+      <div class="rec-card" onclick="location.href='./producto.html?id=${p.id}'">
+        <div class="aspect-[4/3] overflow-hidden bg-navy relative">
+          ${firstImg
+            ? `<img src="./img/${firstImg}" alt="${p.nombre}" class="w-full h-full object-cover" loading="lazy">`
+            : `<div class="w-full h-full flex items-center justify-center"><span class="text-3xl opacity-25">${_cat.emoji}</span></div>`
+          }
+          ${isOffer ? `<span class="absolute top-2 left-2 bg-green text-dark text-xs font-bold px-2 py-0.5 rounded-full">Oferta</span>` : ''}
+        </div>
+        <div class="p-3">
+          <p class="font-syne font-bold text-text text-sm leading-snug mb-1 line-clamp-2">${p.nombre}</p>
+          ${isOffer
+            ? `<p class="text-muted line-through text-xs">${fmt(p.precio)}</p>
+               <p class="font-syne font-extrabold text-green text-base">${fmt(precio)}</p>`
+            : `<p class="font-syne font-extrabold text-text text-base">${fmt(precio)}</p>`
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  section.classList.remove('hidden');
+}
+
+// ── QTY ───────────────────────────────────────────────────────────
+function changeQty(delta) {
+  _qty = Math.max(1, _qty + delta);
+  ['qty-display-d', 'qty-display-m'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = _qty;
+  });
+  ['qty-dec-d', 'qty-dec-m'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = _qty <= 1;
+  });
+  renderAddBtns();
+}
+
+function renderAddBtns() {
+  const label = _sinStock
+    ? 'Sin stock'
+    : _qty > 1
+      ? `+ Agregar ${_qty} — ${fmt(_precio * _qty)}`
+      : '+ Agregar al carrito';
+
+  ['add-btn-d', 'add-btn-m'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.textContent = label;
+    btn.disabled = _sinStock;
+    if (_sinStock) {
+      btn.classList.replace('bg-green', 'bg-card');
+      btn.classList.add('text-muted', 'cursor-not-allowed');
+      btn.classList.remove('text-dark');
+    }
+  });
+}
+
+// ── CART ──────────────────────────────────────────────────────────
+function addToCart() {
+  if (_sinStock) return;
+  const cart = loadCart();
+  const id   = String(_prod.id);
+  if (cart[id]) {
+    cart[id].qty += _qty;
+  } else {
+    cart[id] = {
+      nombre: _prod.nombre, precio: _precio,
+      categoria: _cat.nombre, precioOriginal: _precioOrig,
+      qty: _qty
+    };
+  }
+  saveCart(cart);
+  updateCartBadge();
+  showToast();
+
+  // Button feedback
+  const label = _qty > 1 ? `✓ ${_qty} agregados` : '✓ Agregado';
+  ['add-btn-d', 'add-btn-m'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.textContent = label;
+    btn.classList.replace('bg-green', 'bg-lime');
+  });
+  setTimeout(() => {
+    _qty = 1;
+    ['qty-display-d', 'qty-display-m'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '1';
+    });
+    ['qty-dec-d', 'qty-dec-m'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = true;
+    });
+    ['add-btn-d', 'add-btn-m'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.classList.replace('bg-lime', 'bg-green');
+    });
+    renderAddBtns();
+  }, 1300);
+}
+
+function loadCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY) || '{}'); } catch { return {}; }
+}
+function saveCart(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); }
+
+function updateCartBadge() {
+  const count = Object.values(loadCart()).reduce((s, v) => s + v.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = count;
+  badge.classList.toggle('hidden', count === 0);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+function showToast() {
+  document.getElementById('toast-detail').textContent = `${_prod.nombre} × ${_qty}`;
+  document.getElementById('toast').classList.add('show');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(hideToast, 4000);
+}
+function hideToast() { document.getElementById('toast').classList.remove('show'); }
+
+// ── ERROR ─────────────────────────────────────────────────────────
+function showError() {
+  const main = document.getElementById('gallery-main');
+  if (main) main.innerHTML = `<div class="w-full h-full flex items-center justify-center"><span class="text-6xl opacity-20">🔍</span></div>`;
+  const name = document.getElementById('prod-name');
+  if (name) name.textContent = 'Producto no encontrado';
+  const desc = document.getElementById('prod-desc');
+  if (desc) desc.textContent = 'El producto que buscás no existe o fue eliminado del catálogo.';
+  const footer = document.getElementById('sticky-footer');
+  if (footer) footer.style.display = 'none';
+  const cta = document.getElementById('cta-inline');
+  if (cta) cta.style.display = 'none';
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+window.addEventListener('load', () => {
+  if (!window.gsap) return;
+  gsap.from('#gallery-col', { opacity: 0, x: -20, duration: 0.55, ease: 'power2.out' });
+  gsap.from('#info-col > *', { y: 16, opacity: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out', delay: 0.1 });
+  gsap.from('#recommended-section', { y: 24, opacity: 0, duration: 0.5, ease: 'power2.out', delay: 0.4 });
+});
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>

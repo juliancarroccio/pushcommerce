@@ -687,8 +687,10 @@ async function sendWhatsApp() {
   if (_db) {
     try {
       await _db.collection('pedidos').add({
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        orden:  Date.now(), estado: 'pendiente',
+        creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+        orden:    Date.now(),
+        estado:   'pendiente',
+        origen:   'tienda',
         nombre, direccion, nota, total,
         items: items.map(i => ({ nombre: i.nombre, precio: i.precio, qty: i.qty, categoria: i.categoria }))
       });

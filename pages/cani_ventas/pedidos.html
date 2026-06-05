@@ -261,7 +261,7 @@
 
   <!-- Tabs -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="showTab('kanban',this)">Kanban</button>
+    <button class="tab-btn active" onclick="showTab('kanban',this)">Pedidos</button>
     <button class="tab-btn" onclick="showTab('historial',this)">Historial</button>
     <button class="tab-btn" onclick="showTab('metricas',this)">Métricas</button>
   </div>
@@ -572,9 +572,10 @@ function beep() {
 
 /* ── App boot ── */
 function bootApp() {
-  document.getElementById('s-login').style.display = 'none';
-  document.getElementById('s-app').style.display   = 'flex';
-  document.getElementById('btn-fab').style.display = 'flex';
+  document.getElementById('s-login').style.display   = 'none';
+  document.getElementById('s-app').style.display     = 'flex';
+  document.getElementById('btn-fab').style.display   = 'flex';
+  document.getElementById('tab-kanban').style.display = 'block';
   loadProducts();
   if (_db) {
     listenOrders();
@@ -617,13 +618,17 @@ function listenOrders() {
         if (['pendiente', 'esperando'].includes(estado)) {
           _orders.push(data);
         } else if (isTodayTs(data.creadoEn)) {
-          _orders.push(data); // show today's enviado/retirado in kanban
+          _orders.push(data);
         }
       });
       if (_orders.length > prev && prev > 0) beep();
       renderKanban();
       renderHistorial();
       renderMetrics();
+    }, err => {
+      console.error('Firestore error:', err);
+      document.getElementById('dot-live').style.background = '#EF4444';
+      toast('Error Firestore: ' + err.message, 'err');
     });
 }
 

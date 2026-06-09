@@ -1,0 +1,11 @@
+{
+  "name": "Chingón Burgers",
+  "short_name": "Chingón",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1A0D03",
+  "theme_color": "#F7CE46",
+  "icons": [
+    { "src": "./img/logo.png", "sizes": "any", "type": "image/png" }
+  ]
+}

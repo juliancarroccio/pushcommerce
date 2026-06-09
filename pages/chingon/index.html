@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chingón Burgers® — CHINGOLANDIA · Las Flores</title>
+  <meta name="description" content="Chingón Burgers en Las Flores, Buenos Aires. Las mejores hamburguesas artesanales. Sarmiento y 25 de Mayo. Abierto todos los días desde las 18:30.">
+  <meta property="og:title" content="Chingón Burgers® — CHINGOLANDIA">
+  <meta property="og:description" content="La hamburguesa que buscabas. Las Flores, Buenos Aires.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./img/hero.png">
+
+  <link rel="icon" href="./img/logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="./img/logo.png">
+  <meta name="theme-color" content="#F7CE46">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Chingón Burgers",
+    "image": "./img/hero.png",
+    "telephone": "+5492244401968",
+    "url": "https://juliancarroccio.github.io/pushcommerce/pages/chingon/",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Sarmiento y 25 de Mayo",
+      "addressLocality": "Las Flores",
+      "addressRegion": "Buenos Aires",
+      "postalCode": "B7200",
+      "addressCountry": "AR"
+    },
+    "servesCuisine": "Hamburguesas artesanales",
+    "priceRange": "$$",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "8"
+    },
+    "sameAs": ["https://www.instagram.com/chingonburgers"],
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"],
+        "opens": "18:30",
+        "closes": "23:30"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Friday","Saturday","Sunday"],
+        "opens": "18:30",
+        "closes": "23:59"
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            noir:  '#1A0D03',
+            slate: '#251507',
+            card:  '#2E1A08',
+            card2: '#3A220C',
+            gold:  '#F7CE46',
+            gold2: '#D4A820',
+            cream: '#FFF8E8',
+          },
+          fontFamily: {
+            display: ['"DM Serif Display"', 'Georgia', 'serif'],
+            body:    ['Outfit', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --noir:  #1A0D03;
+      --slate: #251507;
+      --card:  #2E1A08;
+      --card2: #3A220C;
+      --gold:  #F7CE46;
+      --gold2: #D4A820;
+      --cream: #FFF8E8;
+      --muted: rgba(255,248,232,0.42);
+      --brd:   rgba(247,206,70,0.14);
+      --brd2:  rgba(247,206,70,0.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--noir);
+      color: var(--cream);
+      font-family: 'Outfit', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLL PROGRESS ─── */
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 3px;
+      background: var(--gold);
+      z-index: 1000;
+      transition: width 0.1s linear;
+    }
+
+    /* ─── NAVBAR ─── */
+    #navbar {
+      position: fixed;
+      top: 3px; left: 0; right: 0;
+      z-index: 999;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    #navbar.scrolled {
+      background: rgba(26, 13, 3, 0.96);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      text-decoration: none;
+    }
+
+    .nav-logo img {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .nav-logo-text {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.125rem;
+      color: var(--cream);
+      letter-spacing: 0.01em;
+      line-height: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    #nav-estado {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    #nav-estado.abierto {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    #nav-estado.cerrado {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    #nav-estado::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      display: inline-block;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .nav-burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-burger span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ─── HERO ─── */
+    #inicio {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('./img/hero.png');
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+      transform: scale(1.05);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(26,13,3,0.92) 55%, rgba(26,13,3,0.4) 100%);
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      padding: 2rem 4rem 2rem 6vw;
+    }
+
+    .hero-label {
+      display: inline-block;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    .hero-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(3.5rem, 8vw, 6.5rem);
+      line-height: 0.95;
+      color: var(--cream);
+      margin-bottom: 1.25rem;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    .hero-subtitle {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 300;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gold);
+      color: var(--noir);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.9375rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.875rem 2rem;
+      border-radius: 4px;
+      transition: background 0.2s, transform 0.2s;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    .hero-cta:hover {
+      background: var(--gold2);
+      transform: translateY(-2px);
+    }
+
+    .hero-cta svg { flex-shrink: 0; }
+
+    /* ─── DIVIDERS ─── */
+    .divider-gold {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 2.5rem 6vw;
+    }
+
+    .divider-gold .line {
+      flex: 1;
+      height: 1px;
+      background: var(--brd);
+    }
+
+    .divider-gold .icon {
+      font-size: 1.25rem;
+    }
+
+    .divider-pattern {
+      background: var(--slate);
+      padding: 1rem 0;
+      text-align: center;
+      font-size: 1.25rem;
+      letter-spacing: 0.75em;
+      color: var(--brd);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    /* ─── NOSOTROS ─── */
+    #nosotros {
+      background: var(--slate);
+      padding: 5rem 6vw;
+    }
+
+    .nosotros-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .nosotros-text h2 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      color: var(--gold);
+      margin-bottom: 2rem;
+      line-height: 1.15;
+    }
+
+    .nosotros-text p {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 1.25rem;
+    }
+
+    .nosotros-text p:last-child { margin-bottom: 0; }
+
+    .nosotros-img-wrap {
+      position: relative;
+    }
+
+    .nosotros-img-wrap img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .nosotros-img-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border: 1px solid var(--brd);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .nosotros-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(26,13,3,0.4) 0%, transparent 50%);
+      border-radius: 6px;
+    }
+
+    /* ─── PRODUCTOS ─── */
+    #productos {
+      padding: 5rem 6vw;
+      background: var(--noir);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      color: var(--cream);
+      line-height: 1.15;
+    }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 2.5rem;
+      border: 1px solid var(--brd);
+      border-radius: 6px;
+      overflow: hidden;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tab-btn:first-child { border-right: 1px solid var(--brd); }
+
+    .tab-btn.active {
+      background: var(--gold);
+      color: var(--noir);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .sin-papas-banner {
+      background: rgba(247,206,70,0.08);
+      border: 1px solid var(--brd);
+      border-radius: 6px;
+      padding: 0.875rem 1.25rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .sin-papas-banner .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+
+    .sin-papas-banner p {
+      font-size: 0.875rem;
+      color: var(--gold2);
+      line-height: 1.5;
+    }
+
+    .sin-papas-banner strong { color: var(--gold); }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--brd2);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      border-color: var(--brd);
+    }
+
+    .product-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+    }
+
+    .product-img-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--card2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .product-body {
+      padding: 1.25rem;
+    }
+
+    .product-name {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.175rem;
+      color: var(--cream);
+      margin-bottom: 0.5rem;
+      line-height: 1.25;
+    }
+
+    .product-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .product-price {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .products-cta-wrap {
+      text-align: center;
+      margin-top: 2.5rem;
+    }
+
+    .btn-outline-gold {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-outline-gold:hover {
+      background: var(--gold);
+      color: var(--noir);
+    }
+
+    /* ─── OFERTA ─── */
+    #oferta-banner {
+      display: none;
+      background: linear-gradient(135deg, var(--card2) 0%, var(--card) 100%);
+      border-top: 1px solid var(--brd);
+      border-bottom: 1px solid var(--brd);
+      padding: 3.5rem 6vw;
+    }
+
+    #oferta-banner .inner {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    #oferta-banner .oferta-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--noir);
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.875rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    #oferta-banner h2 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      color: var(--cream);
+      margin-bottom: 0.5rem;
+    }
+
+    #oferta-banner .oferta-desc {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    #oferta-banner .oferta-precio-wrap {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    #oferta-banner .precio-original {
+      font-size: 1.25rem;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    #oferta-banner .precio-oferta {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    #oferta-banner .descuento-badge {
+      background: rgba(247,206,70,0.15);
+      border: 1px solid var(--brd);
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 0.875rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+    }
+
+    /* ─── HORARIOS ─── */
+    #horarios {
+      background: var(--slate);
+      padding: 5rem 6vw;
+    }
+
+    #estado-local {
+      text-align: center;
+      font-size: 1.125rem;
+      font-weight: 500;
+      margin-bottom: 2.5rem;
+      padding: 0.875rem 2rem;
+      border-radius: 8px;
+      display: inline-block;
+      width: 100%;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+
+    #estado-local.abierto {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.25);
+      color: #4ade80;
+    }
+
+    #estado-local.cerrado {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #f87171;
+    }
+
+    .horarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .horario-card {
+      background: var(--card);
+      border: 1px solid var(--brd2);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .horario-card.hoy {
+      border-color: var(--gold);
+      background: rgba(247,206,70,0.06);
+    }
+
+    .horario-card .dia {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .horario-card.hoy .dia { color: var(--gold); }
+
+    .horario-card .horas {
+      font-size: 0.875rem;
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    .horario-card .cerrado-txt {
+      font-size: 0.8rem;
+      color: rgba(255,248,232,0.25);
+    }
+
+    /* ─── RESEÑAS ─── */
+    #resenas {
+      background: var(--noir);
+      padding: 5rem 6vw;
+    }
+
+    .resenas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .resena-card {
+      background: var(--card);
+      border: 1px solid var(--brd2);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .resena-card:hover {
+      border-color: var(--brd);
+      transform: translateY(-3px);
+    }
+
+    .resena-stars {
+      font-size: 1rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .resena-text {
+      font-size: 0.9375rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+
+    .resena-author {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--gold2);
+    }
+
+    .rating-global {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .rating-global .num {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 3.5rem;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .rating-global .stars { font-size: 1.25rem; margin: 0.25rem 0; }
+
+    .rating-global .base {
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+
+    /* ─── CONTACTO ─── */
+    #contacto {
+      background: var(--slate);
+      padding: 5rem 6vw;
+    }
+
+    .contacto-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .contacto-info h2 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 2rem;
+      color: var(--gold);
+      margin-bottom: 2rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-icon {
+      font-size: 1.1rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .info-text .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .info-text .value {
+      font-size: 0.9375rem;
+      color: var(--cream);
+    }
+
+    .info-text a {
+      color: var(--cream);
+      text-decoration: none;
+    }
+
+    .info-text a:hover { color: var(--gold); }
+
+    .btn-wa {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+      background: #25D366;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.9375rem;
+      text-decoration: none;
+      padding: 0.875rem 2rem;
+      border-radius: 4px;
+      margin-top: 1.5rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .btn-wa:hover {
+      background: #1ebe5d;
+      transform: translateY(-2px);
+    }
+
+    .maps-wrap iframe {
+      width: 100%;
+      height: 360px;
+      border-radius: 8px;
+      border: 1px solid var(--brd);
+      filter: grayscale(0.3);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--noir);
+      border-top: 1px solid var(--brd2);
+      padding: 3rem 6vw;
+      text-align: center;
+    }
+
+    footer img {
+      height: 48px;
+      width: auto;
+      margin: 0 auto 1rem;
+      display: block;
+    }
+
+    footer .footer-name {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.25rem;
+      color: var(--cream);
+      margin-bottom: 0.375rem;
+    }
+
+    footer .footer-addr {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    footer .footer-legal {
+      font-size: 0.75rem;
+      color: rgba(255,248,232,0.25);
+    }
+
+    footer .footer-legal a {
+      color: var(--gold2);
+      text-decoration: none;
+    }
+
+    footer .footer-legal a:hover { color: var(--gold); }
+
+    /* ─── FLOATING BUTTONS ─── */
+    #wa-float {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 900;
+      width: 56px; height: 56px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+      text-decoration: none;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.3s, transform 0.3s, background 0.2s;
+    }
+
+    #wa-float.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    #wa-float:hover { background: #1ebe5d; transform: scale(1.1); }
+
+    #back-to-top {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 900;
+      width: 44px; height: 44px;
+      background: var(--card);
+      border: 1px solid var(--brd);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s, transform 0.3s, background 0.2s;
+    }
+
+    #back-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #back-to-top:hover { background: var(--card2); }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-burger { display: flex; }
+
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 55px; left: 0; right: 0;
+        background: rgba(26,13,3,0.97);
+        padding: 1.5rem;
+        gap: 1.25rem;
+        border-bottom: 1px solid var(--brd);
+      }
+
+      .hero-content {
+        padding: 1.5rem 5vw;
+        max-width: 100%;
+      }
+
+      .nosotros-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .nosotros-img-wrap { order: -1; }
+      .nosotros-img-wrap img { aspect-ratio: 3/2; }
+
+      .contacto-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+
+      .horarios-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Scroll Progress -->
+  <div id="scroll-progress"></div>
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <a href="#inicio" class="nav-logo">
+      <img src="./img/logo.png" alt="Chingón Burgers logo">
+      <span class="nav-logo-text">Chingón Burgers</span>
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#productos">Menú</a></li>
+      <li><a href="#horarios">Horarios</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+      <li><span id="nav-estado" class="cerrado">Cerrado</span></li>
+    </ul>
+    <div class="nav-burger" id="nav-burger" aria-label="Abrir menú" role="button" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section id="inicio">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-label">Bienvenidos a</span>
+      <h1 class="hero-title">CHINGO<br>LANDIA</h1>
+      <p class="hero-subtitle">La hamburguesa que buscabas</p>
+      <a href="./tienda.html" class="hero-cta">
+        Ver menú
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="divider-gold">
+    <div class="line"></div>
+    <div class="icon">🍔</div>
+    <div class="line"></div>
+  </div>
+
+  <!-- Nosotros -->
+  <section id="nosotros">
+    <div class="nosotros-grid">
+      <div class="nosotros-text">
+        <h2>Pasión por la hamburguesa artesanal</h2>
+        <p>En Chingón Burgers creemos que una buena hamburguesa es mucho más que carne y pan. Es la combinación perfecta de ingredientes seleccionados, técnica y amor por lo que hacemos. Cada medallón se cocina con el punto justo para que cada mordida sea una experiencia.</p>
+        <p>Usamos pan artesanal horneado diariamente, salsas propias que no vas a encontrar en ningún otro lugar, y una obsesión por la calidad que se nota desde el primer bocado. Sin atajos, sin congelados, sin vueltas.</p>
+        <p>Bienvenidos a Chingolandia: el lugar donde la hamburguesa que buscabas te estaba esperando. Las Flores ya tiene su referente. Venís una vez y no podés parar.</p>
+      </div>
+      <div class="nosotros-img-wrap">
+        <img src="./img/hero.png" alt="Hamburguesa artesanal Chingón Burgers">
+      </div>
+    </div>
+  </section>
+
+  <!-- Pattern divider -->
+  <div class="divider-pattern" aria-hidden="true">
+    🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔 🍔
+  </div>
+
+  <!-- Productos -->
+  <section id="productos">
+    <div class="section-header">
+      <p class="section-eyebrow">Lo que hacemos</p>
+      <h2 class="section-title">Nuestro menú</h2>
+    </div>
+
+    <div class="tabs-nav" role="tablist">
+      <button class="tab-btn active" data-tab="hamburguesas" role="tab" aria-selected="true">
+        🍔 Hamburguesas
+      </button>
+      <button class="tab-btn" data-tab="adicionales" role="tab" aria-selected="false">
+        🍟 Adicionales
+      </button>
+    </div>
+
+    <div id="tab-hamburguesas" class="tab-panel active"></div>
+    <div id="tab-adicionales" class="tab-panel"></div>
+
+    <div class="products-cta-wrap">
+      <a href="./tienda.html" class="btn-outline-gold">
+        Ver menú completo
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Oferta Banner -->
+  <section id="oferta-banner">
+    <div class="inner">
+      <span class="oferta-badge">🔥 Oferta de la semana</span>
+      <h2 id="oferta-titulo"></h2>
+      <p class="oferta-desc" id="oferta-desc"></p>
+      <div class="oferta-precio-wrap">
+        <span class="precio-original" id="oferta-precio-original"></span>
+        <span class="precio-oferta" id="oferta-precio-nuevo"></span>
+        <span class="descuento-badge" id="oferta-pct"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="divider-gold">
+    <div class="line"></div>
+    <div class="icon">🕐</div>
+    <div class="line"></div>
+  </div>
+
+  <!-- Horarios -->
+  <section id="horarios">
+    <div class="section-header">
+      <p class="section-eyebrow">Estamos esperándote</p>
+      <h2 class="section-title">Horarios</h2>
+    </div>
+    <p id="estado-local" class="cerrado">Cargando...</p>
+    <div class="horarios-grid" id="horarios-grid"></div>
+  </section>
+
+  <!-- Divider -->
+  <div class="divider-gold">
+    <div class="line"></div>
+    <div class="icon">⭐</div>
+    <div class="line"></div>
+  </div>
+
+  <!-- Reseñas -->
+  <section id="resenas">
+    <div class="section-header">
+      <p class="section-eyebrow">Lo que dice Chingolandia</p>
+      <h2 class="section-title">Reseñas</h2>
+    </div>
+    <div class="rating-global">
+      <div class="num">5.0</div>
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+      <div class="base">8 reseñas en Google</div>
+    </div>
+    <div class="resenas-grid">
+      <div class="resena-card">
+        <div class="resena-stars">⭐⭐⭐⭐⭐</div>
+        <p class="resena-text">"La mejor hamburguesa de Las Flores, sin dudas. La Doble es una bomba, el pan artesanal hace toda la diferencia. Volveré siempre."</p>
+        <div class="resena-author">— Martín R.</div>
+      </div>
+      <div class="resena-card">
+        <div class="resena-stars">⭐⭐⭐⭐⭐</div>
+        <p class="resena-text">"Los nuggets de pollo son increíbles. Pedí delivery y llegó rapidísimo y calentito. 100% recomendado!"</p>
+        <div class="resena-author">— Sofía G.</div>
+      </div>
+      <div class="resena-card">
+        <div class="resena-stars">⭐⭐⭐⭐⭐</div>
+        <p class="resena-text">"Chingón es lo mejor que le pasó a Las Flores. La Triple con cebolla caramelizada es el cielo en la tierra."</p>
+        <div class="resena-author">— Lucas P.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="divider-gold">
+    <div class="line"></div>
+    <div class="icon">📍</div>
+    <div class="line"></div>
+  </div>
+
+  <!-- Contacto -->
+  <section id="contacto">
+    <div class="contacto-grid">
+      <div class="contacto-info">
+        <h2>Encontranos</h2>
+        <div class="info-item">
+          <span class="info-icon">📍</span>
+          <div class="info-text">
+            <div class="label">Dirección</div>
+            <div class="value">Sarmiento y 25 de Mayo<br>Las Flores, B7200 — Buenos Aires</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">📞</span>
+          <div class="info-text">
+            <div class="label">Teléfono</div>
+            <div class="value"><a href="tel:+5492244401968">02244 15-40-1968</a></div>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">📸</span>
+          <div class="info-text">
+            <div class="label">Instagram</div>
+            <div class="value"><a href="https://instagram.com/chingonburgers" target="_blank" rel="noopener">@chingonburgers</a></div>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">🕐</span>
+          <div class="info-text">
+            <div class="label">Horarios</div>
+            <div class="value">Lun–Jue 18:30 a 23:30<br>Vie–Dom 18:30 a 23:59</div>
+          </div>
+        </div>
+        <a href="https://wa.me/5492244401968" target="_blank" rel="noopener" class="btn-wa">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Escribinos por WhatsApp
+        </a>
+      </div>
+      <div class="maps-wrap">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3162.5!2d-59.0985!3d-36.0162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bdce5c5a!2sSarmiento%20%26%2025%20de%20Mayo%2C%20Las%20Flores%2C%20Buenos%20Aires!5e0!3m2!1ses!2sar!4v1"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Ubicación de Chingón Burgers en Las Flores">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <img src="./img/logo.png" alt="Chingón Burgers">
+    <div class="footer-name">Chingón Burgers®</div>
+    <div class="footer-addr">Sarmiento y 25 de Mayo · Las Flores, B7200 · Buenos Aires</div>
+    <div class="footer-legal">
+      © 2026 Chingón Burgers · Hecho con ❤️ por <a href="https://juliancarroccio.github.io/pushcommerce/" target="_blank" rel="noopener">PushCommerce</a>
+    </div>
+  </footer>
+
+  <!-- Floating WA -->
+  <a id="wa-float" href="https://wa.me/5492244401968" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- Back to top -->
+  <button id="back-to-top" aria-label="Volver arriba">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+
+  <script>
+    // ─── DATA FALLBACK ───
+    const _FALLBACK = {
+      "negocio": {"nombre":"Chingón Burgers","whatsapp":"5492244401968","direccion":"Sarmiento y 25 de Mayo, Las Flores","telefono":"02244 15-40-1968","instagram":"chingonburgers","analytics_id":""},
+      "envio": {"disponible":true,"costo":2500},
+      "ofertas": [{"id":1,"activa":true,"producto_id":2,"texto":"Oferta de la semana","precio_oferta":9500}],
+      "horarios": {
+        "lunes":     [{"abre":"18:30","cierra":"23:30"}],
+        "martes":    [{"abre":"18:30","cierra":"23:30"}],
+        "miércoles": [{"abre":"18:30","cierra":"23:30"}],
+        "jueves":    [{"abre":"18:30","cierra":"23:30"}],
+        "viernes":   [{"abre":"18:30","cierra":"23:59"}],
+        "sábado":    [{"abre":"18:30","cierra":"23:59"}],
+        "domingo":   [{"abre":"18:30","cierra":"23:59"}]
+      },
+      "categorias": [
+        {
+          "id":"hamburguesas","nombre":"Hamburguesas","emoji":"🍔","nota_sin_papas":true,
+          "productos":[
+            {"id":1,"nombre":"Chingona Simple","descripcion":"1 medallón 180g, queso cheddar, lechuga, tomate, pickles, salsa chingona. Sin papas.","precio":8500,"imagenes":[]},
+            {"id":2,"nombre":"Chingona Doble","descripcion":"2 medallones 180g c/u, doble cheddar, bacon crocante, salsa especial. Sin papas.","precio":12000,"imagenes":["hero.png"]},
+            {"id":3,"nombre":"Chingona Triple","descripcion":"3 medallones 180g, triple cheddar, bacon, cebolla caramelizada, salsa chingona. Sin papas.","precio":15500,"imagenes":[]}
+          ]
+        },
+        {
+          "id":"adicionales","nombre":"Adicionales","emoji":"🍟",
+          "productos":[
+            {"id":4,"nombre":"Papas fritas","descripcion":"Papas fritas crocantes con sal y condimentos.","precio":4000,"imagenes":[]},
+            {"id":5,"nombre":"Chicken Nuggets x6","descripcion":"6 nuggets de pollo dorados con salsa a elección.","precio":4500,"imagenes":[]},
+            {"id":6,"nombre":"Chicken Nuggets x12","descripcion":"12 nuggets de pollo con salsa a elección.","precio":8000,"imagenes":[]}
+          ]
+        }
+      ]
+    };
+
+    // ─── INIT ───
+    fetch('./productos.json')
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(data => initPage(data))
+      .catch(() => initPage(_FALLBACK));
+
+    function initPage(data) {
+      buildHorarios(data);
+      buildProducts(data);
+      buildOferta(data);
+      setupBadge(data);
+    }
+
+    // ─── FORMAT PRICE ───
+    function formatPrice(n) {
+      return '$' + n.toLocaleString('es-AR');
+    }
+
+    // ─── HORARIOS ───
+    function buildHorarios(data) {
+      const diasNames = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+      const diasLabels = ['Lunes','Martes','Miérc.','Jueves','Viernes','Sábado','Domingo'];
+      const ahora = new Date();
+      const hoyIdx = ahora.getDay() === 0 ? 6 : ahora.getDay() - 1;
+      const hoyKey = diasNames[hoyIdx];
+      const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+
+      let abierto = false;
+      const turnos = data.horarios[hoyKey] || [];
+      abierto = turnos.some(t => {
+        const [ah, am] = t.abre.split(':').map(Number);
+        const [ch, cm] = t.cierra.split(':').map(Number);
+        return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+      });
+
+      // Estado badge in navbar and section
+      const estadoEl = document.getElementById('estado-local');
+      const navEstado = document.getElementById('nav-estado');
+      if (abierto) {
+        estadoEl.textContent = '✅ Ahora estamos abiertos — ¡Pedí ya!';
+        estadoEl.className = 'abierto';
+        navEstado.textContent = 'Abierto';
+        navEstado.className = 'abierto';
+      } else {
+        const proximos = turnos.length ? turnos[0].abre : '18:30';
+        estadoEl.textContent = '🔴 En este momento estamos cerrados. Abrimos hoy a las ' + proximos + '.';
+        estadoEl.className = 'cerrado';
+        navEstado.textContent = 'Cerrado';
+        navEstado.className = 'cerrado';
+      }
+
+      // Grid
+      const grid = document.getElementById('horarios-grid');
+      diasNames.forEach((dia, i) => {
+        const esHoy = i === hoyIdx;
+        const turnos = data.horarios[dia] || [];
+        const card = document.createElement('div');
+        card.className = 'horario-card' + (esHoy ? ' hoy' : '');
+        const horasHtml = turnos.length
+          ? turnos.map(t => `<div class="horas">${t.abre} – ${t.cierra}</div>`).join('')
+          : `<div class="cerrado-txt">Cerrado</div>`;
+        card.innerHTML = `<div class="dia">${diasLabels[i]}${esHoy ? ' <span style="color:var(--gold)">●</span>' : ''}</div>${horasHtml}`;
+        grid.appendChild(card);
+      });
+    }
+
+    // ─── PRODUCTS ───
+    function buildProducts(data) {
+      (data.categorias || []).forEach(cat => {
+        const panel = document.getElementById('tab-' + cat.id);
+        if (!panel) return;
+
+        let html = '';
+
+        // Nota sin papas
+        if (cat.nota_sin_papas) {
+          html += `
+            <div class="sin-papas-banner">
+              <span class="icon">ℹ️</span>
+              <p><strong>Las hamburguesas NO incluyen papas.</strong> Podés agregarlas desde Adicionales.</p>
+            </div>`;
+        }
+
+        html += '<div class="products-grid">';
+        (cat.productos || []).forEach(prod => {
+          const img = (prod.imagenes && prod.imagenes.length)
+            ? `<img class="product-img" src="./img/${prod.imagenes[0]}" alt="${prod.nombre}" loading="lazy">`
+            : `<div class="product-img-placeholder">${cat.emoji}</div>`;
+          html += `
+            <div class="product-card">
+              ${img}
+              <div class="product-body">
+                <div class="product-name">${prod.nombre}</div>
+                <div class="product-desc">${prod.descripcion}</div>
+                <div class="product-price">${formatPrice(prod.precio)}</div>
+              </div>
+            </div>`;
+        });
+        html += '</div>';
+
+        panel.innerHTML = html;
+      });
+
+      // Animate cards
+      gsap.utils.toArray('.products-grid .product-card').forEach((card, i) => {
+        gsap.from(card, {
+          scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none none' },
+          y: 30, opacity: 0, duration: 0.5, delay: (i % 3) * 0.08, ease: 'power2.out'
+        });
+      });
+    }
+
+    // ─── OFERTA ───
+    function buildOferta(data) {
+      const oferta = (data.ofertas || []).find(o => o.activa);
+      if (!oferta) return;
+
+      let prod = null;
+      (data.categorias || []).forEach(cat => {
+        const found = (cat.productos || []).find(p => p.id === oferta.producto_id);
+        if (found) prod = found;
+      });
+      if (!prod) return;
+
+      const pct = Math.round((1 - oferta.precio_oferta / prod.precio) * 100);
+
+      document.getElementById('oferta-titulo').textContent = prod.nombre;
+      document.getElementById('oferta-desc').textContent = prod.descripcion;
+      document.getElementById('oferta-precio-original').textContent = formatPrice(prod.precio);
+      document.getElementById('oferta-precio-nuevo').textContent = formatPrice(oferta.precio_oferta);
+      document.getElementById('oferta-pct').textContent = '-' + pct + '%';
+
+      const banner = document.getElementById('oferta-banner');
+      banner.style.display = 'block';
+
+      gsap.from('#oferta-banner .inner', {
+        scrollTrigger: { trigger: '#oferta-banner', start: 'top 80%', toggleActions: 'play none none none' },
+        y: 40, opacity: 0, duration: 0.7, ease: 'power2.out'
+      });
+    }
+
+    // ─── OPEN/CLOSED BADGE (re-used from buildHorarios) ───
+    function setupBadge(data) {
+      // already handled inside buildHorarios
+    }
+
+    // ─── TABS ───
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected','true');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ─── NAVBAR scroll ───
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    }, { passive: true });
+
+    // ─── SCROLL PROGRESS ───
+    const progressBar = document.getElementById('scroll-progress');
+    window.addEventListener('scroll', () => {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.width = (window.scrollY / total * 100) + '%';
+    }, { passive: true });
+
+    // ─── FLOATING BUTTONS ───
+    const waFloat = document.getElementById('wa-float');
+    const backTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      const heroH = document.getElementById('inicio').offsetHeight;
+      if (window.scrollY > heroH * 0.6) waFloat.classList.add('visible');
+      else waFloat.classList.remove('visible');
+      if (window.scrollY > 300) backTop.classList.add('visible');
+      else backTop.classList.remove('visible');
+    }, { passive: true });
+
+    backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // ─── MOBILE NAV ───
+    const burger = document.getElementById('nav-burger');
+    const navLinks = document.getElementById('nav-links');
+    burger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    burger.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') navLinks.classList.toggle('open'); });
+    navLinks.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+
+    // ─── GSAP ANIMATIONS ───
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Hero reveal
+    gsap.to('.hero-label', { clipPath: 'inset(0 0% 0 0)', duration: 0.7, delay: 0.2, ease: 'power3.out' });
+    gsap.to('.hero-title', { clipPath: 'inset(0 0% 0 0)', duration: 0.9, delay: 0.45, ease: 'power3.out' });
+    gsap.to('.hero-subtitle', { clipPath: 'inset(0 0% 0 0)', duration: 0.7, delay: 0.75, ease: 'power3.out' });
+    gsap.to('.hero-cta', { clipPath: 'inset(0 0% 0 0)', duration: 0.6, delay: 1.0, ease: 'power3.out' });
+
+    // Subtle hero bg zoom
+    gsap.to('.hero-bg', { scale: 1, duration: 1.8, delay: 0, ease: 'power2.out' });
+
+    // Nosotros fade
+    gsap.from('.nosotros-text', {
+      scrollTrigger: { trigger: '#nosotros', start: 'top 75%', toggleActions: 'play none none none' },
+      x: -50, opacity: 0, duration: 0.9, ease: 'power2.out'
+    });
+    gsap.from('.nosotros-img-wrap', {
+      scrollTrigger: { trigger: '#nosotros', start: 'top 75%', toggleActions: 'play none none none' },
+      x: 50, opacity: 0, duration: 0.9, delay: 0.15, ease: 'power2.out'
+    });
+
+    // Section headers fade
+    gsap.utils.toArray('.section-header').forEach(el => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+        y: 30, opacity: 0, duration: 0.6, ease: 'power2.out'
+      });
+    });
+
+    // Reseñas stagger
+    gsap.from('.resena-card', {
+      scrollTrigger: { trigger: '#resenas', start: 'top 80%', toggleActions: 'play none none none' },
+      y: 40, opacity: 0, duration: 0.6, stagger: 0.15, ease: 'power2.out'
+    });
+
+    // Horarios grid
+    gsap.from('.horario-card', {
+      scrollTrigger: { trigger: '#horarios', start: 'top 80%', toggleActions: 'play none none none' },
+      y: 20, opacity: 0, duration: 0.5, stagger: 0.05, ease: 'power2.out'
+    });
+
+    // Contacto
+    gsap.from('.contacto-info', {
+      scrollTrigger: { trigger: '#contacto', start: 'top 80%', toggleActions: 'play none none none' },
+      x: -40, opacity: 0, duration: 0.8, ease: 'power2.out'
+    });
+    gsap.from('.maps-wrap', {
+      scrollTrigger: { trigger: '#contacto', start: 'top 80%', toggleActions: 'play none none none' },
+      x: 40, opacity: 0, duration: 0.8, delay: 0.15, ease: 'power2.out'
+    });
+  </script>
+</body>
+</html>

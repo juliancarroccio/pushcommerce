@@ -1,0 +1,91 @@
+{
+  "negocio": {
+    "nombre": "Chingón Burgers",
+    "whatsapp": "5492244401968",
+    "direccion": "Sarmiento y 25 de Mayo, Las Flores",
+    "telefono": "02244 15-40-1968",
+    "instagram": "chingonburgers",
+    "analytics_id": ""
+  },
+  "envio": {
+    "disponible": true,
+    "costo": 2500
+  },
+  "ofertas": [
+    {
+      "id": 1,
+      "activa": true,
+      "producto_id": 2,
+      "texto": "Oferta de la semana",
+      "precio_oferta": 9500
+    }
+  ],
+  "horarios": {
+    "lunes":     [{"abre": "18:30", "cierra": "23:30"}],
+    "martes":    [{"abre": "18:30", "cierra": "23:30"}],
+    "miércoles": [{"abre": "18:30", "cierra": "23:30"}],
+    "jueves":    [{"abre": "18:30", "cierra": "23:30"}],
+    "viernes":   [{"abre": "18:30", "cierra": "23:59"}],
+    "sábado":    [{"abre": "18:30", "cierra": "23:59"}],
+    "domingo":   [{"abre": "18:30", "cierra": "23:59"}]
+  },
+  "categorias": [
+    {
+      "id": "hamburguesas",
+      "nombre": "Hamburguesas",
+      "emoji": "🍔",
+      "nota_sin_papas": true,
+      "productos": [
+        {
+          "id": 1,
+          "nombre": "Chingona Simple",
+          "descripcion": "1 medallón 180g, queso cheddar, lechuga, tomate, pickles, salsa chingona. Sin papas.",
+          "precio": 8500,
+          "imagenes": []
+        },
+        {
+          "id": 2,
+          "nombre": "Chingona Doble",
+          "descripcion": "2 medallones 180g c/u, doble cheddar, bacon crocante, salsa especial. Sin papas.",
+          "precio": 12000,
+          "imagenes": ["hero.png"]
+        },
+        {
+          "id": 3,
+          "nombre": "Chingona Triple",
+          "descripcion": "3 medallones 180g, triple cheddar, bacon, cebolla caramelizada, salsa chingona. Sin papas.",
+          "precio": 15500,
+          "imagenes": []
+        }
+      ]
+    },
+    {
+      "id": "adicionales",
+      "nombre": "Adicionales",
+      "emoji": "🍟",
+      "productos": [
+        {
+          "id": 4,
+          "nombre": "Papas fritas",
+          "descripcion": "Papas fritas crocantes con sal y condimentos. La dupla perfecta para tu burger.",
+          "precio": 4000,
+          "imagenes": []
+        },
+        {
+          "id": 5,
+          "nombre": "Chicken Nuggets x6",
+          "descripcion": "6 nuggets de pollo dorados, jugosos por dentro, crocantes por fuera. Con salsa a elección.",
+          "precio": 4500,
+          "imagenes": []
+        },
+        {
+          "id": 6,
+          "nombre": "Chicken Nuggets x12",
+          "descripcion": "12 nuggets de pollo, ideales para compartir o para el más hambriado. Con salsa a elección.",
+          "precio": 8000,
+          "imagenes": []
+        }
+      ]
+    }
+  ]
+}

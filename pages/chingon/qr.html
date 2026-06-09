@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR — Chingón Burgers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --noir: #1A0D03;
+      --gold: #F7CE46;
+      --cream: #FFF8E8;
+    }
+    body {
+      background: var(--noir); color: var(--cream);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      background: var(--cream); color: var(--noir);
+      border-radius: 20px; padding: 2.5rem 2rem;
+      max-width: 380px; width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; display: block; }
+    .nombre { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 400; color: var(--noir); margin-bottom: 0.35rem; }
+    .tagline { font-size: 0.85rem; color: rgba(26,13,3,0.55); margin-bottom: 1.5rem; }
+    .divider { border: none; border-top: 2px solid rgba(26,13,3,0.1); margin: 1.5rem 0; }
+    #qr-box { display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+    #qr-box canvas, #qr-box img { border-radius: 10px; }
+    .scan-label { font-size: 0.82rem; font-weight: 600; color: rgba(26,13,3,0.55); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+    .url { font-size: 0.68rem; color: rgba(26,13,3,0.4); word-break: break-all; margin-bottom: 0.75rem; }
+    .direccion { font-size: 0.82rem; color: rgba(26,13,3,0.6); }
+    .powered { margin-top: 1.5rem; font-size: 0.65rem; color: rgba(26,13,3,0.3); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .card { box-shadow: none; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="./img/logo.png" alt="Chingón Burgers" class="logo">
+    <div class="nombre">Chingón Burgers</div>
+    <div class="tagline">Hamburguesería artesanal · Las Flores</div>
+    <hr class="divider">
+    <p class="scan-label">Escaneá para ver nuestros productos</p>
+    <div id="qr-box"></div>
+    <p class="url">juliancarroccio.github.io/pushcommerce/pages/chingon/tienda.html</p>
+    <p class="direccion">📍 Sarmiento y 25 de Mayo, Las Flores</p>
+    <p class="powered">Powered by PushCommerce</p>
+  </div>
+
+  <script>
+    new QRCode(document.getElementById('qr-box'), {
+      text: 'https://juliancarroccio.github.io/pushcommerce/pages/chingon/tienda.html',
+      width: 220,
+      height: 220,
+      colorDark: '#1A0D03',
+      colorLight: '#FFF8E8',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+</body>
+</html>

@@ -725,7 +725,7 @@ const FIREBASE_CONFIG = {
 };
 let db = null;
 try {
-  if (FIREBASE_CONFIG.apiKey !== 'AIzaSyBn2Q4Zr1HynxdMlq3gF3DEUwvCt1si-NU' && typeof firebase !== 'undefined') {
+  if (typeof firebase !== 'undefined') {
     firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.firestore();
   }
@@ -1444,17 +1444,17 @@ async function sendOrder() {
   };
 
   let docId = null;
-  if (db) {
-    try {
-      const ref = await db.collection('pedidos').add(payload);
-      docId = ref.id;
-    } catch (e) {
-      showToast('Error al enviar: ' + e.message);
-      return;
-    }
-  } else {
-    /* Modo demo sin Firebase: guardamos solo en localStorage */
-    console.warn('Firebase no configurado. Pedido no persistido remotamente.');
+  if (!db) {
+    showToast('Sistema de pedidos no disponible. Recargá la página.');
+    return;
+  }
+  try {
+    const ref = await db.collection('pedidos').add(payload);
+    docId = ref.id;
+  } catch (e) {
+    showToast('Error al enviar: ' + e.message);
+    console.error('Firestore write error:', e);
+    return;
   }
 
   lastSubmit = now;

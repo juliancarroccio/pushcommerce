@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /pushcommerce/pages/cattorini/
+Allow: /pushcommerce/pages/cattorini/index.html
+Allow: /pushcommerce/pages/cattorini/tienda.html
+Allow: /pushcommerce/pages/cattorini/producto.html
+
+Disallow: /pushcommerce/pages/cattorini/portal.html
+Disallow: /pushcommerce/pages/cattorini/pedidos.html
+Disallow: /pushcommerce/pages/cattorini/qr.html
+
+Sitemap: https://juliancarroccio.github.io/pushcommerce/pages/cattorini/sitemap.xml

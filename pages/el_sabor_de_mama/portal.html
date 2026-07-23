@@ -5,508 +5,773 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal — El Sabor de Mamá</title>
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="icon" href="./img/logo.jpg" type="image/jpeg" />
+  <link rel="icon" href="./img/logo-transp.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <!-- Firebase compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --noir: #0C0C0C;
+      --noir:  #0C0C0C;
       --slate: #161618;
-      --card: #1E1E20;
-      --border: #2A2A2E;
-      --gold: #F4BD4D;
-      --gold-dark: #C4952A;
+      --card:  #1E1E20;
+      --card2: #252528;
+      --brd:   rgba(244,189,77,0.14);
+      --brd2:  rgba(244,189,77,0.07);
+      --gold:  #F4BD4D;
+      --gold2: #C4952A;
       --cream: #F0EAD8;
-      --muted: #7A7060;
+      --muted: rgba(240,234,216,0.38);
+      --red:   #f87171;
+      --green: #4ade80;
     }
-    *, *::before, *::after { box-sizing: border-box; }
-    body {
+    html, body { height: 100%; background: var(--noir); color: var(--cream); font-family: 'Manrope', sans-serif; }
+
+    /* ── SHARED ── */
+    .lbl { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 0.4rem; }
+    .inp {
+      width: 100%; padding: 0.6rem 0.875rem; border: 1.5px solid var(--brd2);
+      border-radius: 8px; font-size: 0.875rem; color: var(--cream);
+      background: var(--card2); outline: none; transition: border-color 0.15s;
       font-family: 'Manrope', sans-serif;
-      background: var(--noir); color: var(--cream);
-      margin: 0; min-height: 100vh;
     }
-    h1,h2,h3 { font-family: 'Syne', sans-serif; margin: 0; }
-    input, textarea, select {
-      font-family: 'Manrope', sans-serif;
-      background: var(--noir); border: 1px solid var(--border);
-      color: var(--cream); border-radius: 8px; padding: 0.625rem 0.875rem;
-      font-size: 0.9rem; outline: none; width: 100%;
-      transition: border-color 0.2s;
-    }
-    input:focus, textarea:focus, select:focus { border-color: var(--gold); }
-    button {
-      font-family: 'Syne', sans-serif; cursor: pointer; border: none;
-    }
-
-    /* Login */
-    #login-screen {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      padding: 2rem;
-    }
-    .login-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 400px;
-      text-align: center;
-    }
-    .login-card img { height: 48px; border-radius: 4px; margin-bottom: 1.5rem; }
-    .login-card h2 { font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem; }
-    .login-card p { font-size: 0.85rem; color: var(--muted); margin-bottom: 2rem; }
-    .login-card input { margin-bottom: 1rem; text-align: center; letter-spacing: 0.1em; }
-    #btn-login {
-      width: 100%; background: var(--gold); color: var(--noir);
-      font-weight: 700; font-size: 1rem; padding: 0.875rem;
-      border-radius: 10px; transition: background 0.2s;
-    }
-    #btn-login:hover { background: var(--gold-dark); }
-    #login-error {
-      margin-top: 0.75rem; font-size: 0.8rem; color: #f87171; display: none;
-    }
-
-    /* App */
-    #app { display: none; }
-
-    /* Header */
-    .portal-header {
-      background: rgba(12,12,12,0.95); border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100;
-      padding: 0 1.5rem; height: 60px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .portal-header .brand { display: flex; align-items: center; gap: 0.75rem; }
-    .portal-header img { height: 32px; border-radius: 3px; }
-    .portal-header span { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; }
-    .portal-header .pill-portal {
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
-      background: rgba(244,189,77,0.15); color: var(--gold);
-      padding: 0.25rem 0.75rem; border-radius: 99px;
-    }
-    #btn-logout {
-      background: transparent; border: 1px solid var(--border);
-      color: var(--muted); font-size: 0.8rem; padding: 0.4rem 0.875rem;
-      border-radius: 6px; transition: all 0.2s;
-    }
-    #btn-logout:hover { border-color: #f87171; color: #f87171; }
-
-    /* Main */
-    .portal-body { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
-
-    /* Firebase status */
-    #fb-status {
-      padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem;
-      font-size: 0.85rem; font-weight: 600;
-    }
-    #fb-status.ok { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.25); }
-    #fb-status.error { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
-    #fb-status.loading { background: rgba(244,189,77,0.1); color: var(--gold); border: 1px solid rgba(244,189,77,0.25); }
-
-    /* Section cards */
-    .section-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; margin-bottom: 1.5rem; overflow: hidden;
-    }
-    .section-head {
-      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .section-head h3 { font-size: 1rem; font-weight: 700; color: #fff; }
-    .section-body { padding: 1.5rem; }
-
-    /* Horarios */
-    .hor-row {
-      display: grid; grid-template-columns: 120px 1fr 1fr; gap: 0.75rem;
-      align-items: center; margin-bottom: 0.75rem;
-    }
-    .hor-row label { font-size: 0.85rem; font-weight: 600; color: var(--cream); }
-    .hor-row input { font-size: 0.85rem; }
-    .hor-row input[type="time"] { max-width: 100px; }
-    .turno-row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
-    .turno-row span { font-size: 0.75rem; color: var(--muted); }
+    .inp:focus { border-color: var(--gold); }
+    .inp::placeholder { color: var(--muted); }
+    .inp-ro { background: var(--slate); color: var(--muted); }
+    select.inp option { background: var(--card2); }
+    .mb4 { margin-bottom: 1rem; }
+    .mb2 { margin-bottom: 0.5rem; }
 
     /* Toggle */
-    .toggle-wrap { display: flex; align-items: center; gap: 1rem; }
-    .toggle {
-      width: 48px; height: 26px; border-radius: 99px;
-      background: var(--border); border: none;
-      position: relative; cursor: pointer; transition: background 0.2s;
-    }
-    .toggle::after {
-      content: ''; position: absolute; top: 3px; left: 3px;
-      width: 20px; height: 20px; border-radius: 50%; background: #fff;
-      transition: transform 0.2s;
-    }
-    .toggle.on { background: var(--gold); }
-    .toggle.on::after { transform: translateX(22px); }
-    .toggle-label { font-size: 0.9rem; color: var(--cream); }
+    .tog { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .tog input { opacity: 0; width: 0; height: 0; }
+    .tog-sl { position: absolute; inset: 0; background: rgba(255,255,255,0.06); border-radius: 24px; cursor: pointer; transition: 0.2s; border: 1px solid var(--brd2); }
+    .tog-sl::before { content:''; position: absolute; height: 18px; width: 18px; left: 2px; bottom: 2px; background: var(--muted); border-radius: 50%; transition: 0.2s; }
+    .tog input:checked + .tog-sl { background: rgba(244,189,77,0.18); border-color: rgba(244,189,77,0.45); }
+    .tog input:checked + .tog-sl::before { transform: translateX(20px); background: var(--gold); }
 
     /* Buttons */
-    .btn-save {
-      background: var(--gold); color: var(--noir);
-      font-weight: 700; font-size: 0.9rem;
-      padding: 0.625rem 1.5rem; border-radius: 8px;
-      transition: background 0.2s;
-    }
-    .btn-save:hover { background: var(--gold-dark); }
-    .save-msg {
-      font-size: 0.8rem; color: #4ade80; margin-left: 0.75rem;
-      opacity: 0; transition: opacity 0.3s;
-    }
+    .btn-p { background: var(--gold); color: var(--noir); font-weight: 700; font-size: 0.875rem; padding: 0.75rem 1.5rem; border-radius: 10px; border: none; cursor: pointer; transition: all 0.15s; font-family: 'Manrope', sans-serif; width: 100%; }
+    .btn-p:hover { background: var(--gold2); }
+    .btn-p:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-s { background: transparent; color: var(--muted); font-weight: 500; font-size: 0.82rem; padding: 0.45rem 0.9rem; border-radius: 7px; border: 1px solid var(--brd2); cursor: pointer; transition: all 0.15s; font-family: 'Manrope', sans-serif; }
+    .btn-s:hover { border-color: var(--brd); color: var(--cream); }
+    .btn-ghost { background: none; border: none; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 4px; transition: background 0.15s; font-family: 'Manrope', sans-serif; color: var(--red); font-size: 0.78rem; }
+    .btn-ghost:hover { background: rgba(248,113,113,0.1); }
 
-    /* Precios */
-    .precios-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .field-group label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--muted); display: block; margin-bottom: 0.4rem; text-transform: uppercase; }
-    .input-prefix { position: relative; }
-    .input-prefix span {
-      position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%);
-      color: var(--muted); font-size: 0.9rem;
-    }
-    .input-prefix input { padding-left: 1.75rem; }
+    /* Cards */
+    .card { background: var(--card); border-radius: 12px; border: 1px solid var(--brd2); padding: 1.5rem; margin-bottom: 1rem; }
+    .card-title { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); opacity: 0.65; margin-bottom: 1.25rem; }
 
-    /* Oferta */
-    .oferta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-    #oferta-fields { margin-top: 1rem; }
+    /* Tabs */
+    .tab-btn { padding: 0.6rem 1.1rem; font-size: 0.8rem; font-weight: 600; border-bottom: 2px solid transparent; color: var(--muted); transition: all 0.15s; cursor: pointer; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; font-family: 'Manrope', sans-serif; }
+    .tab-btn.active { border-bottom-color: var(--gold); color: var(--gold); }
+    .tab-btn:hover:not(.active) { color: var(--cream); }
 
-    /* Links section */
-    .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-    .link-card {
-      background: var(--slate); border: 1px solid var(--border);
-      border-radius: 8px; padding: 1rem;
+    /* Toast */
+    #toast { position: fixed; bottom: 5rem; left: 50%; transform: translateX(-50%) translateY(150%); background: var(--card); color: var(--cream); border: 1px solid var(--brd); padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.85rem; font-weight: 500; z-index: 9999; transition: transform 0.3s ease; white-space: nowrap; pointer-events: none; }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.ok  { background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.3); color: var(--green); }
+    #toast.err { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.3); color: var(--red); }
+
+    /* ── LOGIN ── */
+    #s-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .login-card { background: var(--card); border: 1px solid var(--brd); border-radius: 20px; width: 100%; max-width: 400px; padding: 2.5rem 2rem; }
+    .login-logo { text-align: center; margin-bottom: 2rem; }
+    .login-logo img { height: 72px; width: auto; }
+    .login-logo .lt { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; margin-top: 0.75rem; }
+    .login-logo .ls { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+    #login-err { color: var(--red); font-size: 0.82rem; text-align: center; margin-top: 0.75rem; min-height: 1.2em; }
+
+    /* ── EDITOR ── */
+    #s-editor { display: none; flex-direction: column; height: 100vh; }
+
+    .ed-hdr {
+      background: var(--slate); border-bottom: 1px solid var(--brd2);
+      padding: 0 1rem; height: 52px;
       display: flex; align-items: center; gap: 0.75rem;
-      text-decoration: none; transition: border-color 0.2s;
+      position: sticky; top: 0; z-index: 100; flex-shrink: 0;
     }
-    .link-card:hover { border-color: var(--gold); }
-    .link-card .lc-icon { font-size: 1.5rem; }
-    .link-card .lc-text strong { display: block; font-size: 0.9rem; color: #fff; font-weight: 700; }
-    .link-card .lc-text span { font-size: 0.75rem; color: var(--muted); }
+    .hdr-logo { height: 28px; width: auto; }
+    .hdr-name { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--cream); }
+    #ed-status { font-size: 0.72rem; color: var(--muted); margin-left: 0.25rem; }
+    .hdr-right { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; }
+    #btn-cola { font-size: 0.7rem; font-weight: 600; padding: 0.3rem 0.75rem; background: rgba(244,189,77,0.1); border: 1px solid rgba(244,189,77,0.3); color: var(--gold); border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: 'Manrope', sans-serif; }
+    #btn-cola:hover { background: rgba(244,189,77,0.2); }
+    #btn-save-hdr { font-family: 'Syne', sans-serif; font-size: 0.75rem; letter-spacing: 0.05em; background: var(--gold); color: var(--noir); font-weight: 700; padding: 0.38rem 1rem; border-radius: 7px; border: none; cursor: pointer; transition: all 0.15s; }
+    #btn-save-hdr:hover { background: var(--gold2); }
+    #btn-save-hdr:disabled { opacity: 0.4; cursor: not-allowed; }
+    #btn-logout { font-size: 0.7rem; color: var(--muted); background: none; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; transition: color 0.15s; }
+    #btn-logout:hover { color: var(--red); }
 
-    @media (max-width: 600px) {
-      .precios-grid, .oferta-grid, .links-grid { grid-template-columns: 1fr; }
-      .hor-row { grid-template-columns: 100px 1fr; }
-    }
+    .tab-bar { background: var(--slate); border-bottom: 1px solid var(--brd2); display: flex; overflow-x: auto; position: sticky; top: 52px; z-index: 99; flex-shrink: 0; scrollbar-width: none; }
+    .tab-bar::-webkit-scrollbar { display: none; }
+
+    .ed-body { flex: 1; overflow-y: auto; padding-bottom: 6rem; }
+    .tab-panel { display: none; max-width: 580px; margin: 0 auto; padding: 1.25rem; }
+    .tab-panel.wide { max-width: 900px; }
+    .tab-panel.active { display: block; }
+
+    /* Horarios */
+    .day-row { padding: 0.875rem 0; border-top: 1px solid var(--brd2); }
+    .day-row:first-child { border-top: none; }
+    .turno-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.6rem; flex-wrap: wrap; }
+
+    /* Catalog */
+    .cat-block { background: var(--card); border-radius: 12px; border: 1px solid var(--brd2); margin-bottom: 0.75rem; overflow: hidden; }
+    .cat-hdr { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.25rem; background: var(--slate); border-bottom: 1px solid var(--brd2); }
+    .cat-hdr-name { flex: 1; font-weight: 600; color: var(--cream); font-size: 0.9rem; background: transparent; border: none; outline: none; min-width: 0; font-family: 'Manrope', sans-serif; }
+    .cat-hdr-name:focus { background: var(--card2); border-radius: 4px; padding: 0.15rem 0.4rem; }
+    .prod-grid { display: grid; grid-template-columns: 3.5rem 1fr 2fr 7rem 1.8rem; gap: 0.5rem; }
+    .prod-row { padding: 0.5rem 1.25rem; border-bottom: 1px solid var(--brd2); }
+    .prod-row:last-child { border-bottom: none; }
+    @media (max-width: 600px) { .prod-grid { grid-template-columns: 3rem 1fr 6rem 1.5rem; } .prod-col-desc { display: none; } }
+    .prod-media { display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; }
+    .prod-thumb { width: 3rem; height: 3rem; object-fit: cover; border-radius: 6px; display: block; }
+    .prod-thumb-rm { position: absolute; top: -5px; right: -5px; background: #f87171; color: #fff; border: none; border-radius: 50%; width: 17px; height: 17px; font-size: 10px; cursor: pointer; line-height: 1; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .prod-cam-btn { font-size: 0.6rem; color: var(--muted); cursor: pointer; line-height: 1.3; text-align: center; }
+    .prod-cam-btn:hover { color: var(--gold); }
+
+    /* Stock tab */
+    .stock-cat-hdr { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 1rem 0 .5rem; padding-bottom: .3rem; border-bottom: 1px solid var(--brd2); }
+    .stock-cat-hdr:first-child { margin-top: 0; }
+    .stock-item { display: flex; align-items: center; gap: .75rem; padding: .5rem .75rem; background: var(--card2); border-radius: 8px; margin-bottom: .3rem; cursor: pointer; transition: background .12s; }
+    .stock-item:hover { background: var(--brd); }
+    .stock-item input[type=checkbox] { accent-color: var(--gold); width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+    .stock-item-name { font-size: .88rem; flex: 1; }
+    .stock-badge-off { font-size: .65rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #f87171; background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.2); padding: .15rem .45rem; border-radius: 4px; }
+
+    /* Mobile save bar */
+    .save-bar-mob { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--slate); border-top: 1px solid var(--brd); padding: 0.875rem; z-index: 50; }
+    @media (max-width: 640px) { .save-bar-mob { display: block; } }
+
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap2 { gap: 0.5rem; }
+    .pb4 { padding-bottom: 1rem; border-bottom: 1px solid var(--brd2); margin-bottom: 1rem; }
   </style>
 </head>
 <body>
+<div id="toast"></div>
 
-<!-- Login Screen -->
-<div id="login-screen">
+<!-- ═══ LOGIN ═══════════════════════════════════════════════════════════════ -->
+<div id="s-login">
   <div class="login-card">
-    <img src="./img/logo.jpg" alt="El Sabor de Mamá" />
-    <h2>Portal de Gestión</h2>
-    <p>Ingresá la contraseña para continuar</p>
-    <input type="password" id="pass-input" placeholder="Contraseña" />
-    <button id="btn-login" onclick="doLogin()">Entrar</button>
-    <p id="login-error">Contraseña incorrecta</p>
+    <div class="login-logo">
+      <img src="./img/logo-transp.png" alt="El Sabor de Mamá">
+      <div class="lt">El Sabor de Mamá</div>
+      <div class="ls">Portal de autogestión</div>
+    </div>
+
+    <!-- Primera vez -->
+    <div id="frm-setup">
+      <p style="font-size:.8rem;color:var(--muted);text-align:center;margin-bottom:1.25rem;line-height:1.55">
+        Primera configuración. Tu token se guardará cifrado en este dispositivo — solo necesitarás la contraseña para volver.
+      </p>
+      <div class="mb4">
+        <label class="lbl">Token de GitHub</label>
+        <div style="position:relative">
+          <input type="password" id="i-pat" class="inp" placeholder="ghp_… o github_pat_…" autocomplete="off" spellcheck="false" style="padding-right:3.5rem">
+          <button type="button" tabindex="-1" onclick="toggleVis('i-pat',this)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);font-size:.72rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:Manrope,sans-serif">Ver</button>
+        </div>
+        <p style="font-size:.7rem;color:var(--muted);margin-top:.35rem">Fine-grained PAT del repositorio · Contents: Read &amp; Write</p>
+      </div>
+      <div class="mb4">
+        <label class="lbl">Contraseña maestra</label>
+        <input type="password" id="i-pwd1" class="inp" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+      </div>
+      <div class="mb4">
+        <label class="lbl">Confirmar contraseña</label>
+        <input type="password" id="i-pwd2" class="inp" placeholder="Repetí la contraseña" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSetup()">
+      </div>
+      <button onclick="doSetup()" class="btn-p" style="margin-top:.25rem">Configurar acceso</button>
+      <button id="btn-ya-tengo" onclick="showReturn()" class="btn-s" style="width:100%;margin-top:.625rem;display:none">Ya tengo acceso configurado</button>
+    </div>
+
+    <!-- Regreso -->
+    <div id="frm-return" style="display:none">
+      <p style="font-size:.8rem;color:var(--muted);text-align:center;margin-bottom:1.25rem">Ingresá tu contraseña para acceder.</p>
+      <div class="mb4">
+        <label class="lbl">Contraseña maestra</label>
+        <input type="password" id="i-pwd-r" class="inp" placeholder="Tu contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button onclick="doLogin()" class="btn-p">Acceder</button>
+      <button onclick="doReset()" style="background:none;border:none;cursor:pointer;width:100%;text-align:center;font-size:.75rem;color:var(--muted);margin-top:.875rem;font-family:Manrope,sans-serif;transition:color .15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">Cambiar token de acceso</button>
+    </div>
+
+    <p id="login-err"></p>
   </div>
 </div>
 
-<!-- App -->
-<div id="app">
-  <header class="portal-header">
-    <div class="brand">
-      <img src="./img/logo.jpg" alt="" />
-      <span>El Sabor de Mamá</span>
-      <span class="pill-portal">PORTAL</span>
+<!-- ═══ EDITOR ══════════════════════════════════════════════════════════════ -->
+<div id="s-editor">
+  <header class="ed-hdr">
+    <img class="hdr-logo" src="./img/logo-transp.png" alt="">
+    <span class="hdr-name">El Sabor de Mamá</span>
+    <span id="ed-status"></span>
+    <div class="hdr-right">
+      <button id="btn-cola" onclick="goCola()">Cola de pedidos →</button>
+      <button id="btn-save-hdr" onclick="doSave()">Guardar</button>
+      <button id="btn-logout" onclick="doLogout()">Salir</button>
     </div>
-    <button id="btn-logout" onclick="doLogout()">Salir</button>
   </header>
 
-  <div class="portal-body">
-    <div id="fb-status" class="loading">⏳ Conectando con Firebase…</div>
+  <nav class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('negocio',this)">Negocio</button>
+    <button class="tab-btn" onclick="showTab('precios',this)">Precios</button>
+    <button class="tab-btn" onclick="showTab('oferta',this)">Oferta</button>
+    <button class="tab-btn" onclick="showTab('horarios',this)">Horarios</button>
+    <button class="tab-btn" onclick="showTab('catalogo',this)">Catálogo</button>
+    <button class="tab-btn" onclick="showTab('stock',this)">Stock</button>
+  </nav>
 
-    <!-- Links rápidos -->
-    <div class="section-card">
-      <div class="section-head"><h3>🔗 Páginas del sitio</h3></div>
-      <div class="section-body">
-        <div class="links-grid">
-          <a href="./index.html" target="_blank" class="link-card">
-            <span class="lc-icon">🏠</span>
-            <div class="lc-text"><strong>Landing</strong><span>Página principal</span></div>
-          </a>
-          <a href="./tienda.html" target="_blank" class="link-card">
-            <span class="lc-icon">🥟</span>
-            <div class="lc-text"><strong>Tienda</strong><span>Catálogo y pedidos</span></div>
-          </a>
-          <a href="./pedidos.html" target="_blank" class="link-card">
-            <span class="lc-icon">🔢</span>
-            <div class="lc-text"><strong>Cola de pedidos</strong><span>Sistema de turnos</span></div>
-          </a>
-          <a href="./qr.html" target="_blank" class="link-card">
-            <span class="lc-icon">📱</span>
-            <div class="lc-text"><strong>QR</strong><span>Para imprimir</span></div>
-          </a>
-        </div>
-      </div>
-    </div>
+  <div class="ed-body">
 
-    <!-- Precios -->
-    <div class="section-card">
-      <div class="section-head">
-        <h3>💰 Precios</h3>
-        <div><button class="btn-save" onclick="savePrecios()">Guardar</button><span class="save-msg" id="msg-precios">✓ Guardado</span></div>
-      </div>
-      <div class="section-body">
-        <div class="precios-grid">
-          <div class="field-group">
-            <label>Precio unitario</label>
-            <div class="input-prefix"><span>$</span><input type="number" id="precio-unit" value="1500" min="0" step="100" /></div>
-          </div>
-          <div class="field-group">
-            <label>Precio docena (12 unidades)</label>
-            <div class="input-prefix"><span>$</span><input type="number" id="precio-docena" value="16000" min="0" step="500" /></div>
+    <!-- NEGOCIO -->
+    <div id="tab-negocio" class="tab-panel active">
+      <div class="card">
+        <div class="card-title">Datos del local</div>
+        <div class="mb4">
+          <label class="lbl">Nombre del negocio</label>
+          <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem .875rem;background:var(--slate);border-radius:8px;border:1px solid var(--brd2)">
+            <span id="disp-nombre" style="font-weight:600;font-size:.875rem;flex:1"></span>
+            <span style="font-size:.7rem;color:var(--muted)">No editable</span>
           </div>
         </div>
+        <div class="mb4">
+          <label class="lbl">WhatsApp <span style="font-weight:400;text-transform:none;font-size:.7rem">(con código de país, sin +)</span></label>
+          <input type="tel" id="f-wa" class="inp" placeholder="5492244475575">
+        </div>
+        <div class="mb4">
+          <label class="lbl">Dirección</label>
+          <input type="text" id="f-dir" class="inp" placeholder="Av. Sarmiento 545, Las Flores">
+        </div>
+        <div class="mb4">
+          <label class="lbl">Teléfono</label>
+          <input type="tel" id="f-tel" class="inp" placeholder="02244 47-5575">
+        </div>
+        <div class="mb4">
+          <label class="lbl">Instagram <span style="font-weight:400;text-transform:none;font-size:.7rem">(sin @)</span></label>
+          <input type="text" id="f-ig" class="inp" placeholder="empanadas_elsabordemama">
+        </div>
+        <div>
+          <label class="lbl">Google Analytics ID <span style="font-weight:400;text-transform:none;font-size:.7rem">(opcional)</span></label>
+          <input type="text" id="f-ga" class="inp" placeholder="G-XXXXXXXXXX">
+        </div>
       </div>
     </div>
 
-    <!-- Oferta -->
-    <div class="section-card">
-      <div class="section-head">
-        <h3>🏷️ Oferta especial</h3>
-        <div><button class="btn-save" onclick="saveOferta()">Guardar</button><span class="save-msg" id="msg-oferta">✓ Guardado</span></div>
-      </div>
-      <div class="section-body">
-        <div class="toggle-wrap">
-          <button class="toggle" id="toggle-oferta" onclick="toggleOferta()"></button>
-          <span class="toggle-label" id="toggle-oferta-label">Oferta desactivada</span>
+    <!-- PRECIOS -->
+    <div id="tab-precios" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Precios de empanadas</div>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.55">
+          Al llegar a la cantidad de docena, el carrito aplica el precio de docena automáticamente. Cambiar estos valores afecta la tienda en tiempo real una vez guardado.
+        </p>
+        <div class="mb4">
+          <label class="lbl">Precio por unidad ($)</label>
+          <input type="number" id="f-punit" class="inp" min="0" step="100" placeholder="1500">
         </div>
-        <div id="oferta-fields" style="display:none">
-          <div class="oferta-grid">
-            <div class="field-group">
-              <label>Texto de la oferta</label>
-              <input type="text" id="oferta-texto" placeholder="Ej: Oferta del finde" />
-            </div>
-            <div class="field-group">
-              <label>Precio especial</label>
-              <div class="input-prefix"><span>$</span><input type="number" id="oferta-precio" value="0" min="0" step="100" /></div>
-            </div>
+        <div class="mb4">
+          <label class="lbl">Precio por docena ($)</label>
+          <input type="number" id="f-pdoc" class="inp" min="0" step="500" placeholder="16000">
+        </div>
+        <div class="mb4">
+          <label class="lbl">Unidades para la docena</label>
+          <input type="number" id="f-pdocn" class="inp" min="1" placeholder="12">
+          <p style="font-size:.7rem;color:var(--muted);margin-top:.35rem">Normalmente 12. Cambiarlo afecta cuántas unidades activan el precio de docena.</p>
+        </div>
+      </div>
+      <div id="precios-preview" style="background:rgba(244,189,77,0.06);border:1px solid rgba(244,189,77,0.18);border-radius:10px;padding:1rem">
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);opacity:.65;margin-bottom:.625rem">Simulación del carrito</div>
+        <div id="pp-text" style="font-size:.82rem;color:var(--cream);line-height:1.7"></div>
+      </div>
+    </div>
+
+    <!-- OFERTA -->
+    <div id="tab-oferta" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Oferta especial</div>
+        <div class="flex items-center justify-between pb4">
+          <div>
+            <div style="font-weight:600;font-size:.9rem">Oferta activa</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Se muestra como banner en la landing y la tienda</div>
           </div>
+          <label class="tog"><input type="checkbox" id="f-oa"><span class="tog-sl"></span></label>
+        </div>
+        <div class="mb4">
+          <label class="lbl">Texto del banner</label>
+          <input type="text" id="f-ot" class="inp" placeholder="🎉 Oferta especial de fin de semana">
+        </div>
+        <div class="mb4">
+          <label class="lbl">Precio por unidad en oferta ($)</label>
+          <input type="number" id="f-opu" class="inp" placeholder="0 = sin descuento en unidades" min="0">
+          <p style="font-size:.7rem;color:var(--muted);margin-top:.35rem">Si ponés un valor, cada empanada muestra el precio original tachado y este en dorado. Dejalo en 0 para no tocar el precio unitario.</p>
+        </div>
+        <div>
+          <label class="lbl">Precio de docena en oferta ($)</label>
+          <input type="number" id="f-opd" class="inp" placeholder="0 = sin descuento en docena" min="0">
+          <p style="font-size:.7rem;color:var(--muted);margin-top:.35rem">Si ponés un valor, el precio de docena muestra el original tachado y este en dorado. Dejalo en 0 para no tocar la docena.</p>
         </div>
       </div>
     </div>
 
-    <!-- Horarios -->
-    <div class="section-card">
-      <div class="section-head">
-        <h3>🕐 Horarios</h3>
-        <div><button class="btn-save" onclick="saveHorarios()">Guardar</button><span class="save-msg" id="msg-horarios">✓ Guardado</span></div>
-      </div>
-      <div class="section-body">
-        <p style="font-size:0.8rem;color:var(--muted);margin:0 0 1.25rem">Si el negocio tiene descanso al mediodía, completá ambos turnos. Si trabaja sin corte, dejá el 2° turno en blanco. Si está cerrado ese día, dejá todo vacío.</p>
-        <div id="hor-editor"></div>
+    <!-- HORARIOS -->
+    <div id="tab-horarios" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Horarios de atención</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5">Cada día puede tener dos turnos (p.ej. mediodía y noche). Si el negocio cierra un día, desactivalo con el toggle.</p>
+        <div id="hor-list"></div>
       </div>
     </div>
 
+    <!-- CATÁLOGO -->
+    <div id="tab-catalogo" class="tab-panel wide">
+      <div id="cat-list"></div>
+      <button onclick="addCat()"
+        style="width:100%;padding:1rem;border:2px dashed var(--brd2);color:var(--muted);border-radius:12px;background:none;cursor:pointer;font-size:.85rem;font-weight:600;font-family:Manrope,sans-serif;transition:all .15s;margin-top:.25rem"
+        onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
+        onmouseout="this.style.borderColor='var(--brd2)';this.style.color='var(--muted)'"
+      >+ Nueva categoría</button>
+    </div>
+
+    <!-- STOCK -->
+    <div id="tab-stock" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Stock de productos</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5">Los productos sin tilde aparecen en la tienda como "Sin stock" y no se pueden agregar al carrito, pero siguen siendo visibles.</p>
+        <div id="stock-list"></div>
+      </div>
+    </div>
+
+  </div><!-- end ed-body -->
+
+  <div class="save-bar-mob">
+    <button onclick="doSave()" class="btn-p">Guardar cambios</button>
   </div>
 </div>
 
 <script>
-// ── Auth ────────────────────────────────────────────────────────────
-const PASS = 'mama2024'; // Cambiar por la contraseña deseada
-const SESSION_KEY = 'esm_portal';
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const GH = { owner: 'elsabordemama', repo: 'elsabordemama.github.io', branch: 'main' };
+const FILE_PATH = 'productos.json';
+const LS = 'pc_epat';
+const DAYS   = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+const D_LBLS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
 
-function checkAuth() {
-  try {
-    const s = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-    return s && (Date.now() - s.ts < 8 * 3600 * 1000);
-  } catch { return false; }
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let pat = null, raw = null, catData = [], horData = {};
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+const enc = new TextEncoder(), dec = new TextDecoder();
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const $   = id => document.getElementById(id);
+
+// ── CRYPTO ────────────────────────────────────────────────────────────────────
+async function deriveKey(pwd, salt) {
+  const km = await crypto.subtle.importKey('raw', enc.encode(pwd), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt, iterations:200000, hash:'SHA-256' },
+    km, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']
+  );
+}
+const toB64 = u8 => btoa(String.fromCharCode(...u8));
+const frB64 = b  => Uint8Array.from(atob(b), c => c.charCodeAt(0));
+
+async function encryptPAT(token, pwd) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const key  = await deriveKey(pwd, salt);
+  const data = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, enc.encode(token));
+  return JSON.stringify({ s: toB64(salt), i: toB64(iv), d: toB64(new Uint8Array(data)) });
+}
+async function decryptPAT(stored, pwd) {
+  const { s, i, d } = JSON.parse(stored);
+  const key = await deriveKey(pwd, frB64(s));
+  const pt  = await crypto.subtle.decrypt({name:'AES-GCM', iv: frB64(i)}, key, frB64(d));
+  return dec.decode(pt);
 }
 
-function doLogin() {
-  const val = document.getElementById('pass-input').value;
-  if (val === PASS) {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now() }));
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = '';
-    initApp();
-  } else {
-    document.getElementById('login-error').style.display = '';
-    document.getElementById('pass-input').value = '';
-    document.getElementById('pass-input').focus();
-  }
+// ── GITHUB API ────────────────────────────────────────────────────────────────
+async function ghGet(path) {
+  const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`, {
+    headers: { Authorization:`Bearer ${pat}`, Accept:'application/vnd.github+json' }
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+  return r.json();
+}
+async function ghPut(path, sha, content, msg) {
+  const bytes = enc.encode(content);
+  let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+  const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`, {
+    method:'PUT',
+    headers: { Authorization:`Bearer ${pat}`, 'Content-Type':'application/json', Accept:'application/vnd.github+json' },
+    body: JSON.stringify({ message: msg, content: btoa(bin), sha, branch: GH.branch })
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+  return r.json();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let _tt;
+function toast(msg, type='') {
+  clearTimeout(_tt);
+  const t = $('toast');
+  t.textContent = msg; t.className = 'show' + (type ? ' '+type : '');
+  _tt = setTimeout(() => t.className = '', 3500);
+}
+
+// ── STATUS ────────────────────────────────────────────────────────────────────
+function setStatus(msg, color) {
+  const el = $('ed-status');
+  el.textContent = msg;
+  el.style.color = color || 'var(--muted)';
+}
+
+// ── SCREENS ───────────────────────────────────────────────────────────────────
+function showEditor() { $('s-login').style.display = 'none'; $('s-editor').style.display = 'flex'; }
+function showLogin()  { $('s-login').style.display = 'flex'; $('s-editor').style.display = 'none'; }
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  $('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'stock') renderStock();
+}
+
+// ── COLA ──────────────────────────────────────────────────────────────────────
+function goCola() {
+  sessionStorage.setItem('pc_cola', JSON.stringify({ ts: Date.now() }));
+  window.location.href = './pedidos.html';
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+function toggleVis(id, btn) {
+  const el = $(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+  btn.textContent = el.type === 'password' ? 'Ver' : 'Ocultar';
+}
+function showReturn() { $('frm-setup').style.display='none'; $('frm-return').style.display='block'; setTimeout(()=>$('i-pwd-r').focus(), 50); }
+function showSetup()  { $('frm-setup').style.display='block'; $('frm-return').style.display='none'; }
+function setErr(msg)  { $('login-err').textContent = msg; }
+
+async function doSetup() {
+  setErr('');
+  const token = $('i-pat').value.trim(), pwd = $('i-pwd1').value, conf = $('i-pwd2').value;
+  if (!token) return setErr('Ingresá el token de GitHub.');
+  if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) return setErr('El token debe empezar con ghp_ o github_pat_');
+  if (pwd.length < 8) return setErr('La contraseña debe tener al menos 8 caracteres.');
+  if (pwd !== conf)   return setErr('Las contraseñas no coinciden.');
+  try {
+    localStorage.setItem(LS, await encryptPAT(token, pwd));
+    pat = token;
+    showEditor();
+    loadFile();
+  } catch(e) { setErr('Error al cifrar: ' + e.message); }
+}
+
+async function doLogin() {
+  setErr('');
+  const pwd = $('i-pwd-r').value;
+  if (!pwd) return setErr('Ingresá tu contraseña.');
+  const stored = localStorage.getItem(LS);
+  if (!stored) return showSetup();
+  try {
+    pat = await decryptPAT(stored, pwd);
+    showEditor();
+    loadFile();
+  } catch { setErr('Contraseña incorrecta.'); }
+}
+
+function doReset() {
+  if (!confirm('¿Reconfigurar el token? Se borrará el acceso guardado en este dispositivo.')) return;
+  localStorage.removeItem(LS);
+  $('i-pat').value = $('i-pwd1').value = $('i-pwd2').value = '';
+  showSetup(); setErr('');
 }
 
 function doLogout() {
-  sessionStorage.removeItem(SESSION_KEY);
-  location.reload();
+  pat = null; raw = null;
+  showLogin();
+  if (localStorage.getItem(LS)) showReturn(); else showSetup();
 }
 
-document.getElementById('pass-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
-
-if (checkAuth()) {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = '';
-  initApp();
-}
-
-// ── Firebase ─────────────────────────────────────────────────────────
-const FIREBASE_CONFIG = {
-  // ⚠️ Reemplazar con tu configuración de Firebase (ver instrucciones de deploy)
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROJECT.firebaseapp.com",
-  projectId: "TU_PROJECT_ID",
-  storageBucket: "TU_PROJECT.appspot.com",
-  messagingSenderId: "TU_SENDER_ID",
-  appId: "TU_APP_ID"
-};
-
-let db = null;
-
-// ── Horarios config ─────────────────────────────────────────────────
-const DIAS = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
-const DIAS_LABEL = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
-
-const DEFAULT_HORARIOS = {
-  lunes:     [{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:00'}],
-  martes:    [{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:00'}],
-  'miércoles':[{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:00'}],
-  jueves:    [{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:00'}],
-  viernes:   [{abre:'11:00',cierra:'14:00'},{abre:'19:00',cierra:'23:30'}],
-  'sábado':  [{abre:'11:00',cierra:'14:30'},{abre:'19:00',cierra:'23:30'}],
-  domingo:   [{abre:'19:00',cierra:'23:00'}]
-};
-
-// ── Oferta toggle ──────────────────────────────────────────────────
-let ofertaActiva = false;
-function toggleOferta() {
-  ofertaActiva = !ofertaActiva;
-  const btn = document.getElementById('toggle-oferta');
-  const label = document.getElementById('toggle-oferta-label');
-  const fields = document.getElementById('oferta-fields');
-  btn.classList.toggle('on', ofertaActiva);
-  label.textContent = ofertaActiva ? 'Oferta activada' : 'Oferta desactivada';
-  fields.style.display = ofertaActiva ? '' : 'none';
-}
-
-// ── Save helpers ──────────────────────────────────────────────────
-function showSaveMsg(id) {
-  const el = document.getElementById(id);
-  el.style.opacity = '1';
-  setTimeout(() => el.style.opacity = '0', 2000);
-}
-
-async function saveToFirebase(data) {
-  if (!db) throw new Error('Firebase no conectado');
-  await db.collection('config').doc('datos').set(data, { merge: true });
-}
-
-// ── Save functions ─────────────────────────────────────────────────
-async function savePrecios() {
-  const unit = parseInt(document.getElementById('precio-unit').value) || 1500;
-  const docena = parseInt(document.getElementById('precio-docena').value) || 16000;
+// ── LOAD FILE ─────────────────────────────────────────────────────────────────
+async function loadFile() {
+  setStatus('Cargando…');
   try {
-    await saveToFirebase({ precios: { empanada_unit: unit, docena, docena_cantidad: 12 } });
-    showSaveMsg('msg-precios');
-  } catch (e) {
-    alert('Error al guardar: ' + e.message);
+    const file = await ghGet(FILE_PATH);
+    const bytes = Uint8Array.from(atob(file.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+    raw = JSON.parse(dec.decode(bytes));
+    buildCatForm(raw);
+    buildNegForm(raw);
+    buildPreciosForm(raw);
+    buildOfForm(raw);
+    buildHorForm(raw);
+    setStatus('');
+  } catch(e) {
+    setStatus('Error al cargar', 'var(--red)');
+    toast('Error: ' + e.message, 'err');
   }
 }
 
-async function saveOferta() {
-  const activa = ofertaActiva;
-  const texto = document.getElementById('oferta-texto').value.trim();
-  const precio = parseInt(document.getElementById('oferta-precio').value) || 0;
-  try {
-    await saveToFirebase({ oferta: { activa, texto, precio_oferta: precio } });
-    showSaveMsg('msg-oferta');
-  } catch (e) {
-    alert('Error al guardar: ' + e.message);
-  }
+// ── NEGOCIO ───────────────────────────────────────────────────────────────────
+function buildNegForm(data) {
+  const n = data.negocio || {};
+  $('disp-nombre').textContent = n.nombre || '';
+  $('f-wa').value  = n.whatsapp     || '';
+  $('f-dir').value = n.direccion    || '';
+  $('f-tel').value = n.telefono     || '';
+  $('f-ig').value  = n.instagram    || '';
+  $('f-ga').value  = n.analytics_id || '';
+}
+function collectNeg() {
+  return { ...raw.negocio,
+    whatsapp:     $('f-wa').value.trim(),
+    direccion:    $('f-dir').value.trim(),
+    telefono:     $('f-tel').value.trim(),
+    instagram:    $('f-ig').value.trim(),
+    analytics_id: $('f-ga').value.trim(),
+  };
 }
 
-async function saveHorarios() {
-  const horarios = {};
-  DIAS.forEach(dia => {
-    const t1a = document.getElementById(`${dia}-t1a`)?.value;
-    const t1c = document.getElementById(`${dia}-t1c`)?.value;
-    const t2a = document.getElementById(`${dia}-t2a`)?.value;
-    const t2c = document.getElementById(`${dia}-t2c`)?.value;
-    const turnos = [];
-    if (t1a && t1c) turnos.push({ abre: t1a, cierra: t1c });
-    if (t2a && t2c) turnos.push({ abre: t2a, cierra: t2c });
-    horarios[dia] = turnos;
-  });
-  try {
-    await saveToFirebase({ horarios });
-    showSaveMsg('msg-horarios');
-  } catch (e) {
-    alert('Error al guardar: ' + e.message);
-  }
+// ── PRECIOS ───────────────────────────────────────────────────────────────────
+function buildPreciosForm(data) {
+  const p = data.precios || {};
+  $('f-punit').value = p.empanada_unit    || 1500;
+  $('f-pdoc').value  = p.docena           || 16000;
+  $('f-pdocn').value = p.docena_cantidad  || 12;
+  updPreciosPrev();
+  ['f-punit','f-pdoc','f-pdocn'].forEach(id => $(id).oninput = updPreciosPrev);
+}
+function updPreciosPrev() {
+  const unit = parseInt($('f-punit').value)||0;
+  const doc  = parseInt($('f-pdoc').value) ||0;
+  const cant = parseInt($('f-pdocn').value)||12;
+  if (!unit || !doc) { $('pp-text').innerHTML = ''; return; }
+  const saved = (unit * cant) - doc;
+  $('pp-text').innerHTML = `
+    ${cant - 1} empanadas → <strong>$${((cant-1)*unit).toLocaleString('es-AR')}</strong><br>
+    ${cant} empanadas <em style="color:var(--gold)">(docena)</em> → <strong style="color:var(--gold)">$${doc.toLocaleString('es-AR')}</strong>
+    <span style="font-size:.7rem;color:var(--muted);margin-left:.4rem">(ahorrás $${saved.toLocaleString('es-AR')})</span><br>
+    ${cant + 1} empanadas → <strong>$${(doc + unit).toLocaleString('es-AR')}</strong>
+  `;
+}
+function collectPrecios() {
+  return {
+    empanada_unit:   parseInt($('f-punit').value) ||1500,
+    docena:          parseInt($('f-pdoc').value)  ||16000,
+    docena_cantidad: parseInt($('f-pdocn').value) ||12,
+  };
 }
 
-// ── Build horario editor ──────────────────────────────────────────
-function buildHorEditor(horarios) {
-  const h = horarios || DEFAULT_HORARIOS;
-  const editor = document.getElementById('hor-editor');
-  editor.innerHTML = DIAS.map((dia, i) => {
-    const ts = h[dia] || [];
-    const t1 = ts[0] || { abre: '', cierra: '' };
-    const t2 = ts[1] || { abre: '', cierra: '' };
-    return `<div class="hor-row">
-      <label>${DIAS_LABEL[i]}</label>
-      <div class="turno-row">
-        <span>1er turno</span>
-        <input type="time" id="${dia}-t1a" value="${t1.abre}" style="width:100px" />
-        <span>–</span>
-        <input type="time" id="${dia}-t1c" value="${t1.cierra}" style="width:100px" />
-      </div>
-      <div class="turno-row">
-        <span>2do turno</span>
-        <input type="time" id="${dia}-t2a" value="${t2.abre}" style="width:100px" />
-        <span>–</span>
-        <input type="time" id="${dia}-t2c" value="${t2.cierra}" style="width:100px" />
-      </div>
-    </div>`;
+// ── OFERTA ────────────────────────────────────────────────────────────────────
+function buildOfForm(data) {
+  const o = data.oferta || {};
+  $('f-oa').checked = !!o.activa;
+  $('f-ot').value   = o.texto               || '';
+  $('f-opu').value  = o.precio_unit_oferta  || '';
+  $('f-opd').value  = o.precio_docena_oferta|| '';
+}
+function collectOf() {
+  return {
+    activa:               $('f-oa').checked,
+    texto:                $('f-ot').value.trim(),
+    precio_unit_oferta:   parseInt($('f-opu').value) || 0,
+    precio_docena_oferta: parseInt($('f-opd').value) || 0,
+  };
+}
+
+// ── HORARIOS ──────────────────────────────────────────────────────────────────
+function buildHorForm(data) {
+  horData = JSON.parse(JSON.stringify(data.horarios || {}));
+  renderHor();
+}
+function renderHor() {
+  $('hor-list').innerHTML = DAYS.map((day, di) => {
+    const ts = horData[day] || [], open = ts.length > 0;
+    return `
+      <div class="day-row">
+        <div class="flex items-center justify-between">
+          <span style="font-weight:600;font-size:.875rem">${D_LBLS[di]}</span>
+          <div class="flex items-center gap2">
+            <span style="font-size:.75rem;color:var(--muted)">${open?'Abierto':'Cerrado'}</span>
+            <label class="tog"><input type="checkbox" ${open?'checked':''} onchange="togDay('${day}',this.checked)"><span class="tog-sl"></span></label>
+          </div>
+        </div>
+        ${open ? `<div style="margin-top:.75rem;padding-left:.25rem">
+          ${ts.map((t,ti) => `
+            <div class="turno-row">
+              <span style="font-size:.7rem;color:var(--muted);width:2.5rem;flex-shrink:0">Abre</span>
+              <input type="time" value="${t.abre}" class="inp" style="width:8rem;font-size:.85rem" onchange="updTurno('${day}',${ti},'abre',this.value)">
+              <span style="font-size:.7rem;color:var(--muted);flex-shrink:0">Cierra</span>
+              <input type="time" value="${t.cierra}" class="inp" style="width:8rem;font-size:.85rem" onchange="updTurno('${day}',${ti},'cierra',this.value)">
+              ${ts.length>1?`<button class="btn-ghost" style="font-size:1.1rem;line-height:1" onclick="delTurno('${day}',${ti})">×</button>`:''}
+            </div>`).join('')}
+          <button onclick="addTurno('${day}')" style="font-size:.73rem;color:var(--gold);background:none;border:none;cursor:pointer;font-family:Manrope,sans-serif;font-weight:600;margin-top:.5rem">+ Turno</button>
+        </div>` : ''}
+      </div>`;
   }).join('');
 }
+function togDay(day, open) { horData[day] = open ? [{abre:'19:00',cierra:'00:00'}] : []; renderHor(); }
+function addTurno(day)      { (horData[day]=horData[day]||[]).push({abre:'09:00',cierra:'18:00'}); renderHor(); }
+function delTurno(day, ti)  { horData[day].splice(ti,1); renderHor(); }
+function updTurno(d,ti,f,v) { horData[d][ti][f] = v; }
 
-// ── Init ──────────────────────────────────────────────────────────
-function initApp() {
-  buildHorEditor(null);
+// ── CATÁLOGO ──────────────────────────────────────────────────────────────────
+// ── IMAGEN DE PRODUCTO ────────────────────────────────────────────────────────
+async function ghUploadImage(filename, base64) {
+  let sha;
+  try { const f = await ghGet('img/' + filename); sha = f.sha; } catch(_) {}
+  const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/img/${filename}`, {
+    method: 'PUT',
+    headers: { Authorization:`Bearer ${pat}`, 'Content-Type':'application/json', Accept:'application/vnd.github+json' },
+    body: JSON.stringify({ message:`portal: foto ${filename}`, content: base64, sha, branch: GH.branch })
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+  return r.json();
+}
 
-  const fbStatus = document.getElementById('fb-status');
+function uploadProductImg(event, ci, pi) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    const base64 = e.target.result.split(',')[1];
+    const ext = file.name.split('.').pop().toLowerCase().replace('jpeg','jpg');
+    const prod = catData[ci].productos[pi];
+    const filename = `prod-${prod.id || Date.now()}.${ext}`;
+    setStatus('Subiendo imagen…');
+    try {
+      await ghUploadImage(filename, base64);
+      catData[ci].productos[pi].imagen = filename;
+      renderCat();
+      setStatus('Imagen subida ✓', 'var(--green)');
+    } catch(err) {
+      setStatus('Error al subir: ' + err.message, '#f87171');
+    }
+  };
+  reader.readAsDataURL(file);
+}
 
-  // Try Firebase
+function clearImg(ci, pi) {
+  catData[ci].productos[pi].imagen = null;
+  renderCat();
+}
+
+// ── STOCK ─────────────────────────────────────────────────────────────────────
+function renderStock() {
+  $('stock-list').innerHTML = catData.map((cat, ci) => `
+    <div class="stock-cat-hdr">${esc(cat.emoji||'')} ${esc(cat.nombre||'')}</div>
+    ${cat.productos.map((p, pi) => `
+      <label class="stock-item">
+        <input type="checkbox" ${p.disponible !== false ? 'checked' : ''}
+          onchange="catData[${ci}].productos[${pi}].disponible=this.checked;renderStock()">
+        <span class="stock-item-name">${esc(p.emoji||'🥟')} ${esc(p.nombre||'Sin nombre')}</span>
+        ${p.disponible === false ? '<span class="stock-badge-off">Sin stock</span>' : ''}
+      </label>`).join('')}
+  `).join('');
+}
+
+// ── CATÁLOGO ──────────────────────────────────────────────────────────────────
+function buildCatForm(data) {
+  catData = JSON.parse(JSON.stringify(data.categorias || []));
+  renderCat();
+}
+function renderCat() {
+  $('cat-list').innerHTML = catData.map((cat, ci) => `
+    <div class="cat-block">
+      <div class="cat-hdr">
+        <span style="font-size:1.2rem">${esc(cat.emoji||'')}</span>
+        <input class="cat-hdr-name" value="${esc(cat.nombre||cat.label||'')}" placeholder="Nombre de categoría" onchange="catData[${ci}].nombre=this.value">
+        <span style="font-size:.7rem;color:var(--muted);flex-shrink:0">${cat.productos.length} prod.</span>
+        <button class="btn-ghost" onclick="delCat(${ci})">Eliminar cat.</button>
+      </div>
+      <div>
+        <div class="prod-grid prod-row" style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--brd2)">
+          <span>Foto</span><span>Nombre</span><span class="prod-col-desc">Descripción</span><span>Precio $</span><span></span>
+        </div>
+        ${cat.productos.map((p,pi) => `
+          <div class="prod-row prod-grid">
+            <div class="prod-media">
+              ${p.imagen
+                ? `<img src="./img/${esc(p.imagen)}" class="prod-thumb" alt="">
+                   <button class="prod-thumb-rm" onclick="clearImg(${ci},${pi})" title="Quitar foto">×</button>`
+                : `<input value="${esc(p.emoji||'')}" maxlength="2" class="inp" style="text-align:center;font-size:.9rem;padding:.2rem .1rem;width:2.8rem" onchange="catData[${ci}].productos[${pi}].emoji=this.value">
+                   <label class="prod-cam-btn" title="Subir foto">📷
+                     <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadProductImg(event,${ci},${pi})">
+                   </label>`
+              }
+            </div>
+            <input value="${esc(p.nombre||'')}" placeholder="Nombre" class="inp" style="font-size:.82rem" onchange="catData[${ci}].productos[${pi}].nombre=this.value">
+            <input value="${esc(p.descripcion||'')}" placeholder="Descripción" class="inp prod-col-desc" style="font-size:.82rem" onchange="catData[${ci}].productos[${pi}].descripcion=this.value">
+            <input type="number" value="${p.precio||0}" min="0" class="inp" style="font-size:.82rem" onchange="catData[${ci}].productos[${pi}].precio=parseInt(this.value)||0">
+            <button class="btn-ghost" style="font-size:1rem;line-height:1;padding:.2rem" onclick="delProd(${ci},${pi})">×</button>
+          </div>`).join('')}
+        <div style="padding:.625rem 1.25rem">
+          <button onclick="addProd(${ci})" style="font-size:.73rem;color:var(--gold);background:none;border:none;cursor:pointer;font-family:Manrope,sans-serif;font-weight:600">+ Agregar producto</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function addProd(ci) {
+  catData[ci].productos.push({ id: Date.now(), nombre:'', descripcion:'', precio:1500, emoji:'🥟' });
+  renderCat();
+}
+function delProd(ci, pi) {
+  if (!confirm(`¿Eliminar "${catData[ci].productos[pi].nombre||'este producto'}"?`)) return;
+  catData[ci].productos.splice(pi,1); renderCat();
+}
+function addCat() {
+  catData.push({ id:'cat-'+Date.now(), nombre:'Nueva categoría', emoji:'🆕', descripcion:'', productos:[] });
+  renderCat();
+}
+function delCat(ci) {
+  if (!confirm(`¿Eliminar categoría "${catData[ci].nombre}" y todos sus productos?`)) return;
+  catData.splice(ci,1); renderCat();
+}
+
+// ── COLLECT ALL ───────────────────────────────────────────────────────────────
+function collectAll() {
+  let nextId = 1;
+  const categorias = catData.map(cat => ({
+    ...cat,
+    nombre: cat.nombre || cat.label || '',
+    productos: cat.productos.map(p => ({ ...p, id: nextId++ }))
+  }));
+  return { ...raw, negocio: collectNeg(), precios: collectPrecios(), oferta: collectOf(), horarios: horData, categorias };
+}
+
+// ── SAVE ──────────────────────────────────────────────────────────────────────
+async function doSave() {
+  const data = collectAll();
+  $('btn-save-hdr').disabled = true;
+  setStatus('Guardando…');
   try {
-    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.firestore();
-
-    db.collection('config').doc('datos').get()
-      .then(doc => {
-        fbStatus.className = 'ok';
-        fbStatus.textContent = '✅ Conectado a Firebase — cambios se guardan en tiempo real';
-
-        if (doc.exists) {
-          const data = doc.data();
-          if (data.precios) {
-            document.getElementById('precio-unit').value = data.precios.empanada_unit || 1500;
-            document.getElementById('precio-docena').value = data.precios.docena || 16000;
-          }
-          if (data.oferta) {
-            ofertaActiva = data.oferta.activa || false;
-            document.getElementById('toggle-oferta').classList.toggle('on', ofertaActiva);
-            document.getElementById('toggle-oferta-label').textContent = ofertaActiva ? 'Oferta activada' : 'Oferta desactivada';
-            document.getElementById('oferta-fields').style.display = ofertaActiva ? '' : 'none';
-            document.getElementById('oferta-texto').value = data.oferta.texto || '';
-            document.getElementById('oferta-precio').value = data.oferta.precio_oferta || '';
-          }
-          if (data.horarios) buildHorEditor(data.horarios);
-        }
-      })
-      .catch(() => {
-        fbStatus.className = 'error';
-        fbStatus.textContent = '⚠️ Firebase conectado pero error al leer — verificá las reglas de Firestore';
-      });
-  } catch (e) {
-    fbStatus.className = 'error';
-    fbStatus.textContent = '⚠️ Firebase no configurado — reemplazá FIREBASE_CONFIG con tus credenciales';
-    db = null;
+    const file = await ghGet(FILE_PATH);
+    const sha  = file.sha;
+    await ghPut(FILE_PATH, sha, JSON.stringify(data, null, 2), `portal: El Sabor de Mamá — ${new Date().toLocaleString('es-AR')}`);
+    raw = data;
+    setStatus('Guardado ✓', 'var(--green)');
+    toast('Publicado. La página se actualiza en ~30 segundos.', 'ok');
+    setTimeout(() => setStatus(''), 5000);
+  } catch(e) {
+    setStatus('Error al guardar', 'var(--red)');
+    toast('Error: ' + e.message, 'err');
+  } finally {
+    $('btn-save-hdr').disabled = false;
   }
 }
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+(function() {
+  const stored = localStorage.getItem(LS);
+  if (stored) showReturn(); else showSetup();
+  window.addEventListener('beforeunload', e => { if (pat) { e.preventDefault(); e.returnValue=''; } });
+})();
 </script>
 </body>
 </html>

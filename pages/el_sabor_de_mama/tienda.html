@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --noir: #0C0C0C;
@@ -116,11 +118,21 @@
 
     /* Banners */
     #status-banner {
-      margin: 0.75rem 1rem; padding: 0.75rem 1rem;
+      margin: 0.75rem 1rem 0; padding: 0.75rem 1rem;
       border-radius: 8px; font-size: 0.85rem; font-weight: 600;
     }
     #status-banner.abierto { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.25); }
     #status-banner.cerrado { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
+    #docena-promo-banner {
+      margin: 0.6rem 1rem 0.75rem; padding: 0.875rem 1.1rem;
+      border-radius: 10px; font-size: 0.875rem; font-weight: 700;
+      background: linear-gradient(135deg, rgba(244,189,77,0.18), rgba(196,149,42,0.12));
+      border: 1.5px solid rgba(244,189,77,0.5);
+      color: var(--gold);
+      display: flex; align-items: center; gap: 0.65rem;
+    }
+    #docena-promo-banner .dpe { font-size: 1.4rem; flex-shrink: 0; }
+    #docena-promo-banner strong { color: #fff; }
 
     /* Catálogo */
     #catalogo { padding: 0 1rem 8rem; max-width: 900px; margin: 0 auto; }
@@ -170,6 +182,19 @@
       font-family: 'Syne', sans-serif;
       font-size: 1.1rem; font-weight: 800; color: var(--gold);
     }
+    .pcard-price-orig {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--muted); text-decoration: line-through; margin-right: 0.35rem;
+    }
+    #oferta-banner {
+      display: none; margin: 0.75rem 1rem 0;
+      background: linear-gradient(135deg, rgba(244,189,77,0.12), rgba(244,189,77,0.06));
+      border: 1px solid rgba(244,189,77,0.35); border-radius: 10px;
+      padding: 0.75rem 1rem; font-size: 0.85rem; font-weight: 600;
+      color: var(--gold); text-align: center; letter-spacing: 0.02em;
+    }
+    #oferta-banner.visible { display: block; }
     .btn-add {
       background: var(--gold); color: var(--noir);
       font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
@@ -178,6 +203,10 @@
     }
     .btn-add:hover { background: var(--gold-dark); transform: scale(1.04); }
     .pcard.hidden { display: none; }
+    .pcard-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .pcard.sin-stock { opacity: 0.55; }
+    .pcard.sin-stock .btn-add { background: var(--border); color: var(--muted); cursor: not-allowed; pointer-events: none; }
+    .sin-stock-badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #f87171; background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.2); padding: 0.18rem 0.45rem; border-radius: 4px; }
 
     /* Skeleton */
     .skeleton { animation: pulse 1.5s ease-in-out infinite; }
@@ -283,6 +312,20 @@
       font-size: 1.5rem; font-weight: 800; color: var(--gold);
     }
     .total-sub { font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem; }
+    .cart-input {
+      background: var(--noir); border: 1px solid var(--border);
+      color: var(--cream); font-family: 'Manrope', sans-serif;
+      font-size: 0.85rem; padding: 0.625rem 0.875rem; border-radius: 8px;
+      width: 100%; outline: none; margin-bottom: 0.65rem;
+      transition: border-color 0.2s;
+    }
+    .cart-input:focus { border-color: var(--gold); }
+    .cart-input.error { border-color: #f87171; }
+    .cart-input::placeholder { color: var(--muted); }
+    .cart-input-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; display: block;
+    }
     .cart-note {
       background: var(--noir); border: 1px solid var(--border);
       color: var(--cream); font-family: 'Manrope', sans-serif;
@@ -369,6 +412,12 @@
 
 <div id="status-banner" class="abierto">Verificando horario…</div>
 
+<div id="docena-promo-banner">
+  <span class="dpe">🎉</span>
+  <span id="docena-promo-txt">Llevando <strong>12 empanadas</strong> se aplica el <strong>precio de docena: $16.000</strong> — en vez de $18.000 por unidad. El descuento se calcula automáticamente en el carrito.</span>
+</div>
+<div id="oferta-banner"></div>
+
 <div id="catalogo">
   <!-- Skeleton -->
   <div id="skeleton-loader" class="skeleton" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;padding:1.25rem 0">
@@ -392,7 +441,11 @@
       <span class="total-amount" id="total-amount">$0</span>
     </div>
     <p class="total-sub">* Precios orientativos. Confirmamos por WhatsApp.</p>
-    <textarea class="cart-note" id="cart-note" rows="2" placeholder="Nota para el pedido (opcional)…"></textarea>
+    <label class="cart-input-label" for="cart-nombre">Tu nombre <span style="color:#f87171">*</span></label>
+    <input type="text" class="cart-input" id="cart-nombre" placeholder="¿Cómo te llamás?" autocomplete="name" />
+    <label class="cart-input-label" for="cart-direccion">Dirección de entrega <span style="color:#f87171">*</span></label>
+    <input type="text" class="cart-input" id="cart-direccion" placeholder="Calle y número (o 'Retiro en local')" autocomplete="street-address" />
+    <textarea class="cart-note" id="cart-note" rows="2" placeholder="Aclaración especial (opcional) — horario de entrega, piso, etc. Sin aclaración los pedidos se envían en orden de llegada."></textarea>
     <button class="btn-wa-checkout" onclick="sendWhatsApp()">💬 Enviar pedido por WhatsApp</button>
     <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar carrito</button>
   </div>
@@ -406,15 +459,15 @@
 const _FALLBACK = {
   "negocio": { "nombre": "El Sabor de Mamá", "whatsapp": "5492244475575", "direccion": "Av. Domingo Faustino Sarmiento 545, Las Flores" },
   "precios": { "empanada_unit": 1500, "docena": 16000, "docena_cantidad": 12 },
-  "oferta": { "activa": false },
+  "oferta": { "activa": false, "texto": "", "precio_unit_oferta": 0, "precio_docena_oferta": 0 },
   "horarios": {
-    "lunes":     [{"abre":"11:00","cierra":"14:00"},{"abre":"19:00","cierra":"23:00"}],
-    "martes":    [{"abre":"11:00","cierra":"14:00"},{"abre":"19:00","cierra":"23:00"}],
-    "miércoles": [{"abre":"11:00","cierra":"14:00"},{"abre":"19:00","cierra":"23:00"}],
-    "jueves":    [{"abre":"11:00","cierra":"14:00"},{"abre":"19:00","cierra":"23:00"}],
-    "viernes":   [{"abre":"11:00","cierra":"14:00"},{"abre":"19:00","cierra":"23:30"}],
-    "sábado":    [{"abre":"11:00","cierra":"14:30"},{"abre":"19:00","cierra":"23:30"}],
-    "domingo":   [{"abre":"19:00","cierra":"23:00"}]
+    "lunes":     [],
+    "martes":    [],
+    "miércoles": [{"abre":"19:00","cierra":"00:00"}],
+    "jueves":    [{"abre":"19:00","cierra":"00:00"}],
+    "viernes":   [{"abre":"19:00","cierra":"00:00"}],
+    "sábado":    [{"abre":"19:00","cierra":"00:00"}],
+    "domingo":   [{"abre":"19:00","cierra":"00:00"}]
   },
   "categorias": [
     { "id": "clasicas", "nombre": "Clásicas", "emoji": "🥟",
@@ -604,12 +657,30 @@ function closeCart() {
 
 function sendWhatsApp() {
   if (cart.length === 0) return;
+
+  const nombreEl   = document.getElementById('cart-nombre');
+  const direccionEl = document.getElementById('cart-direccion');
+  const nombre     = nombreEl.value.trim();
+  const direccion  = direccionEl.value.trim();
+
+  nombreEl.classList.toggle('error', !nombre);
+  direccionEl.classList.toggle('error', !direccion);
+  if (!nombre || !direccion) {
+    if (!nombre) nombreEl.focus();
+    else direccionEl.focus();
+    return;
+  }
+
   const info = docenaInfo(cart);
   const total = calcTotal(cart);
-  const nota = document.getElementById('cart-note').value.trim();
+  const nota       = document.getElementById('cart-note').value.trim();
 
   // Group by category
-  let lines = [`Hola! Quiero hacer un pedido en El Sabor de Mamá.`, '', 'Quiero pedir:', ''];
+  let lines = [`Hola! Quiero hacer un pedido en El Sabor de Mamá.`, ''];
+  if (nombre)    lines.push(`👤 Nombre: ${nombre}`);
+  if (direccion) lines.push(`📍 Entrega: ${direccion}`);
+  if (nombre || direccion) lines.push('');
+  lines.push('Quiero pedir:', '');
 
   // Find category for each item
   const allProds = {};
@@ -644,9 +715,32 @@ function sendWhatsApp() {
 
   const wa = negocioData.whatsapp || '5492244475575';
   window.open(`https://wa.me/${wa}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+
+  // Registrar pedido en Firestore para la cola de pedidos
+  try {
+    const items = cart.map(i => ({ id: i.id, nombre: i.nombre, qty: i.qty, emoji: i.emoji || '🥟' }));
+    _db.collection('pedidos').add({
+      estado:    'pendiente',
+      items,
+      nota:      nota || '',
+      nombre:    nombre || '',
+      direccion: direccion || '',
+      total,
+      docenas:   info.docenas,
+      sueltas:   info.sueltas,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(() => {});
+  } catch(_) {}
 }
 
 // ── Status banner ──────────────────────────────────────────────────
+function toMin(hhmm) {
+  if (!hhmm) return 0;
+  if (hhmm === '00:00') return 1440;
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + m;
+}
+
 function buildStatus(data) {
   const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
   const ahora = new Date();
@@ -654,19 +748,11 @@ function buildStatus(data) {
   const diaIdx = ahora.getDay() === 0 ? 6 : ahora.getDay() - 1;
   const hoy = dias[diaIdx];
   const turnos = data.horarios[hoy] || [];
-  const abierto = turnos.some(t => {
-    const [ah, am] = t.abre.split(':').map(Number);
-    const [ch, cm] = t.cierra.split(':').map(Number);
-    return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
-  });
+  const abierto = turnos.some(t => minAhora >= toMin(t.abre) && minAhora < toMin(t.cierra));
 
   const banner = document.getElementById('status-banner');
   if (abierto) {
-    const turnoActivo = turnos.find(t => {
-      const [ah, am] = t.abre.split(':').map(Number);
-      const [ch, cm] = t.cierra.split(':').map(Number);
-      return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
-    });
+    const turnoActivo = turnos.find(t => minAhora >= toMin(t.abre) && minAhora < toMin(t.cierra));
     banner.className = 'abierto';
     banner.textContent = `● Abierto ahora — cierra a las ${turnoActivo?.cierra} hs`;
   } else {
@@ -676,8 +762,7 @@ function buildStatus(data) {
       const d = dias[(diaIdx + i) % 7];
       const ts = data.horarios[d] || [];
       for (const t of ts) {
-        const [ah, am] = t.abre.split(':').map(Number);
-        if (i === 0 && ah * 60 + am <= minAhora) continue;
+        if (i === 0 && toMin(t.abre) <= minAhora) continue;
         prox = i === 0 ? `Abre hoy a las ${t.abre} hs` : `Abre el ${d} a las ${t.abre} hs`;
         break;
       }
@@ -693,9 +778,36 @@ let _fallbackData = _FALLBACK;
 function buildCatalog(data) {
   _fallbackData = data;
   negocioData = data.negocio || {};
-  PRECIO_UNIT = data.precios?.empanada_unit || 1500;
-  PRECIO_DOCENA = data.precios?.docena || 16000;
+
+  const precioUnitOrig   = data.precios?.empanada_unit   || 1500;
+  const precioDocenaOrig = data.precios?.docena          || 16000;
   DOCENA_CANT = data.precios?.docena_cantidad || 12;
+
+  const oferta = data.oferta || {};
+  const ofertaActiva    = !!oferta.activa;
+  const ofertaUnitPrecio   = ofertaActiva && oferta.precio_unit_oferta   > 0 ? oferta.precio_unit_oferta   : 0;
+  const ofertaDocenaPrecio = ofertaActiva && oferta.precio_docena_oferta > 0 ? oferta.precio_docena_oferta : 0;
+
+  PRECIO_UNIT   = ofertaUnitPrecio   || precioUnitOrig;
+  PRECIO_DOCENA = ofertaDocenaPrecio || precioDocenaOrig;
+
+  // Banner de oferta
+  const ofBanner = document.getElementById('oferta-banner');
+  if (ofertaActiva && oferta.texto) {
+    ofBanner.textContent = oferta.texto;
+    ofBanner.classList.add('visible');
+  } else {
+    ofBanner.classList.remove('visible');
+  }
+
+  // Banner docena promo — actualizar si hay oferta de docena
+  const docTxt = document.getElementById('docena-promo-txt');
+  const precioUnitNormal = precioUnitOrig * DOCENA_CANT;
+  if (ofertaDocenaPrecio) {
+    docTxt.innerHTML = `Llevando <strong>${DOCENA_CANT} empanadas</strong> se aplica el <strong>precio de docena: $${PRECIO_DOCENA.toLocaleString('es-AR')}</strong> — <span style="text-decoration:line-through;opacity:.55">$${precioDocenaOrig.toLocaleString('es-AR')}</span>. El descuento se calcula automáticamente en el carrito.`;
+  } else {
+    docTxt.innerHTML = `Llevando <strong>${DOCENA_CANT} empanadas</strong> se aplica el <strong>precio de docena: $${PRECIO_DOCENA.toLocaleString('es-AR')}</strong> — en vez de $${precioUnitNormal.toLocaleString('es-AR')} por unidad. El descuento se calcula automáticamente en el carrito.`;
+  }
 
   // Pills
   const pills = document.getElementById('pills-strip');
@@ -720,20 +832,31 @@ function buildCatalog(data) {
     <div class="cat-section" data-cat="${c.id}">
       <div class="cat-title">${c.emoji} ${c.nombre}</div>
       <div class="pcard-grid">
-        ${c.productos.map(p => `
-          <div class="pcard" data-nombre="${p.nombre.toLowerCase()}">
-            <div class="pcard-emoji-wrap">${p.emoji || '🥟'}</div>
+        ${c.productos.map(p => {
+          const enStock     = p.disponible !== false;
+          const precioMostrar = ofertaUnitPrecio || p.precio;
+          const precioHtml = ofertaUnitPrecio
+            ? `<span class="pcard-price-orig">$${p.precio.toLocaleString('es-AR')}</span><span class="pcard-price">$${precioMostrar.toLocaleString('es-AR')}</span>`
+            : `<span class="pcard-price">$${p.precio.toLocaleString('es-AR')}</span>`;
+          const cartItem = { ...p, precio: precioMostrar };
+          return `
+          <div class="pcard${enStock ? '' : ' sin-stock'}" data-nombre="${p.nombre.toLowerCase()}">
+            ${p.imagen
+              ? `<img class="pcard-img" src="./img/${p.imagen}" alt="${p.nombre}" loading="lazy">`
+              : `<div class="pcard-emoji-wrap">${p.emoji || '🥟'}</div>`}
             <div class="pcard-body">
               <h3>${p.nombre}</h3>
               <p>${p.descripcion}</p>
               <div class="pcard-footer">
-                <span class="pcard-price">$${p.precio.toLocaleString('es-AR')}</span>
-                <button class="btn-add" data-pid="${p.id}"
-                  onclick='addToCart(${JSON.stringify(p)})'>+ Agregar</button>
+                <div style="display:flex;align-items:baseline;gap:0.1rem;flex-wrap:wrap">
+                  ${precioHtml}
+                  ${!enStock ? '<span class="sin-stock-badge">Sin stock</span>' : ''}
+                </div>
+                <button class="btn-add" data-pid="${p.id}" ${!enStock ? 'disabled' : ''}
+                  onclick='addToCart(${JSON.stringify(cartItem)})'>+ Agregar</button>
               </div>
             </div>
-          </div>
-        `).join('')}
+          </div>`}).join('')}
       </div>
     </div>
   `).join('');
@@ -745,6 +868,9 @@ function buildCatalog(data) {
 // ── Search ────────────────────────────────────────────────────────
 const searchInput = document.getElementById('search-input');
 const btnClear = document.getElementById('btn-clear-search');
+
+document.getElementById('cart-nombre').addEventListener('input', e => e.target.classList.remove('error'));
+document.getElementById('cart-direccion').addEventListener('input', e => e.target.classList.remove('error'));
 
 searchInput.addEventListener('input', () => {
   const q = searchInput.value.toLowerCase();
@@ -788,6 +914,18 @@ fetch('./productos.json')
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
+</script>
+
+<script>
+firebase.initializeApp({
+  apiKey:            "AIzaSyDMgNDXUoAl0GOPxp96qQxr47Tt7nwzjiQ",
+  authDomain:        "elsabordemama-dec44.firebaseapp.com",
+  projectId:         "elsabordemama-dec44",
+  storageBucket:     "elsabordemama-dec44.firebasestorage.app",
+  messagingSenderId: "25045411357",
+  appId:             "1:25045411357:web:72e586a9dff5017523c8f4"
+});
+const _db = firebase.firestore();
 </script>
 </body>
 </html>

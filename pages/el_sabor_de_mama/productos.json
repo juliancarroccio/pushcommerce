@@ -8,23 +8,49 @@
     "analytics_id": ""
   },
   "precios": {
-    "empanada_unit": 1500,
-    "docena": 16000,
+    "empanada_unit": 2000,
+    "docena": 18000,
     "docena_cantidad": 12
   },
   "oferta": {
     "activa": false,
-    "texto": "",
-    "precio_oferta": 0
+    "texto": "Juega  la selección",
+    "precio_unit_oferta": 1000,
+    "precio_docena_oferta": 10000
   },
   "horarios": {
-    "lunes":     [{"abre": "11:00", "cierra": "14:00"}, {"abre": "19:00", "cierra": "23:00"}],
-    "martes":    [{"abre": "11:00", "cierra": "14:00"}, {"abre": "19:00", "cierra": "23:00"}],
-    "miércoles": [{"abre": "11:00", "cierra": "14:00"}, {"abre": "19:00", "cierra": "23:00"}],
-    "jueves":    [{"abre": "11:00", "cierra": "14:00"}, {"abre": "19:00", "cierra": "23:00"}],
-    "viernes":   [{"abre": "11:00", "cierra": "14:00"}, {"abre": "19:00", "cierra": "23:30"}],
-    "sábado":    [{"abre": "11:00", "cierra": "14:30"}, {"abre": "19:00", "cierra": "23:30"}],
-    "domingo":   [{"abre": "19:00", "cierra": "23:00"}]
+    "lunes": [],
+    "martes": [],
+    "miércoles": [
+      {
+        "abre": "19:00",
+        "cierra": "00:00"
+      }
+    ],
+    "jueves": [
+      {
+        "abre": "19:00",
+        "cierra": "00:00"
+      }
+    ],
+    "viernes": [
+      {
+        "abre": "19:00",
+        "cierra": "00:00"
+      }
+    ],
+    "sábado": [
+      {
+        "abre": "19:00",
+        "cierra": "00:00"
+      }
+    ],
+    "domingo": [
+      {
+        "abre": "19:00",
+        "cierra": "00:00"
+      }
+    ]
   },
   "categorias": [
     {
@@ -37,28 +63,28 @@
           "id": 1,
           "nombre": "Carne",
           "descripcion": "Carne suave con el relleno justo, jugosa y bien sazonada",
-          "precio": 1500,
+          "precio": 2000,
           "emoji": "🥩"
         },
         {
           "id": 2,
           "nombre": "Jamón y Queso",
           "descripcion": "La clásica combinación irresistible con queso derretido",
-          "precio": 1500,
+          "precio": 2000,
           "emoji": "🧀"
         },
         {
           "id": 3,
           "nombre": "Humita",
           "descripcion": "Choclo cremoso y aromático, sabor campo",
-          "precio": 1500,
+          "precio": 2000,
           "emoji": "🌽"
         },
         {
           "id": 4,
           "nombre": "Capresse",
           "descripcion": "Tomate, mozzarella fresca y albahaca",
-          "precio": 1500,
+          "precio": 2000,
           "emoji": "🍅"
         }
       ]
@@ -73,28 +99,28 @@
           "id": 5,
           "nombre": "Calabressa",
           "descripcion": "Chorizo calabrés con cebolla caramelizada, con toque picante",
-          "precio": 1500,
+          "precio": 2000,
           "emoji": "🌶️"
         },
         {
           "id": 6,
           "nombre": "Cheddburger",
           "descripcion": "Carne molida, cheddar derretido y cebolla dorada",
-          "precio": 1500,
+          "precio": 2000,
           "emoji": "🍔"
         },
         {
           "id": 7,
           "nombre": "Fugazzeta",
           "descripcion": "Cebolla, mozzarella generosa y aceitunas verdes",
-          "precio": 1500,
+          "precio": 2000,
           "emoji": "🧅"
         },
         {
           "id": 8,
           "nombre": "Roquefort & Nuez",
           "descripcion": "Queso azul cremoso con nueces tostadas, para los atrevidos",
-          "precio": 1500,
+          "precio": 2000,
           "emoji": "🫙"
         }
       ]

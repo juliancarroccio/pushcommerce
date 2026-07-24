@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /pages/jd/portal.html
+Disallow: /pages/jd/pedidos.html
+Disallow: /pages/jd/seguimiento.html
+Sitemap: https://juliancarroccio.github.io/pushcommerce/pages/jd/sitemap.xml

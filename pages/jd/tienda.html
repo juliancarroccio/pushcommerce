@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;" />
+
+  <title>Tienda JD — Muebles de melamina online | Las Flores</title>
+  <meta name="description" content="Comprá muebles de melamina de fábrica: cocinas, placares, vestidores, racks y más. MDF 18 mm, cierre suave. Envíos a AMBA y retiro en Las Flores." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://juliancarroccio.github.io/pushcommerce/pages/jd/tienda.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Tienda JD — Muebles de melamina de fábrica" />
+  <meta property="og:description" content="Cocinas, placares, vestidores y más. Presupuesto en el día. Envíos a AMBA." />
+  <meta property="og:url" content="https://juliancarroccio.github.io/pushcommerce/pages/jd/tienda.html" />
+  <meta property="og:image" content="https://juliancarroccio.github.io/pushcommerce/pages/jd/img/logo-JD.png" />
+  <meta property="og:locale" content="es_AR" />
+
+  <link rel="icon" href="./img/logo-JD.png" type="image/png" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#FAF7F2" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://juliancarroccio.github.io/pushcommerce/pages/jd/index.html" },
+      { "@type": "ListItem", "position": 2, "name": "Tienda", "item": "https://juliancarroccio.github.io/pushcommerce/pages/jd/tienda.html" }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --cream: #FAF7F2;
+      --paper: #FFFFFF;
+      --sand: #D5BFA3;
+      --sand-deep: #B99972;
+      --sand-soft: #EFE5D6;
+      --charcoal: #4A4A4A;
+      --ink: #2B2825;
+      --line: #EAE2D6;
+      --ok: #3E7C4F;
+      --ok-soft: #E4F0E6;
+      --warn: #A8503C;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: var(--cream); color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      font-weight: 300; margin: 0;
+      animation: pageIn .55s ease-out .05s both;
+    }
+    body.leaving { animation: pageOut .35s ease-in forwards; }
+    @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pageOut { from { opacity: 1; } to { opacity: 0; } }
+    .serif { font-family: 'Lora', Georgia, serif; }
+    .curtain {
+      position: fixed; inset: 0; background: var(--sand-soft);
+      z-index: 200; transform: translateY(-100%); pointer-events: none;
+    }
+    .curtain.leave { animation: curtainOut .5s cubic-bezier(.7,0,.3,1) forwards; }
+    @keyframes curtainOut { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+
+    /* Header */
+    header {
+      position: sticky; top: 0; z-index: 40;
+      background: rgba(250,247,242,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .header-top {
+      max-width: 1400px; margin: 0 auto;
+      padding: 14px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px;
+    }
+    .back-link {
+      font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink); text-decoration: none;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .back-link:hover { color: var(--sand-deep); }
+    .brand-logo img { height: 40px; width: auto; display: block; }
+    .cart-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--ink); border: 1px solid var(--ink);
+      border-radius: 999px;
+      padding: 8px 18px; cursor: pointer;
+      font-family: inherit; font-size: 0.72rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #FFF; transition: all .2s;
+    }
+    .cart-btn:hover { background: transparent; color: var(--ink); }
+    .cart-badge {
+      display: inline-block; background: var(--sand); color: var(--ink);
+      font-size: 0.7rem; padding: 1px 8px; border-radius: 999px; font-weight: 500;
+    }
+
+    .cat-strip {
+      display: flex; gap: 8px; padding: 12px 24px;
+      overflow-x: auto; scrollbar-width: none;
+      border-bottom: 1px solid var(--line);
+      max-width: 1400px; margin: 0 auto;
+    }
+    .cat-strip::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      flex-shrink: 0; padding: 8px 18px; border-radius: 999px;
+      font-size: 0.76rem; letter-spacing: 0.06em;
+      border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+      cursor: pointer; transition: all .2s; font-family: inherit;
+    }
+    .cat-pill:hover { border-color: var(--sand-deep); }
+    .cat-pill.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
+
+    .search-strip {
+      padding: 12px 24px;
+      display: flex; gap: 8px;
+      border-bottom: 1px solid var(--line);
+      max-width: 1400px; margin: 0 auto;
+    }
+    .search-strip input {
+      flex: 1; padding: 11px 18px;
+      border: 1px solid var(--line); border-radius: 999px;
+      font-size: 0.9rem; font-family: inherit;
+      background: var(--paper); color: var(--ink);
+    }
+    .search-strip input:focus { outline: none; border-color: var(--sand-deep); }
+    .search-clear {
+      padding: 8px 16px; border-radius: 999px;
+      background: var(--paper); border: 1px solid var(--line);
+      cursor: pointer; font-size: 0.85rem; color: var(--ink);
+    }
+
+    .info-banner {
+      background: var(--ink); color: #FFF;
+      padding: 10px 24px;
+      font-size: 0.76rem; letter-spacing: 0.04em;
+      text-align: center;
+    }
+    .info-banner a { color: var(--sand); text-decoration: underline; }
+
+    /* Status banner */
+    .status-banner {
+      max-width: 1400px; margin: 16px auto 0; padding: 0 24px;
+    }
+    .status-banner .inner {
+      padding: 12px 20px; border-radius: 14px;
+      font-size: 0.82rem; display: flex; align-items: center; gap: 10px;
+    }
+    .status-banner .abierto { background: var(--ok-soft); color: var(--ok); }
+    .status-banner .cerrado { background: #F6E4DF; color: var(--warn); }
+
+    /* Catalog */
+    main { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    .cat-section { margin-bottom: 56px; animation: sectionIn .5s ease .1s both; }
+    .cat-section.hidden-cat { display: none; }
+    @keyframes sectionIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .cat-title { font-family: 'Lora', serif; font-size: 1.8rem; font-weight: 500; margin-bottom: 6px; }
+    .cat-desc { color: #7A7264; font-size: 0.88rem; margin-bottom: 22px; }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+      gap: 22px;
+    }
+    .pcard {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 20px; overflow: hidden;
+      display: flex; flex-direction: column;
+      opacity: 0; transform: translateY(20px);
+      animation: cardIn .6s ease forwards;
+      transition: transform .3s, box-shadow .3s;
+    }
+    @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+    .pcard:hover { transform: translateY(-4px); box-shadow: 0 20px 44px rgba(43,40,37,0.10); }
+    .pcard-img {
+      aspect-ratio: 4/3;
+      background-size: cover; background-position: center;
+      background-color: var(--sand-soft);
+      position: relative;
+    }
+    .pcard-img.placeholder::after {
+      content: '🪵';
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.6rem; opacity: 0.45;
+    }
+    .badge-stock {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--ok); color: #FFF;
+      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 999px; font-weight: 500;
+    }
+    .badge-medida {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(43,40,37,0.85); color: var(--sand);
+      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 999px; font-weight: 500;
+      cursor: help;
+    }
+    .pcard-info { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+    .pcard-name { font-family: 'Lora', serif; font-size: 1.02rem; font-weight: 600; margin-bottom: 3px; }
+    .pcard-medidas { font-size: 0.74rem; color: #9A917F; margin-bottom: 6px; }
+    .pcard-desc { font-size: 0.8rem; color: #7A7264; line-height: 1.55; margin-bottom: 12px; flex: 1; }
+    .pcard-bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .pcard-price { font-weight: 500; font-size: 1.02rem; }
+    .add-btn {
+      padding: 9px 18px; border-radius: 999px;
+      background: var(--sand); color: var(--ink);
+      border: 1px solid var(--sand);
+      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
+      cursor: pointer; font-family: inherit; transition: all .2s;
+      white-space: nowrap;
+    }
+    .add-btn:hover { background: var(--sand-deep); border-color: var(--sand-deep); color: #FFF; }
+
+    /* Skeleton */
+    .skel {
+      background: linear-gradient(90deg, #F1EBE1 0%, #F8F4EC 50%, #F1EBE1 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 20px;
+    }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+    /* Buttons */
+    .btn {
+      display: inline-block; padding: 13px 26px;
+      font-size: 0.76rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+      border: 1px solid var(--ink); border-radius: 999px;
+      cursor: pointer; transition: all .25s;
+      text-decoration: none; background: var(--ink); color: #FFF;
+      font-family: inherit; text-align: center;
+    }
+    .btn:hover { background: transparent; color: var(--ink); }
+    .btn-primary {
+      width: 100%; padding: 15px;
+      background: var(--ink); color: #FFF;
+      border: none; border-radius: 999px; cursor: pointer;
+      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+      font-weight: 500; margin-top: 12px; font-family: inherit;
+      transition: background .2s;
+    }
+    .btn-primary:hover { background: var(--charcoal); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary {
+      width: 100%; padding: 10px;
+      background: transparent; color: #8A8271;
+      border: none; cursor: pointer;
+      font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-top: 6px; font-family: inherit;
+    }
+    .btn-secondary:hover { color: var(--ink); }
+
+    /* Scroll lock */
+    body.no-scroll { position: fixed; width: 100%; overflow: hidden; }
+
+    /* Cart drawer */
+    .drawer-back {
+      position: fixed; inset: 0;
+      background: rgba(43,40,37,0.45);
+      backdrop-filter: blur(2px);
+      z-index: 55; display: none;
+      overscroll-behavior: contain; touch-action: none;
+    }
+    .drawer-back.open { display: block; }
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 100%; max-width: 480px;
+      background: var(--cream); z-index: 56;
+      transform: translateX(100%);
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      overscroll-behavior: contain;
+      height: 100dvh; height: 100%;
+      max-height: 100dvh; max-height: 100vh;
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 22px; border-bottom: 1px solid var(--line);
+      flex-shrink: 0; background: var(--paper);
+    }
+    .drawer-header h2 { font-family: 'Lora', serif; font-size: 1.35rem; font-weight: 600; margin: 0; }
+    .drawer-close {
+      background: none; border: none; font-size: 1.6rem; cursor: pointer;
+      color: var(--ink); padding: 4px 10px; line-height: 1;
+    }
+    .drawer-body {
+      flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain;
+      padding: 12px 22px; min-height: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+    .drawer-footer {
+      border-top: 1px solid var(--line);
+      padding: 16px 22px 20px;
+      background: var(--paper);
+      flex-shrink: 0; overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      max-height: 60vh;
+    }
+    @media (max-width: 500px) {
+      .drawer-header { padding: 14px 18px; }
+      .drawer-body { padding: 10px 18px; }
+      .drawer-footer { padding: 14px 18px 18px; max-height: 62vh; }
+    }
+
+    .cart-item {
+      display: grid; grid-template-columns: 58px 1fr auto;
+      gap: 12px; padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+    .cart-item-img {
+      aspect-ratio: 1; border-radius: 12px;
+      background-color: var(--sand-soft);
+      background-size: cover; background-position: center;
+    }
+    .cart-item-name { font-size: 0.88rem; font-weight: 500; line-height: 1.3; }
+    .cart-item-meta { font-size: 0.7rem; color: #8A8271; margin-top: 2px; }
+    .cart-tag {
+      display: inline-block; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 999px; margin-top: 5px; font-weight: 500;
+    }
+    .cart-tag.stock { background: var(--ok-soft); color: var(--ok); }
+    .cart-tag.medida { background: var(--sand-soft); color: var(--sand-deep); }
+    .cart-item-price { font-size: 0.86rem; margin-top: 6px; font-weight: 500; }
+    .cart-item-qty {
+      display: inline-flex; align-items: center;
+      border: 1px solid var(--line); border-radius: 999px;
+      margin-top: 8px; background: var(--paper); overflow: hidden;
+    }
+    .cart-item-qty button {
+      background: transparent; border: none; padding: 4px 10px; cursor: pointer;
+      font-family: inherit; color: var(--ink); font-size: 0.9rem;
+    }
+    .cart-item-qty span { padding: 4px 8px; font-size: 0.82rem; }
+    .cart-item-del {
+      background: none; border: none; color: #B0A896; cursor: pointer;
+      font-size: 1.1rem; padding: 4px 8px;
+    }
+    .cart-item-del:hover { color: var(--warn); }
+    .cart-empty { text-align: center; padding: 44px 20px; color: #9A917F; }
+
+    .totals-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 6px; font-size: 0.86rem;
+    }
+    .totals-row.total {
+      font-size: 1.04rem; font-weight: 500;
+      padding-top: 10px; margin-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+    .totals-row .muted { color: #8A8271; }
+    .sena-row {
+      margin-top: 10px; padding: 12px 16px;
+      background: var(--sand-soft); border-radius: 12px;
+      font-size: 0.8rem; line-height: 1.55; color: #5E5648;
+    }
+    .sena-row strong { color: var(--ink); }
+
+    .delivery-toggle {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px; margin: 10px 0;
+    }
+    @media (max-width: 380px) { .delivery-toggle { grid-template-columns: 1fr; } }
+    .delivery-toggle button {
+      padding: 10px 6px; background: var(--paper);
+      border: 1px solid var(--line); border-radius: 12px;
+      cursor: pointer; font-size: 0.66rem;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      font-family: inherit; color: var(--ink);
+      line-height: 1.4;
+    }
+    .delivery-toggle button small { display: block; font-size: 0.6rem; color: #8A8271; text-transform: none; letter-spacing: 0; }
+    .delivery-toggle button.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
+    .delivery-toggle button.active small { color: var(--sand); }
+    .delivery-note {
+      font-size: 0.74rem; color: #7A7264; line-height: 1.6;
+      padding: 10px 14px; background: var(--cream);
+      border-radius: 10px; margin-bottom: 8px;
+      border-left: 3px solid var(--sand);
+    }
+    .delivery-input {
+      width: 100%; padding: 10px 14px;
+      border: 1px solid var(--line); border-radius: 10px;
+      font-size: 0.85rem; font-family: inherit;
+      margin-top: 8px; background: var(--paper); color: var(--ink);
+    }
+    .delivery-input:focus { outline: none; border-color: var(--sand-deep); }
+    .cart-note {
+      width: 100%; padding: 10px 14px;
+      border: 1px solid var(--line); border-radius: 10px;
+      font-size: 0.85rem; font-family: inherit;
+      resize: vertical; min-height: 52px; margin-top: 10px;
+      background: var(--paper); color: var(--ink);
+    }
+    .cart-note:focus { outline: none; border-color: var(--sand-deep); }
+    .track-link-row {
+      text-align: center; font-size: 0.76rem; color: #8A8271; margin-top: 12px;
+    }
+    .track-link-row a { color: var(--sand-deep); text-decoration: underline; }
+
+    /* Toast */
+    .toast {
+      position: fixed; top: 84px; left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--ink); color: #FFF;
+      padding: 12px 26px; border-radius: 999px;
+      font-size: 0.85rem; z-index: 100; opacity: 0;
+      transition: all .3s; pointer-events: none;
+      max-width: 90vw;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Confirmation modal */
+    .confirm-back {
+      position: fixed; inset: 0;
+      background: rgba(43,40,37,0.6);
+      backdrop-filter: blur(4px); z-index: 70;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .confirm-back.open { display: flex; }
+    .confirm-content {
+      background: var(--paper); max-width: 480px; width: 100%;
+      padding: 42px 34px; text-align: center;
+      border-radius: 24px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .confirm-icon {
+      width: 62px; height: 62px; border-radius: 50%;
+      background: var(--ok); color: #FFF;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin-bottom: 16px;
+    }
+    .confirm-code {
+      font-family: 'Lora', serif;
+      font-size: 2.3rem; letter-spacing: 0.16em; font-weight: 600;
+      background: var(--sand-soft); padding: 16px 24px; margin: 18px 0;
+      border-radius: 16px;
+    }
+    .confirm-steps {
+      text-align: left; margin: 18px 0;
+      font-size: 0.82rem; color: #5E5648; line-height: 1.7;
+      background: var(--cream); border-radius: 14px; padding: 16px 20px;
+    }
+    .confirm-steps strong { color: var(--ink); }
+
+    /* Info modal (a medida) */
+    .imodal-back {
+      position: fixed; inset: 0;
+      background: rgba(43,40,37,0.5);
+      z-index: 75; display: none;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .imodal-back.open { display: flex; }
+    .imodal {
+      background: var(--paper); max-width: 440px; width: 100%;
+      border-radius: 20px; padding: 32px 28px; position: relative;
+    }
+    .imodal h3 { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 12px; }
+    .imodal p { font-size: 0.88rem; color: #5E5648; line-height: 1.7; margin: 0; }
+    .imodal .close-x {
+      position: absolute; top: 12px; right: 16px;
+      background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #9A917F;
+    }
+
+    /* Back to top + FAB */
+    #back-top {
+      position: fixed; bottom: 24px; left: 24px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--paper); color: var(--ink);
+      border: 1px solid var(--line); cursor: pointer;
+      box-shadow: 0 10px 26px rgba(43,40,37,0.12);
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s; z-index: 30;
+    }
+    #back-top.visible { opacity: 1; pointer-events: auto; }
+    #cart-fab {
+      position: fixed; bottom: 24px; right: 24px; z-index: 30;
+      padding: 15px 26px; border-radius: 999px;
+      background: var(--ink); color: #FFF; border: none;
+      font-family: inherit; font-size: 0.76rem;
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 14px 34px rgba(43,40,37,0.3);
+      display: none; align-items: center; gap: 8px;
+      transition: transform .2s;
+    }
+    #cart-fab:hover { transform: translateY(-2px); }
+    #cart-fab.visible { display: flex; }
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--sand), var(--sand-deep));
+      z-index: 90;
+    }
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+<div class="curtain" id="curtain"></div>
+
+<header>
+  <div class="header-top">
+    <a href="./index.html" class="back-link">← Volver</a>
+    <a href="./index.html" class="brand-logo" aria-label="JD — Ir al inicio">
+      <img src="./img/logo-JD.png" alt="JD — Jonathan Dantas" />
+    </a>
+    <button class="cart-btn" onclick="openCart()" aria-label="Ver mi pedido">
+      Pedido <span class="cart-badge" id="cart-count">0</span>
+    </button>
+  </div>
+  <div class="cat-strip" id="cat-strip"></div>
+  <div class="search-strip">
+    <input type="text" id="search" placeholder="Buscar mueble..." aria-label="Buscar mueble" maxlength="60" />
+    <button class="search-clear" id="search-clear" type="button">×</button>
+  </div>
+  <div class="info-banner" id="info-banner">···</div>
+</header>
+
+<div class="status-banner"><div class="inner" id="status-inner" style="display:none;"></div></div>
+
+<main>
+  <div id="skel-container">
+    <div style="height: 40px; margin-bottom: 24px; max-width: 300px;" class="skel"></div>
+    <div class="products-grid">
+      <div style="aspect-ratio: 3/4;" class="skel"></div>
+      <div style="aspect-ratio: 3/4;" class="skel"></div>
+      <div style="aspect-ratio: 3/4;" class="skel"></div>
+      <div style="aspect-ratio: 3/4;" class="skel"></div>
+    </div>
+  </div>
+  <div id="catalog" style="display: none;"></div>
+</main>
+
+<button id="back-top" aria-label="Volver arriba" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<button id="cart-fab" onclick="openCart()">🛒 Ver pedido <span class="cart-badge" id="fab-count">0</span></button>
+
+<!-- Cart drawer -->
+<div class="drawer-back" id="drawer-back" onclick="closeCart()"></div>
+<div class="drawer" id="drawer" role="dialog" aria-label="Tu pedido">
+  <div class="drawer-header">
+    <h2>Tu pedido</h2>
+    <button class="drawer-close" onclick="closeCart()" aria-label="Cerrar">×</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+  <div class="drawer-footer" id="drawer-footer" style="display:none;">
+    <div id="totals-box"></div>
+    <div class="sena-row" id="sena-box"></div>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:0.76rem;font-weight:500;margin-bottom:4px;letter-spacing:0.06em;text-transform:uppercase;color:#8A8271;">Entrega</div>
+      <div class="delivery-toggle">
+        <button id="tog-retiro" class="active" type="button" onclick="setEntrega('retiro')">Retiro en fábrica<small>Sin costo</small></button>
+        <button id="tog-local" type="button" onclick="setEntrega('local')">Envío local<small>Gratis · 10 km</small></button>
+        <button id="tog-encomienda" type="button" onclick="setEntrega('encomienda')">Encomienda<small>AMBA y cercanías</small></button>
+      </div>
+      <div class="delivery-note" id="delivery-note">···</div>
+
+      <input type="text" id="in-nombre" class="delivery-input" placeholder="Tu nombre y apellido *" maxlength="80" />
+      <input type="tel" id="in-telefono" class="delivery-input" placeholder="Tu teléfono / WhatsApp *" maxlength="25" />
+      <div id="dir-wrap" style="display:none;">
+        <input type="text" id="in-direccion" class="delivery-input" placeholder="Calle y número *" maxlength="120" />
+      </div>
+      <div id="encomienda-wrap" style="display:none;">
+        <input type="text" id="in-localidad" class="delivery-input" placeholder="Localidad *" maxlength="60" />
+        <input type="text" id="in-provincia" class="delivery-input" placeholder="Provincia *" maxlength="40" />
+        <input type="text" id="in-cp" class="delivery-input" placeholder="Código postal (opcional)" maxlength="10" />
+      </div>
+    </div>
+
+    <textarea class="cart-note" id="cart-note" placeholder="Nota: medidas de tu espacio, color de melamina, cambios que quieras… (opcional)" maxlength="400"></textarea>
+
+    <!-- Honeypot -->
+    <input type="text" name="website" id="hp-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true" />
+
+    <button class="btn-primary" id="btn-send" onclick="sendOrder()">Confirmar pedido</button>
+    <button class="btn-secondary" onclick="clearCart()">Vaciar carrito</button>
+    <div class="track-link-row">¿Ya hiciste un pedido? <a href="./seguimiento.html">Consultá el estado acá</a></div>
+  </div>
+</div>
+
+<!-- Confirmation modal -->
+<div class="confirm-back" id="confirm-modal">
+  <div class="confirm-content">
+    <div class="confirm-icon">✓</div>
+    <h2 style="font-family:'Lora',serif;font-size:1.7rem;font-weight:600;margin-bottom:6px;">¡Pedido confirmado!</h2>
+    <p style="color:#7A7264;font-size:0.88rem;margin-bottom:6px;">Guardá este código para seguir tu pedido:</p>
+    <div class="confirm-code" id="confirm-code">···</div>
+    <div class="confirm-steps">
+      <strong>¿Cómo sigue?</strong><br />
+      1 · Te contactamos por WhatsApp o teléfono para coordinar la seña del <span id="confirm-sena-pct">30</span>%.<br />
+      2 · Con la seña acreditada, tu mueble entra en fabricación.<br />
+      3 · Seguí cada etapa con tu código: seña, fabricación, terminado y entrega.
+    </div>
+    <a id="track-link" class="btn" style="display:block;">Ver estado del pedido</a>
+    <button class="btn-secondary" onclick="closeConfirm()" style="margin-top:10px;">Seguir comprando</button>
+  </div>
+</div>
+
+<!-- Modal "a medida" -->
+<div class="imodal-back" id="imodal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="imodal">
+    <button class="close-x" onclick="document.getElementById('imodal').classList.remove('open')">×</button>
+    <h3>Se hace a tu medida</h3>
+    <p id="imodal-texto">Este mueble se puede configurar a medida: cambiá distribución de cajones, módulos y herrajes. El precio ajusta según lo que se quite o agregue de material.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast">···</div>
+
+<script>
+'use strict';
+
+/* =========== FIREBASE — PLACEHOLDER: reemplazar cuando Julian cree el proyecto =========== */
+const FIREBASE_CONFIG = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO",
+  storageBucket: "TU_PROYECTO.firebasestorage.app",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+/* Detecta si la config sigue en placeholder */
+const FIREBASE_READY = !/^TU_/.test(FIREBASE_CONFIG.projectId);
+let db = null;
+try {
+  if (FIREBASE_READY && typeof firebase !== 'undefined') {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+  }
+} catch(e) { console.warn('Firebase no inicializado:', e.message); }
+
+const CART_KEY = 'jd_cart_v1';
+const LS_MIS_PEDIDOS = 'jd_mis_pedidos';
+const LS_DEMO_PEDIDOS = 'jd_demo_pedidos';
+const RATE_LIMIT_MS = 2500;
+
+let DATA = null;
+let categoriaActual = 'todos';
+let entrega = 'retiro';
+let lastSubmit = 0;
+
+/* ---------- Helpers ---------- */
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+function normalizar(str) {
+  return String(str || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+function fmt(n) { return '$' + (n || 0).toLocaleString('es-AR'); }
+function sanitizeInput(s, max = 200) {
+  if (!s) return '';
+  return String(s).slice(0, max).replace(/[<>]/g, '').trim();
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ---------- FALLBACK mínimo para file:// ---------- */
+const _FALLBACK = {
+  "negocio": { "nombre": "JD", "whatsapp": "5492244475753", "telefono": "02244 47-5753", "direccion_corta": "Av. Independencia 698, Las Flores" },
+  "config": {
+    "sena": { "porcentaje": 30, "leyenda": "Al confirmar tu pedido te contactamos por WhatsApp o teléfono para coordinar la seña. Con la seña acreditada, tu mueble entra en fabricación." },
+    "envio": {
+      "radio_gratis_km": 10,
+      "leyenda_local": "Envío gratis en Las Flores y alrededores (hasta 10 km).",
+      "encomienda_valor": 45000,
+      "leyenda_encomienda": "Enviamos a AMBA y zonas cercanas por encomienda. El costo es aproximado y se confirma al coordinar la entrega.",
+      "leyenda_retiro": "Podés retirar en la fábrica sin costo. Te avisamos apenas tu mueble esté terminado."
+    },
+    "stock_inmediato": { "leyenda": "Entrega rápida: este mueble ya está fabricado, solo depende del tiempo de envío." },
+    "a_medida": { "leyenda": "Este mueble se puede configurar a medida: cambiá distribución de cajones, módulos y herrajes. El precio ajusta según lo que se quite o agregue de material." }
+  },
+  "horarios": {
+    "lunes": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
+    "martes": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
+    "miércoles": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
+    "jueves": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
+    "viernes": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
+    "sábado": [], "domingo": []
+  },
+  "categorias": [
+    { "id": "living", "nombre": "Living y Comedor", "descripcion": "Racks de TV, modulares y bibliotecas.", "productos": [
+      { "id": 7, "nombre": "Rack TV 1,80 m", "descripcion": "Rack para TV de hasta 75\" con 2 puertas de cierre suave.", "medidas": "1,80 × 0,50 × 0,40 m", "precio": 280000, "stock_inmediato": true, "disponible": true, "destacado": true, "imagenes": [] }
+    ]}
+  ]
+};
+
+/* ---------- Data load ---------- */
+async function loadData() {
+  try {
+    const res = await fetch('./productos.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    console.warn('productos.json no disponible, usando fallback');
+    return _FALLBACK;
+  }
+}
+
+/* ---------- Header info ---------- */
+function renderInfoBanner() {
+  const banner = document.getElementById('info-banner');
+  banner.innerHTML = '';
+  const span = document.createElement('span');
+  span.textContent = 'Presupuesto en el día sin cargo · Envío gratis hasta ' + ((DATA.config && DATA.config.envio && DATA.config.envio.radio_gratis_km) || 10) + ' km · Envíos a AMBA · ';
+  banner.appendChild(span);
+  const a = document.createElement('a');
+  a.href = './seguimiento.html';
+  a.textContent = 'Seguí tu pedido';
+  banner.appendChild(a);
+}
+
+function renderStatusBanner() {
+  const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+  const ahora = new Date();
+  const hoy = dias[ahora.getDay() === 0 ? 6 : ahora.getDay() - 1];
+  const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+  const turnos = (DATA.horarios && DATA.horarios[hoy]) || [];
+  const turnoActivo = turnos.find(t => {
+    const [ah, am] = t.abre.split(':').map(Number);
+    const [ch, cm] = t.cierra.split(':').map(Number);
+    return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+  });
+  const inner = document.getElementById('status-inner');
+  inner.style.display = 'flex';
+  if (turnoActivo) {
+    inner.className = 'inner abierto';
+    inner.textContent = `● Fábrica abierta — cerramos a las ${turnoActivo.cierra} hs. Los pedidos web se toman las 24 hs.`;
+  } else {
+    inner.className = 'inner cerrado';
+    inner.textContent = '● Fábrica cerrada ahora — igual podés hacer tu pedido: lo tomamos apenas abramos.';
+  }
+}
+
+/* ---------- Catálogo ---------- */
+function renderCatStrip() {
+  const strip = document.getElementById('cat-strip');
+  strip.innerHTML = '';
+  const cats = [{ id: 'todos', nombre: 'Todos' }, ...DATA.categorias.map(c => ({ id: c.id, nombre: c.nombre }))];
+  cats.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-pill' + (categoriaActual === c.id ? ' active' : '');
+    btn.textContent = c.nombre;
+    btn.onclick = () => {
+      categoriaActual = c.id;
+      renderCatStrip();
+      applyFilter();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    strip.appendChild(btn);
+  });
+}
+
+function renderCatalog() {
+  document.getElementById('skel-container').style.display = 'none';
+  const cat = document.getElementById('catalog');
+  cat.style.display = 'block';
+  cat.innerHTML = '';
+
+  DATA.categorias.forEach(categoria => {
+    const section = document.createElement('section');
+    section.className = 'cat-section';
+    section.dataset.catId = categoria.id;
+
+    const title = document.createElement('h2');
+    title.className = 'cat-title';
+    title.textContent = categoria.nombre;
+    section.appendChild(title);
+
+    if (categoria.descripcion) {
+      const desc = document.createElement('p');
+      desc.className = 'cat-desc';
+      desc.textContent = categoria.descripcion;
+      section.appendChild(desc);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'products-grid';
+
+    (categoria.productos || []).forEach((p, idx) => {
+      if (p.disponible === false) return;
+      const card = document.createElement('div');
+      card.className = 'pcard';
+      card.dataset.name = normalizar(p.nombre + ' ' + (p.descripcion || ''));
+      card.style.animationDelay = `${Math.min(idx * 60, 400)}ms`;
+
+      const imgDiv = document.createElement('div');
+      imgDiv.className = 'pcard-img placeholder';
+      if (p.imagenes && p.imagenes.length) {
+        const testImg = new Image();
+        testImg.onload = () => {
+          imgDiv.classList.remove('placeholder');
+          imgDiv.style.backgroundImage = `url('./img/${p.imagenes[0]}')`;
+        };
+        testImg.src = `./img/${p.imagenes[0]}`;
+      }
+
+      if (p.stock_inmediato) {
+        const badge = document.createElement('span');
+        badge.className = 'badge-stock';
+        badge.textContent = '⚡ Stock inmediato';
+        badge.title = (DATA.config.stock_inmediato && DATA.config.stock_inmediato.leyenda) || '';
+        imgDiv.appendChild(badge);
+      } else {
+        const badge = document.createElement('span');
+        badge.className = 'badge-medida';
+        badge.textContent = '✎ Se hace a medida';
+        badge.onclick = (ev) => { ev.stopPropagation(); showAMedida(); };
+        imgDiv.appendChild(badge);
+      }
+      card.appendChild(imgDiv);
+
+      const info = document.createElement('div');
+      info.className = 'pcard-info';
+
+      const name = document.createElement('div');
+      name.className = 'pcard-name';
+      name.textContent = p.nombre;
+      info.appendChild(name);
+
+      if (p.medidas) {
+        const med = document.createElement('div');
+        med.className = 'pcard-medidas';
+        med.textContent = '📐 ' + p.medidas;
+        info.appendChild(med);
+      }
+
+      if (p.descripcion) {
+        const desc = document.createElement('div');
+        desc.className = 'pcard-desc';
+        desc.textContent = p.descripcion;
+        info.appendChild(desc);
+      }
+
+      const bottom = document.createElement('div');
+      bottom.className = 'pcard-bottom';
+      const price = document.createElement('div');
+      price.className = 'pcard-price';
+      price.textContent = fmt(p.precio);
+      bottom.appendChild(price);
+      const add = document.createElement('button');
+      add.className = 'add-btn';
+      add.textContent = '+ Agregar';
+      add.onclick = () => addToCart(p, categoria);
+      bottom.appendChild(add);
+      info.appendChild(bottom);
+
+      card.appendChild(info);
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    cat.appendChild(section);
+  });
+
+  applyFilter();
+}
+
+function applyFilter() {
+  const query = normalizar(document.getElementById('search').value);
+  document.querySelectorAll('.cat-section').forEach(section => {
+    const catMatch = categoriaActual === 'todos' || section.dataset.catId === categoriaActual;
+    if (!catMatch) { section.classList.add('hidden-cat'); return; }
+    let anyVisible = false;
+    section.querySelectorAll('.pcard').forEach(card => {
+      const nameMatch = !query || card.dataset.name.includes(query);
+      card.style.display = nameMatch ? '' : 'none';
+      if (nameMatch) anyVisible = true;
+    });
+    section.classList.toggle('hidden-cat', !anyVisible);
+  });
+}
+
+function getInitialCat() {
+  const params = new URLSearchParams(window.location.search);
+  const cat = params.get('cat');
+  if (cat && DATA.categorias.some(c => c.id === cat)) return cat;
+  return 'todos';
+}
+
+function showAMedida() {
+  const texto = (DATA.config && DATA.config.a_medida && DATA.config.a_medida.leyenda) || '';
+  if (texto) document.getElementById('imodal-texto').textContent = texto;
+  document.getElementById('imodal').classList.add('open');
+}
+
+/* ---------- Cart ---------- */
+function getCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveCart(c) {
+  localStorage.setItem(CART_KEY, JSON.stringify(c));
+  updateCartCount();
+}
+function updateCartCount() {
+  const c = getCart();
+  const total = c.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cart-count').textContent = total;
+  document.getElementById('fab-count').textContent = total;
+  document.getElementById('cart-fab').classList.toggle('visible', total > 0);
+}
+
+function addToCart(p, categoria) {
+  const cart = getCart();
+  const existing = cart.find(i => i.id === p.id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({
+      id: p.id,
+      nombre: p.nombre,
+      categoria: categoria.nombre,
+      medidas: p.medidas || '',
+      stock_inmediato: !!p.stock_inmediato,
+      imagen: (p.imagenes && p.imagenes[0]) || '',
+      precio: p.precio,
+      qty: 1
+    });
+  }
+  saveCart(cart);
+  showToast(`"${p.nombre}" agregado al pedido`);
+}
+
+let _scrollLockY = 0;
+function lockBodyScroll() {
+  _scrollLockY = window.scrollY;
+  document.body.style.top = `-${_scrollLockY}px`;
+  document.body.classList.add('no-scroll');
+}
+function unlockBodyScroll() {
+  document.body.classList.remove('no-scroll');
+  document.body.style.top = '';
+  window.scrollTo(0, _scrollLockY);
+}
+
+function openCart() {
+  renderCart();
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-back').classList.add('open');
+  lockBodyScroll();
+}
+function closeCart() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-back').classList.remove('open');
+  unlockBodyScroll();
+}
+
+function renderCart() {
+  const body = document.getElementById('drawer-body');
+  const footer = document.getElementById('drawer-footer');
+  body.innerHTML = '';
+  const cart = getCart();
+
+  if (!cart.length) {
+    const empty = document.createElement('div');
+    empty.className = 'cart-empty';
+    empty.textContent = 'Tu pedido está vacío. Elegí un mueble y agregalo.';
+    body.appendChild(empty);
+    footer.style.display = 'none';
+    return;
+  }
+
+  footer.style.display = 'block';
+
+  cart.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+
+    const img = document.createElement('div');
+    img.className = 'cart-item-img';
+    if (item.imagen) {
+      const t = new Image();
+      t.onload = () => { img.style.backgroundImage = `url('./img/${item.imagen}')`; };
+      t.src = `./img/${item.imagen}`;
+    }
+    row.appendChild(img);
+
+    const info = document.createElement('div');
+    const name = document.createElement('div');
+    name.className = 'cart-item-name'; name.textContent = item.nombre;
+    info.appendChild(name);
+    const meta = document.createElement('div');
+    meta.className = 'cart-item-meta';
+    meta.textContent = item.categoria + (item.medidas ? ` · ${item.medidas}` : '');
+    info.appendChild(meta);
+
+    const tag = document.createElement('span');
+    if (item.stock_inmediato) {
+      tag.className = 'cart-tag stock';
+      tag.textContent = '⚡ Stock inmediato · entrega rápida';
+      tag.title = (DATA.config.stock_inmediato && DATA.config.stock_inmediato.leyenda) || '';
+    } else {
+      tag.className = 'cart-tag medida';
+      tag.textContent = '✎ Se fabrica para vos';
+    }
+    info.appendChild(tag);
+
+    const price = document.createElement('div');
+    price.className = 'cart-item-price';
+    price.textContent = fmt(item.precio * item.qty);
+    info.appendChild(price);
+
+    const qtyBox = document.createElement('div');
+    qtyBox.className = 'cart-item-qty';
+    const minus = document.createElement('button'); minus.textContent = '−'; minus.type = 'button';
+    minus.onclick = () => chgCartQty(idx, -1);
+    const qty = document.createElement('span'); qty.textContent = item.qty;
+    const plus = document.createElement('button'); plus.textContent = '+'; plus.type = 'button';
+    plus.onclick = () => chgCartQty(idx, 1);
+    qtyBox.appendChild(minus); qtyBox.appendChild(qty); qtyBox.appendChild(plus);
+    info.appendChild(qtyBox);
+    row.appendChild(info);
+
+    const del = document.createElement('button');
+    del.className = 'cart-item-del'; del.textContent = '×'; del.type = 'button';
+    del.setAttribute('aria-label', 'Eliminar');
+    del.onclick = () => delCartItem(idx);
+    row.appendChild(del);
+
+    body.appendChild(row);
+  });
+
+  renderTotals();
+  renderDeliveryNote();
+}
+
+function calcEnvio(subtotal) {
+  const env = (DATA.config && DATA.config.envio) || {};
+  if (entrega === 'encomienda') return { costo: env.encomienda_valor || 0, aprox: true };
+  return { costo: 0, aprox: false };
+}
+
+function renderTotals() {
+  const cart = getCart();
+  const subtotal = cart.reduce((s, i) => s + (i.precio * i.qty), 0);
+  const envio = calcEnvio(subtotal);
+  const total = subtotal + envio.costo;
+  const senaPct = (DATA.config && DATA.config.sena && DATA.config.sena.porcentaje) || 30;
+  const sena = Math.round(total * senaPct / 100);
+
+  const box = document.getElementById('totals-box');
+  box.innerHTML = '';
+
+  const r1 = document.createElement('div');
+  r1.className = 'totals-row';
+  const r1L = document.createElement('span'); r1L.className = 'muted'; r1L.textContent = 'Subtotal';
+  const r1R = document.createElement('span'); r1R.textContent = fmt(subtotal);
+  r1.appendChild(r1L); r1.appendChild(r1R);
+  box.appendChild(r1);
+
+  const r2 = document.createElement('div');
+  r2.className = 'totals-row';
+  const r2L = document.createElement('span'); r2L.className = 'muted';
+  const r2R = document.createElement('span');
+  if (entrega === 'retiro') {
+    r2L.textContent = 'Retiro en fábrica';
+    r2R.textContent = 'Sin costo';
+    r2R.style.color = 'var(--ok)';
+  } else if (entrega === 'local') {
+    r2L.textContent = 'Envío local (hasta ' + (((DATA.config||{}).envio||{}).radio_gratis_km || 10) + ' km)';
+    r2R.textContent = 'Gratis';
+    r2R.style.color = 'var(--ok)';
+  } else {
+    r2L.textContent = 'Envío por encomienda (aprox.)';
+    r2R.textContent = '~' + fmt(envio.costo);
+  }
+  r2.appendChild(r2L); r2.appendChild(r2R);
+  box.appendChild(r2);
+
+  const r3 = document.createElement('div');
+  r3.className = 'totals-row total';
+  const r3L = document.createElement('span');
+  r3L.textContent = 'Total' + (envio.aprox ? ' estimado' : '');
+  const r3R = document.createElement('span');
+  r3R.textContent = fmt(total);
+  r3.appendChild(r3L); r3.appendChild(r3R);
+  box.appendChild(r3);
+
+  const senaBox = document.getElementById('sena-box');
+  senaBox.innerHTML = '';
+  const strong = document.createElement('strong');
+  strong.textContent = `Seña para comenzar (${senaPct}%): ${fmt(sena)}. `;
+  senaBox.appendChild(strong);
+  senaBox.appendChild(document.createTextNode(
+    (DATA.config && DATA.config.sena && DATA.config.sena.leyenda) ||
+    'Al confirmar te contactamos por WhatsApp o teléfono para coordinar la seña.'
+  ));
+}
+
+function renderDeliveryNote() {
+  const env = (DATA.config && DATA.config.envio) || {};
+  const note = document.getElementById('delivery-note');
+  if (entrega === 'retiro') {
+    note.textContent = (env.leyenda_retiro || 'Retirá en la fábrica sin costo.') + ' Al elegir esta opción te comprometés a retirar el mueble en la fábrica una vez terminado.';
+  } else if (entrega === 'local') {
+    note.textContent = env.leyenda_local || 'Envío gratis en Las Flores y alrededores.';
+  } else {
+    note.textContent = (env.leyenda_encomienda || 'Enviamos por encomienda.') + ' El valor mostrado es aproximado.';
+  }
+}
+
+function setEntrega(modo) {
+  entrega = modo;
+  document.getElementById('tog-retiro').classList.toggle('active', modo === 'retiro');
+  document.getElementById('tog-local').classList.toggle('active', modo === 'local');
+  document.getElementById('tog-encomienda').classList.toggle('active', modo === 'encomienda');
+  document.getElementById('dir-wrap').style.display = modo === 'retiro' ? 'none' : 'block';
+  document.getElementById('encomienda-wrap').style.display = modo === 'encomienda' ? 'block' : 'none';
+  renderTotals();
+  renderDeliveryNote();
+}
+
+function chgCartQty(idx, delta) {
+  const cart = getCart();
+  cart[idx].qty = Math.max(1, cart[idx].qty + delta);
+  saveCart(cart); renderCart();
+}
+function delCartItem(idx) {
+  const cart = getCart();
+  cart.splice(idx, 1);
+  saveCart(cart); renderCart();
+}
+function clearCart() {
+  if (!confirm('¿Vaciar el carrito?')) return;
+  saveCart([]); renderCart();
+}
+
+/* ---------- Checkout ---------- */
+function genTrackingCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = '';
+  for (let i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+
+function saveMyOrderCode(code, docId) {
+  try {
+    const arr = JSON.parse(localStorage.getItem(LS_MIS_PEDIDOS) || '[]');
+    arr.unshift({ code, docId, ts: Date.now() });
+    localStorage.setItem(LS_MIS_PEDIDOS, JSON.stringify(arr.slice(0, 30)));
+  } catch {}
+}
+
+/* Modo demo: sin Firebase, los pedidos viven en localStorage para poder
+   mostrar el flujo completo. Al configurar Firebase esto deja de usarse. */
+function saveDemoOrder(payload) {
+  try {
+    const arr = JSON.parse(localStorage.getItem(LS_DEMO_PEDIDOS) || '[]');
+    arr.unshift(payload);
+    localStorage.setItem(LS_DEMO_PEDIDOS, JSON.stringify(arr.slice(0, 50)));
+  } catch {}
+}
+
+async function sendOrder() {
+  const now = Date.now();
+  if (now - lastSubmit < RATE_LIMIT_MS) {
+    showToast('Esperá unos segundos antes de reenviar.');
+    return;
+  }
+  if (document.getElementById('hp-website').value) return;
+
+  const cart = getCart();
+  if (!cart.length) return;
+
+  const nombre = sanitizeInput(document.getElementById('in-nombre').value, 80);
+  if (!nombre) {
+    showToast('Ingresá tu nombre.');
+    document.getElementById('in-nombre').focus();
+    return;
+  }
+  const telefono = sanitizeInput(document.getElementById('in-telefono').value, 25);
+  if (!telefono || telefono.replace(/\D/g, '').length < 6) {
+    showToast('Ingresá un teléfono válido — lo necesitamos para coordinar la seña.');
+    document.getElementById('in-telefono').focus();
+    return;
+  }
+
+  let direccion = '', localidad = '', provincia = '', cp = '';
+  if (entrega !== 'retiro') {
+    direccion = sanitizeInput(document.getElementById('in-direccion').value, 120);
+    if (!direccion) {
+      showToast('Completá la dirección de entrega.');
+      return;
+    }
+  }
+  if (entrega === 'encomienda') {
+    localidad = sanitizeInput(document.getElementById('in-localidad').value, 60);
+    provincia = sanitizeInput(document.getElementById('in-provincia').value, 40);
+    cp = sanitizeInput(document.getElementById('in-cp').value, 10);
+    if (!localidad || !provincia) {
+      showToast('Completá localidad y provincia.');
+      return;
+    }
+  }
+
+  const nota = sanitizeInput(document.getElementById('cart-note').value, 400);
+  const subtotal = cart.reduce((s, i) => s + (i.precio * i.qty), 0);
+  const envio = calcEnvio(subtotal);
+  const total = subtotal + envio.costo;
+  const senaPct = (DATA.config && DATA.config.sena && DATA.config.sena.porcentaje) || 30;
+  const sena = Math.round(total * senaPct / 100);
+
+  const code = genTrackingCode();
+  const payload = {
+    codigo: code,
+    creadoEn: (db && firebase.firestore.FieldValue.serverTimestamp()) || new Date().toISOString(),
+    cliente: { nombre, telefono, direccion, localidad, provincia, codigoPostal: cp },
+    items: cart.map(i => ({
+      id: i.id, nombre: i.nombre, categoria: i.categoria,
+      medidas: i.medidas, stock_inmediato: !!i.stock_inmediato,
+      qty: i.qty, precio: i.precio
+    })),
+    modalidad: entrega,
+    subtotal,
+    envio: envio.costo,
+    envioAproximado: envio.aprox,
+    total,
+    senaPorcentaje: senaPct,
+    senaMonto: sena,
+    nota,
+    estado: 'esperando_pago'
+  };
+
+  let docId = null;
+  if (db) {
+    try {
+      const ref = await db.collection('pedidos').add(payload);
+      docId = ref.id;
+    } catch (e) {
+      showToast('Error al enviar: ' + e.message);
+      console.error('Firestore write error:', e);
+      return;
+    }
+  } else {
+    /* Demo local hasta que exista Firebase */
+    saveDemoOrder(payload);
+  }
+
+  lastSubmit = now;
+  saveMyOrderCode(code, docId);
+
+  document.getElementById('confirm-code').textContent = '#' + code;
+  document.getElementById('confirm-sena-pct').textContent = senaPct;
+  document.getElementById('track-link').href = `./seguimiento.html?code=${code}`;
+  document.getElementById('confirm-modal').classList.add('open');
+
+  saveCart([]);
+  closeCart();
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.remove('open');
+}
+
+/* ---------- Init ---------- */
+async function init() {
+  DATA = await loadData();
+
+  categoriaActual = getInitialCat();
+  renderCatStrip();
+  renderInfoBanner();
+  renderStatusBanner();
+  updateCartCount();
+  renderCatalog();
+
+  document.getElementById('search').addEventListener('input', applyFilter);
+  document.getElementById('search-clear').addEventListener('click', () => {
+    document.getElementById('search').value = '';
+    applyFilter();
+  });
+
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById('scroll-progress').style.width = pct + '%';
+    document.getElementById('back-top').classList.toggle('visible', window.scrollY > 400);
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+
+  /* Page transitions */
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    if (!href || href.startsWith('#')) return;
+    if (link.target === '_blank') return;
+    const url = new URL(href, window.location.href);
+    if (url.origin !== window.location.origin) return;
+    e.preventDefault();
+    document.body.classList.add('leaving');
+    document.getElementById('curtain').classList.add('leave');
+    setTimeout(() => { window.location.href = href; }, 450);
+  });
+  window.addEventListener('pageshow', () => {
+    document.body.classList.remove('leaving');
+    document.getElementById('curtain').classList.remove('leave');
+  });
+}
+
+init();
+</script>
+
+</body>
+</html>

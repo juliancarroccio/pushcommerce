@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;" />
+
+  <title>Seguimiento de pedido — JD Muebles</title>
+  <meta name="description" content="Consultá el estado de tu pedido en JD — Fábrica de Muebles de Melamina." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="./img/logo-JD.png" type="image/png" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#FAF7F2" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --cream: #FAF7F2; --paper: #FFFFFF;
+      --sand: #D5BFA3; --sand-deep: #B99972; --sand-soft: #EFE5D6;
+      --ink: #2B2825; --line: #EAE2D6;
+      --ok: #3E7C4F; --warn: #A8503C;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: var(--cream); color: var(--ink);
+      font-weight: 300; margin: 0; min-height: 100vh;
+      animation: pageIn .5s ease-out both;
+    }
+    @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+    .serif { font-family: 'Lora', Georgia, serif; }
+    header {
+      background: var(--paper); border-bottom: 1px solid var(--line);
+      padding: 14px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    header img { height: 38px; width: auto; display: block; }
+    header a { text-decoration: none; color: var(--ink); }
+    main { max-width: 720px; margin: 0 auto; padding: 44px 24px; }
+    .card {
+      background: var(--paper); padding: 30px;
+      border: 1px solid var(--line); border-radius: 20px;
+      margin-bottom: 18px;
+    }
+    .eyebrow { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--sand-deep); font-weight: 500; }
+    h1 { font-family: 'Lora', serif; font-size: 1.9rem; font-weight: 600; letter-spacing: -0.01em; margin: 8px 0 22px; }
+    h2 { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 12px; }
+    .inp {
+      width: 100%; padding: 13px 18px;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: var(--cream); font-size: 0.95rem;
+      font-family: inherit; letter-spacing: 0.1em;
+      text-transform: uppercase; text-align: center; color: var(--ink);
+    }
+    .inp:focus { outline: none; border-color: var(--sand-deep); }
+    .btn {
+      padding: 12px 26px; background: var(--ink); color: #FFF;
+      border: 1px solid var(--ink); border-radius: 999px; cursor: pointer;
+      font-size: 0.76rem; letter-spacing: 0.14em; text-transform: uppercase;
+      font-family: inherit; font-weight: 500; text-decoration: none;
+      display: inline-block; text-align: center;
+    }
+    .btn:hover { background: transparent; color: var(--ink); }
+
+    .code-display {
+      font-family: 'Lora', serif;
+      font-size: 1.9rem; letter-spacing: 0.16em; font-weight: 600;
+      background: var(--sand-soft); padding: 12px 20px; border-radius: 14px;
+      text-align: center; margin-bottom: 20px;
+    }
+
+    /* Timeline — 5 pasos */
+    .timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 22px 0; }
+    .step {
+      padding: 14px 8px; text-align: center;
+      background: var(--cream); border: 1px solid var(--line);
+      border-radius: 14px; font-size: 0.76rem;
+    }
+    .step.done { background: var(--sand-soft); border-color: var(--sand); }
+    .step.done .step-num { color: var(--sand-deep); }
+    .step.current { background: var(--ink); color: #FFF; border-color: var(--ink); }
+    .step.current .step-num { color: var(--sand); }
+    .step-num { font-family: 'Lora', serif; font-size: 1.25rem; display: block; margin-bottom: 2px; font-weight: 600; }
+    .step-label { font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.4; display: block; }
+    @media (max-width: 640px) {
+      .timeline { grid-template-columns: repeat(2, 1fr); }
+      .step-label { font-size: 0.64rem; }
+    }
+
+    .item-line {
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+      display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+      font-size: 0.88rem;
+    }
+    .item-line .tag {
+      display: inline-block; font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 999px; margin-left: 6px;
+      background: #E4F0E6; color: var(--ok); font-weight: 500;
+    }
+    .totals-line { padding: 6px 0; display: flex; justify-content: space-between; font-size: 0.88rem; }
+    .totals-line.total { font-weight: 500; font-size: 1.02rem; padding-top: 12px; margin-top: 8px; border-top: 1px solid var(--line); }
+    .totals-line.sena { color: var(--sand-deep); font-weight: 500; }
+
+    .mis-pedidos-lista { display: grid; gap: 8px; }
+    .mp-item {
+      padding: 12px 18px; background: var(--cream);
+      border: 1px solid var(--line); border-radius: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      text-decoration: none; color: var(--ink); font-size: 0.88rem;
+    }
+    .mp-item:hover { border-color: var(--sand-deep); }
+
+    .status-msg {
+      padding: 16px 20px; background: var(--sand-soft);
+      border-left: 4px solid var(--sand-deep); border-radius: 12px;
+      font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;
+    }
+    .rt-badge {
+      display: inline-block; font-size: 0.64rem;
+      padding: 3px 10px; background: var(--cream); border-radius: 999px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-left: 10px; color: #8A8271;
+    }
+    .rt-badge.live { background: #E4F0E6; color: var(--ok); }
+    .not-found { text-align: center; padding: 40px 20px; color: #8A8271; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" aria-label="JD — Inicio">
+    <img src="./img/logo-JD.png" alt="JD — Jonathan Dantas" />
+  </a>
+  <a href="./tienda.html" style="font-size:0.76rem;letter-spacing:0.1em;text-transform:uppercase;">Volver a la tienda</a>
+</header>
+
+<main>
+  <div class="eyebrow">Seguimiento</div>
+  <h1>Estado de tu pedido</h1>
+
+  <!-- Búsqueda -->
+  <div class="card" id="search-card">
+    <h2>Ingresá el código</h2>
+    <p style="color:#7A7264;font-size:0.88rem;margin-bottom:16px;">Al confirmar tu pedido te dimos un código de 5 caracteres. Ingresálo para ver el estado.</p>
+    <form onsubmit="event.preventDefault();buscar()">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input type="text" id="in-code" class="inp" placeholder="A3F7B" maxlength="6" style="flex:1;min-width:180px;" />
+        <button type="submit" class="btn">Consultar</button>
+      </div>
+    </form>
+    <div id="search-err" style="display:none;color:var(--warn);font-size:0.85rem;margin-top:10px;"></div>
+  </div>
+
+  <!-- Historial -->
+  <div class="card" id="mis-pedidos-card" style="display:none;">
+    <h2>Tus últimos pedidos</h2>
+    <div class="mis-pedidos-lista" id="mis-pedidos-lista"></div>
+  </div>
+
+  <!-- Detalle -->
+  <div id="pedido-card" style="display:none;">
+    <div class="card">
+      <div class="eyebrow">Código de pedido <span class="rt-badge" id="rt-badge">···</span></div>
+      <div class="code-display" id="code-display">···</div>
+      <div class="status-msg" id="status-msg">···</div>
+
+      <h2>Progreso</h2>
+      <div class="timeline">
+        <div class="step" data-step="esperando_pago">
+          <span class="step-num">1</span>
+          <span class="step-label">Esperando seña</span>
+        </div>
+        <div class="step" data-step="pago_recibido">
+          <span class="step-num">2</span>
+          <span class="step-label">Seña recibida</span>
+        </div>
+        <div class="step" data-step="en_fabricacion">
+          <span class="step-num">3</span>
+          <span class="step-label">En fabricación</span>
+        </div>
+        <div class="step" data-step="terminado">
+          <span class="step-num">4</span>
+          <span class="step-label">Terminado</span>
+        </div>
+        <div class="step" data-step="enviado">
+          <span class="step-num">5</span>
+          <span class="step-label">Enviado</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Detalle</h2>
+      <div id="detalle-cliente" style="margin-bottom:16px;font-size:0.9rem;line-height:1.6;color:#5E5648;"></div>
+      <div id="detalle-items"></div>
+      <div id="detalle-totales" style="margin-top:16px;"></div>
+      <div id="detalle-nota" style="margin-top:16px;padding:12px 16px;background:var(--cream);border-radius:12px;font-size:0.86rem;display:none;"></div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <p style="color:#7A7264;font-size:0.88rem;margin-bottom:12px;">¿Tenés alguna consulta sobre tu pedido?</p>
+      <a id="wa-consulta" target="_blank" rel="noopener noreferrer" class="btn">Consultar por WhatsApp</a>
+    </div>
+  </div>
+
+  <!-- No encontrado -->
+  <div id="not-found-card" style="display:none;">
+    <div class="card not-found">
+      <h2>No encontramos ese pedido</h2>
+      <p>Revisá que el código sea correcto. Los códigos tienen 5 caracteres alfanuméricos.</p>
+      <button class="btn" style="margin-top:16px;" onclick="volverBusqueda()">Volver a intentar</button>
+    </div>
+  </div>
+</main>
+
+<script>
+'use strict';
+
+/* =========== FIREBASE — PLACEHOLDER: reemplazar cuando Julian cree el proyecto =========== */
+const FIREBASE_CONFIG = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO",
+  storageBucket: "TU_PROYECTO.firebasestorage.app",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+const FIREBASE_READY = !/^TU_/.test(FIREBASE_CONFIG.projectId);
+let db = null;
+try {
+  if (FIREBASE_READY && typeof firebase !== 'undefined') {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+  }
+} catch(e) { console.warn('Firebase no inicializado:', e.message); }
+
+const LS_MIS_PEDIDOS = 'jd_mis_pedidos';
+const LS_DEMO_PEDIDOS = 'jd_demo_pedidos';
+let DATA = null;
+let unsubscribe = null;
+
+async function loadData() {
+  try {
+    const res = await fetch('./productos.json', { cache: 'no-cache' });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
+
+function renderMisPedidos() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(LS_MIS_PEDIDOS) || '[]');
+    if (!arr.length) return;
+    const card = document.getElementById('mis-pedidos-card');
+    const lista = document.getElementById('mis-pedidos-lista');
+    lista.innerHTML = '';
+    arr.slice(0, 10).forEach(p => {
+      const item = document.createElement('a');
+      item.href = `?code=${encodeURIComponent(p.code)}`;
+      item.className = 'mp-item';
+      const left = document.createElement('span');
+      left.textContent = '#' + p.code;
+      left.style.fontFamily = "'Lora', serif";
+      left.style.fontSize = '1.1rem';
+      left.style.fontWeight = '600';
+      const right = document.createElement('span');
+      const d = new Date(p.ts);
+      right.textContent = d.toLocaleDateString('es-AR') + ' ' + d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      right.style.color = '#8A8271';
+      right.style.fontSize = '0.76rem';
+      item.appendChild(left);
+      item.appendChild(right);
+      lista.appendChild(item);
+    });
+    card.style.display = 'block';
+  } catch {}
+}
+
+function buscar() {
+  const raw = document.getElementById('in-code').value.trim().toUpperCase();
+  const errEl = document.getElementById('search-err');
+  errEl.style.display = 'none';
+  if (!/^[A-Z0-9]{4,6}$/.test(raw)) {
+    errEl.textContent = 'El código no tiene el formato correcto.';
+    errEl.style.display = 'block';
+    return;
+  }
+  window.location.href = `?code=${encodeURIComponent(raw)}`;
+}
+
+function volverBusqueda() {
+  window.location.href = './seguimiento.html';
+}
+
+const ORDEN_ESTADOS = ['esperando_pago','pago_recibido','en_fabricacion','terminado','enviado'];
+
+function renderTimeline(estado, modalidad) {
+  const idx = ORDEN_ESTADOS.indexOf(estado);
+  document.querySelectorAll('.step').forEach((el, i) => {
+    el.classList.remove('done', 'current');
+    if (i < idx) el.classList.add('done');
+    else if (i === idx) el.classList.add('current');
+  });
+  /* Etiquetas según modalidad */
+  const step4 = document.querySelector('.step[data-step="terminado"] .step-label');
+  const step5 = document.querySelector('.step[data-step="enviado"] .step-label');
+  if (modalidad === 'retiro') {
+    step4.textContent = 'Listo para retirar';
+    step5.textContent = 'Entregado';
+  } else {
+    step4.textContent = 'Terminado · esp. transporte';
+    step5.textContent = 'Enviado';
+  }
+}
+
+function statusMessages(modalidad) {
+  return {
+    esperando_pago: 'Recibimos tu pedido. Te vamos a contactar por WhatsApp o teléfono para coordinar la seña. Con la seña acreditada, tu mueble entra en fabricación.',
+    pago_recibido: '¡Seña recibida! Tu pedido está confirmado y en breve entra en fabricación.',
+    en_fabricacion: 'Tu mueble está en fabricación. Te avisamos apenas esté terminado.',
+    terminado: modalidad === 'retiro'
+      ? 'Tu mueble está terminado. ¡Ya podés pasar a retirarlo por la fábrica! Av. Independencia 698, Las Flores.'
+      : 'Tu mueble está terminado y esperando transporte. Te avisamos cuando salga.',
+    enviado: modalidad === 'retiro'
+      ? 'Tu pedido fue entregado. ¡Gracias por elegirnos!'
+      : 'Tu pedido fue enviado. ¡Gracias por elegirnos!',
+    cancelado: 'Tu pedido fue cancelado. Si tenés dudas, escribinos por WhatsApp.'
+  };
+}
+
+function renderPedido(doc) {
+  document.getElementById('search-card').style.display = 'none';
+  document.getElementById('mis-pedidos-card').style.display = 'none';
+  document.getElementById('not-found-card').style.display = 'none';
+  document.getElementById('pedido-card').style.display = 'block';
+
+  const d = doc.data ? doc.data() : doc;
+  const code = d.codigo || '?';
+
+  document.getElementById('code-display').textContent = '#' + code;
+  const msgs = statusMessages(d.modalidad);
+  document.getElementById('status-msg').textContent = msgs[d.estado] || 'Estado desconocido.';
+  renderTimeline(d.estado, d.modalidad);
+
+  /* Cliente */
+  const cliBox = document.getElementById('detalle-cliente');
+  cliBox.innerHTML = '';
+  const cli = d.cliente || {};
+  const addRow = (label, val) => {
+    if (!val) return;
+    const row = document.createElement('div');
+    const l = document.createElement('span'); l.style.color = '#8A8271'; l.textContent = label + ': ';
+    const v = document.createElement('span'); v.textContent = val;
+    row.appendChild(l); row.appendChild(v);
+    cliBox.appendChild(row);
+  };
+  const modLabels = { retiro: 'Retiro en fábrica', local: 'Envío local (gratis)', encomienda: 'Envío por encomienda' };
+  addRow('Nombre', cli.nombre);
+  addRow('Modalidad', modLabels[d.modalidad] || d.modalidad);
+  if (d.modalidad !== 'retiro') {
+    addRow('Dirección', cli.direccion);
+    if (cli.localidad) addRow('Localidad', cli.localidad + (cli.provincia ? ', ' + cli.provincia : ''));
+    addRow('Código postal', cli.codigoPostal);
+  }
+
+  /* Items */
+  const iBox = document.getElementById('detalle-items');
+  iBox.innerHTML = '';
+  (d.items || []).forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'item-line';
+    const left = document.createElement('span');
+    left.textContent = `${it.nombre}${it.medidas ? ' · ' + it.medidas : ''} · x${it.qty}`;
+    if (it.stock_inmediato) {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = '⚡ Stock';
+      left.appendChild(tag);
+    }
+    const right = document.createElement('span');
+    right.textContent = '$' + ((it.precio || 0) * (it.qty || 0)).toLocaleString('es-AR');
+    row.appendChild(left); row.appendChild(right);
+    iBox.appendChild(row);
+  });
+
+  /* Totales */
+  const tBox = document.getElementById('detalle-totales');
+  tBox.innerHTML = '';
+  const addT = (l, v, cls, prefix) => {
+    const row = document.createElement('div');
+    row.className = 'totals-line ' + (cls || '');
+    const ll = document.createElement('span'); ll.textContent = l;
+    const rr = document.createElement('span'); rr.textContent = (prefix || '') + '$' + (v || 0).toLocaleString('es-AR');
+    row.appendChild(ll); row.appendChild(rr);
+    tBox.appendChild(row);
+  };
+  addT('Subtotal', d.subtotal);
+  if (d.modalidad === 'encomienda') addT('Envío (aproximado)', d.envio, '', '~');
+  addT('Total' + (d.envioAproximado ? ' estimado' : ''), d.total, 'total');
+  if (d.senaMonto) addT(`Seña (${d.senaPorcentaje || 30}%)`, d.senaMonto, 'sena');
+
+  /* Nota */
+  if (d.nota) {
+    const n = document.getElementById('detalle-nota');
+    n.style.display = 'block';
+    n.textContent = 'Nota: ' + d.nota;
+  }
+
+  /* WhatsApp */
+  const wa = (DATA && DATA.negocio && DATA.negocio.whatsapp) || '5492244475753';
+  const msg = encodeURIComponent(`Hola JD! Quería consultar sobre mi pedido #${code}.`);
+  document.getElementById('wa-consulta').href = `https://wa.me/${wa}?text=${msg}`;
+}
+
+/* Demo local (sin Firebase) */
+function buscarDemoOrder(code) {
+  try {
+    const arr = JSON.parse(localStorage.getItem(LS_DEMO_PEDIDOS) || '[]');
+    return arr.find(p => p.codigo === code) || null;
+  } catch { return null; }
+}
+
+async function cargarPedido(code) {
+  const rtBadge = document.getElementById('rt-badge');
+
+  if (!db) {
+    /* Modo demo: buscar en localStorage */
+    const demo = buscarDemoOrder(code);
+    if (demo) {
+      renderPedido(demo);
+      rtBadge.textContent = 'Demo';
+      return;
+    }
+    document.getElementById('search-card').style.display = 'none';
+    document.getElementById('not-found-card').style.display = 'block';
+    return;
+  }
+
+  try {
+    const snap = await db.collection('pedidos').where('codigo', '==', code).limit(1).get();
+    if (snap.empty) {
+      document.getElementById('search-card').style.display = 'none';
+      document.getElementById('not-found-card').style.display = 'block';
+      return;
+    }
+    const doc = snap.docs[0];
+    renderPedido(doc);
+
+    rtBadge.textContent = 'En vivo';
+    rtBadge.classList.add('live');
+    unsubscribe = db.collection('pedidos').doc(doc.id).onSnapshot(s => {
+      if (s.exists) renderPedido(s);
+    }, () => {
+      rtBadge.textContent = 'Sin conexión';
+      rtBadge.classList.remove('live');
+    });
+  } catch (e) {
+    document.getElementById('search-err').textContent = 'Error al consultar. Reintentá.';
+    document.getElementById('search-err').style.display = 'block';
+    console.error(e);
+  }
+}
+
+async function init() {
+  DATA = await loadData();
+  renderMisPedidos();
+
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  if (code) {
+    document.getElementById('in-code').value = code;
+    await cargarPedido(code.toUpperCase());
+  }
+}
+
+init();
+
+/* Page transitions */
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a[href]');
+  if (!link) return;
+  const href = link.getAttribute('href');
+  if (!href || href.startsWith('#') || href.startsWith('?')) return;
+  if (link.target === '_blank') return;
+  const url = new URL(href, window.location.href);
+  if (url.origin !== window.location.origin) return;
+  e.preventDefault();
+  document.body.style.animation = 'pageIn 0.3s ease-in reverse forwards';
+  setTimeout(() => { window.location.href = href; }, 300);
+});
+window.addEventListener('pageshow', () => { document.body.style.animation = ''; });
+</script>
+
+</body>
+</html>

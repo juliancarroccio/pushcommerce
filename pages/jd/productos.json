@@ -1,0 +1,317 @@
+{
+  "negocio": {
+    "nombre": "JD",
+    "nombre_completo": "JD — Jonathan Dantas · Fábrica de Muebles de Melamina",
+    "tagline": "Muebles de melamina de alta calidad, fabricados en Las Flores",
+    "descripcion_corta": "Fábrica de muebles de melamina base MDF de 18 mm. Herrajes de calidad, cierre suave y terminaciones que se destacan. Presupuesto en el día sin cargo.",
+    "descripcion_larga": "Fabricamos muebles de melamina base MDF de 18 mm de alta calidad en Las Flores, provincia de Buenos Aires. Garantizamos calidad en materiales, terminaciones y accesorios: usamos herrajes y pistones de primera línea con cierre suave para que cada mueble se destaque de la competencia. Con tus medidas te damos presupuesto en el día y fecha de entrega tentativa, sin cargo.",
+    "whatsapp": "5492244475753",
+    "telefono": "02244 47-5753",
+    "direccion": "Av. Independencia 698, entre Pueyrredón y Harosteguy, Las Flores, B7200, Buenos Aires",
+    "direccion_corta": "Av. Independencia 698, Las Flores",
+    "provincia": "Buenos Aires",
+    "codigo_postal": "B7200",
+    "pais": "AR",
+    "latitud": "-36.0139",
+    "longitud": "-59.0995",
+    "maps_embed": "https://www.google.com/maps?q=Av.%20Independencia%20698%2C%20Las%20Flores%2C%20Buenos%20Aires&ll=-36.0139,-59.0995&z=16&output=embed&hl=es",
+    "analytics_id": ""
+  },
+  "config": {
+    "sena": {
+      "porcentaje": 30,
+      "leyenda": "Al confirmar tu pedido te contactamos por WhatsApp o teléfono para coordinar la seña. Con la seña acreditada, tu mueble entra en fabricación."
+    },
+    "envio": {
+      "radio_gratis_km": 10,
+      "leyenda_local": "Envío gratis en Las Flores y alrededores (hasta 10 km).",
+      "encomienda_valor": 45000,
+      "leyenda_encomienda": "Enviamos a AMBA y zonas cercanas por encomienda. El costo es aproximado y se confirma al coordinar la entrega.",
+      "leyenda_retiro": "Podés retirar en la fábrica sin costo. Te avisamos apenas tu mueble esté terminado."
+    },
+    "stock_inmediato": {
+      "leyenda": "Entrega rápida: este mueble ya está fabricado, solo depende del tiempo de envío."
+    },
+    "a_medida": {
+      "leyenda": "Este mueble se puede configurar a medida: cambiá distribución de cajones, módulos y herrajes. El precio ajusta según lo que se quite o agregue de material."
+    }
+  },
+  "horarios": {
+    "lunes":     [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "martes":    [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "miércoles": [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "jueves":    [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "viernes":   [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "sábado":    [],
+    "domingo":   []
+  },
+  "categorias": [
+    {
+      "id": "cocinas",
+      "nombre": "Cocinas",
+      "descripcion": "Bajo mesadas, alacenas y desayunadores con herrajes de cierre suave.",
+      "productos": [
+        {
+          "id": 1,
+          "nombre": "Bajo mesada 1,20 m",
+          "descripcion": "Bajo mesada de melamina MDF 18 mm con 2 puertas y cajonera. Bisagras con cierre suave y correderas telescópicas.",
+          "medidas": "1,20 × 0,90 × 0,55 m",
+          "precio": 340000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": true,
+          "imagenes": []
+        },
+        {
+          "id": 2,
+          "nombre": "Alacena 1,20 m",
+          "descripcion": "Alacena de 2 puertas con estante regulable. Pistones a gas con cierre suave en puertas rebatibles.",
+          "medidas": "1,20 × 0,60 × 0,35 m",
+          "precio": 240000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        },
+        {
+          "id": 3,
+          "nombre": "Desayunador con banquetas",
+          "descripcion": "Desayunador de melamina con estructura reforzada y zócalo de PVC. Ideal para cocinas integradas.",
+          "medidas": "1,40 × 1,05 × 0,45 m",
+          "precio": 290000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        }
+      ]
+    },
+    {
+      "id": "placares",
+      "nombre": "Placares y Vestidores",
+      "descripcion": "Placares, vestidores e interiores de placard a medida o con medidas estándar.",
+      "productos": [
+        {
+          "id": 4,
+          "nombre": "Placard 2 puertas corredizas",
+          "descripcion": "Placard de melamina MDF 18 mm con puertas corredizas, barral cromado, estantes y cajonera interna.",
+          "medidas": "1,80 × 2,40 × 0,60 m",
+          "precio": 620000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": true,
+          "imagenes": []
+        },
+        {
+          "id": 5,
+          "nombre": "Vestidor en L",
+          "descripcion": "Vestidor abierto en L con módulos de estantes, barrales dobles y cajoneras con cierre suave.",
+          "medidas": "2,00 × 2,40 × 0,50 m",
+          "precio": 890000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": true,
+          "imagenes": []
+        },
+        {
+          "id": 6,
+          "nombre": "Interior de placard",
+          "descripcion": "Interior a medida para placard de obra: estantes, barrales, cajoneras y zapatero.",
+          "medidas": "A medida",
+          "precio": 380000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        }
+      ]
+    },
+    {
+      "id": "living",
+      "nombre": "Living y Comedor",
+      "descripcion": "Racks de TV, modulares, vajilleros y bibliotecas.",
+      "productos": [
+        {
+          "id": 7,
+          "nombre": "Rack TV 1,80 m",
+          "descripcion": "Rack para TV de hasta 75\" con 2 puertas de cierre suave, estante para consola y pasacables.",
+          "medidas": "1,80 × 0,50 × 0,40 m",
+          "precio": 280000,
+          "stock_inmediato": true,
+          "disponible": true,
+          "destacado": true,
+          "imagenes": []
+        },
+        {
+          "id": 8,
+          "nombre": "Modular panel TV",
+          "descripcion": "Modular con panel para TV colgada, estantes flotantes y módulo bajo con cajones.",
+          "medidas": "2,00 × 1,80 × 0,35 m",
+          "precio": 460000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        },
+        {
+          "id": 9,
+          "nombre": "Biblioteca 5 estantes",
+          "descripcion": "Biblioteca de melamina MDF 18 mm con 5 estantes fijos y fondo reforzado.",
+          "medidas": "0,80 × 1,90 × 0,30 m",
+          "precio": 190000,
+          "stock_inmediato": true,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        }
+      ]
+    },
+    {
+      "id": "dormitorio",
+      "nombre": "Dormitorio",
+      "descripcion": "Mesas de luz, cómodas, respaldos y botineros.",
+      "productos": [
+        {
+          "id": 10,
+          "nombre": "Mesa de luz 2 cajones",
+          "descripcion": "Mesa de luz con 2 cajones sobre correderas telescópicas con cierre suave.",
+          "medidas": "0,45 × 0,55 × 0,38 m",
+          "precio": 110000,
+          "stock_inmediato": true,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        },
+        {
+          "id": 11,
+          "nombre": "Cómoda 4 cajones",
+          "descripcion": "Cómoda de melamina con 4 cajones amplios, tiradores de aluminio y cierre suave.",
+          "medidas": "0,90 × 1,00 × 0,45 m",
+          "precio": 260000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": true,
+          "imagenes": []
+        },
+        {
+          "id": 12,
+          "nombre": "Respaldo con mesas de luz flotantes",
+          "descripcion": "Respaldo de cama con mesas de luz flotantes integradas y luz LED opcional.",
+          "medidas": "2,40 × 1,10 × 0,30 m",
+          "precio": 350000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        }
+      ]
+    },
+    {
+      "id": "escritorios",
+      "nombre": "Escritorios y Oficina",
+      "descripcion": "Escritorios, muebles para PC y estanterías de oficina.",
+      "productos": [
+        {
+          "id": 13,
+          "nombre": "Escritorio 1,20 m con cajonera",
+          "descripcion": "Escritorio de melamina con cajonera de 2 cajones y pasacables. Bordes con tapacanto ABS.",
+          "medidas": "1,20 × 0,75 × 0,60 m",
+          "precio": 180000,
+          "stock_inmediato": true,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        },
+        {
+          "id": 14,
+          "nombre": "Escritorio esquinero",
+          "descripcion": "Escritorio esquinero en L con estante elevado y módulo de cajones independiente.",
+          "medidas": "1,40 × 1,40 × 0,75 m",
+          "precio": 290000,
+          "stock_inmediato": false,
+          "disponible": true,
+          "destacado": false,
+          "imagenes": []
+        }
+      ]
+    }
+  ],
+  "galeria": [
+    {
+      "tipo": "Cocinas",
+      "items": [
+        { "imagen": "", "titulo": "Cocina completa en blanco texturado", "descripcion": "Bajo mesada + alacena con cierre suave" },
+        { "imagen": "", "titulo": "Cocina en L roble americano", "descripcion": "Con desayunador integrado" }
+      ]
+    },
+    {
+      "tipo": "Placares",
+      "items": [
+        { "imagen": "", "titulo": "Placard corredizo 2,40 m", "descripcion": "Frentes combinados blanco y roble" }
+      ]
+    },
+    {
+      "tipo": "Vestidores",
+      "items": [
+        { "imagen": "", "titulo": "Vestidor en L con cajoneras", "descripcion": "Barrales dobles y zapatero" }
+      ]
+    },
+    {
+      "tipo": "Empotrados",
+      "items": [
+        { "imagen": "", "titulo": "Mueble empotrado bajo escalera", "descripcion": "Aprovechamiento total del espacio" }
+      ]
+    },
+    {
+      "tipo": "Living",
+      "items": [
+        { "imagen": "", "titulo": "Modular panel TV 2,00 m", "descripcion": "Con estantes flotantes y LED" }
+      ]
+    }
+  ],
+  "textos": {
+    "hero": {
+      "titulo": "Muebles de melamina que se destacan",
+      "subtitulo": "Fabricamos en Las Flores con MDF de 18 mm, herrajes de primera y cierre suave. Calidad garantizada en materiales, terminaciones y accesorios.",
+      "cta": "Ver la tienda"
+    },
+    "diferencial": {
+      "titulo": "Presupuesto en el día, sin cargo",
+      "texto": "Pasanos las medidas de tu espacio y te damos el presupuesto en el día, junto con una fecha de entrega tentativa. Sin vueltas y sin costo.",
+      "cta": "Pedir presupuesto"
+    },
+    "nosotros": {
+      "titulo": "Fábrica propia en Las Flores",
+      "texto": "Somos una fábrica de muebles de melamina ubicada en Av. Independencia 698, Las Flores. Trabajamos con melamina base MDF de 18 mm de alta calidad y cuidamos cada detalle: terminaciones prolijas, tapacantos ABS, herrajes y pistones de primera línea con cierre suave. Ese nivel de terminación es lo que hace que nuestros muebles se destaquen de la competencia."
+    },
+    "calidad": {
+      "titulo": "Calidad que se nota al abrir un cajón",
+      "items": [
+        { "titulo": "MDF 18 mm", "texto": "Melamina base MDF de 18 mm en toda la estructura, no solo en los frentes." },
+        { "titulo": "Cierre suave", "texto": "Bisagras y correderas con cierre suave en puertas y cajones." },
+        { "titulo": "Pistones de calidad", "texto": "Pistones a gas de primera línea en puertas rebatibles." },
+        { "titulo": "Terminaciones", "texto": "Tapacanto ABS y terminaciones prolijas en cada borde." }
+      ]
+    },
+    "envios": {
+      "titulo": "Llegamos hasta tu casa",
+      "texto": "Hacemos envíos a AMBA y zonas cercanas. En Las Flores y alrededores (hasta 10 km) el envío es gratis. También podés retirar en la fábrica sin costo."
+    },
+    "seguimiento": {
+      "titulo": "Seguí tu pedido",
+      "texto": "Con el código que te damos al confirmar tu pedido podés ver en qué etapa está: seña, fabricación, terminado y envío."
+    },
+    "footer": {
+      "texto": "JD · Jonathan Dantas · Fábrica de muebles de melamina · Las Flores, provincia de Buenos Aires."
+    }
+  },
+  "imagenes": {
+    "logo": "logo-JD.png",
+    "og": "logo-JD.png"
+  },
+  "seo": {
+    "keywords": "muebles de melamina Las Flores, fábrica de muebles Las Flores, muebles a medida Buenos Aires, placares a medida, vestidores, cocinas de melamina, bajo mesada, JD Jonathan Dantas, muebles MDF 18mm, muebles AMBA",
+    "author": "JD — Jonathan Dantas",
+    "url_base": "https://juliancarroccio.github.io/pushcommerce/pages/jd"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "JD — Jonathan Dantas · Fábrica de Muebles de Melamina",
+  "short_name": "JD Muebles",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#D5BFA3",
+  "icons": [
+    { "src": "./img/logo-JD.png", "sizes": "any", "type": "image/png" }
+  ]
+}

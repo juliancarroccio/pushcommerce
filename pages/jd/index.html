@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;" />
+
+  <title>JD — Fábrica de Muebles de Melamina en Las Flores | Jonathan Dantas</title>
+  <meta name="description" content="Fábrica de muebles de melamina base MDF 18 mm en Las Flores, Buenos Aires. Herrajes de calidad y cierre suave. Presupuesto en el día sin cargo. Envíos a AMBA." />
+  <meta name="keywords" content="muebles de melamina Las Flores, fábrica de muebles, placares a medida, vestidores, cocinas de melamina, JD Jonathan Dantas" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://juliancarroccio.github.io/pushcommerce/pages/jd/index.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="JD — Fábrica de Muebles de Melamina · Las Flores" />
+  <meta property="og:description" content="Muebles de melamina MDF 18 mm con herrajes de primera y cierre suave. Presupuesto en el día sin cargo." />
+  <meta property="og:url" content="https://juliancarroccio.github.io/pushcommerce/pages/jd/index.html" />
+  <meta property="og:image" content="https://juliancarroccio.github.io/pushcommerce/pages/jd/img/logo-JD.png" />
+  <meta property="og:locale" content="es_AR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="JD — Fábrica de Muebles de Melamina" />
+  <meta name="twitter:description" content="Presupuesto en el día sin cargo. Envíos a AMBA y zonas cercanas." />
+
+  <link rel="icon" href="./img/logo-JD.png" type="image/png" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#FAF7F2" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FurnitureStore",
+    "name": "JD — Jonathan Dantas · Fábrica de Muebles de Melamina",
+    "description": "Fábrica de muebles de melamina base MDF 18 mm en Las Flores, Buenos Aires. Presupuesto en el día sin cargo.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Independencia 698",
+      "addressLocality": "Las Flores",
+      "addressRegion": "Buenos Aires",
+      "postalCode": "B7200",
+      "addressCountry": "AR"
+    },
+    "geo": { "@type": "GeoCoordinates", "latitude": -36.0139, "longitude": -59.0995 },
+    "telephone": "+542244475753",
+    "url": "https://juliancarroccio.github.io/pushcommerce/pages/jd/index.html",
+    "image": "https://juliancarroccio.github.io/pushcommerce/pages/jd/img/logo-JD.png",
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "12:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "14:00", "closes": "18:00" }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --cream: #FAF7F2;
+      --paper: #FFFFFF;
+      --sand: #D5BFA3;
+      --sand-deep: #B99972;
+      --sand-soft: #EFE5D6;
+      --charcoal: #4A4A4A;
+      --ink: #2B2825;
+      --line: #EAE2D6;
+      --ok: #3E7C4F;
+      --warn: #A8503C;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      font-weight: 300;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+      animation: pageIn .6s ease-out .05s both;
+    }
+    body.leaving { animation: pageOut .35s ease-in forwards; }
+    @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pageOut { from { opacity: 1; } to { opacity: 0; } }
+    .serif { font-family: 'Lora', Georgia, serif; }
+    .eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--sand-deep); font-weight: 500;
+    }
+
+    /* Scroll progress */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--sand), var(--sand-deep));
+      z-index: 90;
+    }
+
+    /* Nav */
+    #navbar {
+      position: sticky; top: 0; z-index: 80;
+      background: rgba(250,247,242,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      transition: box-shadow .3s;
+    }
+    #navbar.scrolled { box-shadow: 0 6px 24px rgba(43,40,37,0.06); }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .nav-logo img { height: 46px; width: auto; display: block; }
+    .nav-links { display: flex; gap: 26px; align-items: center; }
+    .nav-links a {
+      font-size: 0.82rem; color: var(--ink); text-decoration: none;
+      letter-spacing: 0.04em; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--sand-deep); }
+    @media (max-width: 900px) { .nav-links .hide-m { display: none; } }
+    #nav-estado {
+      font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 999px; font-weight: 500;
+    }
+    #nav-estado.abierto { background: #E4F0E6; color: var(--ok); }
+    #nav-estado.cerrado { background: #F6E4DF; color: var(--warn); }
+    .btn {
+      display: inline-block; padding: 13px 28px;
+      background: var(--ink); color: #FFF;
+      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+      text-decoration: none; border: 1px solid var(--ink);
+      border-radius: 999px; cursor: pointer;
+      transition: all .25s; font-family: inherit;
+    }
+    .btn:hover { background: transparent; color: var(--ink); }
+    .btn-sand {
+      background: var(--sand); border-color: var(--sand); color: var(--ink);
+    }
+    .btn-sand:hover { background: var(--sand-deep); border-color: var(--sand-deep); color: #FFF; }
+    .btn-ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+    .btn-ghost:hover { background: var(--ink); color: #FFF; }
+    .btn-nav { padding: 9px 20px; }
+
+    section { padding: 90px 24px; }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+
+    /* Hero */
+    #inicio {
+      min-height: calc(100vh - 76px);
+      display: flex; align-items: center;
+      padding: 60px 24px;
+      position: relative; overflow: hidden;
+    }
+    #inicio::before {
+      content: ''; position: absolute;
+      right: -20%; top: -30%;
+      width: 70%; aspect-ratio: 1;
+      background: radial-gradient(circle, var(--sand-soft) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px; align-items: center; width: 100%;
+      position: relative;
+    }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } }
+    .hero-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(2.3rem, 5vw, 3.8rem);
+      line-height: 1.12; font-weight: 500;
+      margin: 18px 0 22px; letter-spacing: -0.01em;
+    }
+    .hero-title em { font-style: italic; color: var(--sand-deep); }
+    .hero-sub { color: #6B655D; font-size: 1.02rem; line-height: 1.75; max-width: 520px; margin-bottom: 34px; }
+    .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .hero-visual {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 60px 40px;
+      box-shadow: 0 30px 60px rgba(43,40,37,0.08);
+      width: min(420px, 100%);
+      text-align: center;
+      position: relative;
+    }
+    .hero-card img { width: 78%; height: auto; margin: 0 auto; display: block; }
+    .chip {
+      position: absolute;
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 999px; padding: 10px 18px;
+      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em;
+      box-shadow: 0 12px 30px rgba(43,40,37,0.10);
+      display: flex; align-items: center; gap: 8px;
+      white-space: nowrap;
+    }
+    .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sand); }
+    .chip-1 { top: 8%; left: -6%; }
+    .chip-2 { bottom: 16%; right: -8%; }
+    .chip-3 { bottom: -4%; left: 10%; }
+    @media (max-width: 900px) {
+      .chip-1 { left: 0; } .chip-2 { right: 0; } .chip-3 { left: 4%; }
+    }
+
+    /* Divider */
+    .divider { display: flex; align-items: center; gap: 16px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+    .divider span { color: var(--sand-deep); font-size: 1.1rem; }
+
+    /* Diferencial band */
+    #diferencial { padding: 0 24px; }
+    .dif-band {
+      max-width: 1200px; margin: 0 auto;
+      background: var(--ink); color: #FFF;
+      border-radius: 28px; padding: 64px 48px;
+      display: grid; grid-template-columns: 1.4fr 0.6fr;
+      gap: 40px; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .dif-band::after {
+      content: 'JD';
+      position: absolute; right: -20px; bottom: -60px;
+      font-family: 'Lora', serif; font-size: 15rem; font-weight: 600;
+      color: rgba(213,191,163,0.08); line-height: 1;
+      pointer-events: none;
+    }
+    @media (max-width: 800px) { .dif-band { grid-template-columns: 1fr; padding: 44px 28px; } }
+    .dif-band h2 { font-family: 'Lora', serif; font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-weight: 500; margin: 12px 0 16px; }
+    .dif-band p { color: rgba(255,255,255,0.75); line-height: 1.75; font-size: 0.98rem; max-width: 560px; }
+    .dif-band .eyebrow { color: var(--sand); }
+
+    /* Nosotros */
+    .nos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+    @media (max-width: 900px) { .nos-grid { grid-template-columns: 1fr; gap: 36px; } }
+    h2.sec-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+      font-weight: 500; margin: 12px 0 20px; letter-spacing: -0.01em;
+    }
+    .sec-text { color: #6B655D; line-height: 1.8; font-size: 0.97rem; }
+
+    .calidad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 500px) { .calidad-grid { grid-template-columns: 1fr; } }
+    .cal-card {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 18px; padding: 24px;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .cal-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(43,40,37,0.08); }
+    .cal-card h4 { font-family: 'Lora', serif; font-size: 1.08rem; font-weight: 600; margin: 0 0 8px; }
+    .cal-card p { font-size: 0.85rem; color: #6B655D; line-height: 1.65; margin: 0; }
+    .cal-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--sand-soft); color: var(--sand-deep);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; margin-bottom: 14px;
+    }
+
+    /* Trabajos / galería */
+    #trabajos { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .gal-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 28px 0; }
+    .gal-tab {
+      padding: 9px 20px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--cream);
+      font-size: 0.8rem; letter-spacing: 0.05em; cursor: pointer;
+      font-family: inherit; color: var(--ink); transition: all .2s;
+    }
+    .gal-tab:hover { border-color: var(--sand-deep); }
+    .gal-tab.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
+    .gal-track-wrap { position: relative; }
+    .gal-track {
+      display: flex; gap: 20px;
+      overflow-x: auto; scroll-snap-type: x mandatory;
+      padding: 8px 4px 24px; scrollbar-width: none;
+    }
+    .gal-track::-webkit-scrollbar { display: none; }
+    .gal-item {
+      flex: 0 0 min(340px, 82vw);
+      scroll-snap-align: start;
+      background: var(--cream); border: 1px solid var(--line);
+      border-radius: 20px; overflow: hidden;
+      transition: transform .3s;
+    }
+    .gal-item:hover { transform: translateY(-4px); }
+    .gal-img {
+      aspect-ratio: 4/3; background-size: cover; background-position: center;
+      background-color: var(--sand-soft);
+      position: relative;
+    }
+    .gal-img.placeholder::after {
+      content: '📷 Foto próximamente';
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--sand-deep); font-size: 0.82rem; letter-spacing: 0.05em;
+    }
+    .gal-info { padding: 18px 20px 20px; }
+    .gal-info h4 { font-family: 'Lora', serif; font-size: 1.02rem; font-weight: 600; margin: 0 0 4px; }
+    .gal-info p { font-size: 0.82rem; color: #6B655D; margin: 0; }
+    .gal-nav {
+      position: absolute; top: 50%; transform: translateY(-70%);
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--paper); border: 1px solid var(--line);
+      cursor: pointer; font-size: 1rem; color: var(--ink);
+      box-shadow: 0 8px 24px rgba(43,40,37,0.12);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 5; transition: all .2s;
+    }
+    .gal-nav:hover { background: var(--ink); color: #FFF; }
+    .gal-prev { left: -14px; }
+    .gal-next { right: -14px; }
+    @media (max-width: 700px) { .gal-nav { display: none; } }
+
+    /* Productos destacados */
+    .prod-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 22px; margin-top: 36px;
+    }
+    .prod-card {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 20px; overflow: hidden;
+      text-decoration: none; color: var(--ink);
+      transition: transform .3s, box-shadow .3s;
+      display: block;
+    }
+    .prod-card:hover { transform: translateY(-5px); box-shadow: 0 22px 46px rgba(43,40,37,0.10); }
+    .prod-img {
+      aspect-ratio: 4/3; background-size: cover; background-position: center;
+      background-color: var(--sand-soft); position: relative;
+    }
+    .prod-img.placeholder::after {
+      content: '🪵';
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.4rem; opacity: 0.5;
+    }
+    .prod-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--ok); color: #FFF;
+      font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 999px; font-weight: 500;
+    }
+    .prod-info { padding: 18px 20px 22px; }
+    .prod-info h4 { font-family: 'Lora', serif; font-size: 1.05rem; font-weight: 600; margin: 0 0 4px; }
+    .prod-medidas { font-size: 0.76rem; color: #9A917F; margin-bottom: 8px; }
+    .prod-price { font-weight: 500; font-size: 1rem; }
+
+    /* Envíos */
+    .env-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 36px; }
+    @media (max-width: 800px) { .env-grid { grid-template-columns: 1fr; } }
+    .env-card {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 20px; padding: 30px 26px;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .env-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(43,40,37,0.08); }
+    .env-card .cal-icon { font-size: 1.3rem; width: 48px; height: 48px; }
+    .env-card h4 { font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600; margin: 0 0 10px; }
+    .env-card p { font-size: 0.86rem; color: #6B655D; line-height: 1.7; margin: 0; }
+    .env-tag {
+      display: inline-block; margin-top: 14px;
+      font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 999px; font-weight: 500;
+      background: var(--sand-soft); color: var(--sand-deep);
+    }
+    .env-tag.free { background: #E4F0E6; color: var(--ok); }
+    .sena-note {
+      margin-top: 26px; padding: 22px 26px;
+      background: var(--sand-soft); border-radius: 18px;
+      border-left: 4px solid var(--sand-deep);
+      font-size: 0.9rem; line-height: 1.7; color: #5E5648;
+    }
+
+    /* Seguimiento */
+    #seguimiento-sec { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .track-box {
+      max-width: 560px; margin: 30px auto 0;
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .track-box input {
+      flex: 1; min-width: 200px;
+      padding: 15px 20px; border: 1px solid var(--line);
+      border-radius: 999px; background: var(--cream);
+      font-size: 1rem; font-family: inherit;
+      letter-spacing: 0.14em; text-transform: uppercase; text-align: center;
+      color: var(--ink);
+    }
+    .track-box input:focus { outline: none; border-color: var(--sand-deep); }
+
+    /* Horarios */
+    .horarios-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 10px; margin-top: 36px;
+    }
+    @media (max-width: 800px) { .horarios-grid { grid-template-columns: repeat(2, 1fr); } }
+    .dia-card {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 16px; padding: 18px 12px; text-align: center;
+    }
+    .dia-card.hoy { border-color: var(--sand-deep); background: var(--sand-soft); }
+    .dia-card .dia-nombre {
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--sand-deep); font-weight: 500; margin-bottom: 8px;
+    }
+    .dia-card .dia-horas { font-size: 0.78rem; line-height: 1.6; }
+    .dia-card .cerrado { color: #B0A896; }
+
+    /* Contacto */
+    .cont-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: stretch; margin-top: 36px; }
+    @media (max-width: 900px) { .cont-grid { grid-template-columns: 1fr; } }
+    .cont-info {
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .cont-row { display: flex; gap: 16px; align-items: flex-start; }
+    .cont-row .cal-icon { flex-shrink: 0; margin: 0; }
+    .cont-row h5 { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sand-deep); margin: 0 0 4px; font-weight: 500; }
+    .cont-row p { margin: 0; font-size: 0.92rem; line-height: 1.6; }
+    .cont-map {
+      border-radius: 20px; overflow: hidden; border: 1px solid var(--line);
+      min-height: 340px;
+    }
+    .cont-map iframe { width: 100%; height: 100%; min-height: 340px; border: 0; display: block; }
+
+    /* Footer */
+    footer {
+      background: var(--ink); color: rgba(255,255,255,0.7);
+      padding: 56px 24px 40px; text-align: center;
+    }
+    footer img { height: 60px; width: auto; margin: 0 auto 18px; display: block; filter: brightness(0) invert(1); opacity: 0.9; }
+    footer .f-links { display: flex; gap: 24px; justify-content: center; margin: 18px 0; flex-wrap: wrap; }
+    footer .f-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.82rem; }
+    footer .f-links a:hover { color: var(--sand); }
+    footer .powered { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin-top: 22px; }
+
+    /* Floats */
+    #wa-float {
+      position: fixed; bottom: 24px; right: 24px; z-index: 70;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25D366; color: #FFF;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 12px 30px rgba(37,211,102,0.4);
+      opacity: 0; pointer-events: none; transform: scale(0.6);
+      transition: all .35s cubic-bezier(.34,1.56,.64,1);
+      text-decoration: none;
+    }
+    #wa-float.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
+    #wa-float svg { width: 28px; height: 28px; }
+    #back-to-top {
+      position: fixed; bottom: 92px; right: 24px; z-index: 70;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--paper); color: var(--ink);
+      border: 1px solid var(--line); cursor: pointer;
+      box-shadow: 0 10px 26px rgba(43,40,37,0.12);
+      opacity: 0; pointer-events: none;
+      transition: all .3s; font-size: 1rem;
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; }
+    #back-to-top:hover { background: var(--ink); color: #FFF; }
+
+    .curtain {
+      position: fixed; inset: 0; background: var(--sand-soft);
+      z-index: 200; transform: translateY(-100%); pointer-events: none;
+    }
+    .curtain.leave { animation: curtainOut .5s cubic-bezier(.7,0,.3,1) forwards; }
+    @keyframes curtainOut { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+<div class="curtain" id="curtain"></div>
+
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#inicio" class="nav-logo" aria-label="JD — Inicio">
+      <img src="./img/logo-JD.png" alt="JD — Jonathan Dantas, Fábrica de Muebles de Melamina" />
+    </a>
+    <div class="nav-links">
+      <a href="#nosotros" class="hide-m">Nosotros</a>
+      <a href="#trabajos" class="hide-m">Trabajos</a>
+      <a href="#envios" class="hide-m">Envíos</a>
+      <a href="#seguimiento-sec" class="hide-m">Mi pedido</a>
+      <a href="#contacto" class="hide-m">Contacto</a>
+      <span id="nav-estado" class="cerrado">···</span>
+      <a href="./tienda.html" class="btn btn-sand btn-nav">Tienda</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header id="inicio">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">Fábrica de muebles de melamina · Las Flores</div>
+      <h1 class="hero-title" id="hero-titulo">Muebles de melamina <em>que se destacan</em></h1>
+      <p class="hero-sub" id="hero-sub">Fabricamos en Las Flores con MDF de 18 mm, herrajes de primera y cierre suave. Calidad garantizada en materiales, terminaciones y accesorios.</p>
+      <div class="hero-ctas">
+        <a href="./tienda.html" class="btn" id="hero-cta">Ver la tienda</a>
+        <a href="#diferencial" class="btn btn-ghost">Presupuesto en el día</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <img src="./img/logo-JD.png" alt="JD — Jonathan Dantas" />
+      </div>
+      <div class="chip chip-1"><span class="dot"></span> MDF 18 mm</div>
+      <div class="chip chip-2"><span class="dot"></span> Cierre suave</div>
+      <div class="chip chip-3"><span class="dot"></span> Presupuesto en el día</div>
+    </div>
+  </div>
+</header>
+
+<div class="divider"><span>◆</span></div>
+
+<!-- DIFERENCIAL -->
+<section id="diferencial">
+  <div class="dif-band">
+    <div>
+      <div class="eyebrow">Nuestro diferencial</div>
+      <h2 id="dif-titulo">Presupuesto en el día, sin cargo</h2>
+      <p id="dif-texto">Pasanos las medidas de tu espacio y te damos el presupuesto en el día, junto con una fecha de entrega tentativa. Sin vueltas y sin costo.</p>
+    </div>
+    <div style="text-align:center;">
+      <a id="dif-cta" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sand" style="padding:16px 34px;">Pedir presupuesto</a>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:12px;">Respondemos por WhatsApp</div>
+    </div>
+  </div>
+</section>
+
+<!-- NOSOTROS + CALIDAD -->
+<section id="nosotros">
+  <div class="wrap nos-grid">
+    <div class="anim-up">
+      <div class="eyebrow">La fábrica</div>
+      <h2 class="sec-title" id="nos-titulo">Fábrica propia en Las Flores</h2>
+      <p class="sec-text" id="nos-texto">Somos una fábrica de muebles de melamina ubicada en Av. Independencia 698, Las Flores. Trabajamos con melamina base MDF de 18 mm de alta calidad y cuidamos cada detalle: terminaciones prolijas, tapacantos ABS, herrajes y pistones de primera línea con cierre suave. Ese nivel de terminación es lo que hace que nuestros muebles se destaquen de la competencia.</p>
+    </div>
+    <div>
+      <div class="calidad-grid" id="calidad-grid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRABAJOS -->
+<section id="trabajos">
+  <div class="wrap">
+    <div class="eyebrow anim-up">Lo que hicimos</div>
+    <h2 class="sec-title anim-up">Trabajos realizados</h2>
+    <p class="sec-text anim-up" style="max-width:560px;">Cocinas, placares, vestidores, empotrados y más. Elegí un tipo de estructura para ver los trabajos.</p>
+    <div class="gal-tabs" id="gal-tabs"></div>
+    <div class="gal-track-wrap">
+      <button class="gal-nav gal-prev" onclick="galScroll(-1)" aria-label="Anterior">←</button>
+      <div class="gal-track" id="gal-track"></div>
+      <button class="gal-nav gal-next" onclick="galScroll(1)" aria-label="Siguiente">→</button>
+    </div>
+  </div>
+</section>
+
+<!-- DESTACADOS -->
+<section id="productos">
+  <div class="wrap">
+    <div class="eyebrow anim-up">Catálogo</div>
+    <h2 class="sec-title anim-up">Muebles destacados</h2>
+    <div class="prod-grid" id="prod-grid"></div>
+    <div style="text-align:center;margin-top:44px;">
+      <a href="./tienda.html" class="btn">Ver todo el catálogo</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><span>◆</span></div>
+
+<!-- ENVÍOS -->
+<section id="envios">
+  <div class="wrap">
+    <div class="eyebrow anim-up">Entrega</div>
+    <h2 class="sec-title anim-up" id="env-titulo">Llegamos hasta tu casa</h2>
+    <p class="sec-text anim-up" style="max-width:600px;" id="env-texto">Hacemos envíos a AMBA y zonas cercanas. En Las Flores y alrededores el envío es gratis. También podés retirar en la fábrica sin costo.</p>
+    <div class="env-grid">
+      <div class="env-card anim-up">
+        <div class="cal-icon">🏭</div>
+        <h4>Retiro en fábrica</h4>
+        <p id="env-retiro-texto">Retirá tu mueble en Av. Independencia 698, Las Flores, sin costo. Te avisamos apenas esté terminado.</p>
+        <span class="env-tag free">Sin costo</span>
+      </div>
+      <div class="env-card anim-up">
+        <div class="cal-icon">🚚</div>
+        <h4>Envío local</h4>
+        <p id="env-local-texto">Envío gratis en Las Flores y alrededores, en un radio de 10 km de la fábrica.</p>
+        <span class="env-tag free">Gratis hasta <span id="env-radio">10</span> km</span>
+      </div>
+      <div class="env-card anim-up">
+        <div class="cal-icon">📦</div>
+        <h4>Encomienda</h4>
+        <p id="env-enc-texto">Enviamos a AMBA y zonas cercanas por encomienda. El costo es aproximado y se confirma al coordinar la entrega.</p>
+        <span class="env-tag">AMBA y zonas cercanas</span>
+      </div>
+    </div>
+    <div class="sena-note anim-up">
+      <strong>¿Cómo se paga?</strong> <span id="sena-texto">Al confirmar tu pedido te contactamos por WhatsApp o teléfono para coordinar la seña del 30%. Con la seña acreditada, tu mueble entra en fabricación.</span>
+    </div>
+  </div>
+</section>
+
+<!-- SEGUIMIENTO -->
+<section id="seguimiento-sec">
+  <div class="wrap" style="text-align:center;">
+    <div class="eyebrow anim-up">Mi pedido</div>
+    <h2 class="sec-title anim-up" id="seg-titulo">Seguí tu pedido</h2>
+    <p class="sec-text anim-up" style="max-width:520px;margin:0 auto;" id="seg-texto">Con el código que te damos al confirmar tu pedido podés ver en qué etapa está: seña, fabricación, terminado y envío.</p>
+    <form class="track-box anim-up" onsubmit="event.preventDefault();irSeguimiento();">
+      <input type="text" id="track-code" placeholder="CÓDIGO · EJ: A3F7B" maxlength="6" aria-label="Código de pedido" />
+      <button type="submit" class="btn btn-sand">Consultar estado</button>
+    </form>
+  </div>
+</section>
+
+<!-- HORARIOS -->
+<section id="horarios">
+  <div class="wrap">
+    <div class="eyebrow anim-up">Horarios</div>
+    <h2 class="sec-title anim-up">Cuándo encontrarnos</h2>
+    <p class="sec-text anim-up" id="estado-local">···</p>
+    <div class="horarios-grid" id="horarios-grid"></div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" style="padding-top:40px;">
+  <div class="wrap">
+    <div class="eyebrow anim-up">Contacto</div>
+    <h2 class="sec-title anim-up">Vení a conocernos</h2>
+    <div class="cont-grid">
+      <div class="cont-info">
+        <div class="cont-row anim-up">
+          <div class="cal-icon">📍</div>
+          <div>
+            <h5>Dirección</h5>
+            <p id="cont-dir">Av. Independencia 698, entre Pueyrredón y Harosteguy, Las Flores, Buenos Aires</p>
+          </div>
+        </div>
+        <div class="cont-row anim-up">
+          <div class="cal-icon">📞</div>
+          <div>
+            <h5>Teléfono / WhatsApp</h5>
+            <p id="cont-tel">02244 47-5753</p>
+          </div>
+        </div>
+        <div class="cont-row anim-up">
+          <div class="cal-icon">🕗</div>
+          <div>
+            <h5>Horario</h5>
+            <p id="cont-horario">Lunes a viernes de 8:00 a 12:00 y de 14:00 a 18:00</p>
+          </div>
+        </div>
+        <div style="margin-top:10px;" class="anim-up">
+          <a id="cont-wa" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sand">Escribinos por WhatsApp</a>
+        </div>
+      </div>
+      <div class="cont-map anim-up">
+        <iframe id="maps-iframe" title="Ubicación de JD en el mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps?q=Av.%20Independencia%20698%2C%20Las%20Flores%2C%20Buenos%20Aires&ll=-36.0139,-59.0995&z=16&output=embed&hl=es"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <img src="./img/logo-JD.png" alt="JD" />
+  <div id="footer-texto" style="font-size:0.85rem;max-width:480px;margin:0 auto;line-height:1.7;">JD · Jonathan Dantas · Fábrica de muebles de melamina · Las Flores, provincia de Buenos Aires.</div>
+  <div class="f-links">
+    <a href="./tienda.html">Tienda</a>
+    <a href="./seguimiento.html">Estado de mi pedido</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+  <div class="powered">Hecho por PushCommerce · Julian Carroccio</div>
+</footer>
+
+<a id="wa-float" href="#" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.074-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+<button id="back-to-top" aria-label="Volver arriba" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+'use strict';
+
+/* ============ FALLBACK (copia de productos.json para file://) ============ */
+const _FALLBACK = {
+  "negocio": {
+    "nombre": "JD",
+    "nombre_completo": "JD — Jonathan Dantas · Fábrica de Muebles de Melamina",
+    "tagline": "Muebles de melamina de alta calidad, fabricados en Las Flores",
+    "whatsapp": "5492244475753",
+    "telefono": "02244 47-5753",
+    "direccion": "Av. Independencia 698, entre Pueyrredón y Harosteguy, Las Flores, B7200, Buenos Aires",
+    "direccion_corta": "Av. Independencia 698, Las Flores",
+    "maps_embed": "https://www.google.com/maps?q=Av.%20Independencia%20698%2C%20Las%20Flores%2C%20Buenos%20Aires&ll=-36.0139,-59.0995&z=16&output=embed&hl=es",
+    "analytics_id": ""
+  },
+  "config": {
+    "sena": { "porcentaje": 30, "leyenda": "Al confirmar tu pedido te contactamos por WhatsApp o teléfono para coordinar la seña. Con la seña acreditada, tu mueble entra en fabricación." },
+    "envio": {
+      "radio_gratis_km": 10,
+      "leyenda_local": "Envío gratis en Las Flores y alrededores (hasta 10 km).",
+      "encomienda_valor": 45000,
+      "leyenda_encomienda": "Enviamos a AMBA y zonas cercanas por encomienda. El costo es aproximado y se confirma al coordinar la entrega.",
+      "leyenda_retiro": "Podés retirar en la fábrica sin costo. Te avisamos apenas tu mueble esté terminado."
+    }
+  },
+  "horarios": {
+    "lunes":     [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "martes":    [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "miércoles": [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "jueves":    [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "viernes":   [{"abre": "08:00", "cierra": "12:00"}, {"abre": "14:00", "cierra": "18:00"}],
+    "sábado":    [],
+    "domingo":   []
+  },
+  "categorias": [
+    { "id": "cocinas", "nombre": "Cocinas", "productos": [
+      { "id": 1, "nombre": "Bajo mesada 1,20 m", "medidas": "1,20 × 0,90 × 0,55 m", "precio": 340000, "stock_inmediato": false, "disponible": true, "destacado": true, "imagenes": [] }
+    ]},
+    { "id": "placares", "nombre": "Placares y Vestidores", "productos": [
+      { "id": 4, "nombre": "Placard 2 puertas corredizas", "medidas": "1,80 × 2,40 × 0,60 m", "precio": 620000, "stock_inmediato": false, "disponible": true, "destacado": true, "imagenes": [] },
+      { "id": 5, "nombre": "Vestidor en L", "medidas": "2,00 × 2,40 × 0,50 m", "precio": 890000, "stock_inmediato": false, "disponible": true, "destacado": true, "imagenes": [] }
+    ]},
+    { "id": "living", "nombre": "Living y Comedor", "productos": [
+      { "id": 7, "nombre": "Rack TV 1,80 m", "medidas": "1,80 × 0,50 × 0,40 m", "precio": 280000, "stock_inmediato": true, "disponible": true, "destacado": true, "imagenes": [] }
+    ]},
+    { "id": "dormitorio", "nombre": "Dormitorio", "productos": [
+      { "id": 11, "nombre": "Cómoda 4 cajones", "medidas": "0,90 × 1,00 × 0,45 m", "precio": 260000, "stock_inmediato": false, "disponible": true, "destacado": true, "imagenes": [] }
+    ]}
+  ],
+  "galeria": [
+    { "tipo": "Cocinas", "items": [ { "imagen": "", "titulo": "Cocina completa en blanco texturado", "descripcion": "Bajo mesada + alacena con cierre suave" } ] },
+    { "tipo": "Placares", "items": [ { "imagen": "", "titulo": "Placard corredizo 2,40 m", "descripcion": "Frentes combinados blanco y roble" } ] }
+  ],
+  "textos": {
+    "hero": { "titulo": "Muebles de melamina que se destacan", "subtitulo": "Fabricamos en Las Flores con MDF de 18 mm, herrajes de primera y cierre suave. Calidad garantizada en materiales, terminaciones y accesorios.", "cta": "Ver la tienda" },
+    "diferencial": { "titulo": "Presupuesto en el día, sin cargo", "texto": "Pasanos las medidas de tu espacio y te damos el presupuesto en el día, junto con una fecha de entrega tentativa. Sin vueltas y sin costo.", "cta": "Pedir presupuesto" },
+    "nosotros": { "titulo": "Fábrica propia en Las Flores", "texto": "Somos una fábrica de muebles de melamina ubicada en Av. Independencia 698, Las Flores. Trabajamos con melamina base MDF de 18 mm de alta calidad y cuidamos cada detalle: terminaciones prolijas, tapacantos ABS, herrajes y pistones de primera línea con cierre suave. Ese nivel de terminación es lo que hace que nuestros muebles se destaquen de la competencia." },
+    "calidad": { "titulo": "Calidad que se nota al abrir un cajón", "items": [
+      { "titulo": "MDF 18 mm", "texto": "Melamina base MDF de 18 mm en toda la estructura, no solo en los frentes." },
+      { "titulo": "Cierre suave", "texto": "Bisagras y correderas con cierre suave en puertas y cajones." },
+      { "titulo": "Pistones de calidad", "texto": "Pistones a gas de primera línea en puertas rebatibles." },
+      { "titulo": "Terminaciones", "texto": "Tapacanto ABS y terminaciones prolijas en cada borde." }
+    ]},
+    "envios": { "titulo": "Llegamos hasta tu casa", "texto": "Hacemos envíos a AMBA y zonas cercanas. En Las Flores y alrededores (hasta 10 km) el envío es gratis. También podés retirar en la fábrica sin costo." },
+    "seguimiento": { "titulo": "Seguí tu pedido", "texto": "Con el código que te damos al confirmar tu pedido podés ver en qué etapa está: seña, fabricación, terminado y envío." },
+    "footer": { "texto": "JD · Jonathan Dantas · Fábrica de muebles de melamina · Las Flores, provincia de Buenos Aires." }
+  },
+  "imagenes": { "logo": "logo-JD.png" }
+};
+
+let DATA = null;
+let galTipoActual = null;
+
+/* ============ Init ============ */
+fetch('./productos.json', { cache: 'no-cache' })
+  .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+  .then(d => initPage(d))
+  .catch(() => initPage(_FALLBACK));
+
+function initPage(data) {
+  DATA = data;
+  buildTextos(data);
+  buildHorarios(data);
+  buildCalidad(data);
+  buildGaleria(data);
+  buildDestacados(data);
+  buildContacto(data);
+  initAnimations();
+}
+
+/* ============ Textos ============ */
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el && val) el.textContent = val;
+}
+
+function buildTextos(data) {
+  const t = data.textos || {};
+  if (t.hero) {
+    /* Mantener el <em> del título si el texto coincide con el default */
+    if (t.hero.titulo && t.hero.titulo !== 'Muebles de melamina que se destacan') {
+      setText('hero-titulo', t.hero.titulo);
+    }
+    setText('hero-sub', t.hero.subtitulo);
+    setText('hero-cta', t.hero.cta);
+  }
+  if (t.diferencial) {
+    setText('dif-titulo', t.diferencial.titulo);
+    setText('dif-texto', t.diferencial.texto);
+    setText('dif-cta', t.diferencial.cta);
+  }
+  if (t.nosotros) {
+    setText('nos-titulo', t.nosotros.titulo);
+    setText('nos-texto', t.nosotros.texto);
+  }
+  if (t.envios) {
+    setText('env-titulo', t.envios.titulo);
+    setText('env-texto', t.envios.texto);
+  }
+  if (t.seguimiento) {
+    setText('seg-titulo', t.seguimiento.titulo);
+    setText('seg-texto', t.seguimiento.texto);
+  }
+  if (t.footer) setText('footer-texto', t.footer.texto);
+
+  const cfg = data.config || {};
+  if (cfg.envio) {
+    setText('env-local-texto', cfg.envio.leyenda_local);
+    setText('env-enc-texto', cfg.envio.leyenda_encomienda);
+    setText('env-retiro-texto', cfg.envio.leyenda_retiro);
+    setText('env-radio', String(cfg.envio.radio_gratis_km || 10));
+  }
+  if (cfg.sena) {
+    const senaEl = document.getElementById('sena-texto');
+    if (senaEl) senaEl.textContent = (cfg.sena.leyenda || '').replace('la seña', `la seña del ${cfg.sena.porcentaje || 30}%`);
+  }
+}
+
+/* ============ Horarios + badge ============ */
+function buildHorarios(data) {
+  const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+  const ahora = new Date();
+  const hoy = dias[ahora.getDay() === 0 ? 6 : ahora.getDay() - 1];
+  const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+
+  const turnosHoy = (data.horarios && data.horarios[hoy]) || [];
+  const abierto = turnosHoy.some(t => {
+    const [ah, am] = t.abre.split(':').map(Number);
+    const [ch, cm] = t.cierra.split(':').map(Number);
+    return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+  });
+
+  const badge = document.getElementById('nav-estado');
+  badge.textContent = abierto ? 'Abierto' : 'Cerrado';
+  badge.className = abierto ? 'abierto' : 'cerrado';
+  badge.id = 'nav-estado';
+
+  const estadoLocal = document.getElementById('estado-local');
+  if (abierto) {
+    const turno = turnosHoy.find(t => {
+      const [ah, am] = t.abre.split(':').map(Number);
+      const [ch, cm] = t.cierra.split(':').map(Number);
+      return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
+    });
+    estadoLocal.textContent = `La fábrica está abierta ahora — cerramos a las ${turno.cierra} hs.`;
+  } else {
+    estadoLocal.textContent = 'La fábrica está cerrada en este momento. Escribinos por WhatsApp y te respondemos igual.';
+  }
+
+  const grid = document.getElementById('horarios-grid');
+  grid.innerHTML = '';
+  dias.forEach(dia => {
+    const card = document.createElement('div');
+    card.className = 'dia-card anim-up' + (dia === hoy ? ' hoy' : '');
+    const nombre = document.createElement('div');
+    nombre.className = 'dia-nombre';
+    nombre.textContent = dia;
+    card.appendChild(nombre);
+    const horas = document.createElement('div');
+    horas.className = 'dia-horas';
+    const turnos = (data.horarios && data.horarios[dia]) || [];
+    if (!turnos.length) {
+      horas.innerHTML = '<span class="cerrado">Cerrado</span>';
+    } else {
+      horas.textContent = '';
+      turnos.forEach(t => {
+        const line = document.createElement('div');
+        line.textContent = `${t.abre} – ${t.cierra}`;
+        horas.appendChild(line);
+      });
+    }
+    card.appendChild(horas);
+    grid.appendChild(card);
+  });
+}
+
+/* ============ Calidad ============ */
+const CAL_ICONS = ['🪵', '🚪', '⚙️', '✨'];
+function buildCalidad(data) {
+  const grid = document.getElementById('calidad-grid');
+  grid.innerHTML = '';
+  const items = (data.textos && data.textos.calidad && data.textos.calidad.items) || [];
+  items.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'cal-card anim-up';
+    const icon = document.createElement('div');
+    icon.className = 'cal-icon';
+    icon.textContent = CAL_ICONS[i % CAL_ICONS.length];
+    card.appendChild(icon);
+    const h = document.createElement('h4');
+    h.textContent = item.titulo;
+    card.appendChild(h);
+    const p = document.createElement('p');
+    p.textContent = item.texto;
+    card.appendChild(p);
+    grid.appendChild(card);
+  });
+}
+
+/* ============ Galería de trabajos ============ */
+function buildGaleria(data) {
+  const galeria = data.galeria || [];
+  const tabs = document.getElementById('gal-tabs');
+  tabs.innerHTML = '';
+  if (!galeria.length) {
+    document.getElementById('trabajos').style.display = 'none';
+    return;
+  }
+  const tipos = [{ tipo: 'Todos' }, ...galeria];
+  galTipoActual = 'Todos';
+  tipos.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'gal-tab' + (g.tipo === galTipoActual ? ' active' : '');
+    btn.textContent = g.tipo;
+    btn.onclick = () => {
+      galTipoActual = g.tipo;
+      document.querySelectorAll('.gal-tab').forEach(b => b.classList.toggle('active', b.textContent === g.tipo));
+      renderGalItems();
+    };
+    tabs.appendChild(btn);
+  });
+  renderGalItems();
+}
+
+function renderGalItems() {
+  const track = document.getElementById('gal-track');
+  track.innerHTML = '';
+  const galeria = DATA.galeria || [];
+  let items = [];
+  galeria.forEach(g => {
+    if (galTipoActual === 'Todos' || g.tipo === galTipoActual) {
+      (g.items || []).forEach(it => items.push({ ...it, tipo: g.tipo }));
+    }
+  });
+  if (!items.length) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'padding:40px;color:#9A917F;font-size:0.9rem;';
+    empty.textContent = 'Todavía no cargamos trabajos de este tipo. ¡Consultanos!';
+    track.appendChild(empty);
+    return;
+  }
+  items.forEach((it, i) => {
+    const card = document.createElement('div');
+    card.className = 'gal-item';
+    const img = document.createElement('div');
+    img.className = 'gal-img placeholder';
+    if (it.imagen) {
+      const test = new Image();
+      test.onload = () => {
+        img.classList.remove('placeholder');
+        img.style.backgroundImage = `url('./img/${it.imagen}')`;
+      };
+      test.src = `./img/${it.imagen}`;
+    }
+    card.appendChild(img);
+    const info = document.createElement('div');
+    info.className = 'gal-info';
+    const h = document.createElement('h4');
+    h.textContent = it.titulo || it.tipo;
+    info.appendChild(h);
+    const p = document.createElement('p');
+    p.textContent = it.descripcion || it.tipo;
+    info.appendChild(p);
+    card.appendChild(info);
+    track.appendChild(card);
+    if (typeof gsap !== 'undefined') {
+      gsap.from(card, { y: 30, opacity: 0, duration: .5, delay: Math.min(i * 0.07, 0.5), ease: 'power2.out' });
+    }
+  });
+}
+
+function galScroll(dir) {
+  const track = document.getElementById('gal-track');
+  track.scrollBy({ left: dir * 380, behavior: 'smooth' });
+}
+
+/* ============ Destacados ============ */
+function buildDestacados(data) {
+  const grid = document.getElementById('prod-grid');
+  grid.innerHTML = '';
+  const destacados = [];
+  (data.categorias || []).forEach(cat => {
+    (cat.productos || []).forEach(p => {
+      if (p.destacado && p.disponible !== false) destacados.push({ ...p, catNombre: cat.nombre, catId: cat.id });
+    });
+  });
+  destacados.slice(0, 6).forEach(p => {
+    const card = document.createElement('a');
+    card.className = 'prod-card anim-up';
+    card.href = `./tienda.html?cat=${encodeURIComponent(p.catId)}`;
+    const img = document.createElement('div');
+    img.className = 'prod-img placeholder';
+    if (p.imagenes && p.imagenes.length) {
+      const test = new Image();
+      test.onload = () => {
+        img.classList.remove('placeholder');
+        img.style.backgroundImage = `url('./img/${p.imagenes[0]}')`;
+      };
+      test.src = `./img/${p.imagenes[0]}`;
+    }
+    if (p.stock_inmediato) {
+      const badge = document.createElement('span');
+      badge.className = 'prod-badge';
+      badge.textContent = 'Stock inmediato';
+      img.appendChild(badge);
+    }
+    card.appendChild(img);
+    const info = document.createElement('div');
+    info.className = 'prod-info';
+    const h = document.createElement('h4');
+    h.textContent = p.nombre;
+    info.appendChild(h);
+    if (p.medidas) {
+      const m = document.createElement('div');
+      m.className = 'prod-medidas';
+      m.textContent = p.medidas;
+      info.appendChild(m);
+    }
+    const price = document.createElement('div');
+    price.className = 'prod-price';
+    price.textContent = '$' + (p.precio || 0).toLocaleString('es-AR');
+    info.appendChild(price);
+    card.appendChild(info);
+    grid.appendChild(card);
+  });
+}
+
+/* ============ Contacto / WhatsApp ============ */
+function buildContacto(data) {
+  const neg = data.negocio || {};
+  setText('cont-dir', neg.direccion);
+  setText('cont-tel', neg.telefono);
+
+  const wa = neg.whatsapp || '5492244475753';
+  const msgGral = encodeURIComponent('Hola JD! Quería hacer una consulta.');
+  const msgPresu = encodeURIComponent('Hola JD! Quiero pedir un presupuesto. Les paso las medidas de mi espacio:');
+  document.getElementById('cont-wa').href = `https://wa.me/${wa}?text=${msgGral}`;
+  document.getElementById('wa-float').href = `https://wa.me/${wa}?text=${msgGral}`;
+  document.getElementById('dif-cta').href = `https://wa.me/${wa}?text=${msgPresu}`;
+
+  if (neg.maps_embed) document.getElementById('maps-iframe').src = neg.maps_embed;
+}
+
+/* ============ Seguimiento ============ */
+function irSeguimiento() {
+  const code = document.getElementById('track-code').value.trim().toUpperCase();
+  if (code) window.location.href = `./seguimiento.html?code=${encodeURIComponent(code)}`;
+  else window.location.href = './seguimiento.html';
+}
+
+/* ============ Scroll UI ============ */
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('scroll-progress').style.width = pct + '%';
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
+  const pastHero = window.scrollY > window.innerHeight * 0.6;
+  document.getElementById('wa-float').classList.toggle('visible', pastHero);
+  document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 500);
+});
+
+/* ============ GSAP animations ============ */
+function initAnimations() {
+  if (typeof gsap === 'undefined') return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Hero entrance */
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  tl.from('.hero-copy .eyebrow', { y: 24, opacity: 0, duration: .7 })
+    .from('.hero-title', { y: 34, opacity: 0, duration: .8 }, '-=0.45')
+    .from('.hero-sub', { y: 24, opacity: 0, duration: .7 }, '-=0.5')
+    .from('.hero-ctas', { y: 20, opacity: 0, duration: .6 }, '-=0.45')
+    .from('.hero-card', { scale: 0.92, opacity: 0, duration: .9, ease: 'power2.out' }, '-=0.8')
+    .from('.chip', { scale: 0.5, opacity: 0, stagger: 0.12, duration: .5, ease: 'back.out(2)' }, '-=0.4');
+
+  /* Chips float loop */
+  gsap.to('.chip-1', { y: -10, duration: 2.6, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  gsap.to('.chip-2', { y: 10, duration: 3.1, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  gsap.to('.chip-3', { y: -8, duration: 2.9, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+
+  /* Sections */
+  gsap.utils.toArray('.anim-up').forEach(el => {
+    gsap.from(el, {
+      y: 36, opacity: 0, duration: .75, ease: 'power2.out',
+      scrollTrigger: { trigger: el, start: 'top 88%' }
+    });
+  });
+
+  /* Dif band */
+  gsap.from('.dif-band', {
+    y: 50, opacity: 0, duration: .9, ease: 'power2.out',
+    scrollTrigger: { trigger: '.dif-band', start: 'top 85%' }
+  });
+}
+
+/* ============ Page transitions ============ */
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a[href]');
+  if (!link) return;
+  const href = link.getAttribute('href');
+  if (!href || href.startsWith('#')) return;
+  if (link.target === '_blank') return;
+  const url = new URL(href, window.location.href);
+  if (url.origin !== window.location.origin) return;
+  e.preventDefault();
+  document.body.classList.add('leaving');
+  document.getElementById('curtain').classList.add('leave');
+  setTimeout(() => { window.location.href = href; }, 450);
+});
+window.addEventListener('pageshow', () => {
+  document.body.classList.remove('leaving');
+  document.getElementById('curtain').classList.remove('leave');
+});
+
+/* ============ Service worker ============ */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+
+</body>
+</html>

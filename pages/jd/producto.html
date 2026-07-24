@@ -6,15 +6,13 @@
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://firestore.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;" />
 
-  <title>Tienda JD — Muebles de melamina online | Las Flores</title>
-  <meta name="description" content="Comprá muebles de melamina de fábrica: cocinas, placares, vestidores, racks y más. MDF 18 mm, cierre suave. Envíos a AMBA y retiro en Las Flores." />
+  <title>Producto — JD Muebles de Melamina</title>
+  <meta name="description" content="Muebles de melamina de fábrica: MDF 18 mm, herrajes de primera y cierre suave. Presupuesto en el día. Envíos a AMBA y retiro en Las Flores." />
   <meta name="robots" content="index, follow, max-image-preview:large" />
-  <link rel="canonical" href="https://juliancarroccio.github.io/pushcommerce/pages/jd/tienda.html" />
 
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Tienda JD — Muebles de melamina de fábrica" />
-  <meta property="og:description" content="Cocinas, placares, vestidores y más. Presupuesto en el día. Envíos a AMBA." />
-  <meta property="og:url" content="https://juliancarroccio.github.io/pushcommerce/pages/jd/tienda.html" />
+  <meta property="og:type" content="product" />
+  <meta property="og:title" content="JD — Muebles de melamina de fábrica" />
+  <meta property="og:description" content="MDF 18 mm, cierre suave, presupuesto en el día sin cargo." />
   <meta property="og:image" content="https://juliancarroccio.github.io/pushcommerce/pages/jd/img/logo-JD.png" />
   <meta property="og:locale" content="es_AR" />
 
@@ -28,17 +26,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://juliancarroccio.github.io/pushcommerce/pages/jd/index.html" },
-      { "@type": "ListItem", "position": 2, "name": "Tienda", "item": "https://juliancarroccio.github.io/pushcommerce/pages/jd/tienda.html" }
-    ]
-  }
-  </script>
 
   <style>
     :root {
@@ -73,7 +60,7 @@
     .curtain.leave { animation: curtainOut .5s cubic-bezier(.7,0,.3,1) forwards; }
     @keyframes curtainOut { from { transform: translateY(-100%); } to { transform: translateY(0); } }
 
-    /* Header */
+    /* Header (igual a tienda) */
     header {
       position: sticky; top: 0; z-index: 40;
       background: rgba(250,247,242,0.95);
@@ -81,7 +68,7 @@
       border-bottom: 1px solid var(--line);
     }
     .header-top {
-      max-width: 1400px; margin: 0 auto;
+      max-width: 1200px; margin: 0 auto;
       padding: 14px 24px;
       display: flex; justify-content: space-between; align-items: center;
       gap: 16px;
@@ -108,129 +95,184 @@
       font-size: 0.7rem; padding: 1px 8px; border-radius: 999px; font-weight: 500;
     }
 
-    .cat-strip {
-      display: flex; gap: 8px; padding: 12px 24px;
-      overflow-x: auto; scrollbar-width: none;
-      border-bottom: 1px solid var(--line);
-      max-width: 1400px; margin: 0 auto;
-    }
-    .cat-strip::-webkit-scrollbar { display: none; }
-    .cat-pill {
-      flex-shrink: 0; padding: 8px 18px; border-radius: 999px;
-      font-size: 0.76rem; letter-spacing: 0.06em;
-      border: 1px solid var(--line); background: var(--paper); color: var(--ink);
-      cursor: pointer; transition: all .2s; font-family: inherit;
-    }
-    .cat-pill:hover { border-color: var(--sand-deep); }
-    .cat-pill.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
+    main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 
-    .search-strip {
-      padding: 12px 24px;
-      display: flex; gap: 8px;
-      border-bottom: 1px solid var(--line);
-      max-width: 1400px; margin: 0 auto;
+    .breadcrumb {
+      font-size: 0.74rem; color: #9A917F; margin-bottom: 24px;
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
     }
-    .search-strip input {
-      flex: 1; padding: 11px 18px;
-      border: 1px solid var(--line); border-radius: 999px;
-      font-size: 0.9rem; font-family: inherit;
-      background: var(--paper); color: var(--ink);
-    }
-    .search-strip input:focus { outline: none; border-color: var(--sand-deep); }
-    .search-clear {
-      padding: 8px 16px; border-radius: 999px;
-      background: var(--paper); border: 1px solid var(--line);
-      cursor: pointer; font-size: 0.85rem; color: var(--ink);
-    }
+    .breadcrumb a { color: #7A7264; text-decoration: none; }
+    .breadcrumb a:hover { color: var(--sand-deep); }
+    .breadcrumb .sep { color: var(--sand); }
 
-    .info-banner {
-      background: var(--ink); color: #FFF;
-      padding: 10px 24px;
-      font-size: 0.76rem; letter-spacing: 0.04em;
-      text-align: center;
+    /* Layout producto */
+    .prod-layout {
+      display: grid; grid-template-columns: 1.05fr 0.95fr;
+      gap: 48px; align-items: start;
     }
-    .info-banner a { color: var(--sand); text-decoration: underline; }
+    @media (max-width: 900px) { .prod-layout { grid-template-columns: 1fr; gap: 28px; } }
 
-    /* Status banner */
-    .status-banner {
-      max-width: 1400px; margin: 16px auto 0; padding: 0 24px;
-    }
-    .status-banner .inner {
-      padding: 12px 20px; border-radius: 14px;
-      font-size: 0.82rem; display: flex; align-items: center; gap: 10px;
-    }
-    .status-banner .abierto { background: var(--ok-soft); color: var(--ok); }
-    .status-banner .cerrado { background: #F6E4DF; color: var(--warn); }
-
-    /* Catalog */
-    main { max-width: 1400px; margin: 0 auto; padding: 24px; }
-    .cat-section { margin-bottom: 56px; animation: sectionIn .5s ease .1s both; }
-    .cat-section.hidden-cat { display: none; }
-    @keyframes sectionIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .cat-title { font-family: 'Lora', serif; font-size: 1.8rem; font-weight: 500; margin-bottom: 6px; }
-    .cat-desc { color: #7A7264; font-size: 0.88rem; margin-bottom: 22px; }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
-      gap: 22px;
-    }
-    .pcard {
-      background: var(--paper); border: 1px solid var(--line);
-      border-radius: 20px; overflow: hidden;
-      display: flex; flex-direction: column;
-      opacity: 0; transform: translateY(20px);
-      animation: cardIn .6s ease forwards;
-      transition: transform .3s, box-shadow .3s;
-      text-decoration: none; color: var(--ink);
-    }
-    .pcard-more {
-      font-size: 0.7rem; color: var(--sand-deep);
-      letter-spacing: 0.08em; text-transform: uppercase;
-      margin-top: 10px; font-weight: 500;
-    }
-    @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
-    .pcard:hover { transform: translateY(-4px); box-shadow: 0 20px 44px rgba(43,40,37,0.10); }
-    .pcard-img {
-      aspect-ratio: 4/3;
-      background-size: cover; background-position: center;
+    /* Galería */
+    .gal-main {
+      aspect-ratio: 4/3; border-radius: 22px;
       background-color: var(--sand-soft);
-      position: relative;
+      background-size: cover; background-position: center;
+      border: 1px solid var(--line);
+      position: relative; overflow: hidden;
     }
-    .pcard-img.placeholder::after {
-      content: '🪵';
+    .gal-main.placeholder::after {
+      content: '🪵 Fotos próximamente';
       position: absolute; inset: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 2.6rem; opacity: 0.45;
+      color: var(--sand-deep); font-size: 0.95rem; letter-spacing: 0.04em;
     }
-    .badge-stock {
-      position: absolute; top: 12px; left: 12px;
-      background: var(--ok); color: #FFF;
-      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 5px 12px; border-radius: 999px; font-weight: 500;
+    .gal-badge {
+      position: absolute; top: 16px; left: 16px;
+      font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 999px; font-weight: 500; z-index: 2;
     }
-    .badge-medida {
-      position: absolute; top: 12px; left: 12px;
-      background: rgba(43,40,37,0.85); color: var(--sand);
-      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 5px 12px; border-radius: 999px; font-weight: 500;
-      cursor: help;
+    .gal-badge.stock { background: var(--ok); color: #FFF; }
+    .gal-badge.medida { background: rgba(43,40,37,0.85); color: var(--sand); }
+    .gal-thumbs {
+      display: flex; gap: 10px; margin-top: 12px;
+      overflow-x: auto; padding-bottom: 4px; scrollbar-width: none;
     }
-    .pcard-info { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
-    .pcard-name { font-family: 'Lora', serif; font-size: 1.02rem; font-weight: 600; margin-bottom: 3px; }
-    .pcard-medidas { font-size: 0.74rem; color: #9A917F; margin-bottom: 6px; }
-    .pcard-desc { font-size: 0.8rem; color: #7A7264; line-height: 1.55; margin-bottom: 12px; flex: 1; }
-    .pcard-bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .pcard-price { font-weight: 500; font-size: 1.02rem; }
-    .add-btn {
-      padding: 9px 18px; border-radius: 999px;
-      background: var(--sand); color: var(--ink);
-      border: 1px solid var(--sand);
-      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
-      cursor: pointer; font-family: inherit; transition: all .2s;
-      white-space: nowrap;
+    .gal-thumbs::-webkit-scrollbar { display: none; }
+    .gal-thumb {
+      flex: 0 0 84px; aspect-ratio: 1; border-radius: 12px;
+      background-color: var(--sand-soft);
+      background-size: cover; background-position: center;
+      border: 2px solid transparent; cursor: pointer;
+      transition: border-color .2s;
     }
-    .add-btn:hover { background: var(--sand-deep); border-color: var(--sand-deep); color: #FFF; }
+    .gal-thumb.active { border-color: var(--sand-deep); }
+
+    /* Info */
+    .p-eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--sand-deep); font-weight: 500; margin-bottom: 8px;
+    }
+    h1.p-name {
+      font-family: 'Lora', serif; font-weight: 600;
+      font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+      margin: 0 0 10px; letter-spacing: -0.01em; line-height: 1.15;
+    }
+    .p-medidas {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.82rem; color: #5E5648;
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 999px; padding: 7px 16px; margin-bottom: 16px;
+    }
+    .p-medidas small { color: #9A917F; }
+    .p-price {
+      font-family: 'Lora', serif; font-size: 2rem; font-weight: 600;
+      margin: 6px 0 2px;
+    }
+    .p-sena-line { font-size: 0.85rem; color: var(--sand-deep); font-weight: 400; margin-bottom: 18px; }
+    .p-sena-line strong { font-weight: 600; }
+    .p-desc { font-size: 0.92rem; color: #6B655D; line-height: 1.75; margin-bottom: 20px; }
+
+    /* Caja stock / a medida */
+    .p-box {
+      border-radius: 16px; padding: 16px 20px; margin-bottom: 18px;
+      font-size: 0.84rem; line-height: 1.65;
+    }
+    .p-box h4 { margin: 0 0 6px; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .p-box.stock { background: var(--ok-soft); color: #2E5C3B; }
+    .p-box.medida { background: var(--sand-soft); color: #5E5648; }
+    .p-box.medida .wa-mini {
+      display: inline-block; margin-top: 10px;
+      font-size: 0.76rem; font-weight: 500; color: var(--ink);
+      text-decoration: underline;
+    }
+
+    /* Cantidad + agregar */
+    .buy-row { display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap; margin-bottom: 12px; }
+    .qty-box {
+      display: inline-flex; align-items: center;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: var(--paper); overflow: hidden;
+    }
+    .qty-box button {
+      background: transparent; border: none; padding: 12px 18px; cursor: pointer;
+      font-family: inherit; color: var(--ink); font-size: 1.05rem;
+    }
+    .qty-box span { padding: 12px 8px; font-size: 0.95rem; min-width: 34px; text-align: center; }
+    .btn-add {
+      flex: 1; min-width: 200px;
+      padding: 14px 28px; border-radius: 999px;
+      background: var(--ink); color: #FFF; border: 1px solid var(--ink);
+      font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+      cursor: pointer; font-family: inherit; transition: all .25s;
+    }
+    .btn-add:hover { background: var(--charcoal); }
+    .btn-wa-presu {
+      display: block; text-align: center;
+      padding: 13px 28px; border-radius: 999px;
+      background: transparent; color: var(--ink); border: 1px solid var(--ink);
+      font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500;
+      text-decoration: none; transition: all .25s; margin-bottom: 22px;
+    }
+    .btn-wa-presu:hover { background: var(--ink); color: #FFF; }
+
+    /* Políticas (acordeones) */
+    .pol-list { border-top: 1px solid var(--line); }
+    details.pol {
+      border-bottom: 1px solid var(--line);
+    }
+    details.pol summary {
+      cursor: pointer; list-style: none;
+      padding: 15px 4px;
+      font-size: 0.86rem; font-weight: 500;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+    details.pol summary::-webkit-details-marker { display: none; }
+    details.pol summary::after { content: '+'; color: var(--sand-deep); font-size: 1.1rem; transition: transform .2s; }
+    details.pol[open] summary::after { transform: rotate(45deg); }
+    details.pol .pol-body {
+      padding: 0 4px 16px;
+      font-size: 0.82rem; color: #6B655D; line-height: 1.7;
+    }
+    details.pol .pol-body ul { margin: 6px 0 0; padding-left: 18px; }
+    details.pol .pol-body li { margin-bottom: 6px; }
+    .pol-tag {
+      display: inline-block; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 999px; font-weight: 500;
+      background: var(--ok-soft); color: var(--ok); margin-left: 6px;
+    }
+
+    /* Relacionados */
+    .rel-section { margin-top: 64px; }
+    .rel-section h2 { font-family: 'Lora', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 20px; }
+    .rel-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .rel-card {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 18px; overflow: hidden;
+      text-decoration: none; color: var(--ink);
+      transition: transform .3s, box-shadow .3s; display: block;
+    }
+    .rel-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(43,40,37,0.10); }
+    .rel-img {
+      aspect-ratio: 4/3; background-size: cover; background-position: center;
+      background-color: var(--sand-soft); position: relative;
+    }
+    .rel-img.placeholder::after {
+      content: '🪵'; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; opacity: 0.45;
+    }
+    .rel-info { padding: 14px 16px 16px; }
+    .rel-info h4 { font-family: 'Lora', serif; font-size: 0.98rem; font-weight: 600; margin: 0 0 3px; }
+    .rel-info .m { font-size: 0.7rem; color: #9A917F; margin-bottom: 6px; }
+    .rel-info .p { font-weight: 500; font-size: 0.92rem; }
+
+    /* Not found */
+    .nf { text-align: center; padding: 80px 20px; }
+    .nf h2 { font-family: 'Lora', serif; font-size: 1.6rem; font-weight: 600; margin-bottom: 10px; }
+    .nf p { color: #8A8271; margin-bottom: 24px; }
 
     /* Skeleton */
     .skel {
@@ -241,7 +283,7 @@
     }
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-    /* Buttons */
+    /* ===== Cart drawer (idéntico a tienda) ===== */
     .btn {
       display: inline-block; padding: 13px 26px;
       font-size: 0.76rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
@@ -269,11 +311,7 @@
       margin-top: 6px; font-family: inherit;
     }
     .btn-secondary:hover { color: var(--ink); }
-
-    /* Scroll lock */
     body.no-scroll { position: fixed; width: 100%; overflow: hidden; }
-
-    /* Cart drawer */
     .drawer-back {
       position: fixed; inset: 0;
       background: rgba(43,40,37,0.45);
@@ -323,7 +361,6 @@
       .drawer-body { padding: 10px 18px; }
       .drawer-footer { padding: 14px 18px 18px; max-height: 62vh; }
     }
-
     .cart-item {
       display: grid; grid-template-columns: 58px 1fr auto;
       gap: 12px; padding: 14px 0;
@@ -360,7 +397,6 @@
     }
     .cart-item-del:hover { color: var(--warn); }
     .cart-empty { text-align: center; padding: 44px 20px; color: #9A917F; }
-
     .totals-row {
       display: flex; justify-content: space-between; align-items: baseline;
       margin-bottom: 6px; font-size: 0.86rem;
@@ -377,7 +413,6 @@
       font-size: 0.8rem; line-height: 1.55; color: #5E5648;
     }
     .sena-row strong { color: var(--ink); }
-
     .delivery-toggle {
       display: grid; grid-template-columns: 1fr 1fr 1fr;
       gap: 6px; margin: 10px 0;
@@ -415,12 +450,8 @@
       background: var(--paper); color: var(--ink);
     }
     .cart-note:focus { outline: none; border-color: var(--sand-deep); }
-    .track-link-row {
-      text-align: center; font-size: 0.76rem; color: #8A8271; margin-top: 12px;
-    }
+    .track-link-row { text-align: center; font-size: 0.76rem; color: #8A8271; margin-top: 12px; }
     .track-link-row a { color: var(--sand-deep); text-decoration: underline; }
-
-    /* Toast */
     .toast {
       position: fixed; top: 84px; left: 50%;
       transform: translateX(-50%) translateY(-20px);
@@ -431,8 +462,6 @@
       max-width: 90vw;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* Confirmation modal */
     .confirm-back {
       position: fixed; inset: 0;
       background: rgba(43,40,37,0.6);
@@ -465,65 +494,15 @@
       background: var(--cream); border-radius: 14px; padding: 16px 20px;
     }
     .confirm-steps strong { color: var(--ink); }
-
-    /* Info modal (a medida) */
-    .imodal-back {
-      position: fixed; inset: 0;
-      background: rgba(43,40,37,0.5);
-      z-index: 75; display: none;
-      align-items: center; justify-content: center; padding: 20px;
-    }
-    .imodal-back.open { display: flex; }
-    .imodal {
-      background: var(--paper); max-width: 440px; width: 100%;
-      border-radius: 20px; padding: 32px 28px; position: relative;
-    }
-    .imodal h3 { font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 12px; }
-    .imodal p { font-size: 0.88rem; color: #5E5648; line-height: 1.7; margin: 0; }
-    .imodal .close-x {
-      position: absolute; top: 12px; right: 16px;
-      background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #9A917F;
-    }
-
-    /* Back to top + FAB */
-    #back-top {
-      position: fixed; bottom: 24px; left: 24px;
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--paper); color: var(--ink);
-      border: 1px solid var(--line); cursor: pointer;
-      box-shadow: 0 10px 26px rgba(43,40,37,0.12);
-      opacity: 0; pointer-events: none;
-      transition: opacity .3s; z-index: 30;
-    }
-    #back-top.visible { opacity: 1; pointer-events: auto; }
-    #cart-fab {
-      position: fixed; bottom: 24px; right: 24px; z-index: 30;
-      padding: 15px 26px; border-radius: 999px;
-      background: var(--ink); color: #FFF; border: none;
-      font-family: inherit; font-size: 0.76rem;
-      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
-      cursor: pointer;
-      box-shadow: 0 14px 34px rgba(43,40,37,0.3);
-      display: none; align-items: center; gap: 8px;
-      transition: transform .2s;
-    }
-    #cart-fab:hover { transform: translateY(-2px); }
-    #cart-fab.visible { display: flex; }
-    #scroll-progress {
-      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
-      background: linear-gradient(90deg, var(--sand), var(--sand-deep));
-      z-index: 90;
-    }
   </style>
 </head>
 <body>
 
-<div id="scroll-progress"></div>
 <div class="curtain" id="curtain"></div>
 
 <header>
   <div class="header-top">
-    <a href="./index.html" class="back-link">← Volver</a>
+    <a href="./tienda.html" class="back-link">← Tienda</a>
     <a href="./index.html" class="brand-logo" aria-label="JD — Ir al inicio">
       <img src="./img/logo-JD.png" alt="JD — Jonathan Dantas" />
     </a>
@@ -531,31 +510,115 @@
       Pedido <span class="cart-badge" id="cart-count">0</span>
     </button>
   </div>
-  <div class="cat-strip" id="cat-strip"></div>
-  <div class="search-strip">
-    <input type="text" id="search" placeholder="Buscar mueble..." aria-label="Buscar mueble" maxlength="60" />
-    <button class="search-clear" id="search-clear" type="button">×</button>
-  </div>
-  <div class="info-banner" id="info-banner">···</div>
 </header>
 
-<div class="status-banner"><div class="inner" id="status-inner" style="display:none;"></div></div>
-
 <main>
-  <div id="skel-container">
-    <div style="height: 40px; margin-bottom: 24px; max-width: 300px;" class="skel"></div>
-    <div class="products-grid">
-      <div style="aspect-ratio: 3/4;" class="skel"></div>
-      <div style="aspect-ratio: 3/4;" class="skel"></div>
-      <div style="aspect-ratio: 3/4;" class="skel"></div>
-      <div style="aspect-ratio: 3/4;" class="skel"></div>
+  <!-- Skeleton -->
+  <div id="skel">
+    <div style="height:16px;max-width:300px;margin-bottom:24px;" class="skel"></div>
+    <div class="prod-layout">
+      <div style="aspect-ratio:4/3;" class="skel"></div>
+      <div>
+        <div style="height:34px;max-width:70%;margin-bottom:16px;" class="skel"></div>
+        <div style="height:120px;" class="skel"></div>
+      </div>
     </div>
   </div>
-  <div id="catalog" style="display: none;"></div>
-</main>
 
-<button id="back-top" aria-label="Volver arriba" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-<button id="cart-fab" onclick="openCart()">🛒 Ver pedido <span class="cart-badge" id="fab-count">0</span></button>
+  <!-- Producto -->
+  <div id="prod-wrap" style="display:none;">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="./index.html">Inicio</a><span class="sep">/</span>
+      <a href="./tienda.html">Tienda</a><span class="sep">/</span>
+      <a href="#" id="bc-cat">···</a><span class="sep">/</span>
+      <span id="bc-prod">···</span>
+    </nav>
+
+    <div class="prod-layout">
+      <!-- Galería -->
+      <div>
+        <div class="gal-main placeholder" id="gal-main"></div>
+        <div class="gal-thumbs" id="gal-thumbs"></div>
+      </div>
+
+      <!-- Info -->
+      <div>
+        <div class="p-eyebrow" id="p-cat">···</div>
+        <h1 class="p-name" id="p-name">···</h1>
+        <div class="p-medidas" id="p-medidas" style="display:none;">📐 <span id="p-medidas-val"></span> <small id="p-medidas-tipo">· medidas estándar</small></div>
+        <div class="p-price" id="p-price">···</div>
+        <div class="p-sena-line" id="p-sena-line">···</div>
+        <p class="p-desc" id="p-desc"></p>
+
+        <div class="p-box stock" id="box-stock" style="display:none;">
+          <h4>⚡ Stock inmediato — entrega rápida</h4>
+          <span id="box-stock-texto">Este mueble ya está fabricado: te ahorrás el tiempo de fabricación y solo depende del tiempo de envío.</span>
+        </div>
+
+        <div class="p-box medida" id="box-medida" style="display:none;">
+          <h4>✎ Se hace a tu medida</h4>
+          <span id="box-medida-texto">Las medidas mostradas son estándar. Podés configurarlo a medida: cambiar distribución de cajones, módulos y herrajes. El precio ajusta según lo que se quite o agregue de material.</span>
+          <a class="wa-mini" id="box-medida-wa" href="#" target="_blank" rel="noopener noreferrer">Pedí tu presupuesto a medida — respondemos en el día, sin cargo →</a>
+        </div>
+
+        <div class="buy-row">
+          <div class="qty-box">
+            <button type="button" onclick="chgQty(-1)" aria-label="Menos">−</button>
+            <span id="qty-val">1</span>
+            <button type="button" onclick="chgQty(1)" aria-label="Más">+</button>
+          </div>
+          <button class="btn-add" id="btn-add" onclick="addCurrentToCart()">Agregar al pedido</button>
+        </div>
+        <a class="btn-wa-presu" id="btn-wa-presu" href="#" target="_blank" rel="noopener noreferrer">💬 Consultar por WhatsApp</a>
+
+        <!-- Políticas -->
+        <div class="pol-list">
+          <details class="pol" open>
+            <summary>Cómo se paga <span class="pol-tag">Seña <span id="pol-sena-pct">30</span>%</span></summary>
+            <div class="pol-body" id="pol-pago">
+              Hacés el pedido y te contactamos por WhatsApp o teléfono para coordinar la seña del <span class="pol-sena-pct">30</span>%. Con la seña acreditada, tu mueble entra en fabricación. Al confirmar recibís un código para seguir cada etapa: seña → fabricación → terminado → entrega.
+            </div>
+          </details>
+          <details class="pol">
+            <summary>Entrega y envíos</summary>
+            <div class="pol-body">
+              <ul>
+                <li><strong>Retiro en fábrica (sin costo):</strong> <span id="pol-retiro">retirás en Av. Independencia 698, Las Flores, una vez terminado el mueble.</span></li>
+                <li><strong>Envío local (gratis):</strong> <span id="pol-local">en Las Flores y alrededores, hasta 10 km.</span></li>
+                <li><strong>Encomienda (AMBA y zonas cercanas):</strong> <span id="pol-encomienda">el costo es aproximado y se confirma al coordinar la entrega.</span></li>
+              </ul>
+            </div>
+          </details>
+          <details class="pol">
+            <summary>Calidad y materiales</summary>
+            <div class="pol-body" id="pol-calidad">
+              Melamina base MDF de 18 mm en toda la estructura. Herrajes y pistones de primera línea con cierre suave en puertas y cajones. Tapacanto ABS y terminaciones prolijas en cada borde.
+            </div>
+          </details>
+          <details class="pol">
+            <summary>Seguimiento del pedido</summary>
+            <div class="pol-body">
+              Al confirmar tu pedido recibís un código de 5 caracteres. Con ese código consultás el estado en tiempo real desde <a href="./seguimiento.html" style="color:var(--sand-deep);text-decoration:underline;">la página de seguimiento</a>: esperando seña, seña recibida, en fabricación, terminado y enviado.
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- Relacionados -->
+    <div class="rel-section" id="rel-section" style="display:none;">
+      <h2>También en <span id="rel-cat-nombre">esta categoría</span></h2>
+      <div class="rel-grid" id="rel-grid"></div>
+    </div>
+  </div>
+
+  <!-- No encontrado -->
+  <div id="nf" class="nf" style="display:none;">
+    <h2>No encontramos ese producto</h2>
+    <p>Puede que ya no esté disponible o el link sea incorrecto.</p>
+    <a href="./tienda.html" class="btn">Ver todo el catálogo</a>
+  </div>
+</main>
 
 <!-- Cart drawer -->
 <div class="drawer-back" id="drawer-back" onclick="closeCart()"></div>
@@ -619,15 +682,6 @@
   </div>
 </div>
 
-<!-- Modal "a medida" -->
-<div class="imodal-back" id="imodal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="imodal">
-    <button class="close-x" onclick="document.getElementById('imodal').classList.remove('open')">×</button>
-    <h3>Se hace a tu medida</h3>
-    <p id="imodal-texto">Este mueble se puede configurar a medida: cambiá distribución de cajones, módulos y herrajes. El precio ajusta según lo que se quite o agregue de material.</p>
-  </div>
-</div>
-
 <div class="toast" id="toast">···</div>
 
 <script>
@@ -642,7 +696,6 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "TU_SENDER_ID",
   appId: "TU_APP_ID"
 };
-/* Detecta si la config sigue en placeholder */
 const FIREBASE_READY = !/^TU_/.test(FIREBASE_CONFIG.projectId);
 let db = null;
 try {
@@ -658,18 +711,13 @@ const LS_DEMO_PEDIDOS = 'jd_demo_pedidos';
 const RATE_LIMIT_MS = 2500;
 
 let DATA = null;
-let categoriaActual = 'todos';
+let PROD = null;       /* producto actual */
+let PROD_CAT = null;   /* categoría del producto actual */
+let qty = 1;
 let entrega = 'retiro';
 let lastSubmit = 0;
 
 /* ---------- Helpers ---------- */
-function esc(s) {
-  if (s === null || s === undefined) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
-}
-function normalizar(str) {
-  return String(str || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-}
 function fmt(n) { return '$' + (n || 0).toLocaleString('es-AR'); }
 function sanitizeInput(s, max = 200) {
   if (!s) return '';
@@ -682,242 +730,226 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-/* ---------- FALLBACK mínimo para file:// ---------- */
-const _FALLBACK = {
-  "negocio": { "nombre": "JD", "whatsapp": "5492244475753", "telefono": "02244 47-5753", "direccion_corta": "Av. Independencia 698, Las Flores" },
-  "config": {
-    "sena": { "porcentaje": 30, "leyenda": "Al confirmar tu pedido te contactamos por WhatsApp o teléfono para coordinar la seña. Con la seña acreditada, tu mueble entra en fabricación." },
-    "envio": {
-      "radio_gratis_km": 10,
-      "leyenda_local": "Envío gratis en Las Flores y alrededores (hasta 10 km).",
-      "encomienda_valor": 45000,
-      "leyenda_encomienda": "Enviamos a AMBA y zonas cercanas por encomienda. El costo es aproximado y se confirma al coordinar la entrega.",
-      "leyenda_retiro": "Podés retirar en la fábrica sin costo. Te avisamos apenas tu mueble esté terminado."
-    },
-    "stock_inmediato": { "leyenda": "Entrega rápida: este mueble ya está fabricado, solo depende del tiempo de envío." },
-    "a_medida": { "leyenda": "Este mueble se puede configurar a medida: cambiá distribución de cajones, módulos y herrajes. El precio ajusta según lo que se quite o agregue de material." }
-  },
-  "horarios": {
-    "lunes": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
-    "martes": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
-    "miércoles": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
-    "jueves": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
-    "viernes": [{"abre":"08:00","cierra":"12:00"},{"abre":"14:00","cierra":"18:00"}],
-    "sábado": [], "domingo": []
-  },
-  "categorias": [
-    { "id": "living", "nombre": "Living y Comedor", "descripcion": "Racks de TV, modulares y bibliotecas.", "productos": [
-      { "id": 7, "nombre": "Rack TV 1,80 m", "descripcion": "Rack para TV de hasta 75\" con 2 puertas de cierre suave.", "medidas": "1,80 × 0,50 × 0,40 m", "precio": 280000, "stock_inmediato": true, "disponible": true, "destacado": true, "imagenes": [] }
-    ]}
-  ]
-};
-
-/* ---------- Data load ---------- */
 async function loadData() {
   try {
     const res = await fetch('./productos.json', { cache: 'no-cache' });
     if (!res.ok) throw new Error();
     return await res.json();
-  } catch (err) {
-    console.warn('productos.json no disponible, usando fallback');
-    return _FALLBACK;
+  } catch { return null; }
+}
+
+/* ---------- Render producto ---------- */
+function findProducto(id) {
+  for (const cat of (DATA.categorias || [])) {
+    const p = (cat.productos || []).find(x => String(x.id) === String(id));
+    if (p) return { p, cat };
   }
+  return null;
 }
 
-/* ---------- Header info ---------- */
-function renderInfoBanner() {
-  const banner = document.getElementById('info-banner');
-  banner.innerHTML = '';
-  const span = document.createElement('span');
-  span.textContent = 'Presupuesto en el día sin cargo · Envío gratis hasta ' + ((DATA.config && DATA.config.envio && DATA.config.envio.radio_gratis_km) || 10) + ' km · Envíos a AMBA · ';
-  banner.appendChild(span);
-  const a = document.createElement('a');
-  a.href = './seguimiento.html';
-  a.textContent = 'Seguí tu pedido';
-  banner.appendChild(a);
-}
+function renderProducto() {
+  document.getElementById('skel').style.display = 'none';
+  document.getElementById('prod-wrap').style.display = 'block';
 
-function renderStatusBanner() {
-  const dias = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
-  const ahora = new Date();
-  const hoy = dias[ahora.getDay() === 0 ? 6 : ahora.getDay() - 1];
-  const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
-  const turnos = (DATA.horarios && DATA.horarios[hoy]) || [];
-  const turnoActivo = turnos.find(t => {
-    const [ah, am] = t.abre.split(':').map(Number);
-    const [ch, cm] = t.cierra.split(':').map(Number);
-    return minAhora >= ah * 60 + am && minAhora < ch * 60 + cm;
-  });
-  const inner = document.getElementById('status-inner');
-  inner.style.display = 'flex';
-  if (turnoActivo) {
-    inner.className = 'inner abierto';
-    inner.textContent = `● Fábrica abierta — cerramos a las ${turnoActivo.cierra} hs. Los pedidos web se toman las 24 hs.`;
+  const p = PROD, cat = PROD_CAT;
+  const neg = DATA.negocio || {};
+  const cfg = DATA.config || {};
+  const senaPct = (cfg.sena && cfg.sena.porcentaje) || 30;
+
+  document.title = `${p.nombre} — JD Muebles de Melamina`;
+
+  /* Breadcrumb */
+  const bcCat = document.getElementById('bc-cat');
+  bcCat.textContent = cat.nombre;
+  bcCat.href = `./tienda.html?cat=${encodeURIComponent(cat.id)}`;
+  document.getElementById('bc-prod').textContent = p.nombre;
+
+  /* Info */
+  document.getElementById('p-cat').textContent = cat.nombre;
+  document.getElementById('p-name').textContent = p.nombre;
+  if (p.medidas) {
+    document.getElementById('p-medidas').style.display = 'inline-flex';
+    document.getElementById('p-medidas-val').textContent = p.medidas;
+    document.getElementById('p-medidas-tipo').textContent = p.stock_inmediato ? '· medidas del mueble' : '· medidas estándar';
+  }
+  document.getElementById('p-price').textContent = fmt(p.precio);
+  const sena = Math.round((p.precio || 0) * senaPct / 100);
+  document.getElementById('p-sena-line').innerHTML = '';
+  const senaLine = document.getElementById('p-sena-line');
+  const strong = document.createElement('strong');
+  strong.textContent = `Reservalo con ${fmt(sena)}`;
+  senaLine.appendChild(strong);
+  senaLine.appendChild(document.createTextNode(` (seña del ${senaPct}%) — el resto al coordinar la entrega.`));
+  document.getElementById('p-desc').textContent = p.descripcion || '';
+
+  /* Cajas stock / a medida */
+  if (p.stock_inmediato) {
+    document.getElementById('box-stock').style.display = 'block';
+    const ley = cfg.stock_inmediato && cfg.stock_inmediato.leyenda;
+    if (ley) document.getElementById('box-stock-texto').textContent = ley;
   } else {
-    inner.className = 'inner cerrado';
-    inner.textContent = '● Fábrica cerrada ahora — igual podés hacer tu pedido: lo tomamos apenas abramos.';
+    document.getElementById('box-medida').style.display = 'block';
+    const ley = cfg.a_medida && cfg.a_medida.leyenda;
+    if (ley) {
+      document.getElementById('box-medida-texto').textContent =
+        'Las medidas mostradas son estándar. ' + ley;
+    }
+  }
+
+  /* Políticas desde config */
+  document.querySelectorAll('.pol-sena-pct, #pol-sena-pct').forEach(el => el.textContent = senaPct);
+  if (cfg.sena && cfg.sena.leyenda) {
+    document.getElementById('pol-pago').textContent =
+      cfg.sena.leyenda.replace('la seña', `la seña del ${senaPct}%`) +
+      ' Al confirmar recibís un código para seguir cada etapa: seña → fabricación → terminado → entrega.';
+  }
+  if (cfg.envio) {
+    if (cfg.envio.leyenda_retiro) document.getElementById('pol-retiro').textContent = cfg.envio.leyenda_retiro + ' Te comprometés a retirarlo una vez terminado.';
+    if (cfg.envio.leyenda_local) document.getElementById('pol-local').textContent = cfg.envio.leyenda_local;
+    if (cfg.envio.leyenda_encomienda) document.getElementById('pol-encomienda').textContent = cfg.envio.leyenda_encomienda;
+  }
+
+  /* WhatsApp CTAs */
+  const wa = neg.whatsapp || '5492244475753';
+  const msgConsulta = encodeURIComponent(`Hola JD! Quería consultar por "${p.nombre}"${p.medidas ? ' (' + p.medidas + ')' : ''}.`);
+  const msgMedida = encodeURIComponent(`Hola JD! Me interesa "${p.nombre}" pero a medida. Les paso las medidas de mi espacio:`);
+  document.getElementById('btn-wa-presu').href = `https://wa.me/${wa}?text=${msgConsulta}`;
+  document.getElementById('box-medida-wa').href = `https://wa.me/${wa}?text=${msgMedida}`;
+
+  /* Galería */
+  renderGaleria(p);
+
+  /* Relacionados */
+  renderRelacionados(p, cat);
+
+  /* JSON-LD Product */
+  injectJsonLd(p, cat);
+}
+
+function renderGaleria(p) {
+  const main = document.getElementById('gal-main');
+  const thumbs = document.getElementById('gal-thumbs');
+  thumbs.innerHTML = '';
+
+  /* Badge */
+  const badge = document.createElement('span');
+  badge.className = 'gal-badge ' + (p.stock_inmediato ? 'stock' : 'medida');
+  badge.textContent = p.stock_inmediato ? '⚡ Stock inmediato' : '✎ Se hace a medida';
+  main.appendChild(badge);
+
+  const imgs = (p.imagenes || []).filter(Boolean);
+  if (!imgs.length) return;
+
+  const setMain = (src) => {
+    const test = new Image();
+    test.onload = () => {
+      main.classList.remove('placeholder');
+      main.style.backgroundImage = `url('./img/${src}')`;
+    };
+    test.src = `./img/${src}`;
+  };
+  setMain(imgs[0]);
+
+  if (imgs.length > 1) {
+    imgs.forEach((img, i) => {
+      const th = document.createElement('div');
+      th.className = 'gal-thumb' + (i === 0 ? ' active' : '');
+      th.style.backgroundImage = `url('./img/${img}')`;
+      th.onclick = () => {
+        setMain(img);
+        thumbs.querySelectorAll('.gal-thumb').forEach(t => t.classList.remove('active'));
+        th.classList.add('active');
+      };
+      thumbs.appendChild(th);
+    });
   }
 }
 
-/* ---------- Catálogo ---------- */
-function renderCatStrip() {
-  const strip = document.getElementById('cat-strip');
-  strip.innerHTML = '';
-  const cats = [{ id: 'todos', nombre: 'Todos' }, ...DATA.categorias.map(c => ({ id: c.id, nombre: c.nombre }))];
-  cats.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-pill' + (categoriaActual === c.id ? ' active' : '');
-    btn.textContent = c.nombre;
-    btn.onclick = () => {
-      categoriaActual = c.id;
-      renderCatStrip();
-      applyFilter();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-    strip.appendChild(btn);
-  });
-}
-
-function renderCatalog() {
-  document.getElementById('skel-container').style.display = 'none';
-  const cat = document.getElementById('catalog');
-  cat.style.display = 'block';
-  cat.innerHTML = '';
-
-  DATA.categorias.forEach(categoria => {
-    const section = document.createElement('section');
-    section.className = 'cat-section';
-    section.dataset.catId = categoria.id;
-
-    const title = document.createElement('h2');
-    title.className = 'cat-title';
-    title.textContent = categoria.nombre;
-    section.appendChild(title);
-
-    if (categoria.descripcion) {
-      const desc = document.createElement('p');
-      desc.className = 'cat-desc';
-      desc.textContent = categoria.descripcion;
-      section.appendChild(desc);
+function renderRelacionados(p, cat) {
+  const rel = (cat.productos || []).filter(x => x.id !== p.id && x.disponible !== false).slice(0, 4);
+  if (!rel.length) return;
+  document.getElementById('rel-section').style.display = 'block';
+  document.getElementById('rel-cat-nombre').textContent = cat.nombre;
+  const grid = document.getElementById('rel-grid');
+  grid.innerHTML = '';
+  rel.forEach(r => {
+    const card = document.createElement('a');
+    card.className = 'rel-card';
+    card.href = `./producto.html?id=${encodeURIComponent(r.id)}`;
+    const img = document.createElement('div');
+    img.className = 'rel-img placeholder';
+    if (r.imagenes && r.imagenes.length) {
+      const test = new Image();
+      test.onload = () => {
+        img.classList.remove('placeholder');
+        img.style.backgroundImage = `url('./img/${r.imagenes[0]}')`;
+      };
+      test.src = `./img/${r.imagenes[0]}`;
     }
-
-    const grid = document.createElement('div');
-    grid.className = 'products-grid';
-
-    (categoria.productos || []).forEach((p, idx) => {
-      if (p.disponible === false) return;
-      const card = document.createElement('a');
-      card.className = 'pcard';
-      card.href = `./producto.html?id=${encodeURIComponent(p.id)}`;
-      card.dataset.name = normalizar(p.nombre + ' ' + (p.descripcion || ''));
-      card.style.animationDelay = `${Math.min(idx * 60, 400)}ms`;
-
-      const imgDiv = document.createElement('div');
-      imgDiv.className = 'pcard-img placeholder';
-      if (p.imagenes && p.imagenes.length) {
-        const testImg = new Image();
-        testImg.onload = () => {
-          imgDiv.classList.remove('placeholder');
-          imgDiv.style.backgroundImage = `url('./img/${p.imagenes[0]}')`;
-        };
-        testImg.src = `./img/${p.imagenes[0]}`;
-      }
-
-      if (p.stock_inmediato) {
-        const badge = document.createElement('span');
-        badge.className = 'badge-stock';
-        badge.textContent = '⚡ Stock inmediato';
-        badge.title = (DATA.config.stock_inmediato && DATA.config.stock_inmediato.leyenda) || '';
-        imgDiv.appendChild(badge);
-      } else {
-        const badge = document.createElement('span');
-        badge.className = 'badge-medida';
-        badge.textContent = '✎ Se hace a medida';
-        badge.onclick = (ev) => { ev.preventDefault(); ev.stopPropagation(); showAMedida(); };
-        imgDiv.appendChild(badge);
-      }
-      card.appendChild(imgDiv);
-
-      const info = document.createElement('div');
-      info.className = 'pcard-info';
-
-      const name = document.createElement('div');
-      name.className = 'pcard-name';
-      name.textContent = p.nombre;
-      info.appendChild(name);
-
-      if (p.medidas) {
-        const med = document.createElement('div');
-        med.className = 'pcard-medidas';
-        med.textContent = '📐 ' + p.medidas;
-        info.appendChild(med);
-      }
-
-      if (p.descripcion) {
-        const desc = document.createElement('div');
-        desc.className = 'pcard-desc';
-        desc.textContent = p.descripcion;
-        info.appendChild(desc);
-      }
-
-      const bottom = document.createElement('div');
-      bottom.className = 'pcard-bottom';
-      const price = document.createElement('div');
-      price.className = 'pcard-price';
-      price.textContent = fmt(p.precio);
-      bottom.appendChild(price);
-      const add = document.createElement('button');
-      add.className = 'add-btn';
-      add.textContent = '+ Agregar';
-      add.onclick = (ev) => { ev.preventDefault(); ev.stopPropagation(); addToCart(p, categoria); };
-      bottom.appendChild(add);
-      info.appendChild(bottom);
-
-      const more = document.createElement('div');
-      more.className = 'pcard-more';
-      more.textContent = 'Ver fotos y detalles →';
-      info.appendChild(more);
-
-      card.appendChild(info);
-      grid.appendChild(card);
-    });
-
-    section.appendChild(grid);
-    cat.appendChild(section);
-  });
-
-  applyFilter();
-}
-
-function applyFilter() {
-  const query = normalizar(document.getElementById('search').value);
-  document.querySelectorAll('.cat-section').forEach(section => {
-    const catMatch = categoriaActual === 'todos' || section.dataset.catId === categoriaActual;
-    if (!catMatch) { section.classList.add('hidden-cat'); return; }
-    let anyVisible = false;
-    section.querySelectorAll('.pcard').forEach(card => {
-      const nameMatch = !query || card.dataset.name.includes(query);
-      card.style.display = nameMatch ? '' : 'none';
-      if (nameMatch) anyVisible = true;
-    });
-    section.classList.toggle('hidden-cat', !anyVisible);
+    card.appendChild(img);
+    const info = document.createElement('div');
+    info.className = 'rel-info';
+    const h = document.createElement('h4'); h.textContent = r.nombre; info.appendChild(h);
+    if (r.medidas) { const m = document.createElement('div'); m.className = 'm'; m.textContent = r.medidas; info.appendChild(m); }
+    const pr = document.createElement('div'); pr.className = 'p'; pr.textContent = fmt(r.precio); info.appendChild(pr);
+    card.appendChild(info);
+    grid.appendChild(card);
   });
 }
 
-function getInitialCat() {
-  const params = new URLSearchParams(window.location.search);
-  const cat = params.get('cat');
-  if (cat && DATA.categorias.some(c => c.id === cat)) return cat;
-  return 'todos';
+function injectJsonLd(p, cat) {
+  const base = (DATA.seo && DATA.seo.url_base) || 'https://juliancarroccio.github.io/pushcommerce/pages/jd';
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": p.nombre,
+    "description": p.descripcion || '',
+    "category": cat.nombre,
+    "image": (p.imagenes && p.imagenes.length) ? `${base}/img/${p.imagenes[0]}` : `${base}/img/logo-JD.png`,
+    "brand": { "@type": "Brand", "name": "JD — Jonathan Dantas" },
+    "offers": {
+      "@type": "Offer",
+      "url": `${base}/producto.html?id=${p.id}`,
+      "priceCurrency": "ARS",
+      "price": p.precio || 0,
+      "availability": p.stock_inmediato ? "https://schema.org/InStock" : "https://schema.org/MadeToOrder"
+    }
+  };
+  const s = document.createElement('script');
+  s.type = 'application/ld+json';
+  s.textContent = JSON.stringify(ld);
+  document.head.appendChild(s);
 }
 
-function showAMedida() {
-  const texto = (DATA.config && DATA.config.a_medida && DATA.config.a_medida.leyenda) || '';
-  if (texto) document.getElementById('imodal-texto').textContent = texto;
-  document.getElementById('imodal').classList.add('open');
+/* ---------- Cantidad ---------- */
+function chgQty(d) {
+  qty = Math.max(1, qty + d);
+  document.getElementById('qty-val').textContent = qty;
 }
 
-/* ---------- Cart ---------- */
+function addCurrentToCart() {
+  if (!PROD) return;
+  const cart = getCart();
+  const existing = cart.find(i => i.id === PROD.id);
+  if (existing) existing.qty += qty;
+  else cart.push({
+    id: PROD.id,
+    nombre: PROD.nombre,
+    categoria: PROD_CAT.nombre,
+    medidas: PROD.medidas || '',
+    stock_inmediato: !!PROD.stock_inmediato,
+    imagen: (PROD.imagenes && PROD.imagenes[0]) || '',
+    precio: PROD.precio,
+    qty
+  });
+  saveCart(cart);
+  showToast(`"${PROD.nombre}" agregado al pedido`);
+  qty = 1;
+  document.getElementById('qty-val').textContent = 1;
+  openCart();
+}
+
+/* ---------- Cart (idéntico a tienda.html) ---------- */
 function getCart() {
   try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
   catch { return []; }
@@ -928,31 +960,7 @@ function saveCart(c) {
 }
 function updateCartCount() {
   const c = getCart();
-  const total = c.reduce((s, i) => s + i.qty, 0);
-  document.getElementById('cart-count').textContent = total;
-  document.getElementById('fab-count').textContent = total;
-  document.getElementById('cart-fab').classList.toggle('visible', total > 0);
-}
-
-function addToCart(p, categoria) {
-  const cart = getCart();
-  const existing = cart.find(i => i.id === p.id);
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({
-      id: p.id,
-      nombre: p.nombre,
-      categoria: categoria.nombre,
-      medidas: p.medidas || '',
-      stock_inmediato: !!p.stock_inmediato,
-      imagen: (p.imagenes && p.imagenes[0]) || '',
-      precio: p.precio,
-      qty: 1
-    });
-  }
-  saveCart(cart);
-  showToast(`"${p.nombre}" agregado al pedido`);
+  document.getElementById('cart-count').textContent = c.reduce((s, i) => s + i.qty, 0);
 }
 
 let _scrollLockY = 0;
@@ -966,7 +974,6 @@ function unlockBodyScroll() {
   document.body.style.top = '';
   window.scrollTo(0, _scrollLockY);
 }
-
 function openCart() {
   renderCart();
   document.getElementById('drawer').classList.add('open');
@@ -993,7 +1000,6 @@ function renderCart() {
     footer.style.display = 'none';
     return;
   }
-
   footer.style.display = 'block';
 
   cart.forEach((item, idx) => {
@@ -1022,7 +1028,6 @@ function renderCart() {
     if (item.stock_inmediato) {
       tag.className = 'cart-tag stock';
       tag.textContent = '⚡ Stock inmediato · entrega rápida';
-      tag.title = (DATA.config.stock_inmediato && DATA.config.stock_inmediato.leyenda) || '';
     } else {
       tag.className = 'cart-tag medida';
       tag.textContent = '✎ Se fabrica para vos';
@@ -1038,10 +1043,10 @@ function renderCart() {
     qtyBox.className = 'cart-item-qty';
     const minus = document.createElement('button'); minus.textContent = '−'; minus.type = 'button';
     minus.onclick = () => chgCartQty(idx, -1);
-    const qty = document.createElement('span'); qty.textContent = item.qty;
+    const q = document.createElement('span'); q.textContent = item.qty;
     const plus = document.createElement('button'); plus.textContent = '+'; plus.type = 'button';
     plus.onclick = () => chgCartQty(idx, 1);
-    qtyBox.appendChild(minus); qtyBox.appendChild(qty); qtyBox.appendChild(plus);
+    qtyBox.appendChild(minus); qtyBox.appendChild(q); qtyBox.appendChild(plus);
     info.appendChild(qtyBox);
     row.appendChild(info);
 
@@ -1159,14 +1164,13 @@ function clearCart() {
   saveCart([]); renderCart();
 }
 
-/* ---------- Checkout ---------- */
+/* ---------- Checkout (idéntico a tienda.html) ---------- */
 function genTrackingCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let s = '';
   for (let i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
   return s;
 }
-
 function saveMyOrderCode(code, docId) {
   try {
     const arr = JSON.parse(localStorage.getItem(LS_MIS_PEDIDOS) || '[]');
@@ -1174,9 +1178,6 @@ function saveMyOrderCode(code, docId) {
     localStorage.setItem(LS_MIS_PEDIDOS, JSON.stringify(arr.slice(0, 30)));
   } catch {}
 }
-
-/* Modo demo: sin Firebase, los pedidos viven en localStorage para poder
-   mostrar el flujo completo. Al configurar Firebase esto deja de usarse. */
 function saveDemoOrder(payload) {
   try {
     const arr = JSON.parse(localStorage.getItem(LS_DEMO_PEDIDOS) || '[]');
@@ -1212,19 +1213,13 @@ async function sendOrder() {
   let direccion = '', localidad = '', provincia = '', cp = '';
   if (entrega !== 'retiro') {
     direccion = sanitizeInput(document.getElementById('in-direccion').value, 120);
-    if (!direccion) {
-      showToast('Completá la dirección de entrega.');
-      return;
-    }
+    if (!direccion) { showToast('Completá la dirección de entrega.'); return; }
   }
   if (entrega === 'encomienda') {
     localidad = sanitizeInput(document.getElementById('in-localidad').value, 60);
     provincia = sanitizeInput(document.getElementById('in-provincia').value, 40);
     cp = sanitizeInput(document.getElementById('in-cp').value, 10);
-    if (!localidad || !provincia) {
-      showToast('Completá localidad y provincia.');
-      return;
-    }
+    if (!localidad || !provincia) { showToast('Completá localidad y provincia.'); return; }
   }
 
   const nota = sanitizeInput(document.getElementById('cart-note').value, 400);
@@ -1266,7 +1261,6 @@ async function sendOrder() {
       return;
     }
   } else {
-    /* Demo local hasta que exista Firebase */
     saveDemoOrder(payload);
   }
 
@@ -1289,26 +1283,27 @@ function closeConfirm() {
 /* ---------- Init ---------- */
 async function init() {
   DATA = await loadData();
-
-  categoriaActual = getInitialCat();
-  renderCatStrip();
-  renderInfoBanner();
-  renderStatusBanner();
   updateCartCount();
-  renderCatalog();
 
-  document.getElementById('search').addEventListener('input', applyFilter);
-  document.getElementById('search-clear').addEventListener('click', () => {
-    document.getElementById('search').value = '';
-    applyFilter();
-  });
+  if (!DATA) {
+    document.getElementById('skel').style.display = 'none';
+    document.getElementById('nf').style.display = 'block';
+    return;
+  }
 
-  window.addEventListener('scroll', () => {
-    const h = document.documentElement;
-    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-    document.getElementById('scroll-progress').style.width = pct + '%';
-    document.getElementById('back-top').classList.toggle('visible', window.scrollY > 400);
-  });
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const found = id ? findProducto(id) : null;
+
+  if (!found || found.p.disponible === false) {
+    document.getElementById('skel').style.display = 'none';
+    document.getElementById('nf').style.display = 'block';
+    return;
+  }
+
+  PROD = found.p;
+  PROD_CAT = found.cat;
+  renderProducto();
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});

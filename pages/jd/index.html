@@ -998,7 +998,7 @@ function buildDestacados(data) {
   destacados.slice(0, 6).forEach(p => {
     const card = document.createElement('a');
     card.className = 'prod-card anim-up';
-    card.href = `./tienda.html?cat=${encodeURIComponent(p.catId)}`;
+    card.href = `./producto.html?id=${encodeURIComponent(p.id)}`;
     const img = document.createElement('div');
     img.className = 'prod-img placeholder';
     if (p.imagenes && p.imagenes.length) {

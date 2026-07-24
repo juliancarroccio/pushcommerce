@@ -1,21 +1,17 @@
-# JD — Configuración Firebase (pendiente)
+# JD — Configuración Firebase
 
-> El proyecto Firebase **todavía no existe**. Todos los HTML tienen `FIREBASE_CONFIG` en
-> placeholder (`TU_API_KEY`, `TU_PROYECTO`, etc.). Mientras tanto, la tienda funciona en
-> **modo demo**: los pedidos se guardan en `localStorage` (`jd_demo_pedidos`) y el
-> seguimiento los lee de ahí, así el flujo completo es navegable para mostrar al cliente.
+> ✅ **Configurado** — proyecto `jdantas-53617` (región `southamerica-east1`).
+> `FIREBASE_CONFIG` real en: `tienda.html`, `producto.html`, `seguimiento.html`, `pedidos.html`.
+> El modo demo (localStorage `jd_demo_pedidos`) queda inactivo automáticamente.
 
-## Pasos cuando se cree la cuenta
+## Checklist de configuración (hecho 2026-07-23)
 
-1. Crear proyecto en https://console.firebase.google.com (plan Spark, gratis).
-2. Agregar app web → copiar el objeto `firebaseConfig`.
-3. Reemplazar `FIREBASE_CONFIG` en estos 4 archivos:
-   - `tienda.html`
-   - `seguimiento.html`
-   - `pedidos.html`
-4. Habilitar **Firestore Database** (modo producción, región `southamerica-east1`).
-5. Habilitar **Authentication → Anonymous** (la usa `pedidos.html`).
-6. Publicar las reglas de abajo.
+1. ✅ Proyecto `jdantas-53617` en https://console.firebase.google.com (plan Spark).
+2. ✅ App web registrada → `firebaseConfig` copiado a los 4 HTML.
+3. ✅ Firestore Database (modo producción, `southamerica-east1`).
+4. ✅ Authentication → Anonymous habilitado (la usa `pedidos.html`).
+5. ✅ Dominios autorizados: `jdmuebles.github.io` + `juliancarroccio.github.io`.
+6. ✅ Reglas publicadas (abajo).
 
 ## Reglas Firestore
 

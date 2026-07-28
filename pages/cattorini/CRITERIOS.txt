@@ -1,0 +1,1291 @@
+═══════════════════════════════════════════════════════════════
+CRITERIOS DE ACEPTACIÓN — CATTORINI
+Base para armado de tests. Formato: Given / When / Then.
+═══════════════════════════════════════════════════════════════
+
+
+────────────────────────────
+LANDING
+────────────────────────────
+
+1
+dado un cliente
+cuando entra a la landing page
+entonces visualiza la página con un hero
+y la historia
+y un catálogo con las tres líneas de producción
+y una selección de destacados dinámica
+y un link para que se de de alta como mayorista
+y un link para que el mayorista registrado consulte el estado de su solicitud mayorista
+y una sección con el local actual
+y una parte con el contacto con mapa del lugar con días, horarios y mapa disponible
+
+2
+dado un cliente
+cuando hace click en solicitar cuenta mayorista
+entonces se abre un formulario con datos para completar (validar que se pidan los que están ahora en los tests)
+
+3
+dado un cliente
+cuando hace click en solicitar cuenta mayorista
+y completa el formulario con datos relevantes (validar que se pida dirección y datos en tests)
+y presiona enviar solicitud
+entonces se crea una solicitud de mayorista
+y recibe un código de seguimiento de dicha solicitud
+y el local desde portal puede aceptar o rechazar
+
+3.1
+dado un cliente
+cuando llega a la landing con hash "#mayoristas" desde otra página
+entonces la página scrollea automáticamente a la sección Mayoristas
+y el botón "Solicitar cuenta mayorista" se resalta con animación pulse por 3 iteraciones
+
+3.2
+dado un cliente
+cuando envía el formulario de solicitud mayorista sin completar nombre o negocio
+entonces se muestra el mensaje "Nombre y negocio son obligatorios"
+y el pedido NO se crea
+
+3.3
+dado un cliente
+cuando envía el formulario sin WhatsApp ni email
+entonces se muestra el mensaje "Necesitamos WhatsApp o email para contactarte"
+
+3.4
+dado un cliente
+cuando envía el formulario sin provincia o sin localidad
+entonces se muestra el mensaje "Elegí provincia y localidad"
+
+3.5
+dado un cliente
+cuando ingresa una localidad que no existe en la lista de la provincia elegida
+entonces se muestra el mensaje "Elegí una localidad de la lista sugerida"
+
+3.6
+dado un cliente
+cuando envía el formulario sin dirección
+entonces se muestra el mensaje "Ingresá la dirección para poder enviarte pedidos por Vía Cargo"
+
+3.7
+dado un cliente
+cuando envía la solicitud correctamente
+entonces se muestra un modal de confirmación con código MAY-XXXX
+y se ofrece un link "Ver estado de mi solicitud"
+y el código se guarda en localStorage bajo "catt_mis_solicitudes" para acceso rápido futuro
+
+3.8
+dado un cliente
+cuando reintenta enviar dos solicitudes seguidas dentro de 5 segundos
+entonces la segunda es rechazada por rate limit
+y se muestra "Esperá unos segundos antes de reintentar"
+
+3.9
+dado un cliente
+cuando scrollea por las secciones de la landing
+entonces cada sección aparece con animación (fade + slide up)
+y las 5 fotos de Historia rotan como carrusel automático cada 5.5s en el hero
+y las 3 fotos de Fábrica rotan en la sección respectiva cada 4.5s con dots
+y las 3 fotos de Local rotan en la sección respectiva cada 4.5s con dots
+
+3.10
+dado un cliente
+cuando scrollea más de 800px desde el inicio
+entonces aparece un botón flotante de WhatsApp en la esquina inferior derecha
+
+
+────────────────────────────
+SEGUIMIENTO MAYORISTA
+────────────────────────────
+
+4
+dado un cliente
+cuando solicita cuenta mayorista
+y el estado sigue en pendiente
+y consulta el estado de su seguimiento
+entonces recibe la información notificándole de dicho estado
+
+5
+dado un cliente
+cuando solicita cuenta mayorista
+y el estado pasó a rechazado
+y consulta el estado de su seguimiento
+entonces recibe la información notificándole de dicho estado
+y visualiza el motivo del rechazo
+y visualiza un botón para contactar por WhatsApp
+
+6
+dado un cliente
+cuando solicita cuenta mayorista
+y el estado pasó a aceptado
+y consulta el estado de su seguimiento
+entonces recibe la información notificándole de dicho estado
+y recibe un código mayorista para ingresar a la tienda
+
+6.1
+dado un cliente
+cuando entra a /seguimiento-mayorista.html sin parámetro code
+y tiene solicitudes guardadas en localStorage
+entonces visualiza el buscador de código MAY-XXXX
+y visualiza la lista "Tus últimas solicitudes" con acceso directo a cada una
+
+6.2
+dado un cliente
+cuando entra a /seguimiento-mayorista.html?code=XXX con un código inválido
+entonces visualiza el mensaje "No encontramos esa solicitud"
+y un botón para reintentar
+
+6.3
+dado un cliente
+cuando está viendo su solicitud aceptada
+y el admin regenera o modifica el registro en tiempo real
+entonces la vista del cliente se actualiza automáticamente (Firestore onSnapshot)
+
+
+────────────────────────────
+QR
+────────────────────────────
+
+7
+dado el dueño de la tienda
+cuando entra a la URL respectiva al QR
+entonces visualiza una página que muestra el QR que lleva a la tienda
+y puede imprimir ese QR para exhibirlo en el local físico
+
+7.1
+dado el dueño
+cuando abre la página del QR desde el navegador
+entonces el QR renderiza en 220x220 con corrección de errores nivel H
+y apunta a https://cattorini.github.io/tienda.html
+y al usar Ctrl+P se aplica estilo print-friendly
+
+
+────────────────────────────
+TIENDA — IDENTIFICACIÓN
+────────────────────────────
+
+8
+dado un cliente
+cuando entra a la tienda
+entonces puede elegir entre venta mayorista o minorista
+
+9
+dado un cliente
+cuando entra a la tienda
+y elige venta minorista
+entonces se le pide la provincia y localidad
+
+10
+dado un cliente
+cuando entra a la tienda
+y elige venta minorista
+y ingresa la provincia y localidad
+y la localidad NO está como zona mayorista ingresada en el portal
+entonces recibe la oferta vinculada a la venta minorista
+
+11
+dado un cliente
+cuando entra a la tienda
+y elige venta minorista
+y ingresa la provincia y localidad
+y la localidad SÍ está como zona mayorista ingresada en el portal
+entonces recibe una notificación comentándole que se encuentra un mayorista en su zona
+y se le da la info de dicho mayorista
+
+12
+dado un cliente
+cuando entra a la tienda
+y elige venta mayorista
+entonces debe ingresar su código mayorista o redirigirlo a la landing para registrarse
+
+13
+dado un cliente mayorista
+cuando entra a la tienda
+y ingresa su clave mayorista válida
+entonces recibe la oferta vinculada a la venta mayorista
+
+13.1
+dado un cliente mayorista con código individual (mayoristas_activos)
+cuando entra a la tienda
+y ingresa su código
+entonces se descargan sus datos de Firestore
+y se guardan en localStorage bajo "catt_mayorista_data"
+y las próximas veces que entre al carrito no se le pide dirección
+
+13.2
+dado un cliente mayorista con código master (compartido)
+cuando entra a la tienda
+y ingresa el código master
+entonces accede como mayorista SIN datos personales guardados
+y en el checkout debe completar sus datos como un minorista
+
+13.3
+dado un cliente
+cuando ingresa un código mayorista inválido 5 veces seguidas
+entonces se bloquea el input por 30 segundos
+y se muestra "Demasiados intentos. Esperá Xs"
+
+13.4
+dado un cliente ya identificado
+cuando hace click en "Cambiar" en el badge de perfil
+entonces se abre el modal de identificación con opción de cancelar
+y el catálogo detrás sigue visible (no se oculta)
+y si cancela, mantiene su perfil actual
+
+13.5
+dado un cliente minorista de zona libre con bonificación configurada
+cuando entra a la tienda
+entonces visualiza el badge "Cliente minorista · Localidad · Descuento X% aplicado"
+y los precios muestran el precio original tachado + precio con descuento
+y cada card tiene un badge "-X%"
+
+13.6
+dado un cliente
+cuando se identifica correctamente
+y luego cierra el navegador
+y vuelve a abrir la tienda en el mismo dispositivo
+entonces mantiene su perfil (localStorage persiste)
+y para mayoristas se re-valida el hash contra la config actual
+
+13.7
+dado un cliente mayorista con código individual
+cuando el admin elimina su registro de mayoristas_activos
+y el cliente vuelve a entrar en una nueva sesión
+entonces al validar el perfil persistido, su código deja de funcionar
+y se le fuerza a re-identificarse
+
+
+────────────────────────────
+TIENDA — CATÁLOGO
+────────────────────────────
+
+14
+dado cliente mayorista/minorista
+cuando entra a la tienda
+entonces puede visualizar si está viendo el catálogo como mayorista o minorista
+
+15
+dado cliente mayorista/minorista
+cuando entra a la tienda
+entonces visualiza la oferta de productos con su respectiva foto principal
+y puede filtrar por tipo de prenda
+y puede buscar con un buscador por palabra clave
+
+15.1
+dado un cliente
+cuando busca una palabra que no matchea ningún producto
+entonces se ocultan todas las secciones vacías
+y solo se muestran las categorías con al menos un match
+
+15.2
+dado un cliente
+cuando llega a la tienda con URL "?cat=camisas"
+entonces la pill de la categoría Camisas queda seleccionada
+y solo se muestra esa categoría
+
+15.3
+dado un cliente
+cuando presiona el botón X del buscador
+entonces el input se limpia
+y se muestran todos los productos de la categoría activa
+
+15.4
+dado un cliente mayorista
+cuando ve el catálogo
+entonces cada producto muestra el precio mayorista
+y el badge del perfil se ve en la parte superior
+
+15.5
+dado un cliente minorista de zona bloqueada
+cuando vuelve a entrar a la tienda
+entonces al validar el perfil se muestra directamente la pantalla de zona bloqueada con contacto del distribuidor
+sin cargar el catálogo
+
+
+────────────────────────────
+TIENDA — PRODUCTO DETALLE
+────────────────────────────
+
+16
+dado cliente mayorista/minorista
+cuando entra a la tienda
+y hace click a algún producto
+entonces visualiza el producto más detallado
+y puede ver una o más fotos del producto
+y la guía de talle asignada al producto
+y puede elegir talle y cantidad de producto
+y puede agregar el producto con el talle y cantidad al carrito
+
+16.1
+dado un cliente
+cuando entra a /producto.html?id=X con un ID inexistente
+o un producto con disponible=false
+entonces se muestra la pantalla "Producto no encontrado"
+y un link para volver al catálogo
+
+16.2
+dado un cliente
+cuando entra al detalle de un producto
+y NO ha elegido talle
+entonces el botón "Agregar al carrito" está deshabilitado
+
+16.3
+dado un cliente
+cuando hace click en un talle marcado como no disponible
+entonces el botón no responde (disabled)
+y visualmente el talle se ve tachado y opaco
+
+16.4
+dado un cliente
+cuando hace click en "Ver guía de talles"
+entonces se abre un modal con la tabla de medidas del tipo de prenda
+y las columnas se corresponden con las medidas definidas en productos.json
+y las filas muestran cada talle y sus valores
+
+16.5
+dado un cliente en el detalle de producto con múltiples imágenes
+cuando hace click en un thumbnail
+entonces la imagen principal cambia
+y el thumbnail activo tiene borde negro destacado
+
+16.6
+dado un cliente
+cuando agrega un producto al carrito
+entonces se muestra un toast "Agregado · Talle X ×Y"
+y el badge del carrito aumenta la cantidad
+
+16.7
+dado un cliente
+cuando agrega el mismo producto con el mismo talle 2 veces
+entonces el carrito consolida a un solo item con qty sumada
+en vez de duplicar la línea
+
+16.8
+dado un cliente mayorista con código individual
+cuando entra al detalle de un producto
+entonces ve el precio mayorista con el tag "Precio mayorista"
+y el JSON-LD Product en la página tiene ese precio para SEO
+
+16.9
+dado un cliente
+cuando cambia la cantidad con +/-
+entonces la cantidad se limita entre 1 y 999
+
+
+────────────────────────────
+TIENDA — CARRITO
+────────────────────────────
+
+17
+dado un cliente
+cuando hace click en "Pedido" en el header
+entonces se abre el drawer del carrito desde la derecha
+y el body se bloquea (no scrollea)
+y el scroll interno del drawer no se propaga al fondo (overscroll-behavior contain)
+
+18
+dado un cliente
+cuando abre el carrito y está vacío
+entonces visualiza el mensaje "Tu pedido está vacío"
+y no visualiza el formulario de entrega ni el botón confirmar
+
+19
+dado un cliente
+cuando tiene items en el carrito
+entonces cada item muestra imagen, nombre, categoría, talle, cantidad y subtotal
+y puede modificar la cantidad con +/-
+y puede eliminar el item con X
+y el total se recalcula en tiempo real
+
+20
+dado un cliente
+cuando hace click en "Vaciar carrito"
+entonces se pide confirmación
+y al aceptar el carrito queda vacío
+
+21
+dado un cliente
+cuando cierra el drawer (con X, click en backdrop, o después de confirmar pedido)
+entonces el body vuelve a scrollear en la misma posición previa
+y el drawer se desliza a la derecha
+
+
+────────────────────────────
+TIENDA — CHECKOUT MINORISTA
+────────────────────────────
+
+22
+dado un cliente minorista
+cuando abre el carrito con items
+entonces visualiza el toggle "Retiro en local" / "Envío a domicilio" (retiro por default)
+y visualiza el input de nombre y apellido
+y visualiza la nota opcional
+
+23
+dado un cliente minorista
+cuando elige "Envío a domicilio"
+entonces se muestran los inputs: dirección, provincia (dropdown), localidad (autocomplete), CP
+
+24
+dado un cliente minorista
+cuando confirma pedido sin completar nombre
+entonces se muestra "Ingresá tu nombre"
+y el pedido NO se envía
+
+25
+dado un cliente minorista
+cuando elige envío y confirma sin completar dirección/provincia/localidad
+entonces se muestra "Completá dirección, provincia y localidad"
+y el pedido NO se envía
+
+26
+dado un cliente minorista
+cuando elige una localidad que no existe en la lista de la provincia
+entonces se muestra "Elegí una localidad de la lista sugerida"
+y el pedido NO se envía
+
+27
+dado un cliente minorista
+cuando el subtotal >= config.envio.gratis_desde
+y elige envío
+entonces el envío muestra "Gratis"
+y el total es igual al subtotal
+
+28
+dado un cliente minorista
+cuando el subtotal < config.envio.gratis_desde
+y elige envío
+entonces se agrega config.envio.costo_estandar al total
+y se muestra el detalle "Envío (Vía Cargo): $XXXX"
+
+29
+dado un cliente minorista
+cuando elige retiro
+entonces no se pide dirección
+y el total se muestra como "Total estimado"
+
+
+────────────────────────────
+TIENDA — CHECKOUT MAYORISTA
+────────────────────────────
+
+30
+dado un cliente mayorista con datos en mayoristas_activos
+cuando abre el carrito
+entonces visualiza el panel resumen con nombre, negocio, WhatsApp, email y dirección
+y NO visualiza el input de nombre
+
+31
+dado un cliente mayorista con datos y dirección registrada
+cuando elige "Envío a domicilio"
+entonces los campos de dirección aparecen pre-llenados y deshabilitados (fondo gris)
+y aparece el header "Enviamos a tu dirección registrada" con botón "Editar"
+
+32
+dado un cliente mayorista con dirección pre-llenada
+cuando hace click en "Editar"
+entonces los campos se desbloquean
+y el header desaparece
+y el foco va al input de dirección
+
+33
+dado un cliente mayorista con datos
+cuando confirma pedido con envío
+y no editó la dirección
+entonces se guarda el pedido con los datos originales del mayorista
+
+34
+dado un cliente mayorista con datos
+cuando confirma pedido con envío
+y editó la dirección para enviar a otro lado
+entonces se guarda el pedido con la nueva dirección
+pero manteniendo nombre, negocio y datos personales del mayorista
+
+35
+dado un cliente mayorista SIN dirección registrada
+cuando elige envío
+entonces los campos aparecen vacíos y editables directo
+sin el header de "Editar"
+
+36
+dado un cliente mayorista
+cuando confirma pedido
+entonces el payload en Firebase incluye: negocio, whatsapp, email, cuit del mayorista
+para que el admin identifique el pedido en el panel
+
+
+────────────────────────────
+TIENDA — VALIDACIONES ANTI-FRAUDE
+────────────────────────────
+
+37
+dado un cliente minorista
+cuando en el gate ingresó una localidad libre
+y en el checkout elige envío a una localidad con distribuidor registrado
+entonces al confirmar el pedido se muestra el modal "No podemos enviarte a esa localidad"
+con datos del distribuidor
+y el pedido NO se envía
+
+38
+dado un cliente mayorista
+cuando en el checkout elige envío a una localidad con distribuidor registrado (para minoristas)
+entonces el pedido se envía normalmente
+(los mayoristas no tienen restricción de zona)
+
+39
+dado un cliente
+cuando envía dos pedidos dentro de 2.5 segundos
+entonces la segunda confirmación es rechazada por rate limit
+y se muestra "Esperá unos segundos antes de reenviar"
+
+40
+dado un bot
+cuando completa el formulario incluyendo el campo honeypot #hp-website
+entonces el pedido no se procesa (validación anti-spam)
+
+41
+dado un cliente
+cuando Firebase no está disponible (o db es null)
+entonces se muestra "Sistema de pedidos no disponible. Recargá la página."
+y el pedido no queda como "confirmado" falsamente
+
+42
+dado un cliente
+cuando confirma pedido correctamente
+entonces se muestra modal con código de seguimiento tipo #ABCDE
+y el código + docId se guarda en localStorage bajo "catt_mis_pedidos"
+y el carrito se vacía
+y se ofrece link a /seguimiento.html?code=ABCDE
+
+
+────────────────────────────
+SEGUIMIENTO DE PEDIDO
+────────────────────────────
+
+43
+dado un cliente
+cuando entra a /seguimiento.html sin parámetro code
+y tiene pedidos guardados en localStorage
+entonces visualiza el buscador de código
+y visualiza la lista "Tus últimos pedidos" con acceso directo a cada uno
+
+44
+dado un cliente
+cuando ingresa un código válido en el buscador
+entonces se redirecciona a /seguimiento.html?code=XXX
+y se carga el detalle del pedido
+
+45
+dado un cliente
+cuando entra a /seguimiento.html?code=XXX con un código que no existe
+entonces se muestra "No encontramos ese pedido"
+y un botón para reintentar
+
+46
+dado un cliente
+cuando entra con un código válido
+entonces visualiza:
+- código del pedido destacado
+- badge "En vivo" si Firestore onSnapshot está activo
+- mensaje de estado según pendiente/preparando/listo/enviado
+- timeline con 4 pasos coloreados según el estado actual
+- detalle del cliente (nombre, modalidad, dirección si es envío)
+- lista de items con talle, cantidad y subtotal
+- totales (subtotal, envío, total)
+- nota si existe
+- botón "Consultar por WhatsApp"
+
+47
+dado un cliente con un pedido de modalidad envío
+cuando ve el timeline
+entonces los pasos se etiquetan: Encolado / Preparación / Listo / Enviado
+
+48
+dado un cliente con un pedido de modalidad retiro
+cuando ve el timeline
+entonces los pasos se etiquetan: Encolado / Preparación / Listo para retirar / Retirado
+
+49
+dado un cliente viendo su pedido
+cuando el admin cambia el estado desde pedidos.html
+entonces el estado se actualiza en vivo (Firestore onSnapshot)
+sin recargar la página
+
+50
+dado un cliente viendo un pedido en estado "listo"
+y su pedido es envío
+entonces el mensaje dice "Tu pedido está listo. Lo estamos despachando a la logística de Vía Cargo"
+
+51
+dado un cliente viendo un pedido en estado "enviado"
+y su pedido es retiro
+entonces el mensaje dice "Tu pedido fue retirado. ¡Gracias por elegirnos!"
+
+
+────────────────────────────
+COLA DE PEDIDOS — AUTH
+────────────────────────────
+
+52
+dado el admin
+cuando entra a /pedidos.html
+y ya tiene sesión activa (portal recientemente abierto)
+entonces accede directamente
+
+53
+dado el admin
+cuando entra a /pedidos.html
+y no tiene sesión pero tiene PAT encriptado en localStorage
+entonces se le pide la contraseña del portal
+y al ingresarla correctamente se establece sesión
+
+54
+dado el admin
+cuando entra a /pedidos.html
+y no tiene PAT configurado (nunca abrió el portal en este dispositivo)
+entonces se le indica que configure primero el acceso en el portal
+
+
+────────────────────────────
+COLA DE PEDIDOS — KANBAN
+────────────────────────────
+
+55
+dado el admin
+cuando entra a /pedidos.html
+entonces visualiza 4 columnas: Pendientes / En preparación / Listos / Enviados
+y cada columna muestra la cantidad de pedidos activos
+y un badge "En vivo" indica conexión con Firestore
+
+56
+dado el admin
+cuando hay pedidos con estados diferentes
+entonces cada pedido aparece en la columna correspondiente a su estado
+y los pedidos en otros estados (cancelado, etc) no aparecen en la cola activa
+
+57
+dado el admin
+cuando aplica el filtro "Mayoristas"
+entonces solo se muestran los pedidos de perfil=mayorista en las 4 columnas
+
+58
+dado el admin
+cuando aplica el filtro "Minoristas"
+entonces solo se muestran los pedidos de perfil=minorista
+
+59
+dado el admin
+cuando hace click en una tarjeta de pedido
+entonces se abre el modal con el detalle del pedido
+
+60
+dado el admin
+cuando un cliente nuevo confirma un pedido
+entonces la tarjeta aparece en tiempo real en la columna "Pendientes"
+sin necesidad de recargar (onSnapshot docChanges)
+
+
+────────────────────────────
+COLA DE PEDIDOS — DETALLE
+────────────────────────────
+
+61
+dado el admin
+cuando abre el modal de detalle de un pedido
+entonces visualiza:
+- código del pedido y badge de perfil (mayorista/minorista)
+- datos del cliente: nombre, negocio (si mayorista), CUIT, WhatsApp, email, dirección, localidad, CP
+- lista de items con talle, cantidad y precio unitario
+- totales (subtotal, envío, total)
+- nota si existe
+- botones para cambiar estado: Pendiente / Preparando / Listo / Enviado
+- botón eliminar pedido
+
+62
+dado el admin
+cuando hace click en un estado diferente al actual del pedido
+entonces se actualiza el estado en Firestore
+y la tarjeta se mueve automáticamente a la columna correspondiente
+y el modal se cierra
+
+63
+dado el admin
+cuando hace click en "Eliminar pedido"
+entonces se pide confirmación
+y al aceptar el pedido se borra de Firestore
+
+
+────────────────────────────
+COLA DE PEDIDOS — PEDIDO MANUAL
+────────────────────────────
+
+64
+dado el admin
+cuando hace click en "+ Manual"
+entonces se abre el modal de pedido manual
+con el selector de perfil (Minorista/Mayorista) en Minorista por default
+
+65
+dado el admin
+cuando elige perfil "Minorista"
+entonces se muestra el input libre "Nombre del cliente"
+y los precios de los productos aparecen como precio_minorista
+
+66
+dado el admin
+cuando elige perfil "Mayorista"
+entonces se carga el dropdown con los mayoristas de mayoristas_activos
+y los precios cambian a precio_mayorista
+
+67
+dado el admin
+cuando selecciona un mayorista del dropdown
+entonces se muestra la info del mayorista (WA, email, CUIT, dirección)
+y los campos de envío se autocompletan con su dirección registrada
+
+68
+dado el admin
+cuando agrega productos al pedido manual
+y cambia de perfil después
+entonces los precios de los items ya cargados se recalculan al nuevo perfil
+
+69
+dado el admin
+cuando elige modalidad "Envío"
+entonces se muestran los campos dirección/localidad/provincia/CP
+y para mayoristas ya vienen pre-llenados
+
+70
+dado el admin
+cuando confirma un pedido manual como mayorista sin haber elegido uno de la lista
+entonces se muestra "Elegí un mayorista de la lista"
+
+71
+dado el admin
+cuando confirma un pedido manual como minorista sin nombre
+entonces se muestra "Ingresá nombre del cliente"
+
+72
+dado el admin
+cuando el pedido manual se crea correctamente
+entonces se guarda en Firestore con perfil, todos los datos del cliente correctos, items y un código de seguimiento auto-generado
+y el modal se cierra
+y la tarjeta aparece en la columna Pendientes
+
+
+────────────────────────────
+COLA DE PEDIDOS — MÉTRICAS Y HISTORIAL
+────────────────────────────
+
+73
+dado el admin
+cuando entra a la tab "Métricas"
+entonces visualiza para el día actual:
+- cantidad de pedidos hoy
+- facturación total hoy
+- ticket promedio
+- distribución mayorista/minorista
+- distribución retiro/envío
+
+74
+dado el admin
+cuando entra a la tab "Historial"
+entonces visualiza los últimos 500 pedidos (todos los estados) en una tabla
+con: fecha, código, cliente, perfil, modalidad, cantidad items, total, estado
+
+75
+dado el admin
+cuando hace click en una fila del historial
+entonces se abre el modal de detalle del pedido
+
+76
+dado el admin
+cuando hace click en "↓ Exportar CSV"
+entonces se descarga un CSV con todos los pedidos cargados
+con encoding UTF-8 BOM (compatible Excel)
+y columnas: fecha, hora, código, nombre, dirección, localidad, perfil, modalidad, items, subtotal, envío, total, nota, estado
+
+
+────────────────────────────
+PORTAL — AUTH Y SETUP
+────────────────────────────
+
+77
+dado el admin
+cuando entra al portal por primera vez (sin PAT guardado)
+entonces se le pide su PAT de GitHub y una contraseña de min 8 caracteres
+y la contraseña se pide dos veces para confirmar
+
+78
+dado el admin
+cuando ingresa un PAT que no empieza con "ghp_" o "github_pat_"
+entonces se muestra "El PAT parece inválido"
+
+79
+dado el admin
+cuando ingresa una contraseña < 8 caracteres
+o dos contraseñas distintas
+entonces se muestra el error correspondiente
+
+80
+dado el admin
+cuando completa el setup correctamente
+entonces el PAT se encripta con PBKDF2 (300k iteraciones) + AES-GCM usando la contraseña como derivación
+y se guarda en localStorage bajo "catt_epat"
+y se guarda un TTL de 30 días bajo "catt_epat_meta"
+y se establece sesión en sessionStorage
+
+81
+dado el admin
+cuando entra al portal habiendo configurado antes
+entonces se le pide solo la contraseña
+y si es correcta se descifra el PAT y se guarda en sessionStorage
+
+82
+dado el admin
+cuando ingresa una contraseña incorrecta
+entonces se muestra "Contraseña incorrecta"
+
+83
+dado el admin
+cuando la sesión ha expirado (TTL > 30 días)
+entonces se le pide reconfigurar todo el acceso (nuevo PAT + contraseña)
+
+84
+dado el admin
+cuando hace click en "Reconfigurar acceso"
+entonces se limpia el localStorage encriptado
+y se vuelve al setup inicial
+
+85
+dado el admin
+cuando hace click en "Salir"
+entonces se limpia la sesión
+y vuelve a la pantalla de contraseña
+
+86
+dado el admin
+cuando ingresa al portal
+entonces Firebase Auth intenta signInAnonymously()
+y una vez OK, las operaciones de update/delete pueden ejecutarse
+(sin auth solo funcionan reads)
+
+
+────────────────────────────
+PORTAL — GESTIÓN DE CAMBIOS
+────────────────────────────
+
+87
+dado el admin
+cuando modifica cualquier campo con data-field
+entonces se marca el estado como "sin publicar"
+y aparece la barra superior "Hay cambios sin publicar"
+
+88
+dado el admin
+cuando hace click en "Publicar cambios"
+entonces productos.json se envía a la GitHub API (PUT contents)
+y se hace commit al repo cattorini/cattorini.github.io
+y automáticamente se regenera y publica sitemap.xml con las URLs de todos los productos disponibles
+
+89
+dado el admin
+cuando modifica cambios pero no publica
+y navega fuera de la página
+entonces el browser muestra un warning "beforeunload" avisando de cambios sin guardar
+
+90
+dado el admin
+cuando hace click en "↻ Recargar"
+entonces se descartan cambios locales
+y se recarga productos.json del repo
+
+
+────────────────────────────
+PORTAL — TAB NEGOCIO
+────────────────────────────
+
+91
+dado el admin
+cuando entra a la tab "Negocio"
+entonces puede editar: nombre comercial, nombre completo, tagline, descripción corta (SEO), descripción larga, WhatsApp, teléfono, dirección, Analytics ID
+
+92
+dado el admin
+cuando guarda cambios en la tab Negocio
+entonces al publicar, los cambios se ven reflejados en la landing (títulos, metadatos, footer, botón WA, mapa)
+
+
+────────────────────────────
+PORTAL — TAB ENVÍO
+────────────────────────────
+
+93
+dado el admin
+cuando entra a la tab "Envío"
+entonces puede editar: costo estándar, umbral gratis, transportista, leyenda pública
+
+94
+dado el admin
+cuando modifica el costo o umbral
+entonces al publicar, los pedidos nuevos usan los valores actualizados
+
+
+────────────────────────────
+PORTAL — TAB MAYORISTAS — CONFIGURACIÓN
+────────────────────────────
+
+95
+dado el admin
+cuando entra a la sub-tab "Configuración"
+entonces puede ver el hash del código master actual (readonly)
+y puede escribir un código nuevo y hacer "Generar nuevo hash"
+
+96
+dado el admin
+cuando genera un hash nuevo con un código < 4 caracteres
+entonces se muestra "El código debe tener al menos 4 caracteres"
+
+97
+dado el admin
+cuando genera un hash nuevo correctamente
+entonces se muestra un alert con el código plaintext para guardarlo (no se puede recuperar después)
+y el campo del hash se actualiza en pantalla
+y al publicar, ese hash es el nuevo código master de la tienda
+
+98
+dado el admin
+cuando modifica mínimo compra o mensaje de bienvenida
+entonces al publicar, esos valores se reflejan en el gate mayorista de la tienda
+
+
+────────────────────────────
+PORTAL — TAB MAYORISTAS — SOLICITUDES
+────────────────────────────
+
+99
+dado el admin
+cuando entra a la sub-tab "Solicitudes"
+entonces se cargan las últimas 200 solicitudes de solicitudes_mayoristas ordenadas por fecha descendente
+y se muestra un badge rojo con la cantidad de pendientes tanto en el tab Mayoristas como en el sub-tab
+
+100
+dado el admin
+cuando aplica filtros Pendientes / Aceptadas / Rechazadas / Todas
+entonces se filtra la lista
+
+101
+dado el admin
+cuando hace click en "✓ Aceptar" de una solicitud pendiente
+entonces se auto-genera un código CATT-XXXXXX
+y se hashea con SHA-256
+y se crea un doc en mayoristas_activos con ID = hash
+y la solicitud pasa a estado "aceptada" con respuesta.codigoMayorista = código plaintext
+y se abre el modal de código con opción de "Enviar por WhatsApp" y "Bloquear zona para minoristas"
+
+102
+dado el admin
+cuando hace click en "✗ Rechazar" de una solicitud pendiente
+entonces se pide confirmación
+y al aceptar la solicitud pasa a estado "rechazada" con motivo default
+
+103
+dado el admin
+cuando ve una solicitud aceptada
+entonces visualiza el código de acceso asignado
+y un botón WhatsApp con mensaje pre-armado que incluye el código
+
+104
+dado el admin
+cuando ve una solicitud rechazada
+entonces visualiza el motivo del rechazo
+y un botón WhatsApp con mensaje neutral
+
+105
+dado el admin
+cuando hace click en "Eliminar registro" de una solicitud aceptada o rechazada
+entonces se pide confirmación
+y al aceptar se elimina la solicitud (no el mayorista activo)
+
+
+────────────────────────────
+PORTAL — TAB MAYORISTAS — ALTA MANUAL
+────────────────────────────
+
+106
+dado el admin
+cuando entra a la sub-tab "Alta manual"
+entonces visualiza el formulario para registrar un mayorista directo
+sin pasar por solicitud
+
+107
+dado el admin
+cuando completa nombre + negocio + otros datos + dirección
+y hace click en "Registrar mayorista"
+entonces se genera código CATT-XXXXXX
+y se crea en mayoristas_activos + se crea la solicitud correspondiente marcada como aceptada
+y se abre el modal de código con opción WhatsApp + Bloquear zona
+
+
+────────────────────────────
+PORTAL — TAB MAYORISTAS — ACTIVOS (ABM)
+────────────────────────────
+
+108
+dado el admin
+cuando entra a la sub-tab "Activos"
+entonces se cargan los mayoristas de mayoristas_activos
+y el badge muestra la cantidad total
+
+109
+dado el admin
+cuando escribe en el buscador
+entonces se filtran los mayoristas por nombre, negocio, localidad, provincia o email
+
+110
+dado el admin
+cuando hace click en "Editar" de un mayorista
+entonces se muestra un prompt secuencial para editar cada campo
+y al guardar, se actualiza en Firestore
+
+111
+dado el admin
+cuando hace click en "Regenerar código"
+entonces se pide confirmación
+y al aceptar se genera un código nuevo
+y se crea un doc nuevo con hash nuevo
+y se elimina el doc anterior
+y se muestra el nuevo código en el modal
+
+112
+dado el admin
+cuando hace click en "Bloquear zona" de un mayorista
+entonces se pide confirmación
+y al aceptar se agrega su localidad a productos.json.zonas_mayoristas
+y se publica el JSON al repo
+
+113
+dado el admin
+cuando ve un mayorista cuya localidad ya está en zonas_mayoristas
+entonces el botón muestra "✓ Zona bloqueada" y está deshabilitado
+
+114
+dado el admin
+cuando hace click en "Eliminar" un mayorista
+entonces se pide confirmación
+y al aceptar el mayorista se borra de mayoristas_activos
+y su código deja de funcionar en la tienda
+
+
+────────────────────────────
+PORTAL — TAB MINORISTAS
+────────────────────────────
+
+115
+dado el admin
+cuando entra a la tab "Minoristas"
+entonces puede editar: bonificación en zonas libres (%), mensaje de bonificación, mensaje cuando la zona tiene mayorista
+
+116
+dado el admin
+cuando pone bonificación en 0
+entonces los minoristas en zonas libres ven precios sin descuento (no aparece el badge)
+
+
+────────────────────────────
+PORTAL — TAB ZONAS
+────────────────────────────
+
+117
+dado el admin
+cuando entra a la tab "Zonas"
+entonces visualiza la lista de zonas con distribuidor
+y puede agregar/editar/eliminar zonas
+
+118
+dado el admin
+cuando agrega una zona
+entonces completa provincia, lista de localidades (separadas por coma) y datos del mayorista (nombre, dirección, tel, WhatsApp)
+
+119
+dado el admin
+cuando publica cambios en zonas
+entonces la lista se refleja en tienda.html para bloqueo de minoristas
+
+
+────────────────────────────
+PORTAL — TAB GUÍA TALLES
+────────────────────────────
+
+120
+dado el admin
+cuando entra a la tab "Guía talles"
+entonces visualiza las tablas por tipo de prenda (camisas, pantalones, jeans)
+y puede editar unidad, nombres de columnas y celdas
+y puede agregar filas (talles) o tipos nuevos
+
+121
+dado el admin
+cuando modifica los medidas (columnas)
+entonces la cantidad de columnas en la tabla se ajusta
+y los valores existentes se preservan por índice
+
+
+────────────────────────────
+PORTAL — TAB HORARIOS
+────────────────────────────
+
+122
+dado el admin
+cuando entra a la tab "Horarios"
+entonces cada día muestra sus turnos (abre/cierra) o "Cerrado" si vacío
+y puede agregar/eliminar turnos por día
+
+123
+dado el admin
+cuando modifica los horarios
+entonces al publicar, la landing muestra el estado "Abierto/Cerrado" en tiempo real según hora local
+y el JSON-LD OpeningHoursSpecification se actualiza para SEO
+
+
+────────────────────────────
+PORTAL — TAB CATÁLOGO
+────────────────────────────
+
+124
+dado el admin
+cuando entra a la tab "Catálogo"
+entonces puede agregar/editar/eliminar categorías
+y para cada categoría editar id, nombre, descripción y tipo_talle asociado
+
+125
+dado el admin
+cuando agrega un producto a una categoría
+entonces se le asigna un id auto-incremental
+y campos: nombre, descripción, precio_minorista, precio_mayorista, talles_disponibles (checkboxes por talle según tipo_talle), imágenes múltiples, disponible (toggle), destacado (toggle)
+
+126
+dado el admin
+cuando toggle "Disponible" a false
+entonces el producto no aparece en el catálogo público de la tienda
+ni cuenta como destacado
+
+127
+dado el admin
+cuando toggle "Destacado" a true
+entonces el producto aparece en la sección Destacados de la landing (hasta 8 productos)
+
+128
+dado el admin
+cuando sube 1 o más imágenes desde el uploader del producto
+entonces cada imagen se sube al repo GH bajo /img/ con nombre único
+y se agrega al array imagenes[] del producto
+
+129
+dado el admin
+cuando elimina una imagen de un producto
+entonces se remueve del array imagenes[]
+(el archivo físico queda en el repo pero deja de referenciarse)
+
+
+────────────────────────────
+PORTAL — TAB TEXTOS
+────────────────────────────
+
+130
+dado el admin
+cuando entra a la tab "Textos"
+entonces puede editar todos los textos configurables de la landing:
+- hero (título, subtítulo, CTA)
+- fábrica (título, texto)
+- local (título, texto)
+- mayoristas (título, texto, CTA)
+- confianza (texto)
+- footer (texto)
+- checkout saludos (mayorista/minorista)
+
+
+────────────────────────────
+PORTAL — TAB IMÁGENES
+────────────────────────────
+
+131
+dado el admin
+cuando entra a la tab "Imágenes"
+entonces puede subir/reemplazar: logo, hero, foto fábrica, foto local
+
+132
+dado el admin
+cuando sube una imagen
+entonces se envía a GH API bajo /img/ con el nombre fijo esperado por la landing
+
+
+────────────────────────────
+SEGURIDAD Y EDGE CASES
+────────────────────────────
+
+133
+dado un atacante
+cuando hace fetch a /pages/cattorini/portal.html en Google
+entonces la página tiene meta robots="noindex,nofollow" y no aparece en resultados
+y en robots.txt está Disallow: /portal.html
+
+134
+dado un atacante
+cuando intenta escribir en Firestore fuera del shape esperado
+entonces las security rules rechazan el request
+y el pedido no se crea
+
+135
+dado un atacante
+cuando intenta hacer un update/delete en pedidos sin autenticar
+entonces las security rules deniegan (require request.auth != null)
+
+136
+dado un atacante
+cuando descarga productos.json
+entonces solo obtiene el HASH del código master (no el código plaintext)
+y no puede recuperar el código por brute-force razonable
+
+137
+dado un atacante
+cuando trata de listar mayoristas_activos
+entonces las rules deniegan (list solo con auth)
+pero puede hacer get puntual si conoce el hash exacto de un código
+(la seguridad viene del espacio 2^256 de SHA-256)
+
+138
+dado un cliente
+cuando el navegador o red bloquea Firestore
+entonces la tienda sigue funcionando en modo lectura (catálogo, precios)
+pero al confirmar pedido se muestra un error explícito, no un falso éxito
+
+139
+dado un cliente
+cuando la app se sirve desde bfcache (botón "atrás" de Chrome)
+entonces al restaurar la página se remueve la clase "leaving" del body
+y la página vuelve a ser visible inmediatamente
+
+140
+dado un cliente
+cuando el Service Worker v2 detecta una versión nueva del sitio
+entonces la activa automáticamente (skipWaiting + clients.claim)
+y las próximas requests HTML/JS son network-first (siempre traen lo último)
+
+
+────────────────────────────
+NOTAS PARA TESTING
+────────────────────────────
+
+- El campo "código de seguimiento" es alfanumérico [A-Z2-9] de 5 caracteres (pedidos) o "MAY-" + 4 caracteres (solicitudes) o "CATT-" + 6 caracteres (códigos mayorista)
+- El hash SHA-256 se calcula en cliente con crypto.subtle.digest
+- Firebase Auth es anónima (no requiere email/pass del cliente)
+- Los datos sensibles (PAT, contraseña) nunca se guardan en Firestore
+- localStorage keys usadas:
+  * catt_perfil, catt_localidad, catt_zona_status
+  * catt_mayorista_data
+  * catt_cart_v2
+  * catt_mis_pedidos, catt_mis_solicitudes
+  * catt_epat, catt_epat_meta (portal)
+- sessionStorage keys:
+  * catt_pat_session, catt_pedidos_session
+  * catt_codigo_valido_hash

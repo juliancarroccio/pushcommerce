@@ -1,0 +1,916 @@
+═══════════════════════════════════════════════════════════════
+CATTORINI — QUÉ HACE TU PÁGINA WEB
+Guía funcional para revisar el sitio y pedir cambios.
+Formato: Situación / Acción del cliente / Qué debería pasar.
+═══════════════════════════════════════════════════════════════
+
+
+────────────────────────────
+LANDING (PÁGINA PRINCIPAL)
+────────────────────────────
+
+1
+dado un visitante
+cuando entra a la página principal
+entonces ve el hero con las fotos del negocio
+y la historia de Cattorini
+y las tres líneas de productos (camisas, pantalones y jeans)
+y una selección de productos destacados
+y un link para solicitar cuenta como mayorista
+y un link para consultar el estado de una solicitud mayorista
+y la sección del local con fotos
+y la sección de contacto con el mapa, dirección y horarios
+
+2
+dado un visitante
+cuando scrollea la página principal
+entonces las secciones aparecen con animaciones suaves
+y las fotos de "Historia" rotan como carrusel en el hero
+y las fotos de "Fábrica" y "Local" rotan cada pocos segundos en sus secciones
+
+3
+dado un visitante
+cuando scrollea hacia abajo
+entonces aparece un botón flotante de WhatsApp en la esquina para contactarnos
+
+4
+dado un visitante que viene desde la tienda haciendo click en "Solicitar cuenta mayorista"
+cuando llega a la landing
+entonces la página lo lleva automáticamente a la sección de mayoristas
+y el botón "Solicitar cuenta mayorista" se resalta con una animación para llamarle la atención
+
+
+────────────────────────────
+SOLICITAR CUENTA MAYORISTA
+────────────────────────────
+
+5
+dado un visitante
+cuando hace click en "Solicitar cuenta mayorista"
+entonces se abre un formulario con los campos:
+- nombre y apellido (obligatorio)
+- razón social o negocio (obligatorio)
+- CUIT / CUIL
+- tipo de comercio (mercería, tienda de ropa, uniformes, feria, online, otro)
+- teléfono
+- WhatsApp
+- email
+- provincia
+- localidad
+- dirección (obligatorio, para envíos)
+- código postal
+- notas opcionales
+
+6
+dado un visitante
+cuando envía la solicitud sin completar nombre o negocio
+entonces recibe el mensaje "Nombre y negocio son obligatorios"
+y la solicitud no se envía
+
+7
+dado un visitante
+cuando envía la solicitud sin WhatsApp ni email
+entonces recibe el mensaje "Necesitamos WhatsApp o email para contactarte"
+
+8
+dado un visitante
+cuando envía la solicitud sin dirección
+entonces recibe el mensaje pidiendo que la complete
+(la dirección se usa para enviarle mercadería por Vía Cargo cuando sea aceptado)
+
+9
+dado un visitante
+cuando envía la solicitud completa correctamente
+entonces la solicitud queda registrada
+y recibe un código de seguimiento tipo MAY-XXXX en pantalla
+y se le muestra un link para consultar el estado en cualquier momento
+
+10
+dado un visitante
+cuando intenta enviar la solicitud dos veces seguidas muy rápido
+entonces la segunda vez se rechaza
+para evitar solicitudes duplicadas por error
+
+
+────────────────────────────
+SEGUIMIENTO DE UNA SOLICITUD MAYORISTA
+────────────────────────────
+
+11
+dado un solicitante
+cuando entra a la página de seguimiento sin haber puesto código
+y ya usó el sitio antes desde ese dispositivo
+entonces ve la lista de sus últimas solicitudes con acceso directo
+
+12
+dado un solicitante
+cuando ingresa su código de seguimiento
+y la solicitud está en estado "pendiente"
+entonces recibe el mensaje explicándole que su solicitud está siendo revisada
+y que lo van a contactar
+
+13
+dado un solicitante
+cuando ingresa su código de seguimiento
+y la solicitud fue "aceptada"
+entonces ve el mensaje de aprobación
+y ve su código mayorista para usar en la tienda
+y un botón para escribir a Cattorini por WhatsApp
+
+14
+dado un solicitante
+cuando ingresa su código de seguimiento
+y la solicitud fue "rechazada"
+entonces ve el motivo del rechazo
+y un botón para consultar por WhatsApp
+
+15
+dado un solicitante que ingresa un código inválido
+cuando intenta consultar
+entonces se le muestra "No encontramos esa solicitud"
+y un botón para reintentar
+
+16
+dado un solicitante que está viendo su solicitud
+cuando el admin del portal cambia el estado
+entonces el cambio aparece automáticamente sin recargar la página
+
+
+────────────────────────────
+CÓDIGO QR
+────────────────────────────
+
+17
+dado Cattorini
+cuando entra a la página del QR
+entonces ve un QR imprimible que lleva a la tienda online
+y puede imprimirlo para exhibir en el local físico
+
+
+────────────────────────────
+TIENDA — CÓMO SE IDENTIFICA EL CLIENTE
+────────────────────────────
+
+18
+dado un visitante
+cuando entra a la tienda por primera vez
+entonces se abre una pantalla que le pide elegir entre "Soy mayorista" o "Soy minorista"
+
+19
+dado un visitante
+cuando elige "Soy minorista"
+entonces se le pide provincia y localidad
+
+20
+dado un visitante minorista
+cuando su localidad NO tiene distribuidor asignado
+entonces accede a la tienda con precios minoristas
+y si Cattorini configuró bonificación para zonas libres, se le aplica el descuento
+
+21
+dado un visitante minorista
+cuando su localidad SÍ tiene un distribuidor asignado
+entonces NO puede comprar
+y se le muestra "En tu zona tenemos un distribuidor autorizado"
+con los datos de contacto del distribuidor (nombre, teléfono, WhatsApp)
+
+22
+dado un visitante
+cuando elige "Soy mayorista"
+entonces se le pide su código de acceso
+y ve un link para solicitar la cuenta si aún no la tiene
+
+23
+dado un mayorista con código válido
+cuando lo ingresa
+entonces accede a la tienda con precios mayoristas
+
+24
+dado un visitante
+cuando ingresa 5 veces un código mayorista incorrecto
+entonces el sistema lo bloquea por 30 segundos
+como protección contra intentos de adivinar
+
+25
+dado un mayorista ya identificado
+cuando hace click en "Cambiar" al lado de su perfil
+entonces puede volver al gate de identificación
+y si lo cancela, sigue con su perfil actual
+
+26
+dado un visitante ya identificado
+cuando cierra el navegador y vuelve más tarde
+entonces mantiene su perfil (no tiene que volver a ingresarse el código)
+
+
+────────────────────────────
+TIENDA — NAVEGACIÓN Y CATÁLOGO
+────────────────────────────
+
+27
+dado un cliente en la tienda
+cuando ve el catálogo
+entonces sabe si está viendo como mayorista o minorista gracias a un badge visible arriba
+
+28
+dado un cliente
+cuando ve el catálogo
+entonces cada producto se muestra con:
+- foto principal
+- nombre
+- precio (mayorista o minorista según su perfil)
+
+29
+dado un cliente
+cuando quiere filtrar
+entonces puede seleccionar una categoría (Todos / Camisas / Pantalones / Jeans)
+y puede escribir en el buscador para filtrar por palabra clave
+
+30
+dado un cliente
+cuando busca una palabra que no encuentra nada
+entonces las categorías vacías se ocultan automáticamente
+
+31
+dado un cliente minorista en zona libre con bonificación configurada
+cuando ve el catálogo
+entonces los precios muestran el precio original tachado + el precio con descuento
+y cada producto tiene un badge con el porcentaje de descuento aplicado
+
+
+────────────────────────────
+TIENDA — PRODUCTO EN DETALLE
+────────────────────────────
+
+32
+dado un cliente
+cuando hace click en un producto
+entonces ve la ficha completa con:
+- una o más fotos del producto
+- descripción
+- precio según su perfil
+- selector de talle
+- link a la guía de talles
+- selector de cantidad
+- botón "Agregar al carrito"
+
+33
+dado un cliente en el detalle
+cuando aún no eligió talle
+entonces el botón "Agregar al carrito" está desactivado
+
+34
+dado un cliente
+cuando un talle no está disponible
+entonces se muestra tachado y no se puede seleccionar
+
+35
+dado un cliente
+cuando hace click en "Ver guía de talles"
+entonces se abre una ventana con la tabla de medidas del tipo de prenda
+(las medidas las gestiona Cattorini desde el portal)
+
+36
+dado un cliente
+cuando el producto tiene varias fotos
+entonces puede hacer click en las miniaturas para ver otras vistas
+
+37
+dado un cliente
+cuando agrega un producto al carrito
+entonces recibe un mensaje "Agregado · Talle X ×Y"
+y el contador del carrito arriba se actualiza
+
+38
+dado un cliente
+cuando agrega dos veces el mismo producto con el mismo talle
+entonces el carrito los suma en una sola línea (no duplica)
+
+39
+dado un cliente
+cuando intenta entrar a un producto que no existe o que fue desactivado por Cattorini
+entonces ve "Producto no encontrado"
+y un link para volver al catálogo
+
+
+────────────────────────────
+TIENDA — CARRITO
+────────────────────────────
+
+40
+dado un cliente
+cuando hace click en "Pedido" en el header
+entonces se abre el carrito desde la derecha (drawer)
+
+41
+dado un cliente con carrito vacío
+cuando abre el carrito
+entonces ve "Tu pedido está vacío"
+
+42
+dado un cliente con items en el carrito
+cuando lo abre
+entonces cada item muestra imagen, nombre, categoría, talle, cantidad y subtotal
+y puede aumentar o disminuir la cantidad con +/-
+y puede eliminar el item con X
+y el total se recalcula al instante
+
+43
+dado un cliente
+cuando hace click en "Vaciar carrito"
+entonces se pide confirmación antes de vaciarlo
+
+
+────────────────────────────
+TIENDA — CHECKOUT (COMPRA) DEL MINORISTA
+────────────────────────────
+
+44
+dado un cliente minorista
+cuando abre el carrito con items
+entonces ve el toggle "Retiro en local" / "Envío a domicilio" (retiro seleccionado por defecto)
+y ve el campo nombre
+y ve un campo de nota opcional
+
+45
+dado un cliente minorista
+cuando elige "Envío a domicilio"
+entonces aparecen los campos: dirección, provincia, localidad y CP
+
+46
+dado un cliente minorista
+cuando confirma pedido sin nombre
+entonces recibe el mensaje "Ingresá tu nombre"
+
+47
+dado un cliente minorista con envío
+cuando confirma pedido sin dirección o localidad
+entonces recibe el mensaje pidiendo que las complete
+
+48
+dado un cliente
+cuando el subtotal del pedido es mayor o igual al umbral de envío gratis (definido por Cattorini)
+entonces el envío se muestra como "Gratis"
+
+49
+dado un cliente
+cuando el subtotal es menor al umbral
+entonces se suma el costo de envío estándar (definido por Cattorini) al total
+
+50
+dado un cliente
+cuando elige retiro en local
+entonces no se le pide dirección
+y el total aparece como "Total estimado"
+
+
+────────────────────────────
+TIENDA — CHECKOUT DEL MAYORISTA (SIMPLIFICADO)
+────────────────────────────
+
+51
+dado un mayorista con cuenta individual (dado de alta por Cattorini)
+cuando abre el carrito
+entonces ve un panel con sus datos ya cargados: nombre, negocio, WhatsApp, email, dirección
+y NO se le pide nombre nuevamente
+
+52
+dado un mayorista con dirección registrada
+cuando elige "Envío a domicilio"
+entonces sus campos de dirección aparecen pre-llenados y bloqueados
+y aparece un mensaje "Enviamos a tu dirección registrada" con un botón "Editar"
+
+53
+dado un mayorista
+cuando hace click en "Editar" la dirección
+entonces los campos se desbloquean para que pueda enviar a otra dirección puntualmente
+sin que eso cambie la dirección registrada en su cuenta
+
+54
+dado un mayorista
+cuando confirma pedido sin editar la dirección
+entonces el pedido se envía usando los datos de su registro
+
+55
+dado un mayorista
+cuando confirma pedido después de editar la dirección
+entonces el pedido se envía a la nueva dirección
+pero manteniendo su identidad (negocio, WhatsApp, etc.)
+
+56
+dado un mayorista sin dirección registrada
+cuando elige envío
+entonces los campos aparecen vacíos para que los complete
+(estos casos son de mayoristas antiguos, dados de alta antes de agregar el campo dirección)
+
+57
+dado un mayorista
+cuando confirma un pedido
+entonces en la cola de pedidos aparece con todos sus datos (negocio, CUIT, WhatsApp, email) para que Cattorini lo identifique fácil
+
+
+────────────────────────────
+TIENDA — PROTECCIONES AL DISTRIBUIDOR
+────────────────────────────
+
+58
+dado un cliente minorista
+cuando declara vivir en una zona libre en la identificación
+y luego intenta enviar el pedido a una zona con distribuidor
+entonces se le bloquea la compra
+y se le muestra los datos del distribuidor de esa zona
+
+59
+dado un mayorista
+cuando elige enviar a una zona que estaría bloqueada para minoristas
+entonces la compra procede normalmente
+(los mayoristas no tienen esa restricción)
+
+60
+dado un cliente
+cuando intenta confirmar dos pedidos seguidos muy rápido
+entonces el segundo se rechaza
+para evitar duplicados por error
+
+
+────────────────────────────
+CONFIRMACIÓN Y SEGUIMIENTO DE PEDIDO
+────────────────────────────
+
+61
+dado un cliente
+cuando confirma el pedido correctamente
+entonces se muestra una pantalla con:
+- código de seguimiento (5 caracteres, ej: A3F7B)
+- link "Ver estado del pedido"
+- opción de seguir comprando
+
+62
+dado un cliente
+cuando quiere ver el estado de sus pedidos
+entonces entra a la página de seguimiento
+y puede ver la lista de sus últimos pedidos (si los hizo desde ese dispositivo)
+o buscar por código
+
+63
+dado un cliente con código válido
+cuando consulta su pedido
+entonces ve:
+- el código del pedido
+- un indicador "En vivo" mientras hay conexión
+- mensaje del estado actual (pendiente / preparando / listo / enviado)
+- una barra de progreso visual con los 4 pasos
+- sus datos personales del pedido
+- lista de items con talle y cantidad
+- totales
+- botón para consultar por WhatsApp
+
+64
+dado un cliente con un pedido de envío
+cuando ve el progreso
+entonces los pasos se etiquetan: Encolado → Preparación → Listo → Enviado
+
+65
+dado un cliente con un pedido de retiro
+cuando ve el progreso
+entonces los pasos se etiquetan: Encolado → Preparación → Listo para retirar → Retirado
+
+66
+dado un cliente viendo su pedido
+cuando Cattorini cambia el estado desde el portal
+entonces el cambio se refleja al instante sin recargar la página
+
+
+────────────────────────────
+COLA DE PEDIDOS (GESTIÓN INTERNA CATTORINI)
+────────────────────────────
+
+67
+dado el admin
+cuando entra a la cola de pedidos
+entonces ve 4 columnas: Pendientes / En preparación / Listos / Enviados
+y cada columna con la cantidad de pedidos activos
+
+68
+dado el admin
+cuando llega un pedido nuevo desde la tienda
+entonces la tarjeta aparece automáticamente en la columna "Pendientes" sin recargar
+
+69
+dado el admin
+cuando quiere filtrar
+entonces puede ver Todos / Solo Mayoristas / Solo Minoristas
+
+70
+dado el admin
+cuando hace click en una tarjeta de pedido
+entonces se abre el detalle con toda la info del cliente, items y totales
+
+71
+dado el admin
+cuando quiere cambiar el estado de un pedido
+entonces desde el detalle puede pasar entre Pendiente / Preparando / Listo / Enviado con un click
+y la tarjeta se mueve a la columna correspondiente
+
+72
+dado el admin
+cuando quiere eliminar un pedido
+entonces desde el detalle puede hacerlo con confirmación
+
+
+────────────────────────────
+COLA DE PEDIDOS — PEDIDO MANUAL
+────────────────────────────
+
+73
+dado el admin
+cuando recibe un pedido por otro canal (WhatsApp, teléfono, presencial)
+entonces puede cargarlo manualmente desde el botón "+ Manual"
+
+74
+dado el admin
+cuando arma un pedido manual
+entonces primero elige si es Minorista o Mayorista
+
+75
+dado el admin
+cuando elige "Minorista"
+entonces solo escribe el nombre del cliente (los precios se toman como minoristas)
+
+76
+dado el admin
+cuando elige "Mayorista"
+entonces aparece un dropdown con los mayoristas registrados
+y al elegir uno, se autocompletan sus datos (dirección incluida)
+y los precios pasan a mayoristas
+
+77
+dado el admin
+cuando arma un pedido y luego cambia entre minorista y mayorista
+entonces los precios de los items ya cargados se recalculan automáticamente
+
+78
+dado el admin
+cuando elige envío y el cliente es mayorista
+entonces los campos de dirección vienen pre-completados con los datos del mayorista
+
+79
+dado el admin
+cuando confirma el pedido manual
+entonces se guarda en la cola en "Pendientes"
+y se genera un código de seguimiento automático
+
+
+────────────────────────────
+COLA DE PEDIDOS — MÉTRICAS Y HISTORIAL
+────────────────────────────
+
+80
+dado el admin
+cuando entra a "Métricas"
+entonces ve para el día actual:
+- cantidad de pedidos
+- facturación total
+- ticket promedio
+- cantidad mayorista vs minorista
+- cantidad retiro vs envío
+
+81
+dado el admin
+cuando entra a "Historial"
+entonces ve los últimos 500 pedidos en una tabla con fecha, código, cliente, perfil, modalidad, total, estado
+
+82
+dado el admin
+cuando quiere una copia de los datos
+entonces puede exportar el historial a CSV (compatible Excel)
+
+
+────────────────────────────
+PORTAL (PANEL DE ADMINISTRACIÓN)
+────────────────────────────
+
+83
+dado el admin
+cuando entra al portal la primera vez
+entonces configura su acceso (un token de GitHub + una contraseña propia)
+la contraseña se le pide para asegurar el acceso posterior
+
+84
+dado el admin
+cuando entra al portal en visitas siguientes
+entonces solo se le pide su contraseña
+y si es correcta, accede al panel
+
+85
+dado el admin
+cuando pasa mucho tiempo sin usar el portal (30 días o más)
+entonces se le pide reconfigurar el acceso desde cero (por seguridad)
+
+86
+dado el admin
+cuando hace algún cambio en el portal
+entonces el sistema le avisa "Hay cambios sin publicar"
+y debe hacer click en "Publicar cambios" para que se reflejen en la página pública
+
+87
+dado el admin
+cuando intenta cerrar la pestaña con cambios sin publicar
+entonces el navegador le pide confirmación para no perder trabajo
+
+
+────────────────────────────
+PORTAL — DATOS DEL NEGOCIO
+────────────────────────────
+
+88
+dado el admin
+cuando entra a la tab "Negocio"
+entonces puede editar:
+- nombre comercial
+- nombre completo
+- tagline
+- descripción corta (para SEO)
+- descripción larga
+- WhatsApp del negocio
+- teléfono
+- dirección
+- ID de Google Analytics (si querés medir tráfico)
+
+89
+dado el admin
+cuando cambia estos datos y publica
+entonces se reflejan en los títulos, mapa, botón de WhatsApp y footer de la página
+
+
+────────────────────────────
+PORTAL — ENVÍOS
+────────────────────────────
+
+90
+dado el admin
+cuando entra a la tab "Envío"
+entonces puede editar:
+- costo de envío estándar
+- monto a partir del cual el envío es gratis
+- nombre del transportista
+- leyenda pública que aparece en la tienda
+
+
+────────────────────────────
+PORTAL — MAYORISTAS (CONFIGURACIÓN GENERAL)
+────────────────────────────
+
+91
+dado el admin
+cuando entra a la sub-tab "Configuración"
+entonces puede definir un código master (compartido por todos los mayoristas)
+y editar el mínimo de compra mayorista
+y editar el mensaje de bienvenida del gate mayorista
+
+
+────────────────────────────
+PORTAL — MAYORISTAS (SOLICITUDES RECIBIDAS)
+────────────────────────────
+
+92
+dado el admin
+cuando entra a la sub-tab "Solicitudes"
+entonces ve todas las solicitudes recibidas ordenadas por fecha
+y un badge rojo con la cantidad pendientes
+
+93
+dado el admin
+cuando aplica filtros
+entonces puede ver solo Pendientes / Aceptadas / Rechazadas / Todas
+
+94
+dado el admin
+cuando acepta una solicitud pendiente
+entonces se genera automáticamente un código de acceso único para ese mayorista
+y aparece una ventana con el código
+y un botón para enviarlo por WhatsApp al solicitante (mensaje ya armado)
+y opcionalmente un botón para bloquear la zona de ese mayorista para minoristas
+
+95
+dado el admin
+cuando rechaza una solicitud
+entonces se le pide confirmación
+y la solicitud queda marcada como rechazada
+y el solicitante ve el motivo en su URL de seguimiento
+
+96
+dado el admin
+cuando ve una solicitud ya aceptada
+entonces puede ver el código que se le asignó
+y contactar al mayorista por WhatsApp con un botón
+
+97
+dado el admin
+cuando quiere limpiar registros viejos
+entonces puede eliminar solicitudes ya resueltas
+
+
+────────────────────────────
+PORTAL — MAYORISTAS (ALTA MANUAL)
+────────────────────────────
+
+98
+dado el admin
+cuando conoce un mayorista personalmente (visita, feria, WhatsApp)
+entonces desde la sub-tab "Alta manual" puede registrarlo directo
+sin pasar por el formulario público
+
+99
+dado el admin
+cuando registra un mayorista manualmente
+entonces completa los mismos campos que la solicitud pública (nombre, negocio, contactos, dirección)
+y al confirmar se genera el código automáticamente
+y aparece la ventana para enviárselo por WhatsApp
+
+
+────────────────────────────
+PORTAL — MAYORISTAS (ACTIVOS - ALTA/BAJA/MODIFICACIÓN)
+────────────────────────────
+
+100
+dado el admin
+cuando entra a la sub-tab "Activos"
+entonces ve la lista completa de mayoristas registrados
+y el badge muestra el total
+
+101
+dado el admin
+cuando busca en el buscador
+entonces puede filtrar por nombre, negocio, localidad, provincia o email
+
+102
+dado el admin
+cuando quiere editar un mayorista
+entonces puede modificar sus datos (contacto, dirección, etc.)
+
+103
+dado el admin
+cuando un mayorista pierde su código
+entonces puede "Regenerar código" desde el listado
+y se le muestra el código nuevo para enviárselo por WhatsApp
+y el código anterior deja de funcionar automáticamente
+
+104
+dado el admin
+cuando quiere que un mayorista deje de tener acceso
+entonces puede eliminarlo del listado
+y los pedidos anteriores del mayorista se mantienen intactos
+
+105
+dado el admin
+cuando registra un mayorista y quiere proteger su zona
+entonces desde el listado tiene un botón "Bloquear zona"
+que agrega automáticamente la localidad del mayorista a la lista de zonas protegidas
+
+106
+dado el admin
+cuando una zona ya está bloqueada
+entonces el botón aparece como "✓ Zona bloqueada" y desactivado
+para evitar duplicados
+
+
+────────────────────────────
+PORTAL — MINORISTAS
+────────────────────────────
+
+107
+dado el admin
+cuando entra a la tab "Minoristas"
+entonces puede editar el porcentaje de bonificación que se aplica a minoristas de zonas libres
+y el mensaje de la bonificación
+y el mensaje que ven los minoristas de zonas con distribuidor
+
+108
+dado el admin
+cuando pone bonificación en 0
+entonces los minoristas en zonas libres no ven descuento (precios sin oferta)
+
+
+────────────────────────────
+PORTAL — ZONAS CON DISTRIBUIDOR
+────────────────────────────
+
+109
+dado el admin
+cuando entra a la tab "Zonas"
+entonces ve la lista de zonas con distribuidor
+y puede agregar/editar/eliminar zonas
+
+110
+dado el admin
+cuando agrega una zona nueva
+entonces completa la provincia, la lista de localidades (separadas por coma)
+y los datos del distribuidor de esa zona (nombre, dirección, teléfono, WhatsApp)
+
+111
+dado el admin
+cuando publica cambios de zonas
+entonces la tienda pública queda actualizada
+y los minoristas de esas localidades ya no pueden comprar directo
+
+
+────────────────────────────
+PORTAL — GUÍA DE TALLES
+────────────────────────────
+
+112
+dado el admin
+cuando entra a la tab "Guía talles"
+entonces ve las tablas de medidas por tipo de prenda (camisas, pantalones, jeans)
+y puede editar unidades (cm/in), nombres de las columnas de medidas y los valores de cada talle
+y puede agregar filas (talles) o tipos de prenda nuevos
+
+
+────────────────────────────
+PORTAL — HORARIOS
+────────────────────────────
+
+113
+dado el admin
+cuando entra a la tab "Horarios"
+entonces ve un editor por cada día de la semana
+y puede agregar 1 o más turnos (ej: mañana + tarde) o dejarlo vacío para marcar "Cerrado"
+
+114
+dado el admin
+cuando cambia los horarios y publica
+entonces la landing muestra "Abierto" o "Cerrado" en tiempo real según la hora
+y los horarios de la sección Contacto se actualizan
+
+
+────────────────────────────
+PORTAL — CATÁLOGO (PRODUCTOS)
+────────────────────────────
+
+115
+dado el admin
+cuando entra a la tab "Catálogo"
+entonces puede crear/editar/eliminar categorías
+y para cada categoría definir: id, nombre, descripción, tipo de talle asociado
+
+116
+dado el admin
+cuando agrega un producto a una categoría
+entonces completa: nombre, descripción, precio minorista, precio mayorista
+y elige los talles disponibles (checkboxes según el tipo de talle)
+y sube fotos del producto (1 o más)
+y define si está disponible (aparece en la tienda o no)
+y define si es destacado (aparece en la landing hasta 8 destacados)
+
+117
+dado el admin
+cuando marca "no disponible" un producto
+entonces no aparece en la tienda pública
+
+118
+dado el admin
+cuando marca "destacado" un producto
+entonces aparece en la sección de destacados de la landing
+
+119
+dado el admin
+cuando sube fotos de un producto
+entonces se guardan en el sitio automáticamente
+y aparecen en la ficha del producto
+
+120
+dado el admin
+cuando elimina una foto de un producto
+entonces esa foto deja de aparecer en la ficha
+
+
+────────────────────────────
+PORTAL — TEXTOS DE LA LANDING
+────────────────────────────
+
+121
+dado el admin
+cuando entra a la tab "Textos"
+entonces puede editar todos los textos visibles de la landing:
+- hero (título, subtítulo, texto del botón)
+- sección Fábrica (título + texto)
+- sección Local (título + texto)
+- sección Mayoristas (título, texto, texto del botón)
+- sección Confianza (texto)
+- footer (texto)
+- saludos personalizados para el checkout (uno para mayorista, otro para minorista)
+
+
+────────────────────────────
+PORTAL — IMÁGENES GENERALES
+────────────────────────────
+
+122
+dado el admin
+cuando entra a la tab "Imágenes"
+entonces puede subir o reemplazar:
+- el logo
+- la foto de portada (hero)
+- las fotos de la sección Fábrica
+- las fotos de la sección Local

@@ -1,3 +1,7 @@
 .DS_Store
 *.log
 Thumbs.db
+
+# Documentación privada con credenciales — NO subir a git bajo ninguna circunstancia
+pages/cattorini/MANUAL_CATTORINI.md
+**/MANUAL_CATTORINI.md

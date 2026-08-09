@@ -80,7 +80,11 @@ export async function setupPage(page: Page, opts: SetupOptions = {}) {
           if (cfg.zonaStatus) localStorage.setItem('catt_zona_status', cfg.zonaStatus);
         }
         if (cfg.perfil === 'mayorista') {
-          if (cfg.codigoHashValido) sessionStorage.setItem('catt_codigo_valido_hash', cfg.codigoHashValido);
+          /* catt_codigo_valido_hash vive en localStorage (no sessionStorage):
+             si quedaba en sessionStorage, el perfil se invalidaba solo con
+             cerrar y reabrir el navegador (bug real, ya arreglado en el
+             código — este fixture tiene que reflejar el storage correcto). */
+          if (cfg.codigoHashValido) localStorage.setItem('catt_codigo_valido_hash', cfg.codigoHashValido);
           if (cfg.mayoristaData) localStorage.setItem('catt_mayorista_data', JSON.stringify(cfg.mayoristaData));
         }
       }

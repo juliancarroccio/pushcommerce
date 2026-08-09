@@ -42,6 +42,9 @@ export class TiendaPage {
   // Drawer form
   readonly togRetiro: Locator;
   readonly togEnvio: Locator;
+  readonly togPagoLocal: Locator;
+  readonly togPagoQr: Locator;
+  readonly retiroPagoWrap: Locator;
   readonly inpNombre: Locator;
   readonly inpDireccion: Locator;
   readonly inpProvinciaEnvio: Locator;
@@ -58,6 +61,8 @@ export class TiendaPage {
   // Modales
   readonly confirmModal: Locator;
   readonly confirmCode: Locator;
+  readonly confirmPagoQr: Locator;
+  readonly confirmMsg: Locator;
   readonly trackLink: Locator;
   readonly zonaBlockModal: Locator;
   readonly zbNombre: Locator;
@@ -114,8 +119,14 @@ export class TiendaPage {
     this.mayoristaNombre = page.locator('#mayorista-nombre');
     this.mayoristaDir = page.locator('#mayorista-dir');
 
+    this.togPagoLocal = page.locator('#tog-pago-local');
+    this.togPagoQr = page.locator('#tog-pago-qr');
+    this.retiroPagoWrap = page.locator('#retiro-pago-wrap');
+
     this.confirmModal = page.locator('#confirm-modal');
     this.confirmCode = page.locator('#confirm-code');
+    this.confirmPagoQr = page.locator('#confirm-pago-qr');
+    this.confirmMsg = page.locator('#confirm-msg');
     this.trackLink = page.locator('#track-link');
     this.zonaBlockModal = page.locator('#zona-block-modal');
     this.zbNombre = page.locator('#zb-nombre');
@@ -193,6 +204,16 @@ export class TiendaPage {
   async elegirEnvio() {
     await this.page.evaluate(() => (window as any).setEntrega('envio'));
     await this.page.waitForTimeout(200);
+  }
+
+  async elegirPagoLocal() {
+    await this.page.evaluate(() => (window as any).setPagaEnLocal(true));
+    await this.page.waitForTimeout(100);
+  }
+
+  async elegirPagoQr() {
+    await this.page.evaluate(() => (window as any).setPagaEnLocal(false));
+    await this.page.waitForTimeout(100);
   }
 
   async confirmarPedidoBtn() {

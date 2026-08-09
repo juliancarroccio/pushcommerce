@@ -26,7 +26,14 @@ dado un visitante
 cuando scrollea la página principal
 entonces las secciones aparecen con animaciones suaves
 y las fotos de "Historia" rotan como carrusel en el hero
-y las fotos de "Fábrica" y "Local" rotan cada pocos segundos en sus secciones
+y las fotos de "Nuestra Producción" (antes se llamaba "Fábrica") y "Local" rotan cada pocos segundos en sus secciones
+
+2.1
+dado un visitante
+cuando lee el hero y la sección "Nuestra Producción"
+entonces ve que Cattorini es una marca textil de Las Flores desde 1959
+(se actualizó el año de fundación, antes decía 1978, y se ajustaron los textos de
+"años de trayectoria" en consecuencia)
 
 3
 dado un visitante
@@ -60,6 +67,7 @@ entonces se abre un formulario con los campos:
 - dirección (obligatorio, para envíos)
 - código postal
 - notas opcionales
+- foto del negocio (opcional) — le da a Cattorini una idea de dónde se va a vender el producto
 
 6
 dado un visitante
@@ -90,6 +98,17 @@ dado un visitante
 cuando intenta enviar la solicitud dos veces seguidas muy rápido
 entonces la segunda vez se rechaza
 para evitar solicitudes duplicadas por error
+
+10.1
+dado un visitante
+cuando adjunta una foto de su negocio en el formulario
+entonces la foto se guarda junto con el resto de la solicitud
+y Cattorini la puede ver al revisarla desde el portal
+
+10.2
+dado un visitante
+cuando no adjunta ninguna foto
+entonces la solicitud se envía igual, sin problema (el campo es opcional)
 
 
 ────────────────────────────
@@ -201,6 +220,9 @@ y si lo cancela, sigue con su perfil actual
 dado un visitante ya identificado
 cuando cierra el navegador y vuelve más tarde
 entonces mantiene su perfil (no tiene que volver a ingresarse el código)
+y si es mayorista con dirección guardada, el checkout le sigue autocompletando sus datos
+(antes esto fallaba de forma intermitente: andaba bien si seguía en la misma pestaña,
+pero se perdía al cerrar el navegador del todo — ya está corregido)
 
 
 ────────────────────────────
@@ -236,6 +258,29 @@ dado un cliente minorista en zona libre con bonificación configurada
 cuando ve el catálogo
 entonces los precios muestran el precio original tachado + el precio con descuento
 y cada producto tiene un badge con el porcentaje de descuento aplicado
+y arriba dice "Para tu zona tenemos X% de descuento" (antes decía "Descuento X% aplicado")
+
+
+────────────────────────────
+TIENDA — CATÁLOGO MAYORISTA VS MINORISTA
+────────────────────────────
+
+31.1
+dado un producto que Cattorini marcó como "de otra marca" (no fabricación propia)
+cuando un cliente MINORISTA ve el catálogo
+entonces el producto aparece normalmente — el catálogo minorista tiene de todo
+
+31.2
+dado un producto que Cattorini marcó como "de otra marca"
+cuando un cliente MAYORISTA ve el catálogo
+entonces ese producto NO aparece — el catálogo mayorista es solo de lo que Cattorini fabrica
+(ni siquiera entrando directo al link de la ficha del producto se puede ver)
+
+31.3
+dado un producto cargado antes de esta funcionalidad (sin marcar ni una cosa ni la otra)
+cuando cualquier cliente ve el catálogo
+entonces se considera fabricación propia por default — sigue apareciendo en ambos catálogos
+como siempre
 
 
 ────────────────────────────
@@ -249,7 +294,7 @@ entonces ve la ficha completa con:
 - una o más fotos del producto
 - descripción
 - precio según su perfil
-- selector de talle
+- selector de talle (y de color, para los productos que ya tienen colores cargados)
 - link a la guía de talles
 - selector de cantidad
 - botón "Agregar al carrito"
@@ -291,6 +336,39 @@ dado un cliente
 cuando intenta entrar a un producto que no existe o que fue desactivado por Cattorini
 entonces ve "Producto no encontrado"
 y un link para volver al catálogo
+
+
+────────────────────────────
+TIENDA — STOCK Y COLOR POR TALLE
+────────────────────────────
+
+39.1
+dado un producto al que Cattorini ya le cargó stock por color
+cuando un cliente elige un talle
+entonces ve los colores disponibles para ESE talle (un círculo con el color + el nombre, ej: "Rojo")
+
+39.2
+dado un color con pocas unidades (3 o menos)
+cuando el cliente lo elige
+entonces ve un aviso tipo "¡Últimas X unidades!"
+
+39.3
+dado un color sin stock
+cuando el cliente ve el selector
+entonces aparece tachado, no se puede elegir
+
+39.4
+dado un producto al que todavía no se le cargó ningún color/stock
+cuando un cliente lo compra
+entonces funciona exactamente igual que antes (solo talle, sin selector de color, sin límite de stock)
+— no hace falta cargar el stock de todo el catálogo de una para que el sitio siga funcionando
+
+39.5
+dado un cliente que agregó al carrito un color con poco stock
+cuando confirma el pedido
+entonces el sistema chequea el stock real en ese momento antes de crear el pedido
+y si ya no alcanza (por ejemplo, otro cliente lo compró segundos antes), avisa cuánto queda
+y no deja pasar el pedido con una cantidad que no hay
 
 
 ────────────────────────────
@@ -348,9 +426,10 @@ cuando confirma pedido sin dirección o localidad
 entonces recibe el mensaje pidiendo que las complete
 
 48
-dado un cliente
+dado un cliente minorista
 cuando el subtotal del pedido es mayor o igual al umbral de envío gratis (definido por Cattorini)
 entonces el envío se muestra como "Gratis"
+(esto es solo para minoristas — ver criterio 57.1 para mayoristas)
 
 49
 dado un cliente
@@ -362,6 +441,8 @@ dado un cliente
 cuando elige retiro en local
 entonces no se le pide dirección
 y el total aparece como "Total estimado"
+y tiene que elegir cómo va a pagar: "Pago en el local" (viene elegido por default) o "Pago electrónico (QR)"
+(ver sección "PAGO EN RETIRO Y CÓDIGO QR" más abajo)
 
 
 ────────────────────────────
@@ -408,6 +489,12 @@ dado un mayorista
 cuando confirma un pedido
 entonces en la cola de pedidos aparece con todos sus datos (negocio, CUIT, WhatsApp, email) para que Cattorini lo identifique fácil
 
+57.1
+dado un mayorista
+cuando elige envío, sin importar cuánto sea el subtotal
+entonces el envío NUNCA es gratis — siempre paga el costo de envío
+(la bonificación de envío gratis por monto es solo para minoristas)
+
 
 ────────────────────────────
 TIENDA — PROTECCIONES AL DISTRIBUIDOR
@@ -434,6 +521,37 @@ para evitar duplicados por error
 
 
 ────────────────────────────
+PAGO EN RETIRO Y CÓDIGO QR
+────────────────────────────
+
+Regla general: un pedido necesita pago por QR si es de envío (siempre) o si es de
+retiro y el cliente eligió pagar electrónico en vez de pagar en el local. Cuando un
+pedido necesita QR, se comporta igual sea envío o retiro.
+
+60.1
+dado un cliente que eligió "Retiro en local"
+cuando ve el selector "¿Cómo vas a pagar?"
+entonces puede elegir "Pago en el local" (recomendado por default) o "Pago electrónico (QR)"
+
+60.2
+dado un cliente que eligió "Envío a domicilio"
+cuando arma su pedido
+entonces no se le pregunta nada sobre el pago — el envío siempre es electrónico por QR
+
+60.3
+dado un cliente cuyo pedido necesita pago por QR (envío, o retiro con pago electrónico)
+cuando confirma el pedido
+entonces además del código de seguimiento ve un QR para pagar con cualquier billetera
+virtual, y un link de WhatsApp por si prefiere pagar de otra forma
+
+60.4
+dado un cliente de retiro que eligió "Pago en el local"
+cuando confirma el pedido
+entonces NO ve ningún QR
+y el mensaje le confirma que va a pagar cuando pase a retirar
+
+
+────────────────────────────
 CONFIRMACIÓN Y SEGUIMIENTO DE PEDIDO
 ────────────────────────────
 
@@ -442,6 +560,7 @@ dado un cliente
 cuando confirma el pedido correctamente
 entonces se muestra una pantalla con:
 - código de seguimiento (5 caracteres, ej: A3F7B)
+- QR de pago, si el pedido lo necesita (ver sección anterior)
 - link "Ver estado del pedido"
 - opción de seguir comprando
 
@@ -458,27 +577,39 @@ cuando consulta su pedido
 entonces ve:
 - el código del pedido
 - un indicador "En vivo" mientras hay conexión
+- el QR de pago de nuevo, si el pedido lo necesita y sigue en el primer paso
 - mensaje del estado actual (pendiente / preparando / listo / enviado)
 - una barra de progreso visual con los 4 pasos
-- sus datos personales del pedido
-- lista de items con talle y cantidad
+- sus datos personales del pedido, o cómo va a pagar si es retiro
+- lista de items con talle, color y cantidad
 - totales
 - botón para consultar por WhatsApp
 
 64
-dado un cliente con un pedido de envío
+dado un cliente con un pedido de envío, o de retiro con pago electrónico
 cuando ve el progreso
-entonces los pasos se etiquetan: Encolado → Preparación → Listo → Enviado
+entonces los pasos se etiquetan: Pendiente de pago → Preparación → Listo → Enviado
+
+64.1
+dado un cliente con un pedido de retiro que eligió pagar en el local
+cuando ve el progreso
+entonces los pasos se etiquetan: Espera confirmación → Preparación → Listo para retirar → Retirado
+(dice "Espera confirmación" y no "Pendiente de pago", para no confundirlo — ya avisó que paga en el local)
 
 65
 dado un cliente con un pedido de retiro
-cuando ve el progreso
-entonces los pasos se etiquetan: Encolado → Preparación → Listo para retirar → Retirado
+cuando ve el progreso (pasos 3 y 4)
+entonces se etiquetan: Listo para retirar → Retirado
 
 66
 dado un cliente viendo su pedido
 cuando Cattorini cambia el estado desde el portal
 entonces el cambio se refleja al instante sin recargar la página
+
+66.1
+dado un cliente con un pedido que necesitaba pago por QR
+cuando Cattorini lo pasa de "pendiente" a "preparación" (confirmando que le llegó el pago)
+entonces el mensaje le avisa "¡Recibimos tu pago! Tu pedido está en preparación."
 
 
 ────────────────────────────
@@ -488,13 +619,20 @@ COLA DE PEDIDOS (GESTIÓN INTERNA CATTORINI)
 67
 dado el admin
 cuando entra a la cola de pedidos
-entonces ve 4 columnas: Pendientes / En preparación / Listos / Enviados
+entonces ve 4 columnas: Pendiente de pago / En preparación / Listos / Enviados
 y cada columna con la cantidad de pedidos activos
+
+67.1
+dado el admin
+cuando mira las tarjetas de la columna "Pendiente de pago"
+entonces cada una tiene un cartelito que le dice de qué tipo es:
+- 💳 "Pendiente de pago" (amarillo) — necesita que le llegue el pago por QR antes de arrancar
+- 🏬 "Paga en el local" (verde) — retiro con pago en persona, puede arrancar a prepararlo ya
 
 68
 dado el admin
 cuando llega un pedido nuevo desde la tienda
-entonces la tarjeta aparece automáticamente en la columna "Pendientes" sin recargar
+entonces la tarjeta aparece automáticamente en la columna "Pendiente de pago" sin recargar
 
 69
 dado el admin
@@ -509,8 +647,9 @@ entonces se abre el detalle con toda la info del cliente, items y totales
 71
 dado el admin
 cuando quiere cambiar el estado de un pedido
-entonces desde el detalle puede pasar entre Pendiente / Preparando / Listo / Enviado con un click
+entonces desde el detalle puede pasar entre Pendiente de pago / Preparando / Listo / Enviado con un click
 y la tarjeta se mueve a la columna correspondiente
+y si el pedido necesitaba pago por QR, el cliente ve al instante el mensaje de que su pago fue recibido
 
 72
 dado el admin
@@ -557,8 +696,22 @@ entonces los campos de dirección vienen pre-completados con los datos del mayor
 79
 dado el admin
 cuando confirma el pedido manual
-entonces se guarda en la cola en "Pendientes"
+entonces se guarda en la cola en "Pendiente de pago"
 y se genera un código de seguimiento automático
+y si es retiro, se asume que va a pagar en el local (no dispara el flujo de QR)
+
+
+────────────────────────────
+COLA DE PEDIDOS — DETALLE (BUG CORREGIDO)
+────────────────────────────
+
+79.1
+dado un pedido con su código real (el que tiene el cliente)
+cuando el admin lo ve en la tarjeta, en el detalle, en el historial o en el CSV exportado
+entonces en los 4 lugares aparece el MISMO código
+(antes en esos 4 lugares se mostraba un identificador interno distinto al que
+tenía el cliente, lo que hacía imposible saber de qué pedido hablaba alguien
+que llamaba con una consulta o reclamo — ya está corregido)
 
 
 ────────────────────────────
@@ -584,6 +737,7 @@ entonces ve los últimos 500 pedidos en una tabla con fecha, código, cliente, p
 dado el admin
 cuando quiere una copia de los datos
 entonces puede exportar el historial a CSV (compatible Excel)
+e incluye también cómo pagó cada pedido (en el local o QR) y el color de cada prenda cuando corresponde
 
 
 ────────────────────────────
@@ -678,6 +832,23 @@ dado el admin
 cuando entra a la sub-tab "Solicitudes"
 entonces ve todas las solicitudes recibidas ordenadas por fecha
 y un badge rojo con la cantidad pendientes
+y si el solicitante adjuntó una foto de su negocio, la puede ver (y agrandar con un click)
+
+92.1
+dado el admin
+cuando revisa una solicitud pendiente
+y ya existe un mayorista activo en esa misma localidad
+entonces ve un cartel amarillo de aviso con el nombre del mayorista existente
+para que decida a criterio si conviene aceptarla igual (verificando la distancia entre
+direcciones) — el cartel es solo informativo, no le impide aceptar ni rechazar
+
+92.2
+dado el admin
+cuando entra al portal
+entonces la lista de mayoristas activos se empieza a cargar enseguida en segundo plano
+(antes solo se cargaba al entrar puntualmente a la sub-tab "Activos", así que el
+número que se veía ahí quedaba en cero hasta visitarla — ya está corregido, y además
+ahora hace falta para el aviso del criterio 92.1)
 
 93
 dado el admin
@@ -826,6 +997,12 @@ entonces ve las tablas de medidas por tipo de prenda (camisas, pantalones, jeans
 y puede editar unidades (cm/in), nombres de las columnas de medidas y los valores de cada talle
 y puede agregar filas (talles) o tipos de prenda nuevos
 
+112.1
+dado el admin
+cuando escribe los nombres de las columnas de medidas
+entonces puede escribir tranquilo, sin que la página salte de posición en cada letra
+(antes esto pasaba y era muy incómodo para escribir — ya está corregido)
+
 
 ────────────────────────────
 PORTAL — HORARIOS
@@ -851,8 +1028,16 @@ PORTAL — CATÁLOGO (PRODUCTOS)
 115
 dado el admin
 cuando entra a la tab "Catálogo"
-entonces puede crear/editar/eliminar categorías
+entonces tiene un buscador arriba para encontrar un producto por nombre rápido
+y puede crear/editar/eliminar categorías
 y para cada categoría definir: id, nombre, descripción, tipo de talle asociado
+
+115.1
+dado el admin
+cuando entra a la tab "Catálogo" con muchos productos cargados
+entonces cada producto aparece cerrado por default, solo con el nombre visible
+y hace click en el nombre para abrirlo y ver/editar todos sus datos
+(así la lista no se hace eterna de scrollear cuando hay muchos productos)
 
 116
 dado el admin
@@ -862,6 +1047,7 @@ y elige los talles disponibles (checkboxes según el tipo de talle)
 y sube fotos del producto (1 o más)
 y define si está disponible (aparece en la tienda o no)
 y define si es destacado (aparece en la landing hasta 8 destacados)
+y define si es de fabricación propia o de otra marca (esto último solo se vende a minoristas)
 
 117
 dado el admin
@@ -886,6 +1072,42 @@ entonces esa foto deja de aparecer en la ficha
 
 
 ────────────────────────────
+PORTAL — STOCK (CANTIDAD Y COLOR POR TALLE)
+────────────────────────────
+
+120.1
+dado el admin
+cuando entra a la tab "Stock"
+entonces esto NO pasa por "Publicar cambios" — se guarda al instante, en tiempo real
+(a diferencia de todo lo demás del catálogo)
+
+120.2
+dado el admin
+cuando entra a "Stock" → "Editar" y elige un producto
+entonces ve, por cada talle, los colores cargados con su cantidad
+y puede agregar un color nuevo (nombre + color + cantidad inicial)
+y puede editar la cantidad de un color existente escribiendo el número nuevo
+y puede cambiar el color (el círculo) de una variante
+y puede eliminar un color con el botón "×"
+
+120.3
+dado el admin
+cuando tiene que cargar la mercadería que entró en el día (o varios movimientos juntos)
+entonces puede usar "Stock" → "Importar CSV": pega o carga un archivo con el formato
+producto, talle, color, cantidad y motivo (opcional), y se cargan todos de una
+
+120.4
+dado el admin
+cuando quiere ver qué movimientos de stock tuvo un producto
+entonces en "Stock" → "Historial" ve los últimos 100 movimientos (entradas, salidas, ventas)
+
+120.5
+dado un talle/color sin ninguna unidad disponible
+cuando un cliente intenta comprarlo
+entonces el sitio no lo deja — el bloqueo de venta sin stock es automático
+
+
+────────────────────────────
 PORTAL — TEXTOS DE LA LANDING
 ────────────────────────────
 
@@ -894,7 +1116,7 @@ dado el admin
 cuando entra a la tab "Textos"
 entonces puede editar todos los textos visibles de la landing:
 - hero (título, subtítulo, texto del botón)
-- sección Fábrica (título + texto)
+- sección Producción (título + texto — se muestra como "Nuestra Producción")
 - sección Local (título + texto)
 - sección Mayoristas (título, texto, texto del botón)
 - sección Confianza (texto)
@@ -912,5 +1134,13 @@ cuando entra a la tab "Imágenes"
 entonces puede subir o reemplazar:
 - el logo
 - la foto de portada (hero)
-- las fotos de la sección Fábrica
+- las fotos de la sección Producción
 - las fotos de la sección Local
+- el QR de pago (el que ven los clientes al confirmar un pedido pendiente de pago —
+  distinto del QR imprimible que lleva a la tienda, ese está en su propia sección)
+
+122.1
+dado el admin
+cuando todavía no subió su QR de pago real
+entonces los clientes ven un cartel genérico de "pendiente de configurar" en su lugar
+hasta que Cattorini suba la captura de su QR de Mercado Pago (o la billetera que use)

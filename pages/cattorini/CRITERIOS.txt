@@ -73,6 +73,26 @@ entonces se muestra un modal de confirmación con código MAY-XXXX
 y se ofrece un link "Ver estado de mi solicitud"
 y el código se guarda en localStorage bajo "catt_mis_solicitudes" para acceso rápido futuro
 
+3.7.1
+dado un cliente
+cuando en el formulario de solicitud adjunta una foto del negocio (campo opcional, input file)
+entonces la imagen se redimensiona a máximo 640px de lado más largo y se comprime a JPEG calidad 60% en el navegador
+y se envía como string base64 en solicitante.foto_negocio dentro del mismo documento de Firestore
+(no requiere Firebase Storage — el sitio no tiene ese servicio activado)
+y las Firestore rules rechazan el string si supera 700.000 caracteres
+
+3.7.2
+dado un cliente
+cuando envía la solicitud SIN adjuntar foto
+entonces solicitante.foto_negocio se guarda como null
+y la solicitud se procesa igual, sin ningún campo obligatorio de por medio
+
+3.7.3
+dado un cliente
+cuando cierra el modal y lo vuelve a abrir para una segunda solicitud
+entonces el campo de foto y su preview se resetean
+(no arrastra la foto de una solicitud anterior a la siguiente)
+
 3.8
 dado un cliente
 cuando reintenta enviar dos solicitudes seguidas dentro de 5 segundos
@@ -84,8 +104,15 @@ dado un cliente
 cuando scrollea por las secciones de la landing
 entonces cada sección aparece con animación (fade + slide up)
 y las 5 fotos de Historia rotan como carrusel automático cada 5.5s en el hero
-y las 3 fotos de Fábrica rotan en la sección respectiva cada 4.5s con dots
+y las 3 fotos de la sección "Nuestra Producción" (antes "Fábrica") rotan cada 4.5s con dots
 y las 3 fotos de Local rotan en la sección respectiva cada 4.5s con dots
+
+3.9.1
+dado un visitante
+cuando ve el hero y la sección "Nuestra Producción"
+entonces el texto indica que Cattorini es una marca textil de Las Flores desde 1959
+y ningún texto afirma fabricación propia, máquinas propias ni "cada prenda pasa por nuestras manos"
+(la producción está tercerizada; los textos no lo mencionan explícitamente pero tampoco afirman lo contrario)
 
 3.10
 dado un cliente
@@ -234,7 +261,7 @@ y si cancela, mantiene su perfil actual
 13.5
 dado un cliente minorista de zona libre con bonificación configurada
 cuando entra a la tienda
-entonces visualiza el badge "Cliente minorista · Localidad · Descuento X% aplicado"
+entonces visualiza el badge "Cliente minorista · Localidad · Para tu zona tenemos X% de descuento"
 y los precios muestran el precio original tachado + precio con descuento
 y cada card tiene un badge "-X%"
 
@@ -245,6 +272,19 @@ y luego cierra el navegador
 y vuelve a abrir la tienda en el mismo dispositivo
 entonces mantiene su perfil (localStorage persiste)
 y para mayoristas se re-valida el hash contra la config actual
+
+13.6.1
+dado un cliente mayorista con código individual (con dirección guardada)
+cuando se identifica correctamente
+y cierra el navegador por completo (no solo la pestaña)
+y vuelve a entrar más tarde en una sesión nueva
+entonces "catt_codigo_valido_hash" persiste en localStorage (no en sessionStorage)
+y el perfil mayorista sigue válido
+y el checkout sigue autocompletando nombre, negocio y dirección con los datos guardados
+(bug corregido: antes ese hash vivía en sessionStorage mientras el resto del perfil vivía en
+localStorage, así que al cerrar el navegador se perdía la validación y el checkout dejaba de
+autocompletar aunque el código siguiera siendo válido — el comportamiento era intermitente
+según si era la misma pestaña/sesión o una nueva)
 
 13.7
 dado un cliente mayorista con código individual
@@ -302,6 +342,34 @@ sin cargar el catálogo
 
 
 ────────────────────────────
+TIENDA — CATÁLOGO MAYORISTA VS MINORISTA (FABRICACIÓN PROPIA)
+────────────────────────────
+
+15.6
+dado un producto con fabricacion_propia = false (producto de otra marca)
+cuando un cliente minorista ve el catálogo
+entonces el producto aparece normalmente (el catálogo minorista incluye todo)
+
+15.7
+dado un producto con fabricacion_propia = false
+cuando un cliente mayorista ve el catálogo
+entonces el producto NO aparece en el listado
+(el catálogo mayorista es solo de fabricación propia)
+
+15.8
+dado un producto con fabricacion_propia = false
+cuando un cliente mayorista entra directo a /producto.html?id=X de ese producto (por link directo)
+entonces se muestra "Producto no encontrado", igual que un producto inexistente o no disponible
+(no se puede bypassear el filtro por URL directa)
+
+15.9
+dado un producto sin el campo fabricacion_propia definido (cargado antes de esta funcionalidad)
+cuando cualquier cliente ve el catálogo
+entonces se trata como fabricacion_propia = true por default
+(compatibilidad hacia atrás: no desaparece nada del catálogo mayorista existente)
+
+
+────────────────────────────
 TIENDA — PRODUCTO DETALLE
 ────────────────────────────
 
@@ -312,8 +380,8 @@ y hace click a algún producto
 entonces visualiza el producto más detallado
 y puede ver una o más fotos del producto
 y la guía de talle asignada al producto
-y puede elegir talle y cantidad de producto
-y puede agregar el producto con el talle y cantidad al carrito
+y puede elegir talle, color (si el producto tiene stock/color cargado en el portal) y cantidad
+y puede agregar el producto con el talle, color y cantidad al carrito
 
 16.1
 dado un cliente
@@ -369,6 +437,52 @@ y el JSON-LD Product en la página tiene ese precio para SEO
 dado un cliente
 cuando cambia la cantidad con +/-
 entonces la cantidad se limita entre 1 y 999
+
+
+────────────────────────────
+TIENDA — STOCK Y COLOR POR TALLE
+────────────────────────────
+
+16.10
+dado un producto con stock cargado en Firestore (colección stock/{productId})
+cuando un cliente elige un talle en la ficha del producto
+entonces se muestran los colores disponibles para ESE talle específico
+como chips con un círculo del color + el nombre (ej: círculo rojo + "Rojo")
+
+16.11
+dado un color de un talle con cantidad > 3
+cuando el cliente lo selecciona
+entonces se muestra "X disponibles" debajo del selector
+
+16.12
+dado un color de un talle con cantidad entre 1 y 3
+cuando el cliente lo selecciona
+entonces se muestra "¡Últimas X unidades!" para generar urgencia
+
+16.13
+dado un color de un talle con cantidad = 0
+cuando el cliente ve el selector de colores
+entonces ese color aparece tachado/deshabilitado y no se puede elegir
+
+16.14
+dado un producto SIN ningún color cargado en Stock para el talle elegido (o sin doc de stock en absoluto)
+cuando el cliente elige el talle
+entonces no se muestra selector de color
+y el botón "Agregar al carrito" se habilita solo con el talle, igual que antes de esta funcionalidad
+(compatibilidad hacia atrás: productos sin stock cargado no se rompen)
+
+16.15
+dado un cliente que agregó al carrito un producto con color elegido
+cuando llega al checkout y confirma el pedido
+entonces se ejecuta una transacción atómica contra Firestore que verifica el stock de ese talle+color
+y si no alcanza, el pedido NO se crea y se le muestra un mensaje indicando cuánto queda disponible
+y si alcanza, se descuenta la cantidad del pedido del stock y se registra un movimiento en el historial con motivo "Venta #CÓDIGO"
+
+16.16
+dado dos clientes que intentan comprar la última unidad de un talle+color al mismo tiempo
+cuando ambos confirman casi simultáneamente
+entonces la transacción atómica garantiza que solo uno de los dos consiga la unidad
+y el otro recibe el mensaje de stock insuficiente
 
 
 ────────────────────────────
@@ -449,6 +563,7 @@ cuando el subtotal >= config.envio.gratis_desde
 y elige envío
 entonces el envío muestra "Gratis"
 y el total es igual al subtotal
+(esta bonificación es exclusiva de minoristas — ver criterio 36.1 para mayoristas)
 
 28
 dado un cliente minorista
@@ -462,6 +577,8 @@ dado un cliente minorista
 cuando elige retiro
 entonces no se pide dirección
 y el total se muestra como "Total estimado"
+y aparece el selector "¿Cómo vas a pagar?": "Pago en el local" (seleccionado por default) / "Pago electrónico (QR)"
+(ver sección "TIENDA — PAGO EN RETIRO Y FLUJO QR" para el detalle completo)
 
 
 ────────────────────────────
@@ -512,6 +629,13 @@ cuando confirma pedido
 entonces el payload en Firebase incluye: negocio, whatsapp, email, cuit del mayorista
 para que el admin identifique el pedido en el panel
 
+36.1
+dado un cliente mayorista
+cuando elige envío y el subtotal supera config.envio.gratis_desde
+entonces el envío NO se bonifica — siempre se cobra config.envio.costo_estandar
+(el envío gratis por monto es un beneficio exclusivo de minoristas; el envío mayorista
+siempre corre por cuenta del comprador, sin excepción)
+
 
 ────────────────────────────
 TIENDA — VALIDACIONES ANTI-FRAUDE
@@ -555,6 +679,59 @@ entonces se muestra modal con código de seguimiento tipo #ABCDE
 y el código + docId se guarda en localStorage bajo "catt_mis_pedidos"
 y el carrito se vacía
 y se ofrece link a /seguimiento.html?code=ABCDE
+y si el pedido requiere pago electrónico (ver sección siguiente), se muestra además el QR de pago
+
+
+────────────────────────────
+TIENDA — PAGO EN RETIRO Y FLUJO QR
+────────────────────────────
+
+Regla general: un pedido "necesita QR" si es de modalidad envío (siempre),
+o si es de modalidad retiro y el cliente eligió "Pago electrónico (QR)" en vez de
+"Pago en el local". Cuando un pedido necesita QR, el comportamiento es IDÉNTICO
+sea envío o retiro — mismo QR, mismo mensaje, mismo estado.
+
+42.1
+dado un cliente que elige "Retiro en local"
+cuando abre el selector "¿Cómo vas a pagar?"
+entonces ve dos opciones: "Pago en el local" (activa por default) y "Pago electrónico (QR)"
+y un texto de ayuda que cambia según la opción elegida
+
+42.2
+dado un cliente que elige "Envío a domicilio"
+cuando mira el carrito
+entonces el selector "¿Cómo vas a pagar?" no se muestra (el envío siempre es pago electrónico)
+
+42.3
+dado un cliente que confirma un pedido que necesita QR (envío, o retiro + pago electrónico)
+cuando ve la pantalla de confirmación
+entonces además del código de seguimiento se muestra:
+- el texto "Pedido pendiente de pago"
+- un QR (imagen configurada por Cattorini en el portal, tab Imágenes → "QR de pago")
+- instrucciones de escanear con cualquier billetera virtual que ofrezca pagos QR
+- un link de WhatsApp por si prefiere pagar por otro medio
+y el pedido queda guardado en Firestore con estado "pendiente" y pagaEnLocal=false
+
+42.4
+dado un cliente que confirma un pedido de retiro con "Pago en el local"
+cuando ve la pantalla de confirmación
+entonces NO se muestra el QR
+y el mensaje dice que el pedido queda a la espera de que Cattorini lo confirme,
+y que lo va a abonar cuando pase a retirarlo
+y el pedido queda guardado en Firestore con estado "pendiente" y pagaEnLocal=true
+
+42.5
+dado el payload de un pedido guardado en Firestore
+cuando se inspecciona el campo pagaEnLocal
+entonces es true solo si modalidad=retiro Y el cliente eligió pago en el local
+y es false en cualquier otro caso (envío siempre, o retiro con pago QR)
+
+42.6
+dado el admin
+cuando carga un pedido manual de modalidad retiro desde pedidos.html (+ Manual)
+entonces el pedido se guarda con pagaEnLocal=true automáticamente
+(se asume que el pago ya se arregló en persona/teléfono; los pedidos manuales no
+disparan el flujo QR)
 
 
 ────────────────────────────
@@ -586,29 +763,58 @@ cuando entra con un código válido
 entonces visualiza:
 - código del pedido destacado
 - badge "En vivo" si Firestore onSnapshot está activo
+- QR de pago (si el pedido lo requiere y sigue en el primer paso — ver 46.1)
 - mensaje de estado según pendiente/preparando/listo/enviado
 - timeline con 4 pasos coloreados según el estado actual
-- detalle del cliente (nombre, modalidad, dirección si es envío)
-- lista de items con talle, cantidad y subtotal
+- detalle del cliente (nombre, modalidad, dirección si es envío, o método de pago si es retiro)
+- lista de items con talle, color y cantidad y subtotal
 - totales (subtotal, envío, total)
 - nota si existe
 - botón "Consultar por WhatsApp"
 
+46.1
+dado un cliente con un pedido que necesita QR (envío, o retiro + pago electrónico)
+cuando el pedido sigue en estado "pendiente"
+entonces se muestra de nuevo el QR de pago + link de WhatsApp, igual que en la confirmación
+(por si el cliente cerró esa pantalla sin pagar y volvió más tarde)
+
+46.2
+dado un cliente con un pedido de retiro + pago en el local
+cuando el pedido sigue en estado "pendiente"
+entonces NO se muestra ningún QR
+
 47
-dado un cliente con un pedido de modalidad envío
+dado un cliente con un pedido de modalidad envío, o retiro con pago electrónico (QR)
 cuando ve el timeline
-entonces los pasos se etiquetan: Encolado / Preparación / Listo / Enviado
+entonces los pasos se etiquetan: Pendiente de pago / Preparación / Listo / Enviado
+
+47.1
+dado un cliente con un pedido de retiro con "Pago en el local"
+cuando ve el timeline
+entonces los pasos se etiquetan: Espera confirmación / Preparación / Listo para retirar / Retirado
+(NO dice "Pendiente de pago", para no confundir a un cliente que ya avisó que paga en el local)
 
 48
 dado un cliente con un pedido de modalidad retiro
-cuando ve el timeline
-entonces los pasos se etiquetan: Encolado / Preparación / Listo para retirar / Retirado
+cuando ve el timeline (paso 3 y 4)
+entonces se etiquetan: Listo para retirar / Retirado
 
 49
 dado un cliente viendo su pedido
 cuando el admin cambia el estado desde pedidos.html
 entonces el estado se actualiza en vivo (Firestore onSnapshot)
 sin recargar la página
+
+49.1
+dado un cliente con un pedido que necesitaba QR (envío, o retiro + pago electrónico)
+cuando el admin lo mueve de "pendiente" a "preparando" (confirmando que llegó el pago)
+entonces el mensaje pasa a decir "¡Recibimos tu pago! Tu pedido está en preparación."
+
+49.2
+dado un cliente con un pedido de retiro + pago en el local
+cuando el admin lo mueve de "pendiente" a "preparando"
+entonces el mensaje dice "Estamos preparando tu pedido. En breve estará listo."
+(mensaje genérico, sin mencionar pago — porque ese pedido nunca pasó por el flujo de pago electrónico)
 
 50
 dado un cliente viendo un pedido en estado "listo"
@@ -652,15 +858,26 @@ COLA DE PEDIDOS — KANBAN
 55
 dado el admin
 cuando entra a /pedidos.html
-entonces visualiza 4 columnas: Pendientes / En preparación / Listos / Enviados
+entonces visualiza 4 columnas: Pendiente de pago / En preparación / Listos / Enviados
 y cada columna muestra la cantidad de pedidos activos
 y un badge "En vivo" indica conexión con Firestore
+(la columna se sigue llamando por el estado interno "pendiente"; el nombre visible
+cambió de "Pendientes" a "Pendiente de pago" — el detalle de qué pedido es cuál
+sub-tipo se ve en el badge de cada tarjeta, criterio 56.1)
 
 56
 dado el admin
 cuando hay pedidos con estados diferentes
 entonces cada pedido aparece en la columna correspondiente a su estado
 y los pedidos en otros estados (cancelado, etc) no aparecen en la cola activa
+
+56.1
+dado el admin
+cuando ve las tarjetas en la columna "Pendiente de pago"
+entonces cada una tiene un cartel indicando el sub-estado:
+- 💳 "Pendiente de pago" (fondo amarillo) — envío, o retiro con pago QR
+- 🏬 "Paga en el local" (fondo verde) — retiro con pago en el local
+y ese cartel desaparece una vez que el pedido sale de la columna "Pendiente de pago"
 
 57
 dado el admin
@@ -680,7 +897,7 @@ entonces se abre el modal con el detalle del pedido
 60
 dado el admin
 cuando un cliente nuevo confirma un pedido
-entonces la tarjeta aparece en tiempo real en la columna "Pendientes"
+entonces la tarjeta aparece en tiempo real en la columna "Pendiente de pago"
 sin necesidad de recargar (onSnapshot docChanges)
 
 
@@ -692,12 +909,12 @@ COLA DE PEDIDOS — DETALLE
 dado el admin
 cuando abre el modal de detalle de un pedido
 entonces visualiza:
-- código del pedido y badge de perfil (mayorista/minorista)
+- código del pedido, badge de perfil (mayorista/minorista) y badge de pago (💳/🏬) si sigue pendiente
 - datos del cliente: nombre, negocio (si mayorista), CUIT, WhatsApp, email, dirección, localidad, CP
-- lista de items con talle, cantidad y precio unitario
+- lista de items con talle, color (si aplica) y cantidad y precio unitario
 - totales (subtotal, envío, total)
 - nota si existe
-- botones para cambiar estado: Pendiente / Preparando / Listo / Enviado
+- botones para cambiar estado: Pendiente de pago / Preparando / Listo / Enviado
 - botón eliminar pedido
 
 62
@@ -706,12 +923,21 @@ cuando hace click en un estado diferente al actual del pedido
 entonces se actualiza el estado en Firestore
 y la tarjeta se mueve automáticamente a la columna correspondiente
 y el modal se cierra
+y si el pedido necesitaba QR y pasa de pendiente a preparando, el cliente ve el mensaje de pago recibido (ver 49.1)
 
 63
 dado el admin
 cuando hace click en "Eliminar pedido"
 entonces se pide confirmación
 y al aceptar el pedido se borra de Firestore
+
+63.1
+dado un pedido con código real (campo "codigo", ej: A3F7B)
+cuando el admin lo ve en la tarjeta del kanban, en el modal de detalle, en la tabla de historial o en el CSV exportado
+entonces en los 4 lugares se muestra el MISMO código que tiene el cliente en su pantalla de seguimiento
+(bug corregido: antes esos 4 lugares mostraban el ID interno autogenerado de Firestore
+en vez del campo "codigo" real, lo que hacía imposible para el admin identificar de qué
+pedido hablaba un cliente que reportaba un problema con su código)
 
 
 ────────────────────────────
@@ -768,8 +994,9 @@ entonces se muestra "Ingresá nombre del cliente"
 dado el admin
 cuando el pedido manual se crea correctamente
 entonces se guarda en Firestore con perfil, todos los datos del cliente correctos, items y un código de seguimiento auto-generado
+y si la modalidad es retiro, se guarda con pagaEnLocal=true (no dispara flujo QR)
 y el modal se cierra
-y la tarjeta aparece en la columna Pendientes
+y la tarjeta aparece en la columna Pendiente de pago
 
 
 ────────────────────────────
@@ -802,7 +1029,7 @@ dado el admin
 cuando hace click en "↓ Exportar CSV"
 entonces se descarga un CSV con todos los pedidos cargados
 con encoding UTF-8 BOM (compatible Excel)
-y columnas: fecha, hora, código, nombre, dirección, localidad, perfil, modalidad, items, subtotal, envío, total, nota, estado
+y columnas: fecha, hora, código, nombre, dirección, localidad, perfil, modalidad, pago (En el local / QR), items (incluyendo color cuando aplica), subtotal, envío, total, nota, estado
 
 
 ────────────────────────────
@@ -967,6 +1194,23 @@ dado el admin
 cuando entra a la sub-tab "Solicitudes"
 entonces se cargan las últimas 200 solicitudes de solicitudes_mayoristas ordenadas por fecha descendente
 y se muestra un badge rojo con la cantidad de pendientes tanto en el tab Mayoristas como en el sub-tab
+y si el solicitante adjuntó una foto de su negocio, se muestra un thumbnail clickeable para agrandarla
+
+99.1
+dado una solicitud pendiente cuya localidad+provincia coincide con la de un mayorista ya activo
+cuando el admin la ve en la lista de Solicitudes
+entonces aparece un cartel de advertencia amarillo con el nombre del mayorista existente
+y el texto sugiere verificar la distancia entre direcciones antes de aceptar o rechazar
+y el cartel NO bloquea ni deshabilita los botones Aceptar/Rechazar (es solo informativo,
+la decisión queda a criterio del admin — en una localidad grande pueden convivir sin problema)
+
+99.2
+dado que "mayoristas activos" no se había cargado todavía en esta sesión del portal
+cuando el admin entra a la sub-tab "Solicitudes" (sin haber visitado antes "Activos")
+entonces el cruce de zonas del criterio 99.1 igual funciona correctamente
+(la lista de activos se carga en segundo plano apenas se entra al portal, no
+recién al abrir el sub-tab "Activos" — antes el badge de "Activos" también
+se quedaba en 0 hasta visitar ese sub-tab específico, por el mismo motivo)
 
 100
 dado el admin
@@ -1129,6 +1373,14 @@ cuando modifica los medidas (columnas)
 entonces la cantidad de columnas en la tabla se ajusta
 y los valores existentes se preservan por índice
 
+121.1
+dado el admin
+cuando escribe en el campo "Nombres de columnas (separados por coma)" de un tipo de talle
+entonces el foco del campo y la posición de scroll de la página permanecen estables mientras tipea
+y la tabla de columnas recién se reconstruye al salir del campo (blur) o presionar Enter
+(bug corregido: antes cada tecla reconstruía todo el tab desde cero, lo que hacía perder
+el foco del input y saltar el scroll de la página en cada letra escrita)
+
 
 ────────────────────────────
 PORTAL — TAB HORARIOS
@@ -1154,20 +1406,41 @@ PORTAL — TAB CATÁLOGO
 124
 dado el admin
 cuando entra a la tab "Catálogo"
-entonces puede agregar/editar/eliminar categorías
+entonces visualiza un buscador arriba de la lista que filtra productos por nombre
+y puede agregar/editar/eliminar categorías
 y para cada categoría editar id, nombre, descripción y tipo_talle asociado
+
+124.1
+dado el admin
+cuando entra a la tab "Catálogo"
+entonces cada producto aparece colapsado por default (solo el título, con una flechita ▸)
+y hace click en el título para desplegar/ocultar el resto de sus campos editables (acordeón)
+y el estado expandido/colapsado no se guarda entre sesiones (vuelve a colapsado al recargar)
+
+124.2
+dado el admin
+cuando escribe una palabra en el buscador del tab Catálogo
+entonces solo se muestran los productos (y sus categorías) cuyo nombre matchea
+y las categorías sin ningún match quedan ocultas
 
 125
 dado el admin
 cuando agrega un producto a una categoría
 entonces se le asigna un id auto-incremental
-y campos: nombre, descripción, precio_minorista, precio_mayorista, talles_disponibles (checkboxes por talle según tipo_talle), imágenes múltiples, disponible (toggle), destacado (toggle)
+y campos: nombre, descripción, precio_minorista, precio_mayorista, talles_disponibles (checkboxes por talle según tipo_talle), imágenes múltiples, disponible (toggle "Disp."), destacado (toggle "Dest."), fabricación propia (toggle "Fab. propia", true por default)
+y el producto nuevo aparece expandido automáticamente (no colapsado) para poder cargarlo de una
 
 126
 dado el admin
 cuando toggle "Disponible" a false
 entonces el producto no aparece en el catálogo público de la tienda
 ni cuenta como destacado
+
+126.1
+dado el admin
+cuando toggle "Fab. propia" a false
+entonces el producto deja de aparecer en el catálogo mayorista (sigue visible para minoristas)
+(ver sección "TIENDA — CATÁLOGO MAYORISTA VS MINORISTA")
 
 127
 dado el admin
@@ -1188,6 +1461,77 @@ entonces se remueve del array imagenes[]
 
 
 ────────────────────────────
+PORTAL — TAB STOCK
+────────────────────────────
+
+129.1
+dado el admin
+cuando entra a la tab "Stock"
+entonces NO ve la barra de "Publicar cambios" activarse por nada de lo que haga acá
+(el stock se guarda directo en Firestore, en tiempo real — no pasa por el flujo de
+git commit / publicar como el resto del catálogo)
+
+129.2
+dado el admin
+cuando entra a la sub-tab "Editar" y elige un producto del dropdown
+entonces ve, por cada talle marcado como disponible para ese producto en el tab Catálogo,
+una tabla con los colores cargados (círculo de color + nombre + cantidad)
+
+129.3
+dado el admin
+cuando completa nombre, elige un color con el selector y una cantidad inicial, y hace click en "+ Agregar color"
+entonces se crea la variante talle+color en Firestore (colección stock/{productId})
+y se registra un movimiento inicial con motivo "Alta inicial"
+
+129.4
+dado el admin
+cuando cambia directamente la cantidad de un color en la tabla
+entonces se calcula el delta contra el valor anterior
+y se actualiza el stock vía una transacción de Firestore
+y se registra un movimiento con motivo "Ingreso manual" (si sumó) o "Ajuste manual" (si restó)
+
+129.5
+dado el admin
+cuando intenta bajar manualmente la cantidad de un color a un número negativo
+entonces la transacción se rechaza con un mensaje de error
+y el valor del campo vuelve al anterior
+
+129.6
+dado el admin
+cuando hace click en el círculo de color de una variante existente y elige un color distinto
+entonces se actualiza el hex guardado sin tocar la cantidad
+
+129.7
+dado el admin
+cuando hace click en "×" al lado de un color
+entonces se pide confirmación
+y al aceptar se elimina esa variante talle+color
+y se registra un movimiento con el delta negativo correspondiente y motivo "Color eliminado"
+
+129.8
+dado el admin
+cuando entra a la sub-tab "Importar CSV"
+y pega o carga un archivo con líneas "producto_id,talle,color,delta,motivo"
+y hace click en "Importar"
+entonces cada línea se procesa como un movimiento de stock (delta positivo o negativo)
+y si el color no existía para ese talle, se crea con un color gris por default
+y al final se muestra un resumen de cuántas líneas se importaron OK y el detalle de errores línea por línea
+
+129.9
+dado el admin
+cuando entra a la sub-tab "Historial" y elige un producto
+entonces ve los últimos 100 movimientos (entradas, salidas, ventas) con fecha, talle, color, delta y cantidad resultante
+ordenados del más reciente al más viejo
+
+129.10
+dado un cliente anónimo (no autenticado)
+cuando el checkout descuenta stock al confirmar una venta
+entonces solo puede crear movimientos con delta negativo (ventas)
+nunca puede crear un movimiento que aumente stock, propio o ajeno
+(las Firestore rules lo restringen explícitamente — ver FIRESTORE-RULES.md)
+
+
+────────────────────────────
 PORTAL — TAB TEXTOS
 ────────────────────────────
 
@@ -1196,7 +1540,7 @@ dado el admin
 cuando entra a la tab "Textos"
 entonces puede editar todos los textos configurables de la landing:
 - hero (título, subtítulo, CTA)
-- fábrica (título, texto)
+- producción (título, texto — la landing la muestra como "Nuestra Producción")
 - local (título, texto)
 - mayoristas (título, texto, CTA)
 - confianza (texto)
@@ -1211,7 +1555,20 @@ PORTAL — TAB IMÁGENES
 131
 dado el admin
 cuando entra a la tab "Imágenes"
-entonces puede subir/reemplazar: logo, hero, foto fábrica, foto local
+entonces puede subir/reemplazar: logo, hero, foto producción, foto local, QR de pago
+
+131.1
+dado el admin
+cuando todavía no subió ningún "QR de pago"
+entonces la tienda muestra un placeholder genérico ("QR DE PAGO — PENDIENTE DE CONFIGURAR")
+en vez de un QR real, en cualquier pantalla donde correspondería mostrarlo
+
+131.2
+dado el admin
+cuando sube una imagen al campo "QR de pago"
+entonces ese archivo (qr-pago.jpg) es el que ven los clientes al confirmar o consultar
+un pedido con pago pendiente — es DISTINTO del QR imprimible de la tienda (tab QR, ver
+sección "QR" más arriba), que apunta a la URL de la tienda y no cambia nunca
 
 132
 dado el admin
@@ -1283,9 +1640,17 @@ NOTAS PARA TESTING
 - localStorage keys usadas:
   * catt_perfil, catt_localidad, catt_zona_status
   * catt_mayorista_data
+  * catt_codigo_valido_hash (movido de sessionStorage a localStorage — ver criterio 13.6.1)
   * catt_cart_v2
   * catt_mis_pedidos, catt_mis_solicitudes
   * catt_epat, catt_epat_meta (portal)
 - sessionStorage keys:
   * catt_pat_session, catt_pedidos_session
-  * catt_codigo_valido_hash
+- Firestore: el stock (colección `stock/{productId}` + subcolección `movimientos`) es la
+  única parte del catálogo que NO vive en productos.json — ver sección "PORTAL — TAB STOCK"
+  y FIRESTORE-RULES.md
+- Nota sobre el bug de "publish no sube cambios" (reportado por el cliente, no confirmado
+  al 100% con lectura estática de código): se aplicaron mitigaciones defensivas en
+  publishChanges() (re-fetch del SHA remoto antes de publicar, comparación de contenido
+  real antes/después con aviso explícito si no hay cambios) pero no se pudo aislar una
+  causa raíz verificable — pendiente de reproducir en producción

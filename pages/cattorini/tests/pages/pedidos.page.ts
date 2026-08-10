@@ -37,8 +37,12 @@ export class PedidosPage {
   readonly mLoc: Locator;
   readonly mProv: Locator;
   readonly mCp: Locator;
+  readonly mProdSearch: Locator;
   readonly mProducto: Locator;
   readonly mTalle: Locator;
+  readonly mColorWrap: Locator;
+  readonly mColor: Locator;
+  readonly mStockInfo: Locator;
   readonly mQty: Locator;
   readonly mPrecio: Locator;
   readonly mAgregarBtn: Locator;
@@ -80,8 +84,12 @@ export class PedidosPage {
     this.mLoc = page.locator('#m-loc');
     this.mProv = page.locator('#m-prov');
     this.mCp = page.locator('#m-cp');
+    this.mProdSearch = page.locator('#m-prod-search');
     this.mProducto = page.locator('#m-producto');
     this.mTalle = page.locator('#m-talle');
+    this.mColorWrap = page.locator('#m-color-wrap');
+    this.mColor = page.locator('#m-color');
+    this.mStockInfo = page.locator('#m-stock-info');
     this.mQty = page.locator('#m-qty');
     this.mPrecio = page.locator('#m-precio');
     this.mAgregarBtn = page.locator('#modal-manual .btn-ghost').filter({ hasText: '+ Agregar' });

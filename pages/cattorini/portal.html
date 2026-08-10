@@ -135,6 +135,22 @@
       background: #FFF; border: 1px solid #E5E5E5;
       padding: 16px; margin-bottom: 12px;
     }
+    /* Fila clickeable que expande/colapsa detalle (Catálogo, Stock) —
+       flecha bien visible para que quede claro que se puede hacer click
+       aunque no haya ningún otro control ahí. */
+    .expandable-head { cursor: pointer; user-select: none; }
+    .chevron {
+      font-size: 1rem; font-weight: 700; color: #0A0A0A;
+      width: 14px; flex-shrink: 0; display: inline-block;
+    }
+    /* Variante standalone (no comparte fila con otros controles): además
+       resalta el fondo al pasar el mouse, para reforzar la afordancia. */
+    .expandable-head-box {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; user-select: none;
+      margin: -8px -8px 0; padding: 8px;
+    }
+    .expandable-head-box:hover { background: #F5F5F5; }
     .msg-info {
       padding: 10px 14px; margin-bottom: 12px;
       font-size: 0.85rem;
@@ -277,6 +293,7 @@
     <button class="tab-btn" data-tab="stock">Stock</button>
     <button class="tab-btn" data-tab="textos">Textos</button>
     <button class="tab-btn" data-tab="imagenes">Imágenes</button>
+    <button class="tab-btn" data-tab="pago">Datos de pago</button>
   </div>
 
   <div class="content-wrap">
@@ -311,10 +328,17 @@
         <h3 class="serif text-xl mb-4">Configuración de envío</h3>
         <div class="grid-2">
           <div><label class="lbl">Costo estándar ($)</label><input type="number" class="inp" data-field="config.envio.costo_estandar" /></div>
-          <div><label class="lbl">Envío gratis desde ($)</label><input type="number" class="inp" data-field="config.envio.gratis_desde" /></div>
+          <div>
+            <label class="lbl">Envío gratis desde ($) — solo minoristas</label>
+            <input type="number" class="inp" data-field="config.envio.gratis_desde" />
+          </div>
           <div style="grid-column:1/-1;"><label class="lbl">Transportista</label><input class="inp" data-field="config.envio.transportista" /></div>
-          <div style="grid-column:1/-1;"><label class="lbl">Leyenda pública</label><textarea class="inp" rows="2" data-field="config.envio.leyenda"></textarea></div>
+          <div style="grid-column:1/-1;">
+            <label class="lbl">Leyenda pública — solo la ven minoristas</label>
+            <textarea class="inp" rows="2" data-field="config.envio.leyenda"></textarea>
+          </div>
         </div>
+        <div class="msg-info mt-4">Este umbral de envío gratis y la leyenda de arriba son exclusivos de minoristas — los mayoristas siempre pagan el envío, sin excepción, y ven un mensaje distinto en la tienda que se genera automáticamente (no se edita acá).</div>
       </div>
     </div>
 
@@ -484,6 +508,9 @@
           <h3 class="serif text-xl">Guía de talles por tipo de prenda</h3>
           <button class="btn-ghost" onclick="addTipoTalle()">+ Nuevo tipo</button>
         </div>
+        <p class="text-sm mb-4" style="color:var(--muted);">
+          Acá creás las tablas de medidas. Cada producto elige cuál de estas tablas usar desde el tab <b>Catálogo</b> — así dos productos de la misma categoría (ej. "camisas corte clásico" y "camisas slim fit") pueden tener medidas distintas. Creá un tipo nuevo por cada tabla de medidas diferente que necesites.
+        </p>
         <div id="talles-list"></div>
       </div>
     </div>
@@ -520,11 +547,8 @@
       <div class="subtab-panel active" id="subtab-stock-editar">
         <div class="card">
           <h3 class="serif text-xl mb-4">Editar stock por talle y color</h3>
-          <div style="max-width:420px;margin-bottom:16px;">
-            <label class="lbl">Producto</label>
-            <select class="inp" id="stock-prod-select" onchange="renderStockEditor()"></select>
-          </div>
-          <div id="stock-editor"></div>
+          <input class="inp mb-4" id="stock-search" placeholder="Buscar producto por nombre..." oninput="stockSearchQuery = this.value; renderStockList();" />
+          <div id="stock-list"></div>
         </div>
       </div>
 
@@ -620,13 +644,31 @@
             <div id="img-local-preview" style="aspect-ratio:3/2;background:#F5F5F5;background-size:cover;background-position:center;margin-bottom:8px;"></div>
             <label class="img-drop"><input type="file" accept="image/*" style="display:none;" onchange="uploadImagen(this,'local.jpg','local')" />Subir foto del local</label>
           </div>
-          <div>
-            <label class="lbl">QR de pago</label>
-            <div id="img-qr_pago-preview" style="aspect-ratio:1;max-width:200px;background:#F5F5F5;background-size:contain;background-repeat:no-repeat;background-position:center;margin-bottom:8px;"></div>
-            <label class="img-drop"><input type="file" accept="image/*" style="display:none;" onchange="uploadImagen(this,'qr-pago.jpg','qr_pago')" />Subir QR de pago</label>
-          </div>
         </div>
-        <div class="msg-info mt-4">Las imágenes se suben al repositorio de GitHub. Puede tardar unos segundos. El QR de pago es el que ven los clientes al confirmar un pedido con envío — subí una captura del QR estático de tu billetera virtual (Mercado Pago, etc.). Si cambiás de billetera, solo tenés que reemplazar esta imagen.</div>
+        <div class="msg-info mt-4">Las imágenes se suben al repositorio de GitHub. Puede tardar unos segundos.</div>
+      </div>
+    </div>
+
+    <!-- Tab Datos de pago -->
+    <div class="tab-panel" id="tab-pago">
+      <div class="card">
+        <h3 class="serif text-xl mb-4">QR de pago</h3>
+        <div style="max-width:200px;">
+          <div id="img-qr_pago-preview" style="aspect-ratio:1;background:#F5F5F5;background-size:contain;background-repeat:no-repeat;background-position:center;margin-bottom:8px;"></div>
+          <label class="img-drop"><input type="file" accept="image/*" style="display:none;" onchange="uploadImagen(this,'qr-pago.jpg','qr_pago')" />Subir QR de pago</label>
+        </div>
+        <div class="msg-info mt-4">Es el QR que ven los clientes al confirmar un pedido pendiente de pago (envío, o retiro con pago electrónico). Subí una captura del QR estático de tu billetera virtual (Mercado Pago, etc.). Si cambiás de billetera, solo reemplazá esta imagen — puede tardar unos segundos en subir.</div>
+      </div>
+
+      <div class="card mt-4">
+        <h3 class="serif text-xl mb-4">Datos de la cuenta destino</h3>
+        <p class="text-sm mb-4" style="color:var(--muted);">
+          Se muestran junto al QR para que el cliente pueda verificar que el pago va a la cuenta correcta — un segundo chequeo por si el QR se saltea o falla el escaneo.
+        </p>
+        <div class="grid-2">
+          <div><label class="lbl">Titular de la cuenta</label><input class="inp" data-field="config.pago.titular" placeholder="Ej: Juan Cattorini" /></div>
+          <div><label class="lbl">Banco</label><input class="inp" data-field="config.pago.banco" placeholder="Ej: Banco Galicia" /></div>
+        </div>
       </div>
     </div>
 
@@ -1351,10 +1393,11 @@ function renderProductRow(cat, ci, p, pi) {
   const head = document.createElement('div');
   head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;';
   const title = document.createElement('div');
-  title.style.cssText = 'font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;';
+  title.className = 'expandable-head';
+  title.style.cssText = 'font-weight:500;display:flex;align-items:center;gap:6px;';
   const chevron = document.createElement('span');
+  chevron.className = 'chevron';
   chevron.textContent = catExpandedIds.has(p.id) ? '▾' : '▸';
-  chevron.style.cssText = 'font-size:0.7rem;color:#999;';
   const titleTxt = document.createElement('span');
   titleTxt.textContent = `#${p.id} · ${p.nombre || '(sin nombre)'}`;
   title.appendChild(chevron); title.appendChild(titleTxt);
@@ -1446,6 +1489,31 @@ function renderProductRow(cat, ci, p, pi) {
   descW.appendChild(dLbl); descW.appendChild(dInp);
   detail.appendChild(descW);
 
+  /* Guía de talles — es POR PRODUCTO, no por categoría: dos productos de la
+     misma categoría pueden tener cortes distintos (ej. "camisas corte
+     clásico" vs "camisas slim fit") con tablas de medidas distintas.
+     p.tipo_talle es el dueño real; si no está seteado (productos viejos,
+     de antes de este cambio) cae al tipo_talle de la categoría para no
+     romper nada. */
+  const tipoTalleW = document.createElement('div');
+  tipoTalleW.style.marginTop = '10px';
+  const ttLbl = document.createElement('label'); ttLbl.className = 'lbl'; ttLbl.textContent = 'Guía de talles';
+  const ttSel = document.createElement('select'); ttSel.className = 'inp';
+  const tiposDisponibles = Object.keys(data.guia_talles || {});
+  const tipoActual = p.tipo_talle || cat.tipo_talle || '';
+  if (!tiposDisponibles.includes(tipoActual) && tipoActual) {
+    const optFalta = document.createElement('option'); optFalta.value = tipoActual; optFalta.textContent = tipoActual + ' (no existe, elegí otra)';
+    ttSel.appendChild(optFalta);
+  }
+  tiposDisponibles.forEach(t => {
+    const opt = document.createElement('option'); opt.value = t; opt.textContent = t;
+    if (t === tipoActual) opt.selected = true;
+    ttSel.appendChild(opt);
+  });
+  ttSel.onchange = () => { p.tipo_talle = ttSel.value; markDirty(); renderCategorias(); };
+  tipoTalleW.appendChild(ttLbl); tipoTalleW.appendChild(ttSel);
+  detail.appendChild(tipoTalleW);
+
   /* Talles disponibles */
   const tallesW = document.createElement('div');
   tallesW.style.marginTop = '10px';
@@ -1453,8 +1521,8 @@ function renderProductRow(cat, ci, p, pi) {
   tallesW.appendChild(tLbl);
   const chips = document.createElement('div');
   chips.className = 'talles-check-grid';
-  const tipoTalles = cat.tipo_talle && data.guia_talles[cat.tipo_talle]
-    ? Object.keys(data.guia_talles[cat.tipo_talle].tabla)
+  const tipoTalles = tipoActual && data.guia_talles[tipoActual]
+    ? Object.keys(data.guia_talles[tipoActual].tabla)
     : [];
   p.talles_disponibles = p.talles_disponibles || [];
   tipoTalles.forEach(t => {
@@ -1467,17 +1535,36 @@ function renderProductRow(cat, ci, p, pi) {
       else p.talles_disponibles.push(t);
       chip.classList.toggle('on');
       markDirty();
+      refreshColorStock();
     };
     chips.appendChild(chip);
   });
   if (!tipoTalles.length) {
     const w = document.createElement('div');
     w.style.cssText = 'font-size:0.8rem;color:#900;';
-    w.textContent = 'No hay talles definidos para el tipo "' + (cat.tipo_talle || '?') + '". Configurá la guía de talles primero.';
+    w.textContent = 'No hay talles definidos para el tipo "' + (tipoActual || '?') + '". Configurá la guía de talles primero.';
     tallesW.appendChild(w);
   }
   tallesW.appendChild(chips);
   detail.appendChild(tallesW);
+
+  /* Colores y stock inicial — vive en Firestore (no en productos.json), no
+     hace falta publicar para que quede guardado. Integrado acá (mismo
+     mecanismo que el tab Stock) para no tener que cambiar de tab al cargar
+     un producto nuevo. */
+  const colorStockW = document.createElement('div');
+  colorStockW.style.marginTop = '14px';
+  const csLbl = document.createElement('label'); csLbl.className = 'lbl'; csLbl.textContent = 'Colores y stock inicial';
+  colorStockW.appendChild(csLbl);
+  const csBody = document.createElement('div');
+  colorStockW.appendChild(csBody);
+  detail.appendChild(colorStockW);
+
+  function refreshColorStock() {
+    csBody.textContent = 'Cargando...';
+    getStockDoc(p.id).then(stockDoc => renderColorStockBlock(p, stockDoc, csBody, refreshColorStock));
+  }
+  if (catExpandedIds.has(p.id)) refreshColorStock();
 
   /* Imágenes */
   const imgsW = document.createElement('div');
@@ -1537,6 +1624,7 @@ function addProducto(ci) {
     descripcion: '',
     precio_minorista: 0,
     precio_mayorista: 0,
+    tipo_talle: cat.tipo_talle || '',
     talles_disponibles: [],
     disponible: true,
     destacado: false,
@@ -1622,23 +1710,22 @@ function flattenProductos() {
 
 function poblarSelectsStock() {
   const prods = flattenProductos();
-  ['stock-prod-select', 'stock-hist-select'].forEach(selId => {
-    const sel = document.getElementById(selId);
-    if (!sel) return;
+  const sel = document.getElementById('stock-hist-select');
+  if (sel) {
     const prev = sel.value;
     sel.innerHTML = '';
     if (!prods.length) {
       sel.innerHTML = '<option value="">(no hay productos todavía)</option>';
-      return;
+    } else {
+      prods.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id; opt.textContent = `#${p.id} · ${p.nombre}`;
+        sel.appendChild(opt);
+      });
+      if (prev && prods.some(p => String(p.id) === prev)) sel.value = prev;
     }
-    prods.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.id; opt.textContent = `#${p.id} · ${p.nombre}`;
-      sel.appendChild(opt);
-    });
-    if (prev && prods.some(p => String(p.id) === prev)) sel.value = prev;
-  });
-  if (document.getElementById('subtab-stock-editar').classList.contains('active')) renderStockEditor();
+  }
+  if (document.getElementById('subtab-stock-editar').classList.contains('active')) renderStockList();
 }
 
 async function getStockDoc(productId) {
@@ -1699,27 +1786,78 @@ async function eliminarColorStock(productId, talle, color) {
       ts: firebase.firestore.FieldValue.serverTimestamp()
     });
   }
-  renderStockEditor();
 }
 
-async function renderStockEditor() {
-  const sel = document.getElementById('stock-prod-select');
-  const cont = document.getElementById('stock-editor');
+let stockSearchQuery = '';
+let stockExpandedIds = new Set();
+
+/* Lista tipo acordeón, igual patrón que Catálogo: buscador + fila colapsada
+   por producto (solo nombre) que se despliega al click mostrando talle,
+   color y stock. La flechita dice si está desplegado o replegado. */
+function renderStockList() {
+  const cont = document.getElementById('stock-list');
   cont.innerHTML = '';
-  const productId = sel && sel.value;
-  if (!productId) { cont.textContent = 'Elegí un producto.'; return; }
+  const q = stockSearchQuery.trim().toLowerCase();
+  const prods = flattenProductos().filter(p => !q || p.nombre.toLowerCase().includes(q));
+
+  if (!prods.length) {
+    cont.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;">' + (q ? 'Ningún producto coincide con la búsqueda.' : 'No hay productos todavía — cargalos primero en el tab Catálogo.') + '</div>';
+    return;
+  }
+
+  prods.forEach(({ id, nombre }) => {
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.style.marginBottom = '10px';
+
+    const head = document.createElement('div');
+    head.className = 'expandable-head-box';
+    head.style.fontWeight = '500';
+    const chevron = document.createElement('span');
+    chevron.className = 'chevron';
+    chevron.textContent = stockExpandedIds.has(id) ? '▾' : '▸';
+    const titleTxt = document.createElement('span');
+    titleTxt.textContent = `#${id} · ${nombre}`;
+    head.appendChild(chevron); head.appendChild(titleTxt);
+    head.onclick = () => {
+      if (stockExpandedIds.has(id)) stockExpandedIds.delete(id); else stockExpandedIds.add(id);
+      renderStockList();
+    };
+    row.appendChild(head);
+
+    if (stockExpandedIds.has(id)) {
+      const detail = document.createElement('div');
+      detail.style.marginTop = '12px';
+      detail.textContent = 'Cargando...';
+      row.appendChild(detail);
+      renderStockEditorInto(id, detail);
+    }
+
+    cont.appendChild(row);
+  });
+}
+
+async function renderStockEditorInto(productId, cont) {
   const prods = flattenProductos();
   const info = prods.find(p => String(p.id) === String(productId));
   const p = info && (info.cat.productos || []).find(x => String(x.id) === String(productId));
   if (!p) { cont.textContent = 'Producto no encontrado.'; return; }
 
-  cont.textContent = 'Cargando...';
   const stockDoc = await getStockDoc(productId);
-  cont.innerHTML = '';
+  renderColorStockBlock(p, stockDoc, cont, renderStockList);
+}
 
+/* Bloque de talle → colores → stock inicial, reutilizado en dos lugares:
+   el tab Stock (renderStockEditorInto) y el propio tab Catálogo, para que
+   al cargar un producto nuevo no haga falta cambiar de tab para asignarle
+   color y stock. onChange se llama después de cualquier alta/baja/edición,
+   para que cada lugar decida qué re-renderizar. */
+function renderColorStockBlock(p, stockDoc, cont, onChange) {
+  cont.innerHTML = '';
+  const productId = p.id;
   const talles = p.talles_disponibles || [];
   if (!talles.length) {
-    cont.innerHTML = '<div style="color:#900;font-size:0.85rem;">Este producto no tiene talles marcados en el tab Catálogo — marcá al menos uno antes de cargar stock.</div>';
+    cont.innerHTML = '<div style="color:#900;font-size:0.85rem;">Marcá al menos un talle arriba antes de cargar color y stock.</div>';
     return;
   }
 
@@ -1741,7 +1879,7 @@ async function renderStockEditor() {
       const tdSw = document.createElement('td'); tdSw.style.cssText = 'padding:6px;width:28px;';
       const hexIn = document.createElement('input'); hexIn.type = 'color'; hexIn.value = v.hex || '#999999';
       hexIn.style.cssText = 'width:28px;height:28px;border:none;cursor:pointer;';
-      hexIn.onchange = () => ajustarStock(productId, talle, color, 0, null, hexIn.value).then(renderStockEditor);
+      hexIn.onchange = () => ajustarStock(productId, talle, color, 0, null, hexIn.value).then(onChange);
       tdSw.appendChild(hexIn); tr.appendChild(tdSw);
 
       const tdN = document.createElement('td'); tdN.style.padding = '6px'; tdN.textContent = color;
@@ -1755,14 +1893,14 @@ async function renderStockEditor() {
         if (delta === 0) return;
         try {
           await ajustarStock(productId, talle, color, delta, delta > 0 ? 'Ingreso manual' : 'Ajuste manual');
-          renderStockEditor();
+          onChange();
         } catch (e) { alert(e.message); qIn.value = v.cantidad || 0; }
       };
       tdQ.appendChild(qIn); tr.appendChild(tdQ);
 
       const tdA = document.createElement('td'); tdA.style.padding = '6px';
       const delBtn = document.createElement('button'); delBtn.className = 'btn-danger'; delBtn.textContent = '×';
-      delBtn.onclick = () => eliminarColorStock(productId, talle, color);
+      delBtn.onclick = () => eliminarColorStock(productId, talle, color).then(onChange);
       tdA.appendChild(delBtn); tr.appendChild(tdA);
 
       tabla.appendChild(tr);
@@ -1783,7 +1921,7 @@ async function renderStockEditor() {
       const cant = parseInt(qtyNew.value, 10) || 0;
       try {
         await ajustarStock(productId, talle, nombre, cant, 'Alta inicial', hexNew.value);
-        renderStockEditor();
+        onChange();
       } catch (e) { alert(e.message); }
     };
     addRow.appendChild(nameIn); addRow.appendChild(hexNew); addRow.appendChild(qtyNew); addRow.appendChild(addBtn);
@@ -1828,7 +1966,7 @@ async function importarStockCSV() {
   }
   statusEl.innerHTML = `${ok} movimiento(s) importado(s) correctamente.` +
     (errores.length ? `<br><span style="color:#900;">${errores.length} error(es):<br>${errores.map(e => '· ' + e).join('<br>')}</span>` : '');
-  if (ok > 0) renderStockEditor();
+  if (ok > 0) renderStockList();
 }
 
 /* ---- Historial ---- */
@@ -2529,6 +2667,12 @@ async function loadActivos() {
       const badge = document.getElementById('badge-activos');
       if (badge) badge.textContent = mayoristasActivos.length;
       renderActivos();
+      /* Re-renderizar Solicitudes también: el aviso de zona duplicada usa
+         mayoristasActivos, y este snapshot puede resolver DESPUÉS del de
+         solicitudes_mayoristas (ambos son listeners independientes) — sin
+         este llamado, el aviso quedaba sin mostrarse hasta el próximo
+         cambio en solicitudes_mayoristas, que podía tardar o no llegar. */
+      renderSolicitudes();
     });
   } catch (e) {
     statusEl.className = 'msg-info err';
@@ -2730,7 +2874,7 @@ async function eliminarActivo(m) {
 document.querySelectorAll('.tab-btn').forEach(b => {
   b.addEventListener('click', () => {
     if (b.dataset.tab === 'mayoristas') setTimeout(initUbicacionesAM, 80);
-    if (b.dataset.tab === 'stock') renderStockEditor();
+    if (b.dataset.tab === 'stock') renderStockList();
   });
 });
 
@@ -2746,7 +2890,7 @@ document.querySelectorAll('.subtab-btn').forEach(b => {
     document.getElementById('subtab-' + b.dataset.subtab).classList.add('active');
     if (b.dataset.subtab === 'alta') setTimeout(initUbicacionesAM, 80);
     if (b.dataset.subtab === 'activos') loadActivos();
-    if (b.dataset.subtab === 'stock-editar') renderStockEditor();
+    if (b.dataset.subtab === 'stock-editar') renderStockList();
     if (b.dataset.subtab === 'stock-historial') renderStockHistorial();
   });
 });

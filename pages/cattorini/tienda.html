@@ -82,6 +82,13 @@
       display: flex; align-items: center; gap: 6px;
     }
     .back-link:hover { opacity: 0.6; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .track-link {
+      font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #0A0A0A; text-decoration: none;
+      white-space: nowrap;
+    }
+    .track-link:hover { opacity: 0.6; }
     .brand-logo {
       display: flex; align-items: center;
       text-decoration: none; color: #0A0A0A;
@@ -570,9 +577,12 @@
     <a href="./index.html" class="brand-logo" aria-label="Cattorini — Ir al inicio">
       <img src="./img/logo.jpeg" alt="Cattorini" />
     </a>
-    <button class="cart-btn" onclick="openCart()" aria-label="Ver mi pedido">
-      Pedido <span class="cart-badge" id="cart-count">0</span>
-    </button>
+    <div class="header-right">
+      <a href="./seguimiento.html" class="track-link">Mis pedidos</a>
+      <button class="cart-btn" onclick="openCart()" aria-label="Ver mi pedido">
+        Pedido <span class="cart-badge" id="cart-count">0</span>
+      </button>
+    </div>
   </div>
   <div id="perfil-badge" style="display: none;"></div>
   <div class="cat-strip" id="cat-strip"></div>
@@ -713,6 +723,8 @@
     <!-- Honeypot -->
     <input type="text" name="website" id="hp-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true" />
 
+    <div id="minimo-warning" style="display:none;background:#FDECEC;color:#900;padding:10px 12px;margin-bottom:10px;font-size:0.82rem;line-height:1.4;"></div>
+
     <button class="btn-primary" id="btn-send" onclick="sendOrder()">Confirmar pedido</button>
     <button class="btn-secondary" onclick="clearCart()">Vaciar carrito</button>
   </div>
@@ -753,7 +765,12 @@
       <p style="color:#666;font-size:0.82rem;margin-bottom:14px;line-height:1.5;">
         Escaneá el QR con cualquier billetera virtual que ofrezca pagos QR (Mercado Pago, Cuenta DNI, etc.) para abonar tu pedido.
       </p>
-      <img src="./img/qr-pago.jpg" alt="QR de pago" style="width:180px;height:180px;object-fit:contain;background:#FFF;border:1px solid #E5E5E5;margin-bottom:14px;" />
+      <img src="./img/qr-pago.jpg" alt="QR de pago" style="display:block;width:220px;height:220px;max-width:100%;object-fit:contain;background:#FFF;border:1px solid #E5E5E5;margin:0 auto 14px;" />
+      <div id="confirm-pago-datos" style="font-size:0.82rem;line-height:1.6;margin-bottom:14px;display:none;">
+        <div style="color:#666;">Verificá que el pago sea a nombre de:</div>
+        <div id="confirm-pago-titular" style="font-weight:500;"></div>
+        <div id="confirm-pago-banco" style="color:#666;"></div>
+      </div>
       <p style="color:#666;font-size:0.82rem;line-height:1.5;">
         ¿Preferís pagar por otro medio? <a id="confirm-wa-pago" target="_blank" rel="noopener noreferrer" style="color:#0A0A0A;text-decoration:underline;">Escribinos por WhatsApp</a>.
       </p>
@@ -1057,6 +1074,8 @@ function renderPerfilBadge() {
     showModal();
   };
   badge.appendChild(change);
+
+  renderInfoEnvio();
 }
 
 /* ---------- Zona bloqueada ---------- */
@@ -1145,7 +1164,15 @@ function renderCatStrip() {
 function renderInfoEnvio() {
   const banner = document.getElementById('info-envio');
   const env = DATA.config.envio;
-  banner.textContent = env.leyenda || `Envíos por ${env.transportista}. Gratis desde $${env.gratis_desde.toLocaleString('es-AR')}.`;
+  const { perfil } = getPerfilActual();
+  if (perfil === 'mayorista') {
+    /* El envío gratis por monto es un beneficio exclusivo de minoristas —
+       mostrarle esa leyenda a un mayorista es directamente falso, porque
+       para él el envío siempre corre por su cuenta. */
+    banner.textContent = `Envíos por ${env.transportista}. El costo de envío se discrimina aparte y se suma al total en el carrito.`;
+  } else {
+    banner.textContent = env.leyenda || `Envíos por ${env.transportista}. Gratis desde $${env.gratis_desde.toLocaleString('es-AR')}.`;
+  }
 }
 
 function precioParaPerfil(p) {
@@ -1519,6 +1546,30 @@ function renderTotals() {
   r3R.textContent = `$${total.toLocaleString('es-AR')}`;
   r3.appendChild(r3L); r3.appendChild(r3R);
   box.appendChild(r3);
+
+  actualizarMinimoMayorista(perfil, subtotal);
+}
+
+/* Mínimo de compra mayorista — si no llega, avisar y bloquear "Confirmar
+   pedido" (defensa real está en sendOrder, esto es solo UX). */
+function actualizarMinimoMayorista(perfil, subtotal) {
+  const warn = document.getElementById('minimo-warning');
+  const btn = document.getElementById('btn-send');
+  if (!warn || !btn) return;
+  const minimo = (DATA.config.mayoristas && DATA.config.mayoristas.minimo_compra) || 0;
+  if (perfil === 'mayorista' && minimo > 0 && subtotal < minimo) {
+    const falta = minimo - subtotal;
+    warn.textContent = `El pedido mínimo mayorista es $${minimo.toLocaleString('es-AR')}. Te faltan $${falta.toLocaleString('es-AR')} para poder confirmar.`;
+    warn.style.display = 'block';
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+  } else {
+    warn.style.display = 'none';
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor = '';
+  }
 }
 
 function setEntrega(modo) {
@@ -1716,6 +1767,15 @@ async function sendOrder() {
   const localidadPerfil = localStorage.getItem(LS_LOCALIDAD) || '';
 
   const subtotal = cart.reduce((s, i) => s + (i.precio * i.qty), 0);
+
+  /* Mínimo de compra mayorista — el botón ya se deshabilita en renderTotals,
+     esto es la defensa real por si se saltea el UI (devtools, etc). */
+  const minimoMayo = (DATA.config.mayoristas && DATA.config.mayoristas.minimo_compra) || 0;
+  if (cart_perfil === 'mayorista' && minimoMayo > 0 && subtotal < minimoMayo) {
+    showToast(`El pedido mínimo mayorista es $${minimoMayo.toLocaleString('es-AR')}.`);
+    return;
+  }
+
   const env = DATA.config.envio;
   const envio = entrega === 'envio' ? ((cart_perfil !== 'mayorista' && subtotal >= env.gratis_desde) ? 0 : env.costo_estandar) : 0;
   const total = subtotal + envio;
@@ -1830,6 +1890,17 @@ async function sendOrder() {
     const wa = (DATA.negocio && DATA.negocio.whatsapp) || '';
     const waMsg = encodeURIComponent(`Hola! Quiero pagar mi pedido #${code} por otro medio.`);
     document.getElementById('confirm-wa-pago').href = `https://wa.me/${wa}?text=${waMsg}`;
+    /* Titular/banco: doble chequeo para el cliente en caso de que el QR
+       se saltee o falle el escaneo. */
+    const pago = DATA.config.pago || {};
+    const datosBox = document.getElementById('confirm-pago-datos');
+    if (pago.titular || pago.banco) {
+      datosBox.style.display = 'block';
+      document.getElementById('confirm-pago-titular').textContent = pago.titular || '';
+      document.getElementById('confirm-pago-banco').textContent = pago.banco || '';
+    } else {
+      datosBox.style.display = 'none';
+    }
   } else if (entrega === 'retiro') {
     qrBox.style.display = 'none';
     msgEl.textContent = 'Tu pedido queda a la espera de que lo confirmemos. Vas a abonarlo cuando pases a retirarlo por el local.';

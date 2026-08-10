@@ -494,6 +494,25 @@ dado un mayorista
 cuando elige envío, sin importar cuánto sea el subtotal
 entonces el envío NUNCA es gratis — siempre paga el costo de envío
 (la bonificación de envío gratis por monto es solo para minoristas)
+y el cartel que ve dice "El costo de envío se discrimina aparte y se suma al total
+en el carrito" (no menciona "gratis", para que quede claro que no aplica)
+
+57.2
+dado un mayorista
+cuando el total de su carrito todavía no llega al mínimo de compra que Cattorini
+definió para mayoristas
+entonces ve un cartel avisando cuánto le falta
+y el botón de confirmar pedido queda deshabilitado hasta llegar al mínimo
+
+57.3
+dado un mayorista
+cuando su carrito ya llega o supera el mínimo de compra
+entonces el cartel desaparece y puede confirmar el pedido normalmente
+
+57.4
+dado un cliente minorista
+cuando revisa su carrito
+entonces nunca ve el cartel de mínimo de compra (es exclusivo de cuentas mayoristas)
 
 
 ────────────────────────────
@@ -542,7 +561,14 @@ entonces no se le pregunta nada sobre el pago — el envío siempre es electrón
 dado un cliente cuyo pedido necesita pago por QR (envío, o retiro con pago electrónico)
 cuando confirma el pedido
 entonces además del código de seguimiento ve un QR para pagar con cualquier billetera
-virtual, y un link de WhatsApp por si prefiere pagar de otra forma
+virtual, el titular y el banco de la cuenta a la que va el pago (como segundo chequeo
+si el QR falla o prefiere transferir a mano), y un link de WhatsApp por si prefiere
+pagar de otra forma
+
+60.3.1
+dado un cliente con un pedido pendiente de pago
+cuando vuelve más tarde a consultar el seguimiento sin haber pagado todavía
+entonces vuelve a ver el mismo QR con el titular y el banco
 
 60.4
 dado un cliente de retiro que eligió "Pago en el local"
@@ -687,6 +713,28 @@ y los precios pasan a mayoristas
 dado el admin
 cuando arma un pedido y luego cambia entre minorista y mayorista
 entonces los precios de los items ya cargados se recalculan automáticamente
+
+77.1
+dado el admin cargando productos al pedido manual
+cuando escribe en el buscador de producto
+entonces la lista se filtra a los productos cuyo nombre coincide
+(antes había que buscar a mano en una lista larga con todos los productos)
+
+77.2
+dado el admin
+cuando elige un producto y un talle que sí tiene color y stock cargados en el portal
+entonces aparece un selector de color con la cantidad disponible de cada uno
+
+77.3
+dado el admin
+cuando intenta cargar más cantidad de la que hay en stock de ese color
+entonces el sitio avisa y no lo deja agregar
+
+77.4
+dado el admin
+cuando confirma un pedido manual con productos que tienen color asignado
+entonces el stock se descuenta automáticamente, igual que en una compra online
+(no hace falta ir después a "Stock" a restarlo a mano)
 
 78
 dado el admin
@@ -1043,11 +1091,22 @@ y hace click en el nombre para abrirlo y ver/editar todos sus datos
 dado el admin
 cuando agrega un producto a una categoría
 entonces completa: nombre, descripción, precio minorista, precio mayorista
-y elige los talles disponibles (checkboxes según el tipo de talle)
+y elige QUÉ guía de talles usa ese producto puntual (ver 116.1)
+y elige los talles disponibles (checkboxes según la guía elegida)
+y carga los colores y el stock inicial de cada talle, ahí mismo, sin cambiar de tab
 y sube fotos del producto (1 o más)
 y define si está disponible (aparece en la tienda o no)
 y define si es destacado (aparece en la landing hasta 8 destacados)
 y define si es de fabricación propia o de otra marca (esto último solo se vende a minoristas)
+
+116.1
+dado el admin
+cuando dos productos son de la misma categoría pero tienen cortes distintos
+(por ejemplo "camisa corte clásico" y "camisa slim fit")
+entonces puede asignarle a CADA producto su propia guía de talles, aunque compartan
+categoría — ya no queda atada a la categoría entera
+(los productos viejos que nunca se tocaron siguen usando la guía de su categoría,
+como hasta ahora, así que no hay que ir a revisarlos uno por uno)
 
 117
 dado el admin
@@ -1083,8 +1142,11 @@ entonces esto NO pasa por "Publicar cambios" — se guarda al instante, en tiemp
 
 120.2
 dado el admin
-cuando entra a "Stock" → "Editar" y elige un producto
-entonces ve, por cada talle, los colores cargados con su cantidad
+cuando entra a "Stock" → "Editar"
+entonces tiene un buscador para encontrar el producto por nombre, igual que en Catálogo
+y hace click en el nombre del producto para desplegarlo (con una flechita que indica
+que se puede abrir/cerrar)
+y ahí ve, por cada talle, los colores cargados con su cantidad
 y puede agregar un color nuevo (nombre + color + cantidad inicial)
 y puede editar la cantidad de un color existente escribiendo el número nuevo
 y puede cambiar el color (el círculo) de una variante
@@ -1136,11 +1198,31 @@ entonces puede subir o reemplazar:
 - la foto de portada (hero)
 - las fotos de la sección Producción
 - las fotos de la sección Local
-- el QR de pago (el que ven los clientes al confirmar un pedido pendiente de pago —
-  distinto del QR imprimible que lleva a la tienda, ese está en su propia sección)
+(el QR de pago para cobrar pedidos pendientes se subió a su propia tab, "Datos de
+pago" — ver sección siguiente. El QR IMPRIMIBLE que lleva a la tienda es otra cosa
+distinta, tiene su propia sección más abajo)
+
+
+────────────────────────────
+PORTAL — DATOS DE PAGO (QR, TITULAR Y BANCO)
+────────────────────────────
 
 122.1
+dado el admin
+cuando entra a la tab "Datos de pago"
+entonces puede subir o reemplazar el QR de pago (el que ven los clientes al
+confirmar un pedido pendiente de pago)
+y puede escribir el titular y el banco de la cuenta a la que va la plata
+
+122.2
 dado el admin
 cuando todavía no subió su QR de pago real
 entonces los clientes ven un cartel genérico de "pendiente de configurar" en su lugar
 hasta que Cattorini suba la captura de su QR de Mercado Pago (o la billetera que use)
+
+122.3
+dado el admin
+cuando carga titular y banco y publica
+entonces esos datos se muestran junto al QR en cualquier pedido pendiente de pago,
+como una forma extra de que el cliente confirme que está pagando a la cuenta correcta
+(si los deja vacíos, simplemente no se muestra esa línea — no rompe nada)

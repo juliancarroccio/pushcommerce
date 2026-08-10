@@ -102,6 +102,10 @@ export function firebaseMockScript(state: FirebaseMockState = {}): string {
         return {
           id: docId,
           path: colName + '/' + docId,
+          /* Subcolecciones: se guardan con una key compuesta "col/doc/sub"
+             en el mismo store plano — alcanza para lo que usan los tests
+             (stock/{id}/movimientos). */
+          collection: (subName) => makeCollectionRef(colName + '/' + docId + '/' + subName),
           get: async () => {
             await delay();
             const doc = (__state.collections[colName] || {})[docId];
@@ -199,7 +203,23 @@ export function firebaseMockScript(state: FirebaseMockState = {}): string {
       };
 
       const firestoreInstance = {
-        collection: (name) => makeCollectionRef(name)
+        collection: (name) => makeCollectionRef(name),
+        /* Transacción simplificada (no atómica de verdad — los tests corren
+           secuenciales, no hace falta simular contención real). Encola los
+           set/update hechos dentro de la función y los espera antes de
+           resolver, para que quien llama "await db.runTransaction(...)"
+           tenga la certeza de que ya se escribieron cuando sigue. */
+        runTransaction: async (updateFunction) => {
+          const pending = [];
+          const tx = {
+            get: async (ref) => ref.get(),
+            set: (ref, data) => { pending.push(ref.set(data)); },
+            update: (ref, data) => { pending.push(ref.update(data)); }
+          };
+          const result = await updateFunction(tx);
+          await Promise.all(pending);
+          return result;
+        }
       };
 
       const authInstance = {

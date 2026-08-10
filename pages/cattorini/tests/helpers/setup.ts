@@ -5,7 +5,7 @@
  */
 import { Page } from '@playwright/test';
 import { firebaseMockScript, FirebaseMockState } from '../fixtures/firebase-mock';
-import { CODIGO_MASTER_HASH, CODIGO_MAYO_INDIVIDUAL_HASH } from '../fixtures/test-data';
+import { CODIGO_MASTER_HASH, CODIGO_MAYO_INDIVIDUAL_HASH, productosJsonSample } from '../fixtures/test-data';
 
 export interface SetupOptions {
   firebase?: FirebaseMockState;
@@ -27,6 +27,12 @@ export interface SetupOptions {
   misSolicitudes?: Array<{ code: string; docId: string | null; ts: number }>;
   /** Sesión activa del portal (PAT + password ya configurados) */
   portalSession?: boolean;
+  /**
+   * Datos que debe devolver el mock de la GitHub Contents API (ghGet de
+   * portal.html) al hacer loadRemote(). Por default se sirve productosJsonSample
+   * — pasar `false` explícito para dejar la API real sin mockear (no recomendado).
+   */
+  githubData?: any | false;
 }
 
 /**
@@ -51,6 +57,37 @@ export async function setupPage(page: Page, opts: SetupOptions = {}) {
     contentType: 'text/javascript',
     body: '/* sw disabled in tests */'
   }));
+
+  // 1c) Mockear la GitHub Contents API (ghGet/ghPut de portal.html) para que
+  // loadRemote()/publishChanges() no peguen a la red real de api.github.com.
+  // Los PUT (Publicar cambios / subir imagen) quedan en (page as any).__ghPuts
+  // — ver getGithubPuts() más abajo — para que un test inspeccione qué se publicó.
+  if (opts.githubData !== false) {
+    const remoteData = opts.githubData !== undefined ? opts.githubData : productosJsonSample;
+    const remoteContentB64 = Buffer.from(JSON.stringify(remoteData), 'utf-8').toString('base64');
+    (page as any).__ghPuts = [];
+    let putCount = 0;
+    await page.route(/api\.github\.com\/repos\/.+\/contents\//, async route => {
+      const req = route.request();
+      if (req.method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ content: remoteContentB64, sha: 'fake-sha-test', encoding: 'base64' })
+        });
+      } else if (req.method() === 'PUT') {
+        putCount += 1;
+        (page as any).__ghPuts.push(req.postDataJSON());
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ content: { sha: 'fake-sha-test-' + putCount } })
+        });
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
+      }
+    });
+  }
 
   // 1b) Inyectar mock de Firebase antes de que cargue nada
   await page.addInitScript({ content: script });
@@ -107,6 +144,11 @@ export async function setCollection(page: Page, name: string, docs: Record<strin
 /** Helper para leer el estado actual de una colección */
 export async function getCollection(page: Page, name: string) {
   return page.evaluate((n) => (window as any).__firebaseMock.getCollection(n), name);
+}
+
+/** Helper para leer los PUT hechos contra el mock de la GitHub Contents API */
+export function getGithubPuts(page: Page): any[] {
+  return (page as any).__ghPuts || [];
 }
 
 /** Helper: espera a que se complete cualquier animación en curso */

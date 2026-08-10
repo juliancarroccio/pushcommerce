@@ -636,6 +636,39 @@ entonces el envío NO se bonifica — siempre se cobra config.envio.costo_estand
 (el envío gratis por monto es un beneficio exclusivo de minoristas; el envío mayorista
 siempre corre por cuenta del comprador, sin excepción)
 
+36.2
+dado un cliente mayorista
+cuando ve el banner informativo de envío (en tienda.html y en producto.html)
+entonces el texto es "Envíos por {transportista}. El costo de envío se discrimina
+aparte y se suma al total en el carrito." (NO menciona "envío gratis", que es
+exclusivo de minoristas)
+y el mismo banner se actualiza en vivo si el cliente cambia de perfil sin recargar la página
+
+36.3
+dado un cliente mayorista
+cuando el subtotal del carrito es menor a config.mayoristas.minimo_compra
+entonces se muestra un cartel de advertencia con el monto que falta para llegar al mínimo
+y el botón "Confirmar pedido" queda deshabilitado
+(aplica tanto en tienda.html como en producto.html — ver criterio 60.x para la
+defensa equivalente del lado servidor/sendOrder)
+
+36.4
+dado un cliente mayorista
+cuando el subtotal alcanza o supera config.mayoristas.minimo_compra
+entonces el cartel de advertencia desaparece
+y el botón "Confirmar pedido" se habilita
+
+36.5
+dado un cliente minorista
+cuando revisa el carrito, sin importar el subtotal
+entonces nunca ve el cartel de mínimo de compra (esa validación es exclusiva de mayoristas)
+
+36.6
+dado un cliente mayorista bajo el mínimo de compra
+cuando fuerza el envío del pedido saltándose la UI (ej. dispara sendOrder() manualmente)
+entonces la función igual bloquea la creación del pedido y no se guarda nada en Firestore
+(la validación del mínimo no es solo cosmética/UI — está duplicada como defensa real)
+
 
 ────────────────────────────
 TIENDA — VALIDACIONES ANTI-FRAUDE
@@ -707,10 +740,19 @@ dado un cliente que confirma un pedido que necesita QR (envío, o retiro + pago 
 cuando ve la pantalla de confirmación
 entonces además del código de seguimiento se muestra:
 - el texto "Pedido pendiente de pago"
-- un QR (imagen configurada por Cattorini en el portal, tab Imágenes → "QR de pago")
+- un QR (imagen configurada por Cattorini en el portal, tab "Datos de pago")
+- el titular y el banco de la cuenta destino (config.pago.titular / config.pago.banco),
+  como segundo chequeo por si el QR falla el escaneo o el cliente prefiere transferir a mano
 - instrucciones de escanear con cualquier billetera virtual que ofrezca pagos QR
 - un link de WhatsApp por si prefiere pagar por otro medio
 y el pedido queda guardado en Firestore con estado "pendiente" y pagaEnLocal=false
+
+42.3.1
+dado un cliente con un pedido pendiente de pago (QR)
+cuando vuelve más tarde a /seguimiento.html?code=XXX sin haber pagado todavía
+entonces se le vuelve a mostrar el mismo bloque de QR + titular + banco
+(no solo aparece una vez en la confirmación inicial — el cliente puede necesitar
+volver a consultarlo)
 
 42.4
 dado un cliente que confirma un pedido de retiro con "Pago en el local"
@@ -732,6 +774,33 @@ cuando carga un pedido manual de modalidad retiro desde pedidos.html (+ Manual)
 entonces el pedido se guarda con pagaEnLocal=true automáticamente
 (se asume que el pago ya se arregló en persona/teléfono; los pedidos manuales no
 disparan el flujo QR)
+
+
+────────────────────────────
+PORTAL — TAB DATOS DE PAGO
+────────────────────────────
+
+42.7
+dado el admin
+cuando entra a la tab "Datos de pago"
+entonces puede subir/reemplazar la imagen del QR de pago (mismo mecanismo que las demás
+imágenes del sitio, sube directo al repo bajo /img/qr-pago.jpg)
+y puede editar dos campos de texto: "Titular de la cuenta" y "Banco"
+(config.pago.titular / config.pago.banco)
+
+42.8
+dado el admin
+cuando edita titular o banco y hace click en "Publicar cambios"
+entonces esos valores quedan en productos.json (config.pago)
+y a partir de ahí se muestran junto al QR en cualquier pedido pendiente de pago
+(tienda, producto y seguimiento — ver criterio 42.3)
+
+42.9
+dado el admin
+cuando deja titular Y banco vacíos (nunca los configuró)
+entonces en tienda/producto/seguimiento no se muestra el bloque de titular/banco
+(no rompe ni muestra "undefined" — el QR solo se sigue mostrando igual)
+y si carga solo uno de los dos, se muestra el bloque con ese único dato
 
 
 ────────────────────────────
@@ -973,6 +1042,45 @@ dado el admin
 cuando agrega productos al pedido manual
 y cambia de perfil después
 entonces los precios de los items ya cargados se recalculan al nuevo perfil
+
+68.1
+dado el admin agregando productos al pedido manual
+cuando escribe en el buscador de producto
+entonces el selector de producto se filtra a las opciones cuyo nombre matchea
+(antes era un <select> con todos los productos sin forma de filtrar)
+
+68.2
+dado el admin
+cuando elige un producto y un talle
+y ese producto tiene stock/color cargado en el portal para ese talle
+entonces aparece un selector de color con los colores disponibles
+y se muestra la cantidad en stock del color seleccionado
+
+68.3
+dado el admin
+cuando elige un producto y talle SIN stock/color cargado (producto viejo, o nunca se cargó)
+entonces se puede agregar igual sin elegir color, sin bloquear nada
+(compatibilidad con productos cargados antes de esta funcionalidad)
+
+68.4
+dado el admin
+cuando intenta agregar una cantidad mayor al stock disponible de ese color
+(contando también lo que ya haya agregado al carrito manual en items previos)
+entonces se muestra un alert y no se agrega el item
+
+68.5
+dado el admin
+cuando confirma un pedido manual con items que tienen color asignado
+entonces al crear el pedido se descuenta el stock real vía la misma transacción de
+Firestore que usa el checkout online (colección stock/{productId})
+y se registra un movimiento por cada item con motivo "Venta manual #{código}"
+
+68.6
+dado el admin
+cuando confirma un pedido manual y el stock cambió entre que se agregó al carrito
+manual y se confirma (ej. otra venta consumió ese color mientras tanto)
+entonces la transacción lo detecta y bloquea la creación del pedido
+sin descontar nada ni crear el documento en Firestore
 
 69
 dado el admin
@@ -1427,8 +1535,22 @@ y las categorías sin ningún match quedan ocultas
 dado el admin
 cuando agrega un producto a una categoría
 entonces se le asigna un id auto-incremental
-y campos: nombre, descripción, precio_minorista, precio_mayorista, talles_disponibles (checkboxes por talle según tipo_talle), imágenes múltiples, disponible (toggle "Disp."), destacado (toggle "Dest."), fabricación propia (toggle "Fab. propia", true por default)
+y campos: nombre, descripción, precio_minorista, precio_mayorista, guía de talles (select,
+ver 125.1), talles_disponibles (checkboxes por talle según la guía elegida), colores y stock
+inicial por talle (ver sección "PORTAL — TAB STOCK"), imágenes múltiples, disponible
+(toggle "Disp."), destacado (toggle "Dest."), fabricación propia (toggle "Fab. propia",
+true por default)
 y el producto nuevo aparece expandido automáticamente (no colapsado) para poder cargarlo de una
+
+125.1
+dado el admin editando un producto
+cuando abre el select "Guía de talles" dentro de sus campos expandidos
+entonces la guía de talles es POR PRODUCTO, no por categoría — dos productos de la misma
+categoría (ej. "camisas corte clásico" y "camisas slim fit") pueden tener tablas de
+medidas distintas
+y si el producto no tiene una guía propia asignada todavía, el select muestra la de su
+categoría como valor por default (compatibilidad con productos cargados antes de este cambio)
+y cambiar el select y publicar guarda la guía elegida en el producto (no en la categoría)
 
 126
 dado el admin
@@ -1473,9 +1595,23 @@ git commit / publicar como el resto del catálogo)
 
 129.2
 dado el admin
-cuando entra a la sub-tab "Editar" y elige un producto del dropdown
+cuando entra a la sub-tab "Editar"
+entonces ve un buscador arriba de la lista de productos (igual que en Catálogo)
+y cada producto aparece colapsado por default, con una flechita ▸ que indica que se
+puede desplegar (▾ cuando está expandido)
+(antes era un <select> gigante sin buscador ni indicación visual de que se podía interactuar)
+
+129.2.1
+dado el admin
+cuando despliega un producto en la sub-tab "Editar"
 entonces ve, por cada talle marcado como disponible para ese producto en el tab Catálogo,
 una tabla con los colores cargados (círculo de color + nombre + cantidad)
+
+129.2.2
+dado el admin
+cuando está en el tab Catálogo, con un producto desplegado
+entonces ve el mismo bloque de colores y stock inicial ahí mismo, sin necesidad de
+cambiar al tab Stock — útil para cargar color y stock justo al dar de alta un producto nuevo
 
 129.3
 dado el admin

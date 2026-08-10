@@ -125,3 +125,112 @@ export function pedidoConEstado(estado: string, extra: Record<string, any> = {})
     ...extra
   };
 }
+
+/**
+ * Réplica reducida de productos.json para mockear la GitHub Contents API
+ * que usa portal.html (ghGet/loadRemote). Sin esto, enterApp() en el portal
+ * pega a la red real de api.github.com en cada test — ver setup.ts githubData.
+ */
+export const productosJsonSample = {
+  negocio: {
+    nombre: 'Cattorini',
+    tagline: 'Textil de Las Flores desde 1959',
+    whatsapp: '5492244429515',
+    provincia: 'Buenos Aires',
+    fundacion: 1959
+  },
+  config: {
+    envio: {
+      gratis_desde: 80000,
+      costo_estandar: 4500,
+      transportista: 'Vía Cargo',
+      leyenda: 'Enviamos a todo el país por Vía Cargo. Envío gratis en compras superiores a $80.000. Válido para minoristas.'
+    },
+    mayoristas: {
+      codigo_hash: CODIGO_MASTER_HASH,
+      minimo_compra: 100000,
+      mensaje_bienvenida: 'Ingresá tu código de acceso mayorista.'
+    },
+    minoristas: {
+      bonificacion_zonas_libres: 5,
+      mensaje_bonificacion: 'En tu zona no tenemos distribuidor.',
+      mensaje_zona_con_mayorista: 'En tu zona contamos con un distribuidor autorizado.'
+    },
+    pago: { titular: '', banco: '' }
+  },
+  zonas_mayoristas: [
+    { provincia: 'Córdoba', localidad: 'Córdoba', mayorista: 'Ropa CR' }
+  ],
+  guia_talles: {
+    camisas: { unidad: 'cm', medidas: ['Pecho'], tabla: { M: ['96'] } },
+    camisas_slim: { unidad: 'cm', medidas: ['Pecho'], tabla: { M: ['90'] } },
+    pantalones: { unidad: 'cm', medidas: ['Cintura'], tabla: { '40': ['80'] } }
+  },
+  horarios: {},
+  categorias: [
+    {
+      id: 'camisas',
+      nombre: 'Camisas',
+      descripcion: 'Camisas de vestir e industriales.',
+      tipo_talle: 'camisas',
+      imagen: 'cat-camisas.jpg',
+      productos: [
+        {
+          id: 1,
+          nombre: 'Camisa Oxford Blanca',
+          descripcion: 'Camisa de vestir clásica.',
+          precio_minorista: 22000,
+          precio_mayorista: 14500,
+          talles_disponibles: ['S', 'M', 'L'],
+          disponible: true,
+          destacado: true,
+          imagenes: ['camisa-oxford-blanca-1.jpg']
+        },
+        {
+          id: 2,
+          nombre: 'Camisa Slim Fit Negra',
+          descripcion: 'Corte slim, guía de talles propia.',
+          precio_minorista: 23000,
+          precio_mayorista: 15000,
+          talles_disponibles: ['S', 'M', 'L'],
+          disponible: true,
+          destacado: false,
+          fabricacion_propia: false,
+          tipo_talle: 'camisas_slim',
+          imagenes: ['camisa-slim-negra-1.jpg']
+        }
+      ]
+    },
+    {
+      id: 'pantalones',
+      nombre: 'Pantalones',
+      descripcion: 'Pantalones de vestir.',
+      tipo_talle: 'pantalones',
+      imagen: 'cat-pantalones.jpg',
+      productos: [
+        {
+          id: 4,
+          nombre: 'Pantalón de Vestir Negro',
+          descripcion: 'Corte recto.',
+          precio_minorista: 28000,
+          precio_mayorista: 18500,
+          talles_disponibles: ['40', '42'],
+          disponible: true,
+          destacado: true,
+          imagenes: ['pantalon-vestir-negro-1.jpg']
+        }
+      ]
+    }
+  ],
+  textos: {
+    hero: { titulo: 'Camisas, pantalones y jeans', subtitulo: 'Desde 1959 en Las Flores.', cta: 'Ver catálogo' },
+    fabrica: { titulo: 'Nuestra Producción', texto: 'Más de sesenta años.' },
+    local: { titulo: 'Visitá el local', texto: 'Sarmiento y 25 de Mayo.' },
+    mayoristas: { titulo: '¿Sos comerciante?', texto: 'Trabajamos con comercios de todo el país.', cta: 'Solicitar cuenta mayorista' },
+    confianza: { titulo: 'Trayectoria con historia', texto: 'Más de 60 años.' },
+    footer: { texto: 'Cattorini · Las Flores, Buenos Aires.' },
+    checkout: { saludo_mayorista: 'Hola! Soy mayorista.', saludo_minorista: 'Hola!' }
+  },
+  imagenes: { logo: 'logo.jpeg', hero_carousel: [], fabrica_carousel: [], local_carousel: [], og: 'logo.jpeg' },
+  seo: { keywords: 'Cattorini', author: 'Cattorini', url_base: 'https://juliancarroccio.github.io/pushcommerce/pages/cattorini' }
+};

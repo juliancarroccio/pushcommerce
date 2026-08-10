@@ -3,8 +3,11 @@ import { setupPage, getCollection } from '../../helpers/setup';
 import { TiendaPage } from '../../pages/tienda.page';
 import { mayoristaSample, CODIGO_MASTER_HASH } from '../../fixtures/test-data';
 
+/* qty 7 × 14500 = 101500 — por encima del mínimo de compra mayorista
+   (100000) para que estos tests no queden bloqueados por esa validación,
+   que no es lo que están probando. */
 const cartMayo = [
-  { id: 1, nombre: 'Camisa Oxford Blanca', categoria: 'Camisas', talle: 'M', qty: 5, precio: 14500 }
+  { id: 1, nombre: 'Camisa Oxford Blanca', categoria: 'Camisas', talle: 'M', qty: 7, precio: 14500 }
 ];
 
 test.describe('Checkout mayorista con datos @tienda @checkout @mayorista', () => {

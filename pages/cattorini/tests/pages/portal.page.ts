@@ -71,6 +71,20 @@ export class PortalPage {
     await this.loginBtn.click();
   }
 
+  /**
+   * portalSession (sessionStorage) NO salta la pantalla de login de
+   * portal.html — a diferencia de pedidos.html, acá el gate real es
+   * localStorage (LS_EPAT/LS_META), que no se puede prefabricar sin
+   * replicar el cifrado AES-GCM. Más simple: completar el setup real una
+   * vez (rápido, ya que la GitHub Contents API está mockeada por defecto
+   * en setupPage — ver helpers/setup.ts).
+   */
+  async entrarComoAdmin() {
+    await this.goto();
+    await this.setupInicial('ghp_test0000000000000000', 'testpass1234');
+    await this.appScreen.waitFor({ state: 'visible' });
+  }
+
   tab(name: string) {
     return this.page.locator(`.tab-btn[data-tab="${name}"]`);
   }

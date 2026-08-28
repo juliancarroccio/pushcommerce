@@ -1222,6 +1222,24 @@ entonces productos.json se envía a la GitHub API (PUT contents)
 y se hace commit al repo cattorini/cattorini.github.io
 y automáticamente se regenera y publica sitemap.xml con las URLs de todos los productos disponibles
 
+88.1
+dado un producto que YA tiene algún color/stock cargado en Firestore (no es un producto
+100% legado sin control de stock)
+cuando tiene un talle marcado como disponible sin NINGÚN color cargado para ese talle
+y el admin hace click en "Publicar cambios"
+entonces la publicación se bloquea con un alert que detalla el producto y el/los talle(s)
+sin color
+y no se envía ningún PUT a la GitHub API — el estado "cambios sin publicar" sigue activo
+(evita que un talle quede comprable en la tienda sin ningún control de stock real —
+bug real reportado por el cliente: el admin tildaba un talle y se olvidaba de cargarle
+color antes de publicar)
+
+88.2
+dado un producto que NUNCA tuvo ningún color cargado en Firestore (modo legado)
+cuando tiene talles marcados como disponibles y el admin publica
+entonces la publicación NO se bloquea — el modo legado (talle sin control de stock)
+sigue funcionando exactamente igual que siempre, la validación del 88.1 no aplica acá
+
 89
 dado el admin
 cuando modifica cambios pero no publica
@@ -1548,9 +1566,62 @@ cuando abre el select "Guía de talles" dentro de sus campos expandidos
 entonces la guía de talles es POR PRODUCTO, no por categoría — dos productos de la misma
 categoría (ej. "camisas corte clásico" y "camisas slim fit") pueden tener tablas de
 medidas distintas
-y si el producto no tiene una guía propia asignada todavía, el select muestra la de su
-categoría como valor por default (compatibilidad con productos cargados antes de este cambio)
+y SOLO si el producto es de antes de que existiera este campo (tipo_talle nunca definido)
+el select muestra la de su categoría como valor por default — es compatibilidad hacia
+atrás, no un comportamiento nuevo (ver 125.1.1)
 y cambiar el select y publicar guarda la guía elegida en el producto (no en la categoría)
+
+125.1.1
+dado el admin
+cuando agrega un producto nuevo con el botón "+ Producto"
+entonces el select "Guía de talles" arranca en "— Elegí una guía de talles —" (vacío)
+y el mensaje bajo "Talles disponibles" dice "Elegí una guía de talles arriba antes de
+marcar talles disponibles" — no aparece ningún chip de talle hasta elegir una guía
+(antes heredaba automáticamente la guía de la categoría sin que el admin la eligiera a
+propósito — eso es justamente lo que producía el bug de 125.2/125.3: el admin tildaba
+talles bajo esa guía "de arrastre", y si después elegía la guía correcta, esos talles
+iniciales quedaban huérfanos)
+
+125.2
+dado un producto con talles disponibles y colores/stock ya cargados en Firestore para
+esos talles
+cuando el admin cambia el select "Guía de talles" a una guía distinta
+entonces talles_disponibles se filtra automáticamente: solo quedan los talles que
+también existen en la tabla de la guía nueva
+y en Firestore se purga (se elimina) el color/stock de cada talle que quedó afuera,
+registrando un movimiento por cada color eliminado con motivo "Guía de talles cambiada"
+y en "Colores y stock inicial" esos talles dejan de aparecer inmediatamente — ya no
+quedan mezclados los talles de la guía vieja con los de la guía nueva
+(bug real reportado por el cliente: la administrativa cambió de guía después de cargar
+talles con la guía por default, y en "Colores y stock inicial" seguían apareciendo tanto
+los talles viejos como los nuevos, sin forma de sacarlos desde la UI — ni borrando el
+producto, porque el stock en Firestore no se limpiaba solo, ver 125.4/125.5)
+
+125.3
+dado un producto con un talle disponible que tiene color/stock cargado
+cuando el admin destilda ese talle en "Talles disponibles" (sin cambiar de guía)
+entonces pasa exactamente lo mismo que en 125.2: se purga el color/stock de ese talle en
+Firestore, con motivo "Talle deseleccionado en Catálogo"
+(mismo problema, otro gatillo — no hace falta cambiar de guía para que se produzca)
+
+125.4
+dado un producto con color/stock cargado en Firestore
+cuando el admin lo elimina desde el tab Catálogo (botón "Eliminar", con confirmación)
+entonces además de sacarlo de productos.json, se borra su doc completo en la colección
+stock de Firestore
+(antes quedaba huérfano para siempre — ver 125.5 para por qué esto importaba más de lo
+que parece)
+
+125.5
+dado el catálogo con productos de IDs 1, 2, 3, 4
+cuando el admin elimina el producto de ID 4 (el más alto) y después agrega un producto
+nuevo, en la misma sesión del portal
+entonces el producto nuevo recibe el ID 5 — el contador de IDs nunca reutiliza uno que ya
+existió, ni siquiera si se borró en la misma sesión
+(antes el ID se recalculaba como el máximo de los IDs ACTUALES + 1 en cada alta: borrar el
+de ID más alto liberaba ese número, y el próximo producto lo heredaba junto con
+CUALQUIER stock que hubiera quedado huérfano en Firestore bajo ese mismo ID — la otra
+mitad de "por más que borré productos, seguía apareciendo el stock viejo")
 
 126
 dado el admin

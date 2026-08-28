@@ -820,6 +820,16 @@ dado el admin
 cuando intenta cerrar la pestaña con cambios sin publicar
 entonces el navegador le pide confirmación para no perder trabajo
 
+87.1
+dado un producto que ya tiene algún color/stock cargado
+cuando le queda un talle marcado como disponible pero SIN ningún color cargado
+y el admin intenta publicar
+entonces el sitio no lo deja: avisa qué producto y qué talle falta, y no publica nada
+hasta que se cargue el color o se destilde el talle
+(esto evita que ese talle se pueda comprar en la tienda sin ningún control real de stock
+— un producto que nunca usó colores/stock, en cambio, sigue funcionando como siempre,
+sin este chequeo)
+
 
 ────────────────────────────
 PORTAL — DATOS DEL NEGOCIO
@@ -1107,6 +1117,40 @@ entonces puede asignarle a CADA producto su propia guía de talles, aunque compa
 categoría — ya no queda atada a la categoría entera
 (los productos viejos que nunca se tocaron siguen usando la guía de su categoría,
 como hasta ahora, así que no hay que ir a revisarlos uno por uno)
+
+116.2
+dado el admin
+cuando agrega un producto nuevo
+entonces el campo "Guía de talles" arranca vacío — no se precarga solo con la guía de la
+categoría, hay que elegirla a propósito antes de poder tildar talles
+(esto es a propósito: antes se precargaba sola, y si el admin después se daba cuenta que
+correspondía otra guía y la cambiaba, los talles que había tildado con la guía "de
+arrastre" quedaban en un estado raro — ver 116.3)
+
+116.3
+dado un producto con talles y colores/stock ya cargados
+cuando el admin cambia la guía de talles a otra, O destilda un talle sin cambiar de guía
+entonces el sitio limpia automáticamente ese talle: deja de aparecer como disponible, y
+se borra el color/stock que tenía cargado
+(antes esto no pasaba: cambiar de guía dejaba talles viejos y nuevos mezclados en
+"Colores y stock inicial", imposibles de sacar desde ahí — este es el bug real que
+reportaste, ya corregido)
+
+116.4
+dado un producto con color/stock cargado
+cuando el admin lo elimina
+entonces también se borra todo el stock que tenía cargado — no queda ningún resto dando
+vueltas
+
+116.5
+dado el admin
+cuando elimina el producto con el número (ID) más alto del catálogo, y después agrega uno
+nuevo
+entonces el producto nuevo NUNCA repite un número que ya se usó antes, aunque haya sido
+borrado
+(esto es lo que explica por qué "borrar y volver a cargar" no alcanzaba para sacarte de
+encima el problema del criterio 116.3 — el producto nuevo terminaba heredando, sin que se
+notara, el stock viejo del que acababas de borrar)
 
 117
 dado el admin

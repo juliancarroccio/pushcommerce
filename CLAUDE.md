@@ -138,9 +138,9 @@ negocio real, son puramente técnicos.)
 
 ## ⚠️ PENDIENTE AL FINAL DE TODO — no olvidar (decidido por Julian, 2026-10-25)
 
-Estas dos tareas van **últimas** en la lista, después de todo lo demás. Las
-dos tocan a Cattorini (cliente real), y cualquier cambio ahí hay que
-explicárselo al cliente desde cero antes de aplicarlo.
+Estas tareas van **últimas** en la lista, después de todo lo demás. Tocan a
+clientes reales (Cattorini, El Sabor de Mamá), y cualquier cambio ahí hay
+que explicárselo al cliente desde cero antes de aplicarlo.
 
 1. **Seguridad de Cattorini — fases 0 a 3**. Diagnóstico completo en engram
    (`pushcommerce/seguridad-firestore-rules`).
@@ -160,7 +160,22 @@ explicárselo al cliente desde cero antes de aplicarlo.
      login del panel.
    - **Necesito de Julian:** las reglas reales de producción (Firebase
      Console → Firestore → Reglas).
-2. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
+2. **Seguridad de El Sabor de Mamá — CRÍTICO, peor que Cattorini**.
+   Diagnóstico en engram (`pushcommerce/seguridad-sabor-de-mama`).
+   - `pedidos` sin ningún tipo de auth: el código necesita reglas abiertas
+     para leer, modificar y borrar → cualquiera descarga los datos de los
+     clientes, borra la cola o mete spam.
+   - XSS en `pedidos.html:459-492, 550-559, 633`, que puede llegar al PAT y
+     al repo de producción.
+   - El acceso a la cola se saltea con `sessionStorage['pc_cola']`.
+   - Fix: login del dueño con email y contraseña en `pedidos.html`, escapar
+     el `innerHTML` y reglas con `create` público validado y el resto solo
+     dueño. Desplegar primero el código y después las reglas.
+   - Producción vive en otro repo: `elsabordemama/elsabordemama.github.io`.
+   - **Necesito de Julian:** las reglas reales del proyecto
+     `elsabordemama-dec44` y confirmar que ese repo tiene el mismo código.
+   - Preparar la explicación para el cliente.
+3. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
    e-commerce** para ofrecer, más los que hagan falta.
    - Investigación previa en engram (`roadmap/mercadopago-factibilidad`):
      Checkout Pro necesita backend → Cloudflare Workers, nunca Vercel Hobby

@@ -157,3 +157,26 @@ test('flujo completo: comprar entrada → código de 9+ caracteres → sin QR ha
 
   expect(validarErrors, `Errores de consola en validar.html: ${validarErrors.join(' | ')}`).toEqual([]);
 });
+
+test('demo: comprar entrada → "Simular pago confirmado" → aparece el QR → validar.html la acepta', async ({ context }) => {
+  const evento = await context.newPage();
+  await evento.goto('/la_usina/evento.html');
+  await evento.locator('.opt-card:not(.agotado)').first().click();
+  await evento.locator('#in-nombre').fill('Visitante Demo');
+  await evento.locator('#in-telefono').fill('02244 15-999-0001');
+  await evento.locator('#btn-confirmar').click();
+  const codigo = ((await evento.locator('#confirmado-codigo').textContent()) ?? '').trim();
+
+  const miEntrada = await context.newPage();
+  await miEntrada.goto(`/la_usina/mi-entrada.html?code=${codigo}`);
+  await expect(miEntrada.locator('#estado-pendiente')).toBeVisible();
+  await miEntrada.locator('#btn-demo-pago').click();
+  await expect(miEntrada.locator('#estado-vendida')).toBeVisible();
+  await expect(miEntrada.locator('#qrcode canvas, #qrcode img')).not.toHaveCount(0);
+
+  const validar = await context.newPage();
+  await validar.goto('/la_usina/validar.html');
+  await validar.locator('#in-codigo').fill(codigo);
+  await validar.locator('#in-codigo').press('Enter');
+  await expect(validar.locator('#resultado-titulo')).toHaveText('ENTRADA VÁLIDA');
+});

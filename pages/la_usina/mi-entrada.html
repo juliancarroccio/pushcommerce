@@ -46,7 +46,9 @@
   -->
   <script>
     (function () {
-      const local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
+      const DEMO = true;
+      const local = DEMO || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
       const srcs = local
         ? ['./firestore-mock.js']
         : [
@@ -121,6 +123,11 @@
       </div>
       <p class="text-cream/40 text-xs mb-6">Coordiná el pago por WhatsApp para que tu entrada pase a vendida y aparezca el QR.</p>
       <a id="wa-pendiente" href="#" target="_blank" rel="noopener" class="inline-block bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Coordinar pago por WhatsApp</a>
+      <div class="mt-8 border border-dashed border-amber/40 p-5 max-w-sm mx-auto">
+        <p class="text-[10px] font-display tracking-widest uppercase text-amber mb-2">Modo demo</p>
+        <p class="text-cream/50 text-xs mb-4">En un negocio real, el dueño confirma el pago desde su panel. Acá lo simulás vos para ver el QR.</p>
+        <button id="btn-demo-pago" type="button" class="border border-amber/60 hover:bg-amber hover:text-charcoal text-amber font-display tracking-[0.18em] uppercase text-xs px-6 py-2 transition-colors">Simular pago confirmado</button>
+      </div>
     </div>
 
     <!-- Estado: vendida (QR) -->
@@ -131,6 +138,11 @@
       <div id="qrcode" class="mb-6"></div>
       <p class="text-cream/40 text-xs mb-1">Mostrá este QR en la puerta — se valida una sola vez.</p>
       <p class="font-display text-sm text-amber tracking-widest mt-4" id="v-codigo"></p>
+      <div class="mt-8 border border-dashed border-amber/40 p-5 max-w-sm mx-auto">
+        <p class="text-[10px] font-display tracking-widest uppercase text-amber mb-2">Modo demo</p>
+        <p class="text-cream/50 text-xs mb-4">Probá la pantalla que usa el personal en la puerta: escaneá este QR o tipeá el código. La primera vez entra; la segunda, se rechaza.</p>
+        <a href="./validar.html" target="_blank" class="inline-block border border-amber/60 hover:bg-amber hover:text-charcoal text-amber font-display tracking-[0.18em] uppercase text-xs px-6 py-2 transition-colors">Abrir validación en la puerta</a>
+      </div>
     </div>
 
     <!-- Estado: validada -->
@@ -192,6 +204,14 @@
     }
 
     let unsub = null;
+    let docIdActual = null;
+
+    // Demo: reemplaza la confirmación de pago que en un negocio real hace el dueño desde portal.html.
+    document.getElementById('btn-demo-pago').addEventListener('click', () => {
+      if (!db || !docIdActual) return;
+      db.collection('entradas').doc(docIdActual).update({ estado: 'vendida' });
+    });
+
     function escucharEntrada(codigo) {
       mostrar('cargando');
       if (!db) { mostrar('no-encontrada'); return; }
@@ -199,6 +219,7 @@
       unsub = db.collection('entradas').where('codigo', '==', codigo).limit(1)
         .onSnapshot(snap => {
           if (snap.empty) { mostrar('no-encontrada'); return; }
+          docIdActual = snap.docs[0].id;
           renderEntrada(snap.docs[0].data());
         }, err => {
           console.error('onSnapshot entrada:', err);

@@ -118,6 +118,15 @@
     letter-spacing: 0.05em;
   }
   .hidden { display: none !important; }
+  #btn-simular {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1rem;
+    background: #1F6B3A; color: #FAF8F2; border: none; border-radius: 999px;
+    padding: 14px 32px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 6px 20px rgba(31,107,58,0.25); transition: background .2s, transform .2s;
+  }
+  #btn-simular:hover { background: #154D29; transform: translateX(-50%) translateY(-2px); }
+  #btn-simular small { font-weight: 400; opacity: .75; font-size: .75rem; }
 </style>
 </head>
 <body>
@@ -144,6 +153,12 @@
 </div>
 
 <div id="resultado" class="hidden"></div>
+
+<!-- Solo demo: sin lector físico no hay forma de mostrar un escaneo real. -->
+<button id="btn-simular" type="button">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M11 8v8M15 8v8M18 8v8"/></svg>
+  Simular escaneo <small>(demo)</small>
+</button>
 
 <script>
 (function () {
@@ -206,13 +221,32 @@
       volverTimeout = setTimeout(volverAEspera, 8000);
     });
 
+    // Demo: elige un producto al azar (distinto al anterior) y lo "escanea"
+    // por el mismo camino que el lector real: código en el input + submit.
+    var btnSimular = document.getElementById('btn-simular');
+    var ultimoSimulado = null;
+    btnSimular.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    btnSimular.addEventListener('click', function () {
+      var codigos = Array.from(productos.keys());
+      if (!codigos.length) return;
+      var codigo;
+      do {
+        codigo = codigos[Math.floor(Math.random() * codigos.length)];
+      } while (codigos.length > 1 && codigo === ultimoSimulado);
+      ultimoSimulado = codigo;
+      input.value = codigo;
+      document.getElementById('scan-form').requestSubmit();
+      asegurarFoco();
+    });
+
     function mostrarResultado(producto, codigoLeido) {
       espera.classList.add('hidden');
       resultado.classList.remove('hidden');
       if (producto) {
         resultado.innerHTML =
           '<p class="precio">$' + formatearPrecio(producto.precio) + '</p>' +
-          '<p class="nombre">' + escapeHtml(producto.nombre) + '</p>';
+          '<p class="nombre">' + escapeHtml(producto.nombre) + '</p>' +
+          '<p class="codigo">' + escapeHtml(codigoLeido) + '</p>';
       } else {
         resultado.innerHTML =
           '<p class="no-encontrado">Producto no encontrado</p>' +

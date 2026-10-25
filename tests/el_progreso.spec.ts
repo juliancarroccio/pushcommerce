@@ -66,3 +66,16 @@ test('panel.html → consulta.html: un producto cargado en el ABM aparece al esc
 
   await expect(consulta.locator('#resultado')).toContainText('Producto Test Playwright');
 });
+
+test('consulta.html: "Simular escaneo" muestra un producto real con precio y mantiene el foco', async ({ page }) => {
+  await page.goto('/el_progreso/consulta.html');
+  await page.locator('#btn-simular').click();
+
+  const resultado = page.locator('#resultado');
+  await expect(resultado).toBeVisible();
+  await expect(resultado.locator('.precio')).toContainText('$');
+  await expect(resultado.locator('.nombre')).not.toBeEmpty();
+  await expect(resultado.locator('.no-encontrado')).toHaveCount(0);
+  await expect(page.locator('#codigo')).toBeFocused();
+  await expect(page.locator('#codigo')).toHaveValue('');
+});

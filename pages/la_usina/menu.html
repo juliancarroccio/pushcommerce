@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carta — La Usina</title>
+  <meta name="description" content="Carta de tragos de autor, cervezas y picadas de La Usina, bar cultural en Las Flores.">
+  <meta property="og:title" content="Carta · La Usina">
+  <meta property="og:description" content="Tragos de autor, cervezas artesanales y picadas para compartir. Las Flores, Buenos Aires.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./img/logo.png">
+
+  <link rel="icon" href="./img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./img/favicon-180.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#A84C2D">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            charcoal:        '#1C1A17',
+            'charcoal-mid':  '#242019',
+            'charcoal-light':'#2E2821',
+            rust:            '#A84C2D',
+            'rust-dark':     '#7A3620',
+            amber:           '#D98E34',
+            'amber-lt':      '#E8A855',
+            cream:           '#EDE4D3',
+          },
+          fontFamily: {
+            display: ['Bebas Neue', 'sans-serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { animation: fade-in 0.4s ease; }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+    .skeleton {
+      background: linear-gradient(90deg, #2E2821 25%, #3A332A 37%, #2E2821 63%);
+      background-size: 400% 100%;
+      animation: skeleton-loading 1.4s ease infinite;
+    }
+    @keyframes skeleton-loading { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+
+    .item-row { transition: background-color 0.25s ease; }
+    .item-row:hover { background-color: rgba(217,142,52,0.06); }
+
+    #back-to-top {
+      opacity: 0; pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  </style>
+</head>
+
+<body class="bg-charcoal text-cream font-sans min-h-screen">
+
+  <!-- Header -->
+  <header class="border-b border-amber/10 py-10 px-6 text-center">
+    <a href="./index.html" class="inline-flex items-center gap-3 mb-6">
+      <img src="./img/logo.png" alt="La Usina" class="w-12 h-12 rounded-full object-cover">
+      <span class="font-display text-lg tracking-[0.25em] uppercase text-cream/90">La Usina</span>
+    </a>
+    <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-2">La carta</p>
+    <h1 class="font-display text-4xl md:text-5xl uppercase text-cream">Tragos, cervezas y picadas</h1>
+    <p class="text-cream/40 text-sm mt-3 max-w-md mx-auto">Esta carta es solo para consultar. Hacé tu pedido con el mozo o por WhatsApp.</p>
+  </header>
+
+  <!-- Loading skeleton -->
+  <main id="menu-content" class="max-w-3xl mx-auto px-6 py-14">
+    <div id="skeleton" class="space-y-10">
+      <div>
+        <div class="skeleton h-5 w-40 mb-6"></div>
+        <div class="space-y-3">
+          <div class="skeleton h-14 w-full"></div>
+          <div class="skeleton h-14 w-full"></div>
+          <div class="skeleton h-14 w-full"></div>
+        </div>
+      </div>
+      <div>
+        <div class="skeleton h-5 w-40 mb-6"></div>
+        <div class="space-y-3">
+          <div class="skeleton h-14 w-full"></div>
+          <div class="skeleton h-14 w-full"></div>
+        </div>
+      </div>
+    </div>
+    <div id="categorias" class="space-y-14 hidden"></div>
+  </main>
+
+  <!-- CTA de vuelta -->
+  <div class="max-w-3xl mx-auto px-6 pb-14 text-center">
+    <a href="https://wa.me/54922445001234?text=%C2%A1Hola%20La%20Usina!%20%E2%9A%A1%20Quiero%20reservar%20una%20mesa"
+       target="_blank" rel="noopener"
+       class="inline-block bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-10 py-4 transition-all duration-300 hover:scale-105">
+      Reservá por WhatsApp
+    </a>
+    <p class="mt-6">
+      <a href="./index.html" class="text-cream/35 hover:text-amber text-xs font-display tracking-widest uppercase transition-colors">← Volver al inicio</a>
+    </p>
+  </div>
+
+  <footer class="border-t border-white/5 py-8 px-6 text-center">
+    <p class="text-cream/15 text-xs">© 2026 La Usina · Belgrano 530, Las Flores, Buenos Aires</p>
+  </footer>
+
+  <!-- Back to top -->
+  <button id="back-to-top"
+          onclick="window.scrollTo({top:0,behavior:'smooth'})"
+          aria-label="Volver arriba"
+          class="fixed bottom-6 right-6 z-30 w-11 h-11 bg-charcoal/80 hover:bg-charcoal text-amber/70 hover:text-amber flex items-center justify-center border border-amber/15 hover:border-amber/35 transition-colors duration-300 backdrop-blur-sm">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+  </button>
+
+  <script>
+    /* ── Fallback: copia exacta de carta.json, para file:// o fetch fallido ── */
+    const _FALLBACK = {
+      "negocio": { "nombre": "La Usina", "whatsapp": "54922445001234" },
+      "categorias": [
+        {
+          "id": "tragos", "nombre": "Tragos de autor", "emoji": "🍸",
+          "items": [
+            { "nombre": "Obrera", "descripcion": "Fernet premium, pomelo, jengibre", "precio": 5600 },
+            { "nombre": "Chispa", "descripcion": "Aperitivo amargo, prosecco, soda", "precio": 5400 },
+            { "nombre": "Galpón Mule", "descripcion": "Vodka, jengibre, lima, menta", "precio": 5900 },
+            { "nombre": "Rayo Verde", "descripcion": "Gin, pepino, albahaca, tónica", "precio": 6200 },
+            { "nombre": "Usina Sour", "descripcion": "Whisky, limón, clara, angostura", "precio": 6400 },
+            { "nombre": "Fierro Negro", "descripcion": "Ron añejo, café, almíbar de panela, ralladura de naranja", "precio": 6800 },
+            { "nombre": "Fundición", "descripcion": "Mezcal, maracuyá, chile, sal ahumada", "precio": 7200 },
+            { "nombre": "Humo y Brasa", "descripcion": "Whisky ahumado con romero, bitter de naranja", "precio": 7500 }
+          ]
+        },
+        {
+          "id": "cervezas", "nombre": "Cervezas", "emoji": "🍺",
+          "items": [
+            { "nombre": "Lager Clásica", "descripcion": "Botella 473ml", "precio": 2800 },
+            { "nombre": "Rubia Industrial", "descripcion": "Cervecería del Galpón · 473ml", "precio": 3200 },
+            { "nombre": "Honey Ale Las Flores", "descripcion": "Cervecería Rumbo Sur · 473ml", "precio": 3400 },
+            { "nombre": "IPA Oxidada", "descripcion": "Cervecería del Galpón · 473ml", "precio": 3600 },
+            { "nombre": "Stout Forjada", "descripcion": "Cervecería del Galpón · 473ml", "precio": 3800 }
+          ]
+        },
+        {
+          "id": "picadas", "nombre": "Para compartir", "emoji": "🧀",
+          "items": [
+            { "nombre": "Provoleta a la Parrilla", "descripcion": "Con chimichurri casero", "precio": 6200 },
+            { "nombre": "Rabas", "descripcion": "Con salsa golf", "precio": 7400 },
+            { "nombre": "Tabla de Bondiola Ahumada", "descripcion": "Con papas rústicas", "precio": 8600 },
+            { "nombre": "Picada La Usina", "descripcion": "Fiambres, quesos, aceitunas y pan casero · para 2-3 personas", "precio": 9800 }
+          ]
+        }
+      ]
+    };
+
+    function renderCarta(data) {
+      const cont = document.getElementById('categorias');
+      cont.innerHTML = (data.categorias || []).map(cat => `
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-2xl">${cat.emoji || ''}</span>
+            <h2 class="font-display text-2xl md:text-3xl uppercase text-cream tracking-wide">${cat.nombre}</h2>
+            <div class="flex-1 h-px bg-amber/15"></div>
+          </div>
+          <div class="space-y-1">
+            ${(cat.items || []).map(it => `
+              <div class="item-row flex items-start justify-between gap-6 px-4 py-4 border-b border-amber/5">
+                <div>
+                  <p class="font-display text-base uppercase tracking-wide text-cream">${it.nombre}</p>
+                  ${it.descripcion ? `<p class="text-cream/45 text-sm mt-1">${it.descripcion}</p>` : ''}
+                </div>
+                <p class="font-display text-lg text-amber whitespace-nowrap">$${it.precio.toLocaleString('es-AR')}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('skeleton').classList.add('hidden');
+      cont.classList.remove('hidden');
+    }
+
+    fetch('./carta.json', { cache: 'no-cache' })
+      .then(r => r.json())
+      .then(renderCarta)
+      .catch(() => renderCarta(_FALLBACK));
+
+    window.addEventListener('scroll', () => {
+      const btt = document.getElementById('back-to-top');
+      window.scrollY > 300 ? btt.classList.add('visible') : btt.classList.remove('visible');
+    }, { passive: true });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

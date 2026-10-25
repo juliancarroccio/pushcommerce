@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Consulta de Precios — Supermercado El Progreso</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1F6B3A;
+    --verde-claro: #4CAF6D;
+    --crema: #FAF8F2;
+    --texto: #1C2B22;
+    --rojo: #B3402A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--crema);
+    color: var(--texto);
+    font-family: 'Inter', sans-serif;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+  .marca {
+    position: absolute;
+    top: 2rem;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.1rem, 2vw, 1.6rem);
+    color: var(--verde);
+    letter-spacing: 0.02em;
+  }
+  #scan-form { position: absolute; width: 0; height: 0; overflow: hidden; }
+  #codigo {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    border: 0;
+    pointer-events: none;
+  }
+  #espera {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  #espera .icono {
+    width: clamp(90px, 14vw, 140px);
+    height: clamp(90px, 14vw, 140px);
+    border: 6px solid var(--verde-claro);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #espera .icono svg { width: 60%; height: 60%; }
+  #espera p {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3.2vw, 2.4rem);
+    color: var(--verde);
+  }
+  #espera .sub {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    color: #5A6B5F;
+  }
+  #resultado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  #resultado .precio {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: clamp(5rem, 16vw, 11rem);
+    color: var(--verde);
+    line-height: 1;
+  }
+  #resultado .nombre {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    color: var(--texto);
+    max-width: 90vw;
+  }
+  #resultado .no-encontrado {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--rojo);
+  }
+  #resultado .codigo {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    color: #8A8A8A;
+    letter-spacing: 0.05em;
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="marca">Supermercado El Progreso</div>
+
+<form id="scan-form">
+  <input id="codigo" autofocus autocomplete="off" inputmode="none" aria-label="Código de barras">
+</form>
+
+<div id="espera">
+  <div class="icono">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#1F6B3A" stroke-width="1.5">
+      <rect x="2" y="5" width="2" height="14"/>
+      <rect x="6" y="5" width="1" height="14"/>
+      <rect x="9" y="5" width="3" height="14"/>
+      <rect x="14" y="5" width="1" height="14"/>
+      <rect x="17" y="5" width="2" height="14"/>
+      <rect x="21" y="5" width="1" height="14"/>
+    </svg>
+  </div>
+  <p>Escaneá un producto</p>
+  <p class="sub">Acercá el código de barras al lector</p>
+</div>
+
+<div id="resultado" class="hidden"></div>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'elprogreso_precios';
+
+  function construirMapa(data) {
+    return new Map((data.productos || []).map(function (p) {
+      return [String(p.codigo_barras), p];
+    }));
+  }
+
+  function cargarCatalogo() {
+    return new Promise(function (resolve) {
+      var guardado = null;
+      try {
+        guardado = localStorage.getItem(STORAGE_KEY);
+      } catch (e) {
+        guardado = null;
+      }
+      if (guardado) {
+        try {
+          resolve(JSON.parse(guardado));
+          return;
+        } catch (e) {
+          // JSON corrupto en localStorage: seguimos al fetch estático
+        }
+      }
+      fetch('precios.json')
+        .then(function (r) { return r.json(); })
+        .then(resolve)
+        .catch(function () { resolve({ productos: [] }); });
+    });
+  }
+
+  cargarCatalogo().then(function (data) {
+    var productos = construirMapa(data);
+    var input = document.getElementById('codigo');
+    var espera = document.getElementById('espera');
+    var resultado = document.getElementById('resultado');
+    var volverTimeout = null;
+
+    function asegurarFoco() {
+      input.focus();
+    }
+    asegurarFoco();
+    document.addEventListener('click', asegurarFoco);
+    input.addEventListener('blur', function () {
+      setTimeout(asegurarFoco, 50);
+    });
+
+    document.getElementById('scan-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var codigo = input.value.trim();
+      input.value = ''; // vaciar YA, antes de mostrar nada
+      if (!codigo) return;
+
+      clearTimeout(volverTimeout);
+      var producto = productos.get(codigo);
+      mostrarResultado(producto, codigo);
+      volverTimeout = setTimeout(volverAEspera, 8000);
+    });
+
+    function mostrarResultado(producto, codigoLeido) {
+      espera.classList.add('hidden');
+      resultado.classList.remove('hidden');
+      if (producto) {
+        resultado.innerHTML =
+          '<p class="precio">$' + formatearPrecio(producto.precio) + '</p>' +
+          '<p class="nombre">' + escapeHtml(producto.nombre) + '</p>';
+      } else {
+        resultado.innerHTML =
+          '<p class="no-encontrado">Producto no encontrado</p>' +
+          '<p class="codigo">' + escapeHtml(codigoLeido) + '</p>';
+      }
+    }
+
+    function volverAEspera() {
+      resultado.classList.add('hidden');
+      espera.classList.remove('hidden');
+      asegurarFoco();
+    }
+
+    function formatearPrecio(n) {
+      return Number(n).toLocaleString('es-AR');
+    }
+
+    function escapeHtml(s) {
+      var div = document.createElement('div');
+      div.textContent = s;
+      return div.innerHTML;
+    }
+  });
+})();
+</script>
+</body>
+</html>

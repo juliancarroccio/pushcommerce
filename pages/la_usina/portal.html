@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com https://*.googleapis.com;" />
+  <title>Portal La Usina</title>
+  <link rel="icon" href="./img/favicon-32.png" sizes="32x32" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!--
+    Carga condicional Firebase/mock (local-db-testing.md): en localhost usa
+    firestore-mock.js (Level 0, localStorage), en cualquier otro host los
+    SDKs reales — necesarios para la tab Agenda (datos en vivo de `reservas`).
+  -->
+  <script>
+    (function () {
+      const local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const srcs = local
+        ? ['./firestore-mock.js']
+        : [
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js',
+          ];
+      srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
+    })();
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #1C1A17;
+      color: #EDE4D3;
+      margin: 0;
+    }
+    .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; }
+    .eyebrow { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: #D98E34; font-weight: 500; }
+    input, select, textarea, button { font-family: inherit; color: #EDE4D3; }
+    .inp {
+      width: 100%; padding: 10px 12px;
+      border: 1px solid rgba(217,142,52,0.2);
+      background: #242019; font-size: 0.9rem; color: #EDE4D3;
+    }
+    .inp:focus { outline: none; border-color: #D98E34; }
+    .lbl { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 6px; color: #EDE4D3B0; }
+    .btn {
+      padding: 10px 20px; background: #A84C2D; color: #EDE4D3;
+      border: 1px solid #A84C2D; cursor: pointer;
+      font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+    }
+    .btn:hover { background: #7A3620; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-ghost {
+      padding: 8px 14px; background: transparent; border: 1px solid rgba(217,142,52,0.25);
+      color: #EDE4D3; cursor: pointer; font-size: 0.78rem;
+    }
+    .btn-ghost:hover { border-color: #D98E34; }
+    .btn-danger {
+      padding: 6px 12px; background: transparent; border: 1px solid rgba(200,60,60,0.4);
+      color: #E08080; cursor: pointer; font-size: 0.75rem;
+    }
+    .btn-danger:hover { background: rgba(200,60,60,0.12); }
+    .card { background: #242019; padding: 24px; border: 1px solid rgba(217,142,52,0.12); margin-bottom: 16px; }
+    .login-card {
+      max-width: 420px; margin: 10vh auto; background: #242019;
+      border: 1px solid rgba(217,142,52,0.2); padding: 32px;
+    }
+    .msg-info { font-size: 0.82rem; color: #EDE4D3A0; background: rgba(217,142,52,0.08); padding: 10px 14px; border: 1px solid rgba(217,142,52,0.15); }
+    .msg-info.err { color: #E08080; background: rgba(200,60,60,0.1); border-color: rgba(200,60,60,0.3); }
+    .tabs-nav { display: flex; gap: 4px; border-bottom: 1px solid rgba(217,142,52,0.15); overflow-x: auto; background: #1C1A17; padding: 0 24px; position: sticky; top: 56px; z-index: 10; }
+    .tabs-nav::-webkit-scrollbar { display: none; }
+    .tab-btn { padding: 14px 16px; background: transparent; border: none; border-bottom: 2px solid transparent; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; color: #EDE4D380; white-space: nowrap; }
+    .tab-btn.active { color: #D98E34; border-bottom-color: #D98E34; }
+    .tab-panel { display: none; padding: 24px; }
+    .tab-panel.active { display: block; }
+    .app-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #141210; position: sticky; top: 0; z-index: 20; border-bottom: 1px solid rgba(217,142,52,0.12); }
+    .app-header .actions { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; }
+    .content-wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    @media (max-width: 700px) { .grid-3 { grid-template-columns: 1fr; } }
+    .item-row { background: #1C1A17; border: 1px solid rgba(217,142,52,0.12); padding: 16px; margin-bottom: 12px; }
+    .dias-row { display: grid; grid-template-columns: 90px 1fr 1fr auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .reserva-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; background: #1C1A17; border: 1px solid rgba(217,142,52,0.12); padding: 14px 16px; margin-bottom: 10px; }
+    .estado-chip { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 2px; }
+    .estado-confirmado { background: rgba(80,160,80,0.2); color: #9FD89F; }
+    .estado-cancelado  { background: rgba(200,60,60,0.2); color: #E08080; }
+    .estado-completado { background: rgba(140,140,140,0.25); color: #CFCFCF; }
+    .estado-bloqueado  { background: rgba(120,80,40,0.25); color: #D9A86A; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="text-center mb-6">
+      <img src="./img/logo.png" alt="La Usina" style="height:36px;width:36px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;" />
+      <div class="display text-lg uppercase mb-1">La Usina</div>
+      <div class="eyebrow">Panel de administración</div>
+    </div>
+
+    <div id="login-first" style="display:none;">
+      <div class="msg-info mb-4">Primera vez. Configurá el acceso con tu Personal Access Token de GitHub y una contraseña.</div>
+      <div class="mb-3">
+        <label class="lbl">GitHub PAT (con permisos repo)</label>
+        <input type="password" id="in-pat" class="inp" placeholder="ghp_..." autocomplete="off" />
+      </div>
+      <div class="mb-3">
+        <label class="lbl">Contraseña (para desbloquear el token)</label>
+        <input type="password" id="in-pass" class="inp" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+      </div>
+      <div class="mb-3">
+        <label class="lbl">Repetir contraseña</label>
+        <input type="password" id="in-pass2" class="inp" autocomplete="new-password" />
+      </div>
+      <div id="err-setup" class="msg-info err mb-3" style="display:none;"></div>
+      <button class="btn w-full" onclick="setupAccess()">Guardar y entrar</button>
+    </div>
+
+    <div id="login-recurring" style="display:none;">
+      <div class="mb-3">
+        <label class="lbl">Contraseña</label>
+        <input type="password" id="in-pass-r" class="inp" placeholder="Tu contraseña" autocomplete="current-password" />
+      </div>
+      <div id="err-login" class="msg-info err mb-3" style="display:none;"></div>
+      <button class="btn w-full" onclick="doLogin()">Entrar</button>
+      <button class="btn-ghost w-full mt-2" onclick="resetAccess()">Reconfigurar acceso</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen" style="display:none;">
+  <div class="app-header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img src="./img/logo.png" alt="La Usina" style="height:22px;width:22px;border-radius:50%;object-fit:cover;" />
+      <span class="display text-sm uppercase" style="opacity:0.85;">Portal · La Usina</span>
+    </div>
+    <div class="actions">
+      <span id="save-status">···</span>
+      <button class="btn-ghost" onclick="loadRemote()">↻ Recargar</button>
+      <a class="btn-ghost" href="./agenda.html" target="_blank" style="text-decoration:none;">Ver agenda pública ↗</a>
+      <a class="btn-ghost" href="./evento.html" target="_blank" style="text-decoration:none;">Ver evento público ↗</a>
+      <a class="btn-ghost" href="./validar.html" target="_blank" style="text-decoration:none;">Validar en la puerta ↗</a>
+      <button class="btn-ghost" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+
+  <div class="tabs-nav">
+    <button class="tab-btn active" data-tab="negocio">Negocio</button>
+    <button class="tab-btn" data-tab="servicios">Servicios</button>
+    <button class="tab-btn" data-tab="agenda">Agenda <span id="badge-agenda" style="background:#A84C2D;color:#EDE4D3;font-size:0.65rem;padding:1px 6px;margin-left:4px;display:none;border-radius:2px;">0</span></button>
+    <button class="tab-btn" data-tab="horario-atencion">Horario de atención</button>
+    <button class="tab-btn" data-tab="entradas">Entradas <span id="badge-entradas" style="background:#A84C2D;color:#EDE4D3;font-size:0.65rem;padding:1px 6px;margin-left:4px;display:none;border-radius:2px;">0</span></button>
+    <button class="tab-btn" data-tab="tipos-entrada">Tipos de entrada</button>
+  </div>
+
+  <div class="content-wrap">
+    <div id="save-bar" class="mb-4" style="display:none;">
+      <div class="card" style="background:#A84C2D; border-color:#A84C2D; color:#EDE4D3; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+        <span>Hay cambios sin publicar.</span>
+        <button class="btn" style="background:#EDE4D3; color:#1C1A17; border-color:#EDE4D3;" onclick="publishChanges()">Publicar cambios</button>
+      </div>
+    </div>
+
+    <!-- Tab Negocio -->
+    <div class="tab-panel active" id="tab-negocio">
+      <div class="card">
+        <h3 class="display text-lg uppercase mb-4">Datos del negocio</h3>
+        <div class="grid-2">
+          <div><label class="lbl">Nombre</label><input class="inp" data-field="negocio.nombre" /></div>
+          <div><label class="lbl">WhatsApp (549...)</label><input class="inp" data-field="negocio.whatsapp" /></div>
+          <div><label class="lbl">Teléfono</label><input class="inp" data-field="negocio.telefono" /></div>
+          <div style="grid-column:1/-1;"><label class="lbl">Dirección</label><input class="inp" data-field="negocio.direccion" /></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="display text-lg uppercase mb-2">Modo de confirmación</h3>
+        <p class="msg-info">Este cliente reserva en modo <strong>instantánea</strong>: si el horario está libre, la reserva queda confirmada al momento, sin que nadie la apruebe a mano. No editable desde acá — cambiarlo implica revisar también las reglas de Firestore (ver <code>firestore-setup-guide.md</code> §4).</p>
+      </div>
+    </div>
+
+    <!-- Tab Servicios -->
+    <div class="tab-panel" id="tab-servicios">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h3 class="display text-lg uppercase">Servicios</h3>
+          <button class="btn-ghost" onclick="agregarServicio()">+ Agregar servicio</button>
+        </div>
+        <p class="msg-info mb-4">Cada servicio usa su propio recurso (línea de disponibilidad independiente) — así "Mesa para la noche de show" y "Privado para eventos" no se pisan entre sí aunque tengan horarios distintos.</p>
+        <div id="servicios-list"></div>
+      </div>
+    </div>
+
+    <!-- Tab Agenda -->
+    <div class="tab-panel" id="tab-agenda">
+      <div class="card">
+        <h3 class="display text-lg uppercase mb-4">Reservas</h3>
+        <div id="reservas-list"><p class="msg-info">Cargando reservas...</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="display text-lg uppercase mb-4">Alta manual (reserva tomada por teléfono)</h3>
+        <div class="grid-2 mb-3">
+          <div>
+            <label class="lbl">Servicio</label>
+            <select id="manual-servicio" class="inp" onchange="manualRenderFechas()"></select>
+          </div>
+          <div>
+            <label class="lbl">Fecha</label>
+            <select id="manual-fecha" class="inp" onchange="manualRenderSlots()"></select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="lbl">Horario</label>
+          <select id="manual-slot" class="inp"></select>
+        </div>
+        <div class="grid-2 mb-3">
+          <div><label class="lbl">Nombre del cliente</label><input id="manual-nombre" class="inp" /></div>
+          <div><label class="lbl">Teléfono</label><input id="manual-telefono" class="inp" /></div>
+        </div>
+        <div class="mb-3"><label class="lbl">Nota</label><input id="manual-nota" class="inp" /></div>
+        <button class="btn" onclick="altaManual()">Agregar reserva</button>
+      </div>
+
+      <div class="card">
+        <h3 class="display text-lg uppercase mb-4">Bloquear horario (feriado, mantenimiento)</h3>
+        <p class="msg-info mb-3">Un bloqueo ocupa el horario entero para el público, igual que una reserva confirmada — no hace falta cliente.</p>
+        <div class="grid-2 mb-3">
+          <div>
+            <label class="lbl">Servicio / recurso a bloquear</label>
+            <select id="bloqueo-servicio" class="inp" onchange="bloqueoRenderFechas()"></select>
+          </div>
+          <div>
+            <label class="lbl">Fecha</label>
+            <select id="bloqueo-fecha" class="inp"></select>
+          </div>
+        </div>
+        <div class="grid-2 mb-3">
+          <div><label class="lbl">Desde</label><input id="bloqueo-desde" type="time" class="inp" /></div>
+          <div><label class="lbl">Hasta</label><input id="bloqueo-hasta" type="time" class="inp" /></div>
+        </div>
+        <div class="mb-3"><label class="lbl">Motivo (opcional, solo interno)</label><input id="bloqueo-motivo" class="inp" /></div>
+        <button class="btn" onclick="crearBloqueo()">Bloquear horario</button>
+      </div>
+    </div>
+
+    <!-- Tab Horario de atención -->
+    <div class="tab-panel" id="tab-horario-atencion">
+      <div id="horarios-recursos"></div>
+    </div>
+
+    <!-- Tab Entradas (module-eventos.md) -->
+    <div class="tab-panel" id="tab-entradas">
+      <div class="card">
+        <h3 class="display text-lg uppercase mb-1">Noche de Blues — Fierro Viejo en vivo</h3>
+        <p class="msg-info mb-4">Métricas y entradas vendidas vía <code>evento.html</code>. Confirmar el pago manualmente pasa una entrada de <code>pendiente_pago</code> a <code>vendida</code> — recién ahí el comprador ve su QR en <code>mi-entrada.html</code>.</p>
+        <div id="metricas-entradas" class="grid-3 mb-2"></div>
+      </div>
+      <div class="card">
+        <h3 class="display text-lg uppercase mb-4">Entradas</h3>
+        <div id="entradas-list"><p class="msg-info">Cargando entradas...</p></div>
+      </div>
+    </div>
+
+    <!-- Tab Tipos de entrada (module-eventos.md) -->
+    <div class="tab-panel" id="tab-tipos-entrada">
+      <div id="save-bar-evento" class="mb-4" style="display:none;">
+        <div class="card" style="background:#A84C2D; border-color:#A84C2D; color:#EDE4D3; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+          <span>Hay cambios sin publicar en el evento.</span>
+          <button class="btn" style="background:#EDE4D3; color:#1C1A17; border-color:#EDE4D3;" onclick="publishEventoChanges()">Publicar cambios</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="display text-lg uppercase mb-4">Datos del evento</h3>
+        <div class="grid-2">
+          <div><label class="lbl">Nombre</label><input class="inp" data-field-ev="evento.nombre" /></div>
+          <div><label class="lbl">Lugar</label><input class="inp" data-field-ev="evento.lugar" /></div>
+          <div><label class="lbl">Fecha</label><input type="date" class="inp" data-field-ev="evento.fecha" /></div>
+          <div><label class="lbl">Hora del show</label><input type="time" class="inp" data-field-ev="evento.hora" /></div>
+          <div><label class="lbl">Apertura de puertas</label><input type="time" class="inp" data-field-ev="evento.puertas" /></div>
+          <div style="grid-column:1/-1;"><label class="lbl">Descripción</label><textarea class="inp" rows="3" data-field-ev="evento.descripcion"></textarea></div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h3 class="display text-lg uppercase">Tipos de entrada</h3>
+          <button class="btn-ghost" onclick="agregarTipoEntrada()">+ Agregar tipo</button>
+        </div>
+        <p class="msg-info mb-4">El cupo es el máximo de entradas que se pueden vender de ese tipo — lo controla una transacción en <code>evento.html</code>, nunca se vende de más.</p>
+        <div id="tipos-entrada-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ Config ============ */
+const GH = { owner: 'juliancarroccio', repo: 'pushcommerce', branch: 'main' };
+const FILE_PATH = 'pages/la_usina/turnos.json';
+const FILE_PATH_EVENTO = 'pages/la_usina/evento.json';
+
+const LS_EPAT = 'usina_epat';
+const LS_META = 'usina_epat_meta';
+const SESSION_PAT = 'usina_pat_session';
+const TTL_DAYS = 30;
+const PBKDF2_ITER = 300000;
+
+const DIAS_ORDEN = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+const DIAS_LABEL = { lunes:'Lunes', martes:'Martes', miércoles:'Miércoles', jueves:'Jueves', viernes:'Viernes', sábado:'Sábado', domingo:'Domingo' };
+
+let data = null;
+let dataSha = null;
+let dirty = false;
+
+let eventoData = null;
+let eventoSha = null;
+let eventoDirty = false;
+
+/* ============ XSS-safe ============ */
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+/* ============ Crypto (PBKDF2 + AES-GCM, igual que el resto de los portales) ============ */
+async function deriveKey(password, salt) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: PBKDF2_ITER, hash: 'SHA-256' },
+    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+  );
+}
+async function encryptToken(token, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(password, salt);
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(token));
+  return { salt: Array.from(salt), iv: Array.from(iv), ct: Array.from(new Uint8Array(ct)) };
+}
+async function decryptToken(payload, password) {
+  const salt = new Uint8Array(payload.salt), iv = new Uint8Array(payload.iv), ct = new Uint8Array(payload.ct);
+  const key = await deriveKey(password, salt);
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+  return new TextDecoder().decode(pt);
+}
+
+/* ============ Login flow ============ */
+function checkLoginState() {
+  const enc = localStorage.getItem(LS_EPAT);
+  const metaRaw = localStorage.getItem(LS_META);
+  if (!enc || !metaRaw) { document.getElementById('login-first').style.display = 'block'; return; }
+  try {
+    const meta = JSON.parse(metaRaw);
+    if (meta.expiresAt && Date.now() > meta.expiresAt) {
+      localStorage.removeItem(LS_EPAT); localStorage.removeItem(LS_META);
+      document.getElementById('login-first').style.display = 'block';
+      showErr('setup', 'La sesión expiró. Reingresá el PAT y contraseña.');
+      return;
+    }
+  } catch {}
+  document.getElementById('login-recurring').style.display = 'block';
+}
+function showErr(kind, msg) { const el = document.getElementById('err-' + kind); el.textContent = msg; el.style.display = 'block'; }
+function hideErr(kind) { document.getElementById('err-' + kind).style.display = 'none'; }
+
+async function setupAccess() {
+  hideErr('setup');
+  const pat = document.getElementById('in-pat').value.trim();
+  const pass = document.getElementById('in-pass').value;
+  const pass2 = document.getElementById('in-pass2').value;
+  if (!pat.startsWith('ghp_') && !pat.startsWith('github_pat_')) { showErr('setup', 'El PAT parece inválido.'); return; }
+  if (pass.length < 8) { showErr('setup', 'La contraseña debe tener al menos 8 caracteres.'); return; }
+  if (pass !== pass2) { showErr('setup', 'Las contraseñas no coinciden.'); return; }
+  try {
+    const payload = await encryptToken(pat, pass);
+    localStorage.setItem(LS_EPAT, JSON.stringify(payload));
+    localStorage.setItem(LS_META, JSON.stringify({ expiresAt: Date.now() + TTL_DAYS * 86400000 }));
+    sessionStorage.setItem(SESSION_PAT, pat);
+    await enterApp();
+  } catch (e) { showErr('setup', 'Error al guardar: ' + e.message); }
+}
+async function doLogin() {
+  hideErr('login');
+  const pass = document.getElementById('in-pass-r').value;
+  if (!pass) return;
+  try {
+    const enc = JSON.parse(localStorage.getItem(LS_EPAT));
+    const pat = await decryptToken(enc, pass);
+    sessionStorage.setItem(SESSION_PAT, pat);
+    localStorage.setItem(LS_META, JSON.stringify({ expiresAt: Date.now() + TTL_DAYS * 86400000 }));
+    await enterApp();
+  } catch (e) { showErr('login', 'Contraseña incorrecta.'); }
+}
+function resetAccess() {
+  if (!confirm('¿Reconfigurar acceso? Vas a tener que ingresar el PAT nuevamente.')) return;
+  localStorage.removeItem(LS_EPAT); localStorage.removeItem(LS_META); sessionStorage.removeItem(SESSION_PAT);
+  location.reload();
+}
+function doLogout() { sessionStorage.removeItem(SESSION_PAT); location.reload(); }
+
+async function enterApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  try { await loadRemote(); initAgendaLive(); }
+  catch (e) { alert('Error al cargar datos: ' + e.message); }
+  try { await loadEventoRemote(); initEntradasLive(); }
+  catch (e) { alert('Error al cargar el evento: ' + e.message); }
+}
+
+/* ============ GH API ============ */
+function ghHeaders() {
+  const pat = sessionStorage.getItem(SESSION_PAT);
+  return { 'Authorization': `Bearer ${pat}`, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+}
+async function ghGet(path) {
+  const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}`;
+  const res = await fetch(url, { headers: ghHeaders() });
+  if (!res.ok) throw new Error(`GH GET ${path}: ${res.status}`);
+  return res.json();
+}
+async function ghPut(path, contentBase64, sha, message) {
+  const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`;
+  const body = { message, content: contentBase64, branch: GH.branch };
+  if (sha) body.sha = sha;
+  const res = await fetch(url, { method: 'PUT', headers: { ...ghHeaders(), 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`GH PUT ${path}: ${res.status} — ${await res.text()}`);
+  return res.json();
+}
+function base64UnicodeEncode(str) { return btoa(unescape(encodeURIComponent(str))); }
+function base64UnicodeDecode(b64) { return decodeURIComponent(escape(atob(b64))); }
+
+/* ============ Load / Save turnos.json ============ */
+async function loadRemote() {
+  setStatus('Cargando...');
+  const meta = await ghGet(FILE_PATH);
+  data = JSON.parse(base64UnicodeDecode(meta.content));
+  dataSha = meta.sha;
+  bindAll();
+  renderAll();
+  dirty = false;
+  document.getElementById('save-bar').style.display = 'none';
+  setStatus('Sincronizado', 'ok');
+}
+function setStatus(txt, kind) {
+  const el = document.getElementById('save-status');
+  el.textContent = txt;
+  el.style.color = kind === 'ok' ? '#9FD89F' : (kind === 'err' ? '#E08080' : '#EDE4D380');
+}
+function markDirty() { dirty = true; document.getElementById('save-bar').style.display = 'block'; setStatus('Cambios sin publicar'); }
+
+async function publishChanges() {
+  try {
+    setStatus('Publicando...');
+    const content = JSON.stringify(data, null, 2);
+    const remote = await ghGet(FILE_PATH);
+    const remoteContent = base64UnicodeDecode(remote.content);
+    if (remoteContent === content) {
+      dirty = false; document.getElementById('save-bar').style.display = 'none';
+      setStatus('Sin cambios', 'ok');
+      alert('No hay cambios reales para publicar.');
+      return;
+    }
+    const b64 = base64UnicodeEncode(content);
+    const res = await ghPut(FILE_PATH, b64, remote.sha, 'chore(la_usina): actualizar turnos.json desde portal');
+    dataSha = res.content.sha;
+    dirty = false;
+    document.getElementById('save-bar').style.display = 'none';
+    setStatus('Publicado ✓', 'ok');
+  } catch (e) {
+    setStatus('Error', 'err');
+    alert('Error al publicar: ' + e.message);
+  }
+}
+
+/* ============ Binding genérico (data-field="a.b.c") ============ */
+function getPath(obj, path) { return path.split('.').reduce((o, k) => (o ? o[k] : undefined), obj); }
+function setPath(obj, path, value) {
+  const parts = path.split('.'); let cur = obj;
+  for (let i = 0; i < parts.length - 1; i++) { if (!cur[parts[i]] || typeof cur[parts[i]] !== 'object') cur[parts[i]] = {}; cur = cur[parts[i]]; }
+  cur[parts[parts.length - 1]] = value;
+}
+function bindAll() {
+  document.querySelectorAll('[data-field]').forEach(el => {
+    const path = el.dataset.field;
+    const val = getPath(data, path);
+    if (val !== undefined) el.value = val;
+    el.oninput = () => { setPath(data, path, el.type === 'number' ? (parseFloat(el.value) || 0) : el.value); markDirty(); };
+  });
+}
+
+function renderAll() {
+  renderServicios();
+  renderHorarios();
+  poblarSelectsAgenda();
+}
+
+/* ============ Tab Servicios (servicios[] + su recurso enlazado) ============ */
+function recursoDe(servicio) { return data.recursos.find(r => r.id === servicio.recurso_id); }
+
+function renderServicios() {
+  const cont = document.getElementById('servicios-list');
+  cont.innerHTML = '';
+  (data.servicios || []).forEach((s, i) => {
+    const r = recursoDe(s);
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="display text-base uppercase">Servicio ${i + 1}</div>
+        <button class="btn-danger" data-act="del-serv">Eliminar servicio</button>
+      </div>
+      <div class="grid-2 mb-3">
+        <div><label class="lbl">Nombre</label><input class="inp" data-k="nombre" value="${esc(s.nombre)}" /></div>
+        <div><label class="lbl">Duración (minutos)</label><input type="number" class="inp" data-k="duracion_min" value="${s.duracion_min}" /></div>
+      </div>
+      <div class="mb-3"><label class="lbl">Nota (se muestra en la agenda pública)</label><input class="inp" data-k="nota" value="${esc(s.nota || '')}" /></div>
+      <div class="grid-2">
+        <div><label class="lbl">Capacidad por horario (mesas/salones en paralelo)</label><input type="number" min="1" class="inp" data-k-r="capacidad" value="${r ? r.capacidad : 1}" /></div>
+        <div><label class="lbl">Cada cuántos minutos se ofrece un horario nuevo</label><input type="number" min="5" class="inp" data-k-r="intervalo_slots_min" value="${r ? r.intervalo_slots_min : 30}" /></div>
+      </div>
+    `;
+    row.querySelector('[data-act="del-serv"]').onclick = () => {
+      if (!confirm('¿Eliminar este servicio y su recurso? Las reservas ya hechas no se borran.')) return;
+      const recursoId = s.recurso_id;
+      data.servicios.splice(i, 1);
+      data.recursos = data.recursos.filter(x => x.id !== recursoId);
+      markDirty(); renderAll();
+    };
+    row.querySelector('[data-k="nombre"]').oninput = (e) => { s.nombre = e.target.value; markDirty(); };
+    row.querySelector('[data-k="duracion_min"]').oninput = (e) => { s.duracion_min = parseInt(e.target.value) || 15; markDirty(); };
+    row.querySelector('[data-k="nota"]').oninput = (e) => { s.nota = e.target.value; markDirty(); };
+    if (r) {
+      row.querySelector('[data-k-r="capacidad"]').oninput = (e) => { r.capacidad = Math.max(1, parseInt(e.target.value) || 1); markDirty(); };
+      row.querySelector('[data-k-r="intervalo_slots_min"]').oninput = (e) => { r.intervalo_slots_min = Math.max(5, parseInt(e.target.value) || 30); markDirty(); };
+    }
+    cont.appendChild(row);
+  });
+}
+
+function agregarServicio() {
+  const n = (data.servicios || []).length + 1;
+  const id = 'servicio-' + Date.now();
+  const recursoId = 'recurso-' + Date.now();
+  data.servicios = data.servicios || [];
+  data.recursos = data.recursos || [];
+  data.servicios.push({ id, nombre: 'Nuevo servicio', recurso_id: recursoId, duracion_min: 30, nota: '' });
+  data.recursos.push({
+    id: recursoId, nombre: 'Nuevo recurso', capacidad: 1, intervalo_slots_min: 30,
+    horario_atencion: { lunes: [], martes: [], miércoles: [], jueves: [], viernes: [], sábado: [], domingo: [] }
+  });
+  markDirty();
+  renderAll();
+}
+
+/* ============ Tab Horario de atención (franjas por día, por recurso) ============ */
+function renderHorarios() {
+  const cont = document.getElementById('horarios-recursos');
+  cont.innerHTML = '';
+  (data.servicios || []).forEach(s => {
+    const r = recursoDe(s);
+    if (!r) return;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<h3 class="display text-lg uppercase mb-1">${esc(s.nombre)}</h3><p class="msg-info mb-4">Franjas en las que se puede reservar este servicio. Un día sin franjas queda cerrado para esa reserva.</p><div class="dias-grid"></div>`;
+    const grid = card.querySelector('.dias-grid');
+    DIAS_ORDEN.forEach(dia => {
+      const franjas = r.horario_atencion[dia] || (r.horario_atencion[dia] = []);
+      const franja = franjas[0] || null;
+      const row = document.createElement('div');
+      row.className = 'dias-row';
+      row.innerHTML = `
+        <span class="lbl" style="margin:0;">${DIAS_LABEL[dia]}</span>
+        <input type="time" class="inp" value="${franja ? franja.abre : ''}" data-dia-abre />
+        <input type="time" class="inp" value="${franja ? franja.cierra : ''}" data-dia-cierra />
+        <button class="btn-ghost" data-dia-clear>Cerrar</button>
+      `;
+      const abreInp = row.querySelector('[data-dia-abre]');
+      const cierraInp = row.querySelector('[data-dia-cierra]');
+      function sync() {
+        if (abreInp.value && cierraInp.value) { r.horario_atencion[dia] = [{ abre: abreInp.value, cierra: cierraInp.value }]; }
+        else { r.horario_atencion[dia] = []; }
+        markDirty();
+      }
+      abreInp.oninput = sync; cierraInp.oninput = sync;
+      row.querySelector('[data-dia-clear]').onclick = () => { abreInp.value = ''; cierraInp.value = ''; sync(); };
+      grid.appendChild(row);
+    });
+    cont.appendChild(card);
+  });
+}
+
+/* ============ Tab Agenda — Firestore en vivo ============ */
+const FIREBASE_CONFIG = {
+  // TODO (antes de producción): cliente demo inventado, nunca se creó un
+  // proyecto Firebase real. Reemplazar siguiendo firestore-setup-guide.md.
+  apiKey: "TODO_REEMPLAZAR", authDomain: "la-usina-demo.firebaseapp.com", projectId: "la-usina-demo",
+  storageBucket: "la-usina-demo.firebasestorage.app", messagingSenderId: "0", appId: "1:0:web:0"
+};
+let fbDb = null;
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    fbDb = firebase.firestore();
+    firebase.auth().signInAnonymously().catch(e => console.error('Auth error:', e));
+  }
+} catch (e) { console.error('Error init Firebase/mock en portal:', e.message); }
+
+const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+function toMin(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
+function toHHMM(min) { return String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0'); }
+function solapa(iA, fA, iB, fB) { return toMin(iA) < toMin(fB) && toMin(fA) > toMin(iB); }
+function fechaISO(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function fechaLabel(d) { return d.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' }); }
+function proximasFechasValidas(recurso, n) {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const out = [];
+  for (let i = 0; i < 90 && out.length < n; i++) {
+    const d = new Date(hoy); d.setDate(hoy.getDate() + i);
+    const dia = DIAS[d.getDay()];
+    if ((recurso.horario_atencion[dia] || []).length > 0) out.push(d);
+  }
+  return out;
+}
+
+function initAgendaLive() {
+  if (!fbDb) return;
+  fbDb.collection('reservas').onSnapshot(snap => {
+    const reservas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    reservas.sort((a, b) => (a.fecha + a.hora_inicio).localeCompare(b.fecha + b.hora_inicio));
+    renderReservas(reservas);
+    const pendientesHoy = reservas.filter(r => r.estado === 'confirmado' && r.fecha >= fechaISO(new Date())).length;
+    const badge = document.getElementById('badge-agenda');
+    if (pendientesHoy > 0) { badge.textContent = pendientesHoy; badge.style.display = 'inline-block'; }
+    else badge.style.display = 'none';
+  }, err => console.error('onSnapshot reservas:', err));
+}
+
+function renderReservas(reservas) {
+  const cont = document.getElementById('reservas-list');
+  if (!reservas.length) { cont.innerHTML = '<p class="msg-info">Todavía no hay reservas.</p>'; return; }
+  cont.innerHTML = '';
+  reservas.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'reserva-row';
+    const chipClass = 'estado-' + r.estado;
+    row.innerHTML = `
+      <div>
+        <div style="font-weight:600;">${esc(r.servicio_nombre || r.recurso_id)} <span class="estado-chip ${chipClass}">${esc(r.estado)}</span></div>
+        <div style="font-size:0.82rem;opacity:0.7;">${esc(r.fecha)} · ${esc(r.hora_inicio)}–${esc(r.hora_fin)} ${r.cliente ? '· ' + esc(r.cliente.nombre) + ' (' + esc(r.cliente.telefono) + ')' : ''}</div>
+        ${r.nota ? `<div style="font-size:0.78rem;opacity:0.5;">${esc(r.nota)}</div>` : ''}
+        ${r.codigo ? `<div style="font-size:0.72rem;opacity:0.4;">Código: ${esc(r.codigo)}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+        ${r.estado === 'confirmado' ? `<button class="btn-ghost" data-act="completado">Completada</button><button class="btn-danger" data-act="cancelar">Cancelar</button>` : ''}
+        ${r.estado === 'bloqueado' ? `<button class="btn-danger" data-act="desbloquear">Quitar bloqueo</button>` : ''}
+      </div>
+    `;
+    const btnCompletado = row.querySelector('[data-act="completado"]');
+    if (btnCompletado) btnCompletado.onclick = () => fbDb.collection('reservas').doc(r.id).update({ estado: 'completado' });
+    const btnCancelar = row.querySelector('[data-act="cancelar"]');
+    if (btnCancelar) btnCancelar.onclick = () => { if (confirm('¿Cancelar esta reserva?')) fbDb.collection('reservas').doc(r.id).update({ estado: 'cancelado' }); };
+    const btnDesbloquear = row.querySelector('[data-act="desbloquear"]');
+    if (btnDesbloquear) btnDesbloquear.onclick = () => { if (confirm('¿Quitar este bloqueo?')) fbDb.collection('reservas').doc(r.id).delete(); };
+    cont.appendChild(row);
+  });
+}
+
+/* ---- Selects compartidos (alta manual + bloqueo) ---- */
+function poblarSelectsAgenda() {
+  const opts = (data.servicios || []).map(s => `<option value="${s.id}">${esc(s.nombre)}</option>`).join('');
+  document.getElementById('manual-servicio').innerHTML = opts;
+  document.getElementById('bloqueo-servicio').innerHTML = opts;
+  manualRenderFechas();
+  bloqueoRenderFechas();
+}
+
+function manualRenderFechas() {
+  const servicioId = document.getElementById('manual-servicio').value;
+  const s = (data.servicios || []).find(x => x.id === servicioId);
+  if (!s) return;
+  const r = recursoDe(s);
+  const fechas = proximasFechasValidas(r, 8);
+  document.getElementById('manual-fecha').innerHTML = fechas.map(d => `<option value="${fechaISO(d)}">${fechaLabel(d)}</option>`).join('') || '<option value="">Sin fechas disponibles</option>';
+  manualRenderSlots();
+}
+async function manualRenderSlots() {
+  const servicioId = document.getElementById('manual-servicio').value;
+  const fecha = document.getElementById('manual-fecha').value;
+  const sel = document.getElementById('manual-slot');
+  if (!servicioId || !fecha || !fbDb) { sel.innerHTML = ''; return; }
+  const s = data.servicios.find(x => x.id === servicioId);
+  const r = recursoDe(s);
+  const snap = await fbDb.collection('reservas').where('recurso_id', '==', r.id).where('fecha', '==', fecha).get();
+  const existentes = snap.docs.map(d => d.data());
+  const slots = calcularSlots(s, r, fecha, existentes);
+  sel.innerHTML = slots.map(sl => `<option value="${sl.hora_inicio}|${sl.hora_fin}" ${sl.libres <= 0 ? 'disabled' : ''}>${sl.hora_inicio}–${sl.hora_fin} (${sl.libres}/${sl.capacidad} libres)</option>`).join('') || '<option value="">Sin horarios ese día</option>';
+}
+function calcularSlots(servicio, recurso, fecha, existentes) {
+  const dia = DIAS[new Date(fecha + 'T00:00:00').getDay()];
+  const franjas = recurso.horario_atencion[dia] || [];
+  const capacidad = recurso.capacidad || 1;
+  const confirmadas = existentes.filter(r => r.estado === 'confirmado');
+  const bloqueos = existentes.filter(r => r.estado === 'bloqueado');
+  const out = [];
+  for (const franja of franjas) {
+    for (let ini = toMin(franja.abre); ini + servicio.duracion_min <= toMin(franja.cierra); ini += recurso.intervalo_slots_min) {
+      const fin = ini + servicio.duracion_min;
+      const hi = toHHMM(ini), hf = toHHMM(fin);
+      const bloqueado = bloqueos.some(b => solapa(hi, hf, b.hora_inicio, b.hora_fin));
+      const ocupadas = confirmadas.filter(c => solapa(hi, hf, c.hora_inicio, c.hora_fin)).length;
+      out.push({ hora_inicio: hi, hora_fin: hf, libres: bloqueado ? 0 : Math.max(0, capacidad - ocupadas), capacidad });
+    }
+  }
+  return out;
+}
+
+async function altaManual() {
+  const servicioId = document.getElementById('manual-servicio').value;
+  const fecha = document.getElementById('manual-fecha').value;
+  const slotVal = document.getElementById('manual-slot').value;
+  const nombre = document.getElementById('manual-nombre').value.trim();
+  const telefono = document.getElementById('manual-telefono').value.trim();
+  const nota = document.getElementById('manual-nota').value.trim();
+  if (!servicioId || !fecha || !slotVal || !nombre || !telefono) { alert('Completá servicio, fecha, horario, nombre y teléfono.'); return; }
+  const [hora_inicio, hora_fin] = slotVal.split('|');
+  const s = data.servicios.find(x => x.id === servicioId);
+  const r = recursoDe(s);
+  const codigo = genCodigo();
+  try {
+    const snap = await fbDb.collection('reservas').where('recurso_id', '==', r.id).where('fecha', '==', fecha).get();
+    const existentes = snap.docs.map(d => d.data());
+    const bloqueado = existentes.some(e => e.estado === 'bloqueado' && solapa(hora_inicio, hora_fin, e.hora_inicio, e.hora_fin));
+    const ocupadas = existentes.filter(e => e.estado === 'confirmado' && solapa(hora_inicio, hora_fin, e.hora_inicio, e.hora_fin)).length;
+    if (bloqueado || ocupadas >= (r.capacidad || 1)) { alert('Ese horario ya no tiene cupo. Elegí otro.'); manualRenderSlots(); return; }
+    await fbDb.collection('reservas').add({
+      recurso_id: r.id, servicio_id: s.id, servicio_nombre: s.nombre, fecha, hora_inicio, hora_fin,
+      cliente: { nombre, telefono }, nota, estado: 'confirmado', codigo,
+      creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('manual-nombre').value = ''; document.getElementById('manual-telefono').value = ''; document.getElementById('manual-nota').value = '';
+    alert('Reserva agregada. Código: ' + codigo);
+    manualRenderSlots();
+  } catch (e) { alert('No se pudo agregar la reserva: ' + e.message); }
+}
+
+function bloqueoRenderFechas() {
+  const servicioId = document.getElementById('bloqueo-servicio').value;
+  const s = (data.servicios || []).find(x => x.id === servicioId);
+  if (!s) return;
+  const r = recursoDe(s);
+  const fechas = proximasFechasValidas(r, 8);
+  document.getElementById('bloqueo-fecha').innerHTML = fechas.map(d => `<option value="${fechaISO(d)}">${fechaLabel(d)}</option>`).join('') || '<option value="">Sin fechas disponibles</option>';
+}
+async function crearBloqueo() {
+  const servicioId = document.getElementById('bloqueo-servicio').value;
+  const fecha = document.getElementById('bloqueo-fecha').value;
+  const desde = document.getElementById('bloqueo-desde').value;
+  const hasta = document.getElementById('bloqueo-hasta').value;
+  const motivo = document.getElementById('bloqueo-motivo').value.trim();
+  if (!servicioId || !fecha || !desde || !hasta) { alert('Completá servicio, fecha y horario.'); return; }
+  const s = data.servicios.find(x => x.id === servicioId);
+  const r = recursoDe(s);
+  try {
+    await fbDb.collection('reservas').add({
+      recurso_id: r.id, servicio_id: s.id, servicio_nombre: s.nombre, fecha,
+      hora_inicio: desde, hora_fin: hasta, nota: motivo, estado: 'bloqueado',
+      creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('bloqueo-motivo').value = '';
+    alert('Horario bloqueado.');
+  } catch (e) { alert('No se pudo bloquear: ' + e.message); }
+}
+
+const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function genCodigo(len = 5) { return Array.from({ length: len }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join(''); }
+
+/* ============================================================
+   module-eventos.md — Entradas / Tipos de entrada
+   evento.json se carga/publica igual que turnos.json pero por su
+   cuenta (archivo y dirty-flag propios) — así publicar el evento
+   nunca pisa cambios sin publicar de Servicios/Horario de atención,
+   y viceversa.
+   ============================================================ */
+
+/* ---- Load / Save evento.json ---- */
+async function loadEventoRemote() {
+  const meta = await ghGet(FILE_PATH_EVENTO);
+  eventoData = JSON.parse(base64UnicodeDecode(meta.content));
+  eventoSha = meta.sha;
+  bindAllEvento();
+  renderTiposEntrada();
+  eventoDirty = false;
+  document.getElementById('save-bar-evento').style.display = 'none';
+}
+
+function markDirtyEvento() { eventoDirty = true; document.getElementById('save-bar-evento').style.display = 'block'; }
+
+async function publishEventoChanges() {
+  try {
+    const content = JSON.stringify(eventoData, null, 2);
+    const remote = await ghGet(FILE_PATH_EVENTO);
+    const remoteContent = base64UnicodeDecode(remote.content);
+    if (remoteContent === content) {
+      eventoDirty = false; document.getElementById('save-bar-evento').style.display = 'none';
+      alert('No hay cambios reales para publicar.');
+      return;
+    }
+    const b64 = base64UnicodeEncode(content);
+    const res = await ghPut(FILE_PATH_EVENTO, b64, remote.sha, 'chore(la_usina): actualizar evento.json desde portal');
+    eventoSha = res.content.sha;
+    eventoDirty = false;
+    document.getElementById('save-bar-evento').style.display = 'none';
+    alert('Evento publicado ✓');
+  } catch (e) {
+    alert('Error al publicar el evento: ' + e.message);
+  }
+}
+
+/* ---- Binding genérico para evento.json (data-field-ev="a.b.c") ---- */
+function bindAllEvento() {
+  document.querySelectorAll('[data-field-ev]').forEach(el => {
+    const path = el.dataset.fieldEv;
+    const val = getPath(eventoData, path);
+    if (val !== undefined) el.value = val;
+    el.oninput = () => { setPath(eventoData, path, el.value); markDirtyEvento(); };
+  });
+}
+
+/* ---- Tab Tipos de entrada (ABM: nombre, precio, cupo) ---- */
+function renderTiposEntrada() {
+  const cont = document.getElementById('tipos-entrada-list');
+  if (!cont) return;
+  cont.innerHTML = '';
+  (eventoData.tipos_entrada || []).forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="display text-base uppercase">Tipo ${i + 1}</div>
+        <button class="btn-danger" data-act="del-tipo">Eliminar tipo</button>
+      </div>
+      <div class="grid-2 mb-3">
+        <div><label class="lbl">Nombre</label><input class="inp" data-k="nombre" value="${esc(t.nombre)}" /></div>
+        <div><label class="lbl">Precio (ARS)</label><input type="number" min="0" class="inp" data-k="precio" value="${t.precio}" /></div>
+      </div>
+      <div class="grid-2 mb-3">
+        <div><label class="lbl">Cupo total</label><input type="number" min="0" class="inp" data-k="cupo_total" value="${t.cupo_total}" /></div>
+        <div><label class="lbl">Descripción (opcional, se muestra al público)</label><input class="inp" data-k="descripcion" value="${esc(t.descripcion || '')}" /></div>
+      </div>
+      <p style="font-size:0.75rem;opacity:0.5;">id interno: <code>${esc(t.id)}</code> — no editable, lo usan <code>cupos/{id}</code> y <code>entradas.tipo_id</code> en Firestore.</p>
+    `;
+    row.querySelector('[data-act="del-tipo"]').onclick = () => {
+      if (!confirm('¿Eliminar este tipo de entrada? Las entradas ya vendidas de este tipo no se borran, pero deja de poder venderse más.')) return;
+      eventoData.tipos_entrada.splice(i, 1);
+      markDirtyEvento(); renderTiposEntrada();
+    };
+    row.querySelector('[data-k="nombre"]').oninput = (e) => { t.nombre = e.target.value; markDirtyEvento(); };
+    row.querySelector('[data-k="precio"]').oninput = (e) => { t.precio = Math.max(0, parseFloat(e.target.value) || 0); markDirtyEvento(); };
+    row.querySelector('[data-k="cupo_total"]').oninput = (e) => { t.cupo_total = Math.max(0, parseInt(e.target.value) || 0); markDirtyEvento(); };
+    row.querySelector('[data-k="descripcion"]').oninput = (e) => { t.descripcion = e.target.value; markDirtyEvento(); };
+    cont.appendChild(row);
+  });
+}
+
+function agregarTipoEntrada() {
+  const n = (eventoData.tipos_entrada || []).length + 1;
+  const id = 'tipo-' + Date.now();
+  eventoData.tipos_entrada = eventoData.tipos_entrada || [];
+  eventoData.tipos_entrada.push({ id, nombre: 'Nuevo tipo ' + n, descripcion: '', precio: 0, cupo_total: 0 });
+  markDirtyEvento();
+  renderTiposEntrada();
+}
+
+/* ---- Tab Entradas — Firestore en vivo (colecciones `entradas` y `cupos`) ---- */
+function initEntradasLive() {
+  if (!fbDb) return;
+  fbDb.collection('entradas').onSnapshot(snap => {
+    const entradas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    entradas.sort((a, b) => {
+      const ca = a.creadoEn || '', cb = b.creadoEn || '';
+      return String(cb).localeCompare(String(ca)); // más nuevas primero
+    });
+    renderEntradas(entradas);
+    renderMetricasEntradas(entradas);
+    const pendientes = entradas.filter(e => e.estado === 'pendiente_pago').length;
+    const badge = document.getElementById('badge-entradas');
+    if (pendientes > 0) { badge.textContent = pendientes; badge.style.display = 'inline-block'; }
+    else badge.style.display = 'none';
+  }, err => console.error('onSnapshot entradas:', err));
+}
+
+const ESTADO_CHIP_ENTRADA = {
+  pendiente_pago: 'estado-bloqueado',
+  vendida: 'estado-confirmado',
+  validada: 'estado-completado',
+  cancelada: 'estado-cancelado',
+};
+
+function renderEntradas(entradas) {
+  const cont = document.getElementById('entradas-list');
+  if (!entradas.length) { cont.innerHTML = '<p class="msg-info">Todavía no se vendió ninguna entrada.</p>'; return; }
+  cont.innerHTML = '';
+  entradas.forEach(e => {
+    const row = document.createElement('div');
+    row.className = 'reserva-row';
+    const chipClass = ESTADO_CHIP_ENTRADA[e.estado] || 'estado-cancelado';
+    row.innerHTML = `
+      <div>
+        <div style="font-weight:600;">${esc(e.tipo_nombre || e.tipo_id)} <span class="estado-chip ${chipClass}">${esc(e.estado)}</span></div>
+        <div style="font-size:0.82rem;opacity:0.7;">${e.comprador ? esc(e.comprador.nombre) + ' · ' + esc(e.comprador.telefono) : ''}</div>
+        <div style="font-size:0.72rem;opacity:0.4;">Código: ${esc(e.codigo)}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+        ${e.estado === 'pendiente_pago' ? `<button class="btn-ghost" data-act="confirmar">Confirmar pago</button><button class="btn-danger" data-act="cancelar">Cancelar</button>` : ''}
+        ${e.estado === 'vendida' ? `<button class="btn-danger" data-act="cancelar">Cancelar</button>` : ''}
+      </div>
+    `;
+    const btnConfirmar = row.querySelector('[data-act="confirmar"]');
+    if (btnConfirmar) btnConfirmar.onclick = () => fbDb.collection('entradas').doc(e.id).update({ estado: 'vendida' });
+    const btnCancelar = row.querySelector('[data-act="cancelar"]');
+    if (btnCancelar) btnCancelar.onclick = () => {
+      if (!confirm('¿Cancelar esta entrada? Libera su lugar en el cupo del tipo.')) return;
+      cancelarEntrada(e);
+    };
+    cont.appendChild(row);
+  });
+}
+
+async function cancelarEntrada(entrada) {
+  try {
+    await fbDb.collection('entradas').doc(entrada.id).update({ estado: 'cancelada' });
+    // Libera el cupo que esa entrada había reservado al comprarse (nunca por debajo de 0).
+    const cupoRef = fbDb.collection('cupos').doc(entrada.tipo_id);
+    const cupoSnap = await cupoRef.get();
+    const vendidas = cupoSnap.exists ? (cupoSnap.data().vendidas || 0) : 0;
+    await cupoRef.set({ vendidas: Math.max(0, vendidas - 1) });
+  } catch (e) { alert('No se pudo cancelar: ' + e.message); }
+}
+
+function renderMetricasEntradas(entradas) {
+  const cont = document.getElementById('metricas-entradas');
+  if (!cont) return;
+  const tipos = (eventoData && eventoData.tipos_entrada) || [];
+  const vendidas = entradas.filter(e => e.estado === 'vendida' || e.estado === 'validada');
+  const validadas = entradas.filter(e => e.estado === 'validada');
+  const recaudacion = vendidas.reduce((sum, e) => {
+    const t = tipos.find(x => x.id === e.tipo_id);
+    return sum + (t ? t.precio : 0);
+  }, 0);
+  cont.innerHTML = `
+    <div class="item-row" style="text-align:center;"><div class="display text-2xl">${vendidas.length}</div><div class="lbl" style="margin:0;">Vendidas</div></div>
+    <div class="item-row" style="text-align:center;"><div class="display text-2xl">${validadas.length}</div><div class="lbl" style="margin:0;">Validadas en puerta</div></div>
+    <div class="item-row" style="text-align:center;"><div class="display text-2xl">$${recaudacion.toLocaleString('es-AR')}</div><div class="lbl" style="margin:0;">Recaudación estimada</div></div>
+  `;
+}
+
+/* ============ Tabs ============ */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+window.addEventListener('beforeunload', (e) => { if (dirty || eventoDirty) { e.preventDefault(); e.returnValue = ''; } });
+
+checkLoginState();
+</script>
+</body>
+</html>

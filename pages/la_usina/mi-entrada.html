@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi entrada · La Usina</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" href="./img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./img/favicon-180.png">
+  <meta name="theme-color" content="#A84C2D">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            charcoal:        '#1C1A17',
+            'charcoal-mid':  '#242019',
+            'charcoal-light':'#2E2821',
+            rust:            '#A84C2D',
+            'rust-dark':     '#7A3620',
+            amber:           '#D98E34',
+            'amber-lt':      '#E8A855',
+            cream:           '#EDE4D3',
+          },
+          fontFamily: {
+            display: ['Bebas Neue', 'sans-serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!--
+    Carga condicional: en localhost usa el mock de Firestore (Level 0, cero
+    instalación, localStorage) — en cualquier otro host, los SDKs reales.
+    Ver references/local-db-testing.md.
+  -->
+  <script>
+    (function () {
+      const local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const srcs = local
+        ? ['./firestore-mock.js']
+        : [
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js',
+          ];
+      srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
+    })();
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    .fade-in { animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .spinner { border: 2px solid rgba(217,142,52,.25); border-top-color: #D98E34; border-radius: 50%; width: 22px; height: 22px; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #qrcode { background: #fff; padding: 16px; display: inline-block; }
+    #qrcode canvas, #qrcode img { display: block; }
+  </style>
+</head>
+<body class="bg-charcoal text-cream font-sans min-h-screen">
+
+  <!-- NAV -->
+  <nav class="border-b border-amber/10">
+    <div class="max-w-xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="./index.html" class="flex items-center gap-3">
+        <img src="./img/logo.png" alt="La Usina" class="w-8 h-8 rounded-full object-cover">
+        <span class="font-display text-sm tracking-[0.25em] uppercase text-cream/90">La Usina</span>
+      </a>
+      <a href="./evento.html" class="text-cream/40 hover:text-amber text-xs font-display tracking-widest uppercase transition-colors">Comprar otra →</a>
+    </div>
+  </nav>
+
+  <main class="max-w-xl mx-auto px-6 py-14 text-center">
+
+    <!-- Sin código en la URL -->
+    <div id="sin-codigo" class="hidden fade-in">
+      <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Mi entrada</p>
+      <h1 class="font-display text-3xl uppercase text-cream mb-4">Falta el código</h1>
+      <p class="text-cream/50 text-sm mb-8">Abrí este link desde el mensaje que recibiste al comprar tu entrada (termina en <code>?code=...</code>), o escribí el código manualmente.</p>
+      <div class="flex gap-3 max-w-sm mx-auto">
+        <input id="in-buscar-codigo" type="text" placeholder="TU CÓDIGO" class="flex-1 bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none uppercase tracking-widest text-sm text-center">
+        <button onclick="buscarPorInput()" class="bg-rust hover:bg-rust-dark text-cream font-display tracking-widest uppercase text-sm px-6 py-3">Ver</button>
+      </div>
+    </div>
+
+    <!-- Cargando -->
+    <div id="cargando" class="hidden fade-in flex flex-col items-center gap-4 py-10">
+      <span class="spinner"></span>
+      <p class="text-cream/40 text-sm">Buscando tu entrada...</p>
+    </div>
+
+    <!-- No encontrada -->
+    <div id="no-encontrada" class="hidden fade-in">
+      <p class="font-display text-[11px] tracking-[0.38em] uppercase text-red-400 mb-4">No encontrada</p>
+      <h1 class="font-display text-3xl uppercase text-cream mb-4">No existe ese código</h1>
+      <p class="text-cream/50 text-sm mb-8">Revisá que el código esté completo y bien escrito. Si comprás por acá y tenés dudas, escribinos por WhatsApp.</p>
+      <a href="./evento.html" class="inline-block border border-amber/40 hover:border-amber text-amber font-display tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Comprar una entrada</a>
+    </div>
+
+    <!-- Estado: pendiente_pago -->
+    <div id="estado-pendiente" class="hidden fade-in">
+      <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Pendiente de pago</p>
+      <h1 class="font-display text-3xl uppercase text-cream mb-4">Todavía no es válida para entrar</h1>
+      <p class="text-cream/60 text-sm mb-6 leading-relaxed">Tu lugar está reservado, pero hasta que confirmemos el pago esta entrada no sirve para entrar al show — no se pinta ningún QR mientras siga en este estado.</p>
+      <div class="border border-amber/30 bg-charcoal-mid p-6 mb-6 inline-block text-left">
+        <p id="p-tipo" class="text-cream text-base mb-1"></p>
+        <p id="p-comprador" class="text-cream/50 text-sm mb-1"></p>
+        <p class="text-[10px] font-display tracking-widest uppercase text-cream/40 mt-3 mb-1">Código</p>
+        <p id="p-codigo" class="font-display text-xl text-amber tracking-widest"></p>
+      </div>
+      <p class="text-cream/40 text-xs mb-6">Coordiná el pago por WhatsApp para que tu entrada pase a vendida y aparezca el QR.</p>
+      <a id="wa-pendiente" href="#" target="_blank" rel="noopener" class="inline-block bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Coordinar pago por WhatsApp</a>
+    </div>
+
+    <!-- Estado: vendida (QR) -->
+    <div id="estado-vendida" class="hidden fade-in">
+      <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Entrada confirmada</p>
+      <h1 class="font-display text-3xl uppercase text-cream mb-2" id="v-tipo"></h1>
+      <p class="text-cream/50 text-sm mb-6" id="v-comprador"></p>
+      <div id="qrcode" class="mb-6"></div>
+      <p class="text-cream/40 text-xs mb-1">Mostrá este QR en la puerta — se valida una sola vez.</p>
+      <p class="font-display text-sm text-amber tracking-widest mt-4" id="v-codigo"></p>
+    </div>
+
+    <!-- Estado: validada -->
+    <div id="estado-validada" class="hidden fade-in">
+      <p class="font-display text-[11px] tracking-[0.38em] uppercase text-cream/40 mb-4">Entrada ya usada</p>
+      <h1 class="font-display text-3xl uppercase text-cream mb-4">Esta entrada ya fue escaneada</h1>
+      <p class="text-cream/60 text-sm mb-2" id="va-fecha"></p>
+      <p class="text-cream/40 text-xs leading-relaxed max-w-sm mx-auto">Si no fuiste vos quien entró con este código, avisanos por WhatsApp — puede que alguien más haya usado tu QR.</p>
+    </div>
+
+    <!-- Estado: cancelada -->
+    <div id="estado-cancelada" class="hidden fade-in">
+      <p class="font-display text-[11px] tracking-[0.38em] uppercase text-red-400 mb-4">Cancelada</p>
+      <h1 class="font-display text-3xl uppercase text-cream mb-4">Esta entrada fue cancelada</h1>
+      <p class="text-cream/50 text-sm">Si pensás que es un error, escribinos por WhatsApp mencionando el código.</p>
+    </div>
+
+  </main>
+
+  <footer class="text-center py-10 text-cream/20 text-xs">
+    © 2026 La Usina · Las Flores, Buenos Aires
+  </footer>
+
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "TODO_REEMPLAZAR",
+      authDomain: "la-usina-demo.firebaseapp.com",
+      projectId: "la-usina-demo",
+      storageBucket: "la-usina-demo.firebasestorage.app",
+      messagingSenderId: "0",
+      appId: "1:0:web:0"
+    };
+
+    let db = null;
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      firebase.auth().signInAnonymously().catch(() => {});
+    } catch (e) {
+      console.error('Error inicializando Firebase/mock:', e);
+    }
+
+    const WA_NEGOCIO = '54922445001234';
+
+    function ocultarTodo() {
+      ['sin-codigo', 'cargando', 'no-encontrada', 'estado-pendiente', 'estado-vendida', 'estado-validada', 'estado-cancelada']
+        .forEach(id => document.getElementById(id).classList.add('hidden'));
+    }
+    function mostrar(id) { ocultarTodo(); document.getElementById(id).classList.remove('hidden'); }
+
+    function buscarPorInput() {
+      const code = document.getElementById('in-buscar-codigo').value.trim().toUpperCase();
+      if (!code) return;
+      location.href = `./mi-entrada.html?code=${encodeURIComponent(code)}`;
+    }
+
+    let unsub = null;
+    function escucharEntrada(codigo) {
+      mostrar('cargando');
+      if (!db) { mostrar('no-encontrada'); return; }
+      if (unsub) unsub();
+      unsub = db.collection('entradas').where('codigo', '==', codigo).limit(1)
+        .onSnapshot(snap => {
+          if (snap.empty) { mostrar('no-encontrada'); return; }
+          renderEntrada(snap.docs[0].data());
+        }, err => {
+          console.error('onSnapshot entrada:', err);
+          mostrar('no-encontrada');
+        });
+    }
+
+    function renderEntrada(d) {
+      const waMsg = (txt) => `https://wa.me/${WA_NEGOCIO}?text=${encodeURIComponent(txt)}`;
+
+      if (d.estado === 'pendiente_pago') {
+        document.getElementById('p-tipo').textContent = d.tipo_nombre || d.tipo_id;
+        document.getElementById('p-comprador').textContent = d.comprador ? `${d.comprador.nombre} · ${d.comprador.telefono}` : '';
+        document.getElementById('p-codigo').textContent = d.codigo;
+        document.getElementById('wa-pendiente').href = waMsg(`¡Hola La Usina! Quiero coordinar el pago de mi entrada "${d.tipo_nombre}". Código: ${d.codigo}`);
+        mostrar('estado-pendiente');
+        return;
+      }
+
+      if (d.estado === 'vendida') {
+        // El QR SOLO se pinta en este estado — nunca antes (ver module-eventos.md, checklist).
+        document.getElementById('v-tipo').textContent = d.tipo_nombre || d.tipo_id;
+        document.getElementById('v-comprador').textContent = d.comprador ? d.comprador.nombre : '';
+        document.getElementById('v-codigo').textContent = d.codigo;
+        const cont = document.getElementById('qrcode');
+        cont.innerHTML = '';
+        new QRCode(cont, {
+          text: d.codigo, // el código mismo es lo que lee validar.html, no una URL
+          width: 220, height: 220,
+          colorDark: '#1C1A17', colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M,
+        });
+        mostrar('estado-vendida');
+        return;
+      }
+
+      if (d.estado === 'validada') {
+        let fecha = '';
+        try {
+          const raw = d.validadaEn;
+          const dt = raw && raw.toDate ? raw.toDate() : (raw ? new Date(raw) : null);
+          if (dt) fecha = dt.toLocaleString('es-AR');
+        } catch {}
+        document.getElementById('va-fecha').textContent = fecha ? `Validada el ${fecha}.` : 'Validada.';
+        mostrar('estado-validada');
+        return;
+      }
+
+      // cancelada (o cualquier estado inesperado): tratar como no válida
+      mostrar('estado-cancelada');
+    }
+
+    const params = new URLSearchParams(location.search);
+    const code = (params.get('code') || '').trim().toUpperCase();
+    if (!code) { mostrar('sin-codigo'); }
+    else { escucharEntrada(code); }
+  </script>
+</body>
+</html>

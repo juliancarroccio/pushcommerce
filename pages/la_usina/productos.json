@@ -1,0 +1,26 @@
+{
+  "negocio": {
+    "nombre": "La Usina",
+    "whatsapp": "54922445001234",
+    "direccion": "Belgrano 530, Las Flores, Buenos Aires (B7200)",
+    "telefono": "02244 15-500-1234",
+    "analytics_id": ""
+  },
+  "oferta": {
+    "activa": false,
+    "producto_id": null,
+    "texto": "",
+    "precio_oferta": 0
+  },
+  "categorias": [],
+  "resenas": [],
+  "horarios": {
+    "lunes": [],
+    "martes": [],
+    "miércoles": [],
+    "jueves": [{ "abre": "20:00", "cierra": "01:00" }],
+    "viernes": [{ "abre": "20:00", "cierra": "01:00" }],
+    "sábado": [{ "abre": "21:00", "cierra": "02:00" }],
+    "domingo": []
+  }
+}

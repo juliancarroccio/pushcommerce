@@ -2,6 +2,16 @@
 *.log
 Thumbs.db
 
+# Node / Playwright (infraestructura de testing del repo, no de cada cliente)
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Working files from the taste-skill design inspector (screenshots, reports)
+.taste-skill/
+
 # Documentación privada con credenciales — NO subir a git bajo ninguna circunstancia
 pages/cattorini/MANUAL_CATTORINI.md
 **/MANUAL_CATTORINI.md

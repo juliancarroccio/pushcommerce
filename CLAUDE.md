@@ -12,24 +12,27 @@ Servicio de landing pages + e-commerce para pequeños negocios de **Las Flores, 
 
 ---
 
-## Modelo de negocio — pago único, sin membresías
+## Modelo de negocio — modular, por servicio (ver `PLAYBOOK.md` para el detalle completo)
 
-| Plan | Precio | Incluye |
+El cliente ya no compra "un plan" cerrado — compra uno o más **servicios**
+(Landing, E-commerce, Hotel, Turnos, Entradas/Eventos, Consulta de precios),
+cada uno configurable. Dos formas de pago, por servicio:
+
+| Modalidad | Precio | Para quién |
 |---|---|---|
-| Landing | $80 USD | Landing profesional + hosting + URL + mobile |
-| Tienda | $80 USD | Tienda → WhatsApp + catálogo + 1 cambio/mes |
-| Landing + Tienda | $130 USD | Ambos + 1 cambio/mes |
-| Landing + Tienda + Panel ⭐ | $150 USD | Todo + panel de autoadministración |
+| Pago único | $70 USD/servicio + $8 USD canon por cambio post-entrega | Negocios ya funcionando que quieren escalar |
+| SaaS mensual | $8 USD/mes | Emprendimientos que recién arrancan o quieren probar |
 
-**Siempre gratis:** SEO básico, Google Analytics, QR code.
-**Extras fijos:** cambio extra $10 USD · tickera/cola $20 USD.
-**Diferenciador central:** pago único. Sin Menuya, Pency ni Milocal. GitHub Pages = $0/mes para siempre.
+**Siempre gratis en cualquier servicio:** SEO básico, Google Analytics, QR code, hosting GitHub Pages $0 para siempre.
+**Diferenciador central:** costo $0 de hosting para siempre. Sin Menuya, Pency ni Milocal.
 
-**Pitch de cierre:** "Un solo pedido extra por semana paga los $80 USD el primer mes. De ahí en más, es pura ganancia."
+**Pitch de cierre:** "Un solo pedido extra por semana paga los $70 USD el primer mes. De ahí en más, es pura ganancia."
 
-Ver playbook completo en `PLAYBOOK.md`.
-
-El playbook completo está en `PLAYBOOK.md`.
+El catálogo técnico completo de servicios/módulos vive en
+`~/.claude/skills/new_client/` (skill `new_client`, v3.0 — pregunta
+rubro y servicios ANTES de crear nada, delega la construcción a agentes
+especializados `~/.claude/agents/pushcommerce-*.md`). Ver playbook de
+negocio completo en `PLAYBOOK.md`.
 
 ---
 
@@ -67,6 +70,23 @@ pushcommerce/
 **Producción:** crear cuenta GitHub `{nombre-negocio}` → repo `{nombre}.github.io` → transferir
 
 ---
+
+## ⚠️ Clientes REALES vendidos — NUNCA tocar sin pedido explícito
+
+- `pages/el_sabor_de_mama/`
+- `pages/cattorini/`
+
+Son negocios reales que ya pagaron y están en producción. **No les
+apliques ninguna refactorización, módulo nuevo, migración de skill ni
+"mejora" general** — ni siquiera si parece una mejora objetiva (ej. no
+migrarlos al flujo modular de `new_client` v3.0). Tocalos únicamente
+cuando Julian lo pida explícitamente PARA ESE cliente puntual.
+
+El resto de `pages/*` son demos/trabajo en curso — sí es terreno normal
+para iterar, probar y aplicar el flujo nuevo. (Distinto de los clientes
+de prueba descartables tipo `pages/*_de_prueba/` que se crean y borran
+dentro de una misma sesión para validar la skill — esos ni siquiera son
+negocio real, son puramente técnicos.)
 
 ## Clientes actuales
 
@@ -118,8 +138,9 @@ pushcommerce/
 
 ## Tasks pendientes (ver también el task tracker)
 
-**Skills a construir:**
-- [ ] `new-client` — pipeline completo automatizado
+**Skills:**
+- [x] `new_client` — pipeline modular completo, v3.0, delega a 6 agentes
+      especializados (`~/.claude/agents/pushcommerce-*.md`)
 - [ ] `edit-section` — editar sección puntual de página existente
 - [ ] `update-products` — editar catálogo en tienda.html
 - [ ] `add-service` — inyectar features nuevas (reseñas, QR, MP, etc.)

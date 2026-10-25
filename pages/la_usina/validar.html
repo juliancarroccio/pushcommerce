@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validar entrada · La Usina</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" href="./img/favicon-32.png" sizes="32x32">
+  <meta name="theme-color" content="#1C1A17">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- jsQR: decodifica QR desde frames de video, 100% client-side, sin apps ni build step. -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            charcoal:        '#1C1A17',
+            'charcoal-mid':  '#242019',
+            'charcoal-light':'#2E2821',
+            rust:            '#A84C2D',
+            'rust-dark':     '#7A3620',
+            amber:           '#D98E34',
+            'amber-lt':      '#E8A855',
+            cream:           '#EDE4D3',
+          },
+          fontFamily: {
+            display: ['Bebas Neue', 'sans-serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!--
+    Carga condicional: en localhost usa el mock de Firestore (Level 0, cero
+    instalación, localStorage) — en cualquier otro host, los SDKs reales.
+    Ver references/local-db-testing.md.
+  -->
+  <script>
+    (function () {
+      const local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const srcs = local
+        ? ['./firestore-mock.js']
+        : [
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js',
+          ];
+      srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
+    })();
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    .spinner { border: 3px solid rgba(217,142,52,.25); border-top-color: #D98E34; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #video-wrap { position: relative; background: #000; overflow: hidden; }
+    #video-wrap video { width: 100%; display: block; }
+    #scan-frame { position: absolute; inset: 12%; border: 3px solid rgba(217,142,52,0.6); border-radius: 12px; pointer-events: none; }
+    .resultado-ok  { background: #1a3a1a; border-color: #3FA33F; }
+    .resultado-err { background: #3a1a1a; border-color: #C83C3C; }
+    .fade-in { animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body class="bg-charcoal text-cream font-sans min-h-screen">
+
+  <header class="border-b border-amber/10 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <img src="./img/logo.png" alt="La Usina" class="w-8 h-8 rounded-full object-cover">
+      <div>
+        <span class="font-display text-sm tracking-[0.25em] uppercase text-cream/90 block">La Usina</span>
+        <span class="text-[10px] uppercase tracking-widest text-amber">Puerta · Validar entrada</span>
+      </div>
+    </div>
+    <span id="contador" class="text-[11px] text-cream/40 font-display tracking-widest uppercase"></span>
+  </header>
+
+  <main class="max-w-md mx-auto px-5 py-8">
+
+    <!-- Resultado grande -->
+    <div id="resultado" class="hidden fade-in border rounded-lg p-6 mb-6 text-center">
+      <p id="resultado-icono" class="text-5xl mb-3"></p>
+      <p id="resultado-titulo" class="font-display text-2xl uppercase mb-2"></p>
+      <p id="resultado-sub" class="text-sm opacity-80"></p>
+    </div>
+
+    <!-- Cámara -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <p class="eyebrow-like text-[11px] font-display tracking-widest uppercase text-amber">Escanear QR</p>
+        <button id="btn-camara" onclick="toggleCamara()" class="text-xs border border-amber/30 hover:border-amber text-amber px-3 py-1.5">Activar cámara</button>
+      </div>
+      <div id="video-wrap" class="hidden rounded-lg" style="aspect-ratio: 1/1;">
+        <video id="video" playsinline muted></video>
+        <div id="scan-frame"></div>
+      </div>
+      <canvas id="canvas" class="hidden"></canvas>
+      <p id="camara-error" class="hidden text-xs text-red-300 mt-2">No se pudo acceder a la cámara. Usá el código manual abajo.</p>
+    </div>
+
+    <!-- Input manual: siempre disponible, es el fallback universal -->
+    <div class="border border-amber/15 bg-charcoal-mid p-5">
+      <p class="font-display text-[11px] tracking-widest uppercase text-amber mb-3">Código manual</p>
+      <div class="flex gap-2">
+        <input id="in-codigo" type="text" placeholder="CÓDIGO DE 9 CARACTERES" maxlength="12"
+               class="flex-1 bg-charcoal border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none uppercase tracking-widest text-sm text-center"
+               onkeydown="if(event.key==='Enter') validarAhora();">
+        <button onclick="validarAhora()" class="bg-rust hover:bg-rust-dark text-cream font-display tracking-widest uppercase text-sm px-5 py-3">Validar</button>
+      </div>
+    </div>
+
+    <p class="text-center text-cream/30 text-[11px] mt-6 leading-relaxed">
+      Ante cualquier duda, se rechaza. Un código ya usado no vuelve a pasar.
+    </p>
+  </main>
+
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "TODO_REEMPLAZAR",
+      authDomain: "la-usina-demo.firebaseapp.com",
+      projectId: "la-usina-demo",
+      storageBucket: "la-usina-demo.firebasestorage.app",
+      messagingSenderId: "0",
+      appId: "1:0:web:0"
+    };
+
+    let db = null;
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      firebase.auth().signInAnonymously().catch(() => {});
+    } catch (e) {
+      console.error('Error inicializando Firebase/mock:', e);
+    }
+
+    let validadasHoy = 0;
+    function actualizarContador() {
+      document.getElementById('contador').textContent = `${validadasHoy} validadas esta sesión`;
+    }
+    actualizarContador();
+
+    /* ═══════════════════════ Validación ═══════════════════════
+       Ante CUALQUIER estado que no sea 'vendida', se rechaza. Nunca se deja
+       pasar "por las dudas" — ver checklist de module-eventos.md. */
+    let validando = false;
+
+    async function validarAhora() {
+      const input = document.getElementById('in-codigo');
+      const codigo = input.value.trim().toUpperCase();
+      input.value = '';
+      if (!codigo) return;
+      await validarCodigo(codigo);
+    }
+
+    async function validarCodigo(codigoRaw) {
+      if (validando) return;
+      validando = true;
+      const codigo = codigoRaw.trim().toUpperCase();
+
+      if (!db) { mostrarResultado(false, '⚠️', 'Sin conexión a la base', 'No se puede validar sin acceso a los datos.'); validando = false; return; }
+      if (codigo.length < 6) { mostrarResultado(false, '⛔', 'Código inválido', 'Muy corto para ser un código de entrada real.'); validando = false; return; }
+
+      mostrarResultado(null, '…', 'Verificando…', codigo);
+
+      try {
+        const snap = await db.collection('entradas').where('codigo', '==', codigo).limit(1).get();
+        if (snap.empty) {
+          mostrarResultado(false, '⛔', 'CÓDIGO NO ENCONTRADO', 'No existe ninguna entrada con ese código. No se deja pasar.');
+          return;
+        }
+        const docId = snap.docs[0].id;
+        const ref = db.collection('entradas').doc(docId);
+
+        let resultado;
+        if (typeof db.runTransaction === 'function') {
+          /* Firestore real: transacción atómica sobre el doc ya ubicado —
+             relee el estado fresco y recién ahí decide, para que dos
+             escaneos casi simultáneos del mismo QR no pasen ambos. */
+          resultado = await db.runTransaction(async (tx) => {
+            const fresh = await tx.get(ref);
+            if (!fresh.exists) return { ok: false, titulo: 'CÓDIGO NO ENCONTRADO', sub: 'La entrada ya no existe. No se deja pasar.' };
+            const d = fresh.data();
+            return procesarEstado(tx, ref, d, true);
+          });
+        } else {
+          /* Mock de nivel 0: sin runTransaction, re-chequeo best-effort —
+             alcanza para probar la lógica de "una sola vez", no la
+             atomicidad real ante dos escaneos exactamente simultáneos.
+             Eso se valida contra el emulador antes de producción. */
+          const fresh = await ref.get();
+          const d = fresh.data();
+          resultado = await procesarEstado(null, ref, d, false);
+        }
+
+        if (resultado.ok) {
+          validadasHoy++;
+          actualizarContador();
+          mostrarResultado(true, '✅', 'ENTRADA VÁLIDA', resultado.sub);
+        } else {
+          mostrarResultado(false, '⛔', resultado.titulo, resultado.sub);
+        }
+      } catch (e) {
+        // Cualquier error inesperado también se trata como rechazo — nunca
+        // se deja pasar "por las dudas".
+        mostrarResultado(false, '⛔', 'ERROR AL VALIDAR', 'No se pudo confirmar el estado. No se deja pasar: ' + e.message);
+      } finally {
+        validando = false;
+      }
+    }
+
+    function procesarEstado(tx, ref, d, transaccional) {
+      if (d.estado === 'vendida') {
+        const update = { estado: 'validada', validadaEn: firebase.firestore.FieldValue.serverTimestamp() };
+        if (transaccional) tx.update(ref, update);
+        else ref.update(update);
+        const nombre = d.comprador ? d.comprador.nombre : '';
+        return { ok: true, sub: `${d.tipo_nombre || d.tipo_id}${nombre ? ' — ' + nombre : ''}` };
+      }
+      if (d.estado === 'validada') {
+        let fecha = '';
+        try {
+          const raw = d.validadaEn;
+          const dt = raw && raw.toDate ? raw.toDate() : (raw ? new Date(raw) : null);
+          if (dt) fecha = dt.toLocaleString('es-AR');
+        } catch {}
+        return { ok: false, titulo: 'YA FUE USADA', sub: fecha ? `Validada el ${fecha}.` : 'Ya fue validada antes.' };
+      }
+      if (d.estado === 'pendiente_pago') {
+        return { ok: false, titulo: 'PAGO NO CONFIRMADO', sub: 'Esta entrada nunca se confirmó como vendida.' };
+      }
+      if (d.estado === 'cancelada') {
+        return { ok: false, titulo: 'ENTRADA CANCELADA', sub: 'Esta entrada fue cancelada.' };
+      }
+      // Cualquier estado desconocido: nunca dejar pasar por las dudas.
+      return { ok: false, titulo: 'ESTADO NO VÁLIDO', sub: 'Estado desconocido: ' + d.estado };
+    }
+
+    function mostrarResultado(ok, icono, titulo, sub) {
+      const box = document.getElementById('resultado');
+      box.classList.remove('hidden', 'resultado-ok', 'resultado-err');
+      if (ok === true) box.classList.add('resultado-ok');
+      else if (ok === false) box.classList.add('resultado-err');
+      document.getElementById('resultado-icono').textContent = icono;
+      document.getElementById('resultado-titulo').textContent = titulo;
+      document.getElementById('resultado-sub').textContent = sub;
+    }
+
+    /* ═══════════════════════ Cámara + jsQR ═══════════════════════ */
+    let stream = null;
+    let scanLoop = null;
+
+    async function toggleCamara() {
+      const wrap = document.getElementById('video-wrap');
+      if (stream) { pararCamara(); return; }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+        await video.play();
+        wrap.classList.remove('hidden');
+        document.getElementById('btn-camara').textContent = 'Apagar cámara';
+        document.getElementById('camara-error').classList.add('hidden');
+        iniciarLoopScan(video);
+      } catch (e) {
+        document.getElementById('camara-error').classList.remove('hidden');
+        console.error('Error de cámara:', e);
+      }
+    }
+
+    function pararCamara() {
+      if (scanLoop) cancelAnimationFrame(scanLoop);
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      stream = null;
+      document.getElementById('video-wrap').classList.add('hidden');
+      document.getElementById('btn-camara').textContent = 'Activar cámara';
+    }
+
+    function iniciarLoopScan(video) {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      let ultimoCodigo = '';
+      let ultimoTs = 0;
+
+      function tick() {
+        if (!stream) return;
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          try {
+            const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = typeof jsQR === 'function' ? jsQR(img.data, img.width, img.height) : null;
+            if (code && code.data) {
+              const texto = code.data.trim().toUpperCase();
+              const ahora = Date.now();
+              // Evita re-disparar el mismo código en cada frame mientras sigue en cuadro.
+              if (texto !== ultimoCodigo || ahora - ultimoTs > 4000) {
+                ultimoCodigo = texto;
+                ultimoTs = ahora;
+                validarCodigo(texto);
+              }
+            }
+          } catch (e) { /* frame no legible, seguir intentando */ }
+        }
+        scanLoop = requestAnimationFrame(tick);
+      }
+      scanLoop = requestAnimationFrame(tick);
+    }
+  </script>
+</body>
+</html>

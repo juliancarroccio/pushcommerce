@@ -1,0 +1,57 @@
+{
+  "negocio": {
+    "nombre": "La Usina",
+    "whatsapp": "54922445001234",
+    "direccion": "Belgrano 530, Las Flores, Buenos Aires (B7200)",
+    "telefono": "02244 15-500-1234"
+  },
+  "modo_confirmacion": "instantanea",
+  "servicios": [
+    {
+      "id": "mesa-show",
+      "nombre": "Mesa para la noche de show",
+      "recurso_id": "mesas-show",
+      "duracion_min": 30,
+      "nota": "Para la noche de show del sábado — banda en vivo desde las 22:30. Elegí tu hora de llegada."
+    },
+    {
+      "id": "privado-eventos",
+      "nombre": "Privado para eventos",
+      "recurso_id": "privado",
+      "duracion_min": 120,
+      "nota": "Cumpleaños, after-office o reuniones privadas en el salón que normalmente está cerrado al público entre semana."
+    }
+  ],
+  "recursos": [
+    {
+      "id": "mesas-show",
+      "nombre": "Mesas (noche de show)",
+      "capacidad": 8,
+      "intervalo_slots_min": 30,
+      "horario_atencion": {
+        "lunes": [],
+        "martes": [],
+        "miércoles": [],
+        "jueves": [],
+        "viernes": [],
+        "sábado": [{ "abre": "21:00", "cierra": "23:00" }],
+        "domingo": []
+      }
+    },
+    {
+      "id": "privado",
+      "nombre": "Salón privado",
+      "capacidad": 1,
+      "intervalo_slots_min": 120,
+      "horario_atencion": {
+        "lunes": [],
+        "martes": [],
+        "miércoles": [],
+        "jueves": [{ "abre": "19:00", "cierra": "23:00" }],
+        "viernes": [{ "abre": "19:00", "cierra": "23:00" }],
+        "sábado": [],
+        "domingo": []
+      }
+    }
+  ]
+}

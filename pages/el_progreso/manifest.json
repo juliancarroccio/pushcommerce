@@ -1,0 +1,29 @@
+{
+  "name": "Supermercado El Progreso",
+  "short_name": "El Progreso",
+  "description": "Supermercado familiar en Las Flores: almacén, bebidas, lácteos y limpieza con buenos precios. Consultá precios sin hacer cola en nuestra pantalla de la entrada.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAF8F2",
+  "theme_color": "#1F6B3A",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "./img/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "./img/favicon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./img/logo.png",
+      "sizes": "600x600",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

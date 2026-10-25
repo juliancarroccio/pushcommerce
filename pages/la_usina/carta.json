@@ -1,0 +1,46 @@
+{
+  "negocio": {
+    "nombre": "La Usina",
+    "whatsapp": "54922445001234"
+  },
+  "categorias": [
+    {
+      "id": "tragos",
+      "nombre": "Tragos de autor",
+      "emoji": "🍸",
+      "items": [
+        { "nombre": "Obrera", "descripcion": "Fernet premium, pomelo, jengibre", "precio": 5600 },
+        { "nombre": "Chispa", "descripcion": "Aperitivo amargo, prosecco, soda", "precio": 5400 },
+        { "nombre": "Galpón Mule", "descripcion": "Vodka, jengibre, lima, menta", "precio": 5900 },
+        { "nombre": "Rayo Verde", "descripcion": "Gin, pepino, albahaca, tónica", "precio": 6200 },
+        { "nombre": "Usina Sour", "descripcion": "Whisky, limón, clara, angostura", "precio": 6400 },
+        { "nombre": "Fierro Negro", "descripcion": "Ron añejo, café, almíbar de panela, ralladura de naranja", "precio": 6800 },
+        { "nombre": "Fundición", "descripcion": "Mezcal, maracuyá, chile, sal ahumada", "precio": 7200 },
+        { "nombre": "Humo y Brasa", "descripcion": "Whisky ahumado con romero, bitter de naranja", "precio": 7500 }
+      ]
+    },
+    {
+      "id": "cervezas",
+      "nombre": "Cervezas",
+      "emoji": "🍺",
+      "items": [
+        { "nombre": "Lager Clásica", "descripcion": "Botella 473ml", "precio": 2800 },
+        { "nombre": "Rubia Industrial", "descripcion": "Cervecería del Galpón · 473ml", "precio": 3200 },
+        { "nombre": "Honey Ale Las Flores", "descripcion": "Cervecería Rumbo Sur · 473ml", "precio": 3400 },
+        { "nombre": "IPA Oxidada", "descripcion": "Cervecería del Galpón · 473ml", "precio": 3600 },
+        { "nombre": "Stout Forjada", "descripcion": "Cervecería del Galpón · 473ml", "precio": 3800 }
+      ]
+    },
+    {
+      "id": "picadas",
+      "nombre": "Para compartir",
+      "emoji": "🧀",
+      "items": [
+        { "nombre": "Provoleta a la Parrilla", "descripcion": "Con chimichurri casero", "precio": 6200 },
+        { "nombre": "Rabas", "descripcion": "Con salsa golf", "precio": 7400 },
+        { "nombre": "Tabla de Bondiola Ahumada", "descripcion": "Con papas rústicas", "precio": 8600 },
+        { "nombre": "Picada La Usina", "descripcion": "Fiambres, quesos, aceitunas y pan casero · para 2-3 personas", "precio": 9800 }
+      ]
+    }
+  ]
+}

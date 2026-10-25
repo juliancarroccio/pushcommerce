@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Precios — Supermercado El Progreso</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1F6B3A;
+    --verde-claro: #4CAF6D;
+    --crema: #FAF8F2;
+    --texto: #1C2B22;
+    --rojo: #B3402A;
+    --borde: #DDE3D8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--crema);
+    color: var(--texto);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+  header {
+    max-width: 880px;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  header img { height: 48px; width: auto; border-radius: 8px; }
+  header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--verde);
+  }
+  header .sub {
+    font-size: 0.9rem;
+    color: #5A6B5F;
+  }
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .card h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--verde);
+    margin-bottom: 1rem;
+  }
+  .info-ayuda {
+    background: #EFF6F0;
+    border: 1px solid var(--verde-claro);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  form#form-producto {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr auto;
+    gap: 0.75rem;
+    align-items: end;
+  }
+  @media (max-width: 680px) {
+    form#form-producto { grid-template-columns: 1fr; }
+  }
+  .campo { display: flex; flex-direction: column; gap: 0.35rem; }
+  .campo label { font-size: 0.85rem; font-weight: 600; color: #5A6B5F; }
+  .campo input {
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+  }
+  .campo input:focus { outline: 2px solid var(--verde-claro); border-color: var(--verde-claro); }
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.65rem 1.1rem;
+  }
+  button.primario { background: var(--verde); color: #fff; }
+  button.primario:hover { background: #185a30; }
+  button.secundario { background: #fff; color: var(--verde); border: 1px solid var(--verde); }
+  button.secundario:hover { background: #EFF6F0; }
+  button.cancelar { background: #fff; color: #5A6B5F; border: 1px solid var(--borde); }
+  button.peligro { background: #fff; color: var(--rojo); border: 1px solid var(--rojo); padding: 0.35rem 0.7rem; font-size: 0.85rem; }
+  button.peligro:hover { background: #FBEAE6; }
+  button.editar { background: #fff; color: var(--verde); border: 1px solid var(--verde); padding: 0.35rem 0.7rem; font-size: 0.85rem; margin-right: 0.4rem; }
+  button.editar:hover { background: #EFF6F0; }
+  #mensaje {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: none;
+  }
+  #mensaje.ok { display: block; background: #E6F4EA; color: var(--verde); border: 1px solid var(--verde-claro); }
+  #mensaje.error { display: block; background: #FBEAE6; color: var(--rojo); border: 1px solid #E09080; }
+  .acciones-tabla { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
+  .buscador { flex: 1; min-width: 180px; }
+  .buscador input {
+    width: 100%;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    font-family: 'Inter', sans-serif;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  thead th {
+    text-align: left;
+    padding: 0.6rem 0.5rem;
+    border-bottom: 2px solid var(--borde);
+    color: #5A6B5F;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  tbody td {
+    padding: 0.6rem 0.5rem;
+    border-bottom: 1px solid var(--borde);
+    vertical-align: middle;
+  }
+  tbody tr:hover { background: #FAFCF9; }
+  td.precio-col { font-weight: 600; color: var(--verde); white-space: nowrap; }
+  td.codigo-col { font-family: monospace; color: #5A6B5F; }
+  .vacio { text-align: center; color: #8A8A8A; padding: 2rem 0; }
+  .contador { font-size: 0.85rem; color: #5A6B5F; margin-top: 0.75rem; }
+  footer {
+    max-width: 880px;
+    margin: 2rem auto 0;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8A8A8A;
+  }
+  a { color: var(--verde); text-decoration: none; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="img/logo.png" alt="Supermercado El Progreso">
+  <div>
+    <h1>Panel de Precios</h1>
+    <div class="sub">Supermercado El Progreso — administración del catálogo</div>
+  </div>
+</header>
+
+<main>
+  <div class="card info-ayuda">
+    Acá cargás, editás o eliminás los productos que tus clientes van a poder
+    consultar escaneando el código de barras en la pantalla del kiosko.
+    Los cambios se guardan automáticamente en este navegador. Cuando
+    termines de actualizar tus productos, apretá <strong>"Exportar
+    precios.json"</strong> y mandale ese archivo a tu proveedor de la
+    página para que lo publique en la pantalla de consulta.
+  </div>
+
+  <div class="card">
+    <h2 id="titulo-form">Agregar producto</h2>
+    <form id="form-producto">
+      <div class="campo">
+        <label for="input-codigo">Código de barras</label>
+        <input type="text" id="input-codigo" inputmode="numeric" placeholder="7790000000000">
+      </div>
+      <div class="campo">
+        <label for="input-nombre">Nombre del producto</label>
+        <input type="text" id="input-nombre" placeholder="Arroz 1kg">
+      </div>
+      <div class="campo">
+        <label for="input-precio">Precio ($)</label>
+        <input type="text" id="input-precio" inputmode="decimal" placeholder="2450">
+      </div>
+      <div class="campo" style="flex-direction: row; gap: 0.5rem;">
+        <button type="submit" class="primario" id="btn-guardar">Agregar</button>
+        <button type="button" class="cancelar hidden" id="btn-cancelar">Cancelar</button>
+      </div>
+    </form>
+    <div id="mensaje"></div>
+  </div>
+
+  <div class="card">
+    <h2>Catálogo actual</h2>
+    <div class="acciones-tabla">
+      <div class="buscador">
+        <input type="text" id="input-buscar" placeholder="Buscar por nombre o código...">
+      </div>
+      <button type="button" class="secundario" id="btn-exportar">Exportar precios.json</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tabla-body"></tbody>
+    </table>
+    <div class="vacio hidden" id="tabla-vacia">No hay productos cargados todavía.</div>
+    <div class="contador" id="contador"></div>
+  </div>
+</main>
+
+<footer>
+  Supermercado El Progreso · Panel interno de administración de precios
+</footer>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'elprogreso_precios';
+  var NOMBRE_NEGOCIO = 'Supermercado El Progreso';
+
+  var form = document.getElementById('form-producto');
+  var inputCodigo = document.getElementById('input-codigo');
+  var inputNombre = document.getElementById('input-nombre');
+  var inputPrecio = document.getElementById('input-precio');
+  var inputBuscar = document.getElementById('input-buscar');
+  var tablaBody = document.getElementById('tabla-body');
+  var tablaVacia = document.getElementById('tabla-vacia');
+  var contador = document.getElementById('contador');
+  var mensaje = document.getElementById('mensaje');
+  var btnGuardar = document.getElementById('btn-guardar');
+  var btnCancelar = document.getElementById('btn-cancelar');
+  var tituloForm = document.getElementById('titulo-form');
+  var btnExportar = document.getElementById('btn-exportar');
+
+  var codigoEnEdicion = null; // null = modo alta, string = editando ese código
+
+  function leerCatalogo() {
+    var guardado = null;
+    try {
+      guardado = localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+      guardado = null;
+    }
+    if (guardado) {
+      try {
+        var data = JSON.parse(guardado);
+        return Array.isArray(data.productos) ? data.productos : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return null; // null = todavía no hay nada en localStorage, hay que cargar precios.json
+  }
+
+  function guardarCatalogo(productos) {
+    var data = { negocio: { nombre: NOMBRE_NEGOCIO }, productos: productos };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return data;
+  }
+
+  function init() {
+    var productos = leerCatalogo();
+    if (productos === null) {
+      fetch('precios.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var base = Array.isArray(data.productos) ? data.productos : [];
+          guardarCatalogo(base);
+          renderTabla(base);
+        })
+        .catch(function () {
+          renderTabla([]);
+        });
+    } else {
+      renderTabla(productos);
+    }
+  }
+
+  function renderTabla(filtro) {
+    var productos = leerCatalogo() || [];
+    var texto = (typeof filtro === 'string') ? filtro.trim().toLowerCase() : (inputBuscar.value || '').trim().toLowerCase();
+    var visibles = productos;
+    if (texto) {
+      visibles = productos.filter(function (p) {
+        return p.nombre.toLowerCase().indexOf(texto) !== -1 || String(p.codigo_barras).indexOf(texto) !== -1;
+      });
+    }
+
+    tablaBody.innerHTML = '';
+    if (visibles.length === 0) {
+      tablaVacia.classList.remove('hidden');
+    } else {
+      tablaVacia.classList.add('hidden');
+      visibles
+        .slice()
+        .sort(function (a, b) { return a.nombre.localeCompare(b.nombre, 'es'); })
+        .forEach(function (p) {
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td class="codigo-col">' + escapeHtml(p.codigo_barras) + '</td>' +
+            '<td>' + escapeHtml(p.nombre) + '</td>' +
+            '<td class="precio-col">$' + formatearPrecio(p.precio) + '</td>' +
+            '<td>' +
+              '<button type="button" class="editar" data-codigo="' + escapeHtml(p.codigo_barras) + '">Editar</button>' +
+              '<button type="button" class="peligro" data-codigo="' + escapeHtml(p.codigo_barras) + '">Eliminar</button>' +
+            '</td>';
+          tablaBody.appendChild(tr);
+        });
+    }
+    contador.textContent = productos.length + (productos.length === 1 ? ' producto cargado' : ' productos cargados');
+  }
+
+  function formatearPrecio(n) {
+    return Number(n).toLocaleString('es-AR');
+  }
+
+  function escapeHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = String(s);
+    return div.innerHTML;
+  }
+
+  function mostrarMensaje(texto, tipo) {
+    mensaje.textContent = texto;
+    mensaje.className = tipo;
+    setTimeout(function () {
+      mensaje.className = '';
+      mensaje.textContent = '';
+    }, 4000);
+  }
+
+  function limpiarForm() {
+    inputCodigo.value = '';
+    inputNombre.value = '';
+    inputPrecio.value = '';
+    codigoEnEdicion = null;
+    tituloForm.textContent = 'Agregar producto';
+    btnGuardar.textContent = 'Agregar';
+    btnCancelar.classList.add('hidden');
+    inputCodigo.disabled = false;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var codigo = inputCodigo.value.trim();
+    var nombre = inputNombre.value.trim();
+    var precioTexto = inputPrecio.value.trim().replace(',', '.');
+    var precio = parseFloat(precioTexto);
+
+    if (!codigo || !/^[0-9]+$/.test(codigo)) {
+      mostrarMensaje('El código de barras tiene que tener solo números.', 'error');
+      return;
+    }
+    if (!nombre) {
+      mostrarMensaje('El nombre del producto no puede estar vacío.', 'error');
+      return;
+    }
+    if (isNaN(precio) || precio <= 0) {
+      mostrarMensaje('El precio tiene que ser un número mayor que cero.', 'error');
+      return;
+    }
+
+    var productos = leerCatalogo() || [];
+    var existente = productos.findIndex(function (p) { return String(p.codigo_barras) === codigo; });
+
+    if (codigoEnEdicion !== null) {
+      // modo edición: actualizar el producto que se estaba editando
+      var idxEdicion = productos.findIndex(function (p) { return String(p.codigo_barras) === codigoEnEdicion; });
+      if (existente !== -1 && codigo !== codigoEnEdicion) {
+        mostrarMensaje('Ya existe otro producto con ese código de barras.', 'error');
+        return;
+      }
+      if (idxEdicion !== -1) {
+        productos[idxEdicion] = { codigo_barras: codigo, nombre: nombre, precio: precio };
+      }
+      guardarCatalogo(productos);
+      mostrarMensaje('Producto actualizado correctamente.', 'ok');
+    } else {
+      if (existente !== -1) {
+        mostrarMensaje('Ya existe un producto con ese código de barras. Usá "Editar" para modificarlo.', 'error');
+        return;
+      }
+      productos.push({ codigo_barras: codigo, nombre: nombre, precio: precio });
+      guardarCatalogo(productos);
+      mostrarMensaje('Producto agregado correctamente.', 'ok');
+    }
+
+    limpiarForm();
+    renderTabla();
+  });
+
+  btnCancelar.addEventListener('click', function () {
+    limpiarForm();
+  });
+
+  tablaBody.addEventListener('click', function (e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var codigo = btn.getAttribute('data-codigo');
+    var productos = leerCatalogo() || [];
+
+    if (btn.classList.contains('editar')) {
+      var producto = productos.find(function (p) { return String(p.codigo_barras) === codigo; });
+      if (!producto) return;
+      inputCodigo.value = producto.codigo_barras;
+      inputNombre.value = producto.nombre;
+      inputPrecio.value = producto.precio;
+      codigoEnEdicion = codigo;
+      tituloForm.textContent = 'Editar producto';
+      btnGuardar.textContent = 'Guardar cambios';
+      btnCancelar.classList.remove('hidden');
+      inputCodigo.focus();
+    }
+
+    if (btn.classList.contains('peligro')) {
+      var producto2 = productos.find(function (p) { return String(p.codigo_barras) === codigo; });
+      var nombreProducto = producto2 ? producto2.nombre : codigo;
+      if (window.confirm('¿Eliminar "' + nombreProducto + '" del catálogo?')) {
+        var restantes = productos.filter(function (p) { return String(p.codigo_barras) !== codigo; });
+        guardarCatalogo(restantes);
+        if (codigoEnEdicion === codigo) limpiarForm();
+        renderTabla();
+        mostrarMensaje('Producto eliminado.', 'ok');
+      }
+    }
+  });
+
+  inputBuscar.addEventListener('input', function () {
+    renderTabla(inputBuscar.value);
+  });
+
+  btnExportar.addEventListener('click', function () {
+    var productos = leerCatalogo() || [];
+    var data = { negocio: { nombre: NOMBRE_NEGOCIO }, productos: productos };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'precios.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    mostrarMensaje('Archivo descargado. Ahora enviáselo a tu proveedor de la página.', 'ok');
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "La Usina — Bar Cultural",
+  "short_name": "La Usina",
+  "description": "Bar cultural con shows en vivo, stand-up y noches temáticas en Las Flores.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1C1A17",
+  "theme_color": "#A84C2D",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "./img/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "./img/favicon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./img/logo.png",
+      "sizes": "600x600",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

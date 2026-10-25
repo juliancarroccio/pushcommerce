@@ -31,42 +31,39 @@ Comparado con Menuya, Pency o Milocal (membresías mensuales) o WordPress/Wix ($
 
 ---
 
-## 2. El modelo de negocio
+## 2. El modelo de negocio (actualizado — modularizado por servicio)
 
-### Precio base: $80 USD — pago único
+A partir de la modularización de `new_client` (ver `~/.claude/skills/new_client/SKILL.md`), un cliente ya no compra "un plan" cerrado — compra **uno o más servicios**, cada uno configurable con sus propias features, armados todos desde el mismo panel único cuando se combinan (ver `module-reservas.md`/`panel-unico.md`). Servicios disponibles hoy: **Landing** (con extras: mapa, horarios, preview, galería), **E-commerce** (3 niveles: solo WhatsApp, Panel + WhatsApp, Panel Firestore completo — con mayorista/minorista y ropa talle/color como submódulos), **Hotel** (reservas día/noche), **Turnos** (reservas por horario), **Entradas/Eventos** (venta con QR de validación única), **Consulta de precios** (kiosko con lector de código de barras).
 
-La landing es la puerta de entrada. Todo lo demás es upsell. El diferenciador central es el **pago único**: sin cuotas, sin sorpresas.
+### Dos formas de vender cada servicio
 
-**El argumento de cierre:**
-> "Un solo pedido extra por semana, o una sola mesa nueva por mes, paga los $80 USD el primer mes. De ahí en más, es pura ganancia."
+**A. Pago único — $70 USD por servicio**
+Autoadministrado, costo $0 (hosting GitHub Pages para siempre, dominio a elección del cliente), soporte técnico gratis ante caídas. Cambios de funcionalidad post-entrega: **$8 USD de canon** por cambio. Ideal para **negocios ya funcionando que quieren escalar** — el pitch es el mismo de siempre: pagás una vez, es tuyo para siempre, sin cuotas.
 
----
+**B. SaaS mensual — $8 USD/mes**
+Mismo servicio, pago recurrente en vez de único. Ideal para **emprendimientos que recién arrancan o quieren probar** el servicio antes de comprometerse al pago único.
 
-## 3. Planes
-
-Todos los planes son **pago único**. Sin membresías. Hosting GitHub Pages: **$0 por mes, para siempre.**
-
-### Incluidos gratis en todos los planes
-- SEO básico + indexado en Google
-- Google Analytics
-- Código QR (para el local o el menú)
+**El argumento de cierre (pago único):**
+> "Un solo pedido extra por semana, o una sola mesa nueva por mes, paga los $70 USD el primer mes. De ahí en más, es pura ganancia."
 
 ---
 
-| | Landing | Tienda | Landing + Tienda | Landing + Tienda + Panel ⭐ |
-|---|---|---|---|---|
-| **Precio** | **$80 USD** | **$80 USD** | **$130 USD** | **$150 USD** |
-| Landing page profesional | ✅ | ❌ | ✅ | ✅ |
-| Diseño con logo y colores | ✅ | ✅ | ✅ | ✅ |
-| Tienda carrito → WhatsApp | ❌ | ✅ | ✅ | ✅ |
-| Catálogo de productos con precios | ❌ | ✅ | ✅ | ✅ |
-| Panel de autoadministración | ❌ | ❌ | ❌ | ✅ |
-| Hosting gratuito para siempre | ✅ | ✅ | ✅ | ✅ |
-| URL propia (negocio.github.io) | ✅ | ✅ | ✅ | ✅ |
-| Optimizado para mobile | ✅ | ✅ | ✅ | ✅ |
-| 1 cambio gratis por mes | ❌ | ✅ | ✅ | ❌ |
+## 3. Servicios y combinaciones
 
-> El plan **Landing + Tienda + Panel** es el más completo: el cliente puede editar precios, horarios, ofertas y catálogo sin depender de vos.
+Todo servicio incluye, siempre, sin costo extra: SEO básico + indexado en Google, Google Analytics, código QR, hosting GitHub Pages gratis para siempre, mobile responsive, y los dos checklists obligatorios de todo cliente nuevo (`checklist-seo-legal.md`, `checklist-diseno.md` — privacidad, términos, HTTPS, cookie banner, favicon, alt text, contraste, anti-spam, etc.).
+
+| Servicio | Pago único | SaaS mensual | Qué incluye (resumen — detalle técnico en `references/module-*.md`) |
+|---|---|---|---|
+| **Landing** | $70 USD | $8 USD/mes | Landing con hero/nosotros/contacto/reseñas reales. Extras opcionales: mapa, horarios dinámicos, preview de catálogo, galería |
+| **E-commerce** | $70 USD | $8 USD/mes | 3 niveles (solo WhatsApp → Panel + WhatsApp → Panel Firestore completo). Mayorista/minorista y ropa talle/color como submódulos del nivel más alto |
+| **Hotel** | $70 USD | $8 USD/mes | Reservas por día/noche, confirmación instantánea o manual, recepción con check-in/out |
+| **Turnos** | $70 USD | $8 USD/mes | Reservas por horario (peluquería, consultorio, restaurant), confirmación instantánea o manual |
+| **Entradas/Eventos** | $70 USD | $8 USD/mes | Venta de entradas con QR único, validación una sola vez en la puerta |
+| **Consulta de precios** | $70 USD | $8 USD/mes | Kiosko de código de barras, sin Firestore, ideal negocios grandes |
+
+Un cliente puede contratar varios servicios a la vez (ej. Landing + E-commerce + Turnos) — cada uno se cobra por separado, y si combina 2+ que usan panel administrable, todos quedan en un panel único (`panel-unico.md`), no paneles sueltos.
+
+> El panel único administrable (incluido automáticamente cuando el nivel de e-commerce es "Panel Firestore completo", o cuando hay turnos/eventos) es lo que permite al cliente editar precios, horarios, ofertas, catálogo, agenda o entradas sin depender de vos.
 
 ---
 
@@ -83,8 +80,8 @@ Todos los planes son **pago único**. Sin membresías. Hosting GitHub Pages: **$
 
 | Servicio | Precio |
 |---|---|
-| Funcionalidad personalizada | $5–$20 USD según complejidad |
-| Dominio personalizado | desarrollo gratis — dominio se paga anualmente (costo real) |
+| Cambio de funcionalidad post-entrega (pago único) | $8 USD de canon por cambio |
+| Dominio personalizado | desarrollo gratis — dominio se paga anualmente (costo real del cliente) |
 
 ---
 
@@ -177,7 +174,7 @@ Lo que incluye:
 - SEO básico + Google Analytics
 - Hosting gratuito para siempre — sin cuota mensual
 
-El precio es $80 USD — pago único. Sin sorpresas, sin Menuya, sin Pency.
+El precio es $70 USD por servicio — pago único. Sin sorpresas, sin Menuya, sin Pency.
 
 ¿Te interesa? Podemos hablar cuando quieras.
 
@@ -197,7 +194,7 @@ Hago páginas web para negocios locales, pago único sin mensualidades.
 Te hice una para [Nombre del negocio], ya está en vivo:
 👉 [URL de la demo]
 
-$80 USD único, hosting gratis para siempre.
+$70 USD por servicio único, hosting gratis para siempre.
 ¿Les interesa verla?
 ```
 
@@ -209,7 +206,7 @@ $80 USD único, hosting gratis para siempre.
 2. **Demo inmediata:** Abrir el celular con la página ya cargada. "Les hice esto para el negocio."
 3. **Silencio.** Dejar que lo vean. No explicar nada todavía.
 4. **Pregunta:** "¿Qué les parece? ¿Cambiarían algo?"
-5. **Precio solo si preguntan:** "$80 USD, una sola vez. Sin cuota mensual, hosting gratis para siempre. No es Menuya, no es Pency — no hay suscripción."
+5. **Precio solo si preguntan:** "$70 USD por servicio, una sola vez. Sin cuota mensual, hosting gratis para siempre. No es Menuya, no es Pency — no hay suscripción."
 6. **Objeción más común:** "¿Y qué pasa si quiero cambiar algo?" → "Me mandás un WhatsApp y lo cambio. O si preferís manejarlo vos, hay un panel para editarlo desde el celular."
 
 ---

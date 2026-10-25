@@ -1,0 +1,25 @@
+{
+  "negocio": { "nombre": "Supermercado El Progreso" },
+  "productos": [
+    { "codigo_barras": "7790070418014", "nombre": "Arroz Gallo Oro 1kg", "precio": 2450 },
+    { "codigo_barras": "7790580012349", "nombre": "Fideos Matarazzo Mostachol 500g", "precio": 1680 },
+    { "codigo_barras": "7790310011237", "nombre": "Aceite Natura Girasol 900ml", "precio": 3980 },
+    { "codigo_barras": "7790740006582", "nombre": "Yerba Mate Playadito 1kg", "precio": 5200 },
+    { "codigo_barras": "7790580098765", "nombre": "Azucar Ledesma 1kg", "precio": 1950 },
+    { "codigo_barras": "7790895123456", "nombre": "Harina Blancaflor 1kg", "precio": 1520 },
+    { "codigo_barras": "7790040234567", "nombre": "Sal Fina Celusal 500g", "precio": 980 },
+    { "codigo_barras": "7790150345678", "nombre": "Cafe La Virginia 250g", "precio": 4650 },
+    { "codigo_barras": "7790895456789", "nombre": "Coca-Cola 1.5L", "precio": 2890 },
+    { "codigo_barras": "7790895567890", "nombre": "Agua Mineral Villavicencio 2L", "precio": 1450 },
+    { "codigo_barras": "7790310678901", "nombre": "Cerveza Quilmes 1L retornable", "precio": 2150 },
+    { "codigo_barras": "7790580789012", "nombre": "Jugo Baggio Naranja 1L", "precio": 1780 },
+    { "codigo_barras": "7790740890123", "nombre": "Leche La Serenisima Entera 1L", "precio": 1680 },
+    { "codigo_barras": "7790895901234", "nombre": "Yogur Ser Bebible Frutilla 900g", "precio": 2980 },
+    { "codigo_barras": "7790040012345", "nombre": "Queso Cremoso La Paulina 500g", "precio": 5890 },
+    { "codigo_barras": "7790150123456", "nombre": "Manteca La Serenisima 200g", "precio": 2340 },
+    { "codigo_barras": "7790310234567", "nombre": "Detergente Magistral 750ml", "precio": 2150 },
+    { "codigo_barras": "7790580345678", "nombre": "Lavandina Ayudin 1L", "precio": 1290 },
+    { "codigo_barras": "7790740456789", "nombre": "Papel Higienico Elite x4", "precio": 3450 },
+    { "codigo_barras": "7790895234561", "nombre": "Jabon en Polvo Skip 800g", "precio": 4120 }
+  ]
+}

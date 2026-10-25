@@ -1,0 +1,26 @@
+{
+  "negocio": {
+    "nombre": "Supermercado El Progreso",
+    "whatsapp": "54922446007890",
+    "direccion": "Av. Alsina 1120, Las Flores, Buenos Aires (B7200)",
+    "telefono": "02244 15-600-7890",
+    "analytics_id": ""
+  },
+  "oferta": {
+    "activa": false,
+    "producto_id": null,
+    "texto": "",
+    "precio_oferta": 0
+  },
+  "categorias": [],
+  "resenas": [],
+  "horarios": {
+    "lunes": [{ "abre": "08:00", "cierra": "21:00" }],
+    "martes": [{ "abre": "08:00", "cierra": "21:00" }],
+    "miércoles": [{ "abre": "08:00", "cierra": "21:00" }],
+    "jueves": [{ "abre": "08:00", "cierra": "21:00" }],
+    "viernes": [{ "abre": "08:00", "cierra": "21:00" }],
+    "sábado": [{ "abre": "08:00", "cierra": "21:00" }],
+    "domingo": [{ "abre": "09:00", "cierra": "13:00" }]
+  }
+}

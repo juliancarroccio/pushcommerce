@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página no encontrada — La Usina</title>
+  <link rel="icon" href="./img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./img/favicon-180.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#A84C2D">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1C1A17;
+      color: #EDE4D3;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+      overflow: hidden;
+    }
+
+    .grain {
+      position: fixed; inset: -50%; width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.045;
+      animation: grain-shift 0.35s steps(1) infinite;
+    }
+    @keyframes grain-shift {
+      0%  { transform: translate(0,0) }
+      25% { transform: translate(-2%,-3%) }
+      50% { transform: translate(3%,2%) }
+      75% { transform: translate(-1%,3%) }
+    }
+
+    .bg-num {
+      position: fixed;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(180px, 32vw, 300px);
+      line-height: 1;
+      color: rgba(168,76,45,0.1);
+      letter-spacing: 0.04em;
+      user-select: none;
+      pointer-events: none;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    .logo {
+      width: 84px; height: 84px; border-radius: 50%;
+      object-fit: cover; opacity: 0.85;
+      border: 2px solid rgba(217,142,52,0.3);
+      margin: 0 auto 36px;
+      display: block;
+      background: #2E2821;
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #D98E34;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      line-height: 1.6;
+      color: rgba(237,228,211,0.45);
+      margin-bottom: 44px;
+    }
+
+    .divider {
+      width: 3rem; height: 1px;
+      background: rgba(217,142,52,0.25);
+      margin: 0 auto 44px;
+    }
+
+    a.btn {
+      display: inline-block;
+      background: #A84C2D;
+      color: #EDE4D3;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 14px 40px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    a.btn:hover { background: #D98E34; transform: scale(1.03); }
+
+    .brand {
+      margin-top: 52px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(237,228,211,0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <p class="bg-num" aria-hidden="true">404</p>
+
+  <div class="content">
+    <img src="./img/logo.png" alt="La Usina" class="logo">
+    <h1>Página no encontrada</h1>
+    <p class="subtitle">
+      Esto se apagó.<br>
+      Volvé a prender la luz.
+    </p>
+    <div class="divider"></div>
+    <a href="./index.html" class="btn">← Volver al inicio</a>
+    <p class="brand">La Usina · Las Flores, Buenos Aires</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supermercado El Progreso — Almacén, Bebidas y Limpieza · Las Flores</title>
+  <meta name="description" content="Supermercado El Progreso: más de 20 años en Las Flores. Almacén, bebidas, lácteos y limpieza con buenos precios, y una pantalla de consulta de precios para no hacer cola por una duda.">
+  <meta property="og:title" content="Supermercado El Progreso · Las Flores">
+  <meta property="og:description" content="Almacén, bebidas, lácteos y limpieza con buenos precios. Consultá un precio sin hacer cola en nuestra pantalla de la entrada.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./img/logo.png">
+
+  <link rel="icon" href="./img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./img/favicon-180.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#1F6B3A">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "GroceryStore",
+    "name": "Supermercado El Progreso",
+    "image": "./img/logo.png",
+    "telephone": "+54922446007890",
+    "url": "https://juliancarroccio.github.io/pushcommerce/pages/el_progreso/",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Alsina 1120",
+      "addressLocality": "Las Flores",
+      "addressRegion": "Buenos Aires",
+      "postalCode": "B7200",
+      "addressCountry": "AR"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], "opens": "08:00", "closes": "21:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "09:00", "closes": "13:00" }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream:        '#FAF8F2',
+            'cream-dark': '#F1ECDD',
+            ink:          '#1C2B20',
+            'ink-soft':   '#4B5C50',
+            green:        '#1F6B3A',
+            'green-dark': '#154D29',
+            'green-light':'#4CAF6D',
+          },
+          fontFamily: {
+            display: ['Poppins', 'sans-serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* Soft dotted texture (bolsa de almacén) */
+    .dotted {
+      background-image: radial-gradient(circle, rgba(31,107,58,0.08) 1.6px, transparent 1.8px);
+      background-size: 22px 22px;
+    }
+
+    /* Hero panel blob */
+    .hero-panel {
+      background: radial-gradient(circle at 30% 20%, rgba(76,175,109,0.9) 0%, #1F6B3A 55%, #154D29 100%);
+    }
+    .hero-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1.4px, transparent 1.6px);
+      background-size: 26px 26px;
+      opacity: 0.6;
+    }
+
+    .logo-badge {
+      transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,0.18));
+    }
+    .logo-badge:hover { transform: scale(1.05) rotate(-3deg); }
+
+    /* Card hover lift */
+    .lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .lift:hover { transform: translateY(-5px); box-shadow: 0 18px 40px rgba(28,43,32,0.12); }
+
+    .divider { display: flex; align-items: center; gap: 0.75rem; }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 2px; background: currentColor; opacity: 0.18; border-radius: 2px;
+    }
+
+    /* CTA pulse */
+    .cta-pulse { position: relative; }
+    .cta-pulse::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: inherit;
+      border: 2px solid rgba(76,175,109,0.5);
+      animation: pulse-ring 2.2s ease-in-out infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { opacity: 0; transform: scale(0.95); }
+      50%      { opacity: 1; transform: scale(1.04); }
+    }
+
+    /* Scroll progress bar */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0;
+      width: 0%; height: 3px;
+      background: #1F6B3A;
+      z-index: 99999;
+      pointer-events: none;
+      transition: width 0.08s linear;
+    }
+
+    /* Back to top */
+    #back-to-top {
+      opacity: 0; pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+    /* WA float */
+    #wa-float {
+      opacity: 0; pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    #wa-float.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    #wa-float:hover { transform: scale(1.1); }
+
+    /* Mobile menu */
+    #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+    #mobile-menu.open { max-height: 420px; }
+
+    .barcode-strip {
+      display: flex; align-items: flex-end; gap: 3px; height: 46px;
+    }
+    .barcode-strip span { display: block; background: #FAF8F2; }
+  </style>
+</head>
+
+<body class="bg-cream text-ink font-sans overflow-x-hidden">
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav id="nav" class="fixed top-0 inset-x-0 z-50 bg-cream/90 backdrop-blur-sm border-b border-ink/5 transition-all duration-500">
+    <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="./img/logo.png" alt="Supermercado El Progreso" class="w-10 h-10 rounded-full object-cover bg-white">
+        <span class="font-display font-bold text-sm tracking-wide text-ink">El Progreso</span>
+        <span id="nav-estado" class="hidden font-display text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full"></span>
+      </div>
+
+      <div class="hidden md:flex items-center gap-7">
+        <a href="#nosotros" class="text-ink-soft hover:text-green text-sm font-medium transition-colors">Nosotros</a>
+        <a href="#precios" class="text-ink-soft hover:text-green text-sm font-medium transition-colors">Consulta de precios</a>
+        <a href="#horarios" class="text-ink-soft hover:text-green text-sm font-medium transition-colors">Horarios</a>
+        <a href="#contacto" class="text-ink-soft hover:text-green text-sm font-medium transition-colors">Contacto</a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="https://wa.me/54922446007890?text=%C2%A1Hola%20Supermercado%20El%20Progreso!%20%F0%9F%9B%92%20Quiero%20hacer%20una%20consulta"
+           target="_blank" rel="noopener"
+           class="hidden sm:inline-block bg-green hover:bg-green-dark text-cream font-display text-xs font-semibold uppercase tracking-wide px-5 py-2.5 rounded-full transition-all duration-300">
+          Escribinos
+        </a>
+        <button id="menu-toggle" aria-label="Abrir menú" aria-expanded="false"
+                class="md:hidden w-9 h-9 flex items-center justify-center text-ink/70 hover:text-green">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="md:hidden bg-cream border-t border-ink/5">
+      <div class="flex flex-col px-6 py-4 gap-4">
+        <a href="#nosotros" class="text-ink-soft hover:text-green text-sm font-medium">Nosotros</a>
+        <a href="#precios" class="text-ink-soft hover:text-green text-sm font-medium">Consulta de precios</a>
+        <a href="#horarios" class="text-ink-soft hover:text-green text-sm font-medium">Horarios</a>
+        <a href="#contacto" class="text-ink-soft hover:text-green text-sm font-medium">Contacto</a>
+        <a href="https://wa.me/54922446007890?text=%C2%A1Hola%20Supermercado%20El%20Progreso!%20%F0%9F%9B%92%20Quiero%20hacer%20una%20consulta"
+           target="_blank" rel="noopener"
+           class="mt-2 inline-block text-center bg-green text-cream font-display text-xs font-semibold uppercase tracking-wide px-5 py-3 rounded-full">
+          Escribinos por WhatsApp
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO (split) ═══ -->
+  <section id="hero" class="relative min-h-screen flex items-center pt-20 overflow-hidden dotted">
+    <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-14 items-center w-full">
+
+      <div id="hero-text" class="relative z-10">
+        <p class="hero-item font-display text-xs font-semibold uppercase tracking-[0.25em] text-green mb-5">Las Flores · Buenos Aires</p>
+        <h1 class="hero-item font-display text-5xl md:text-6xl font-extrabold text-ink leading-[1.05] mb-6">
+          Supermercado<br><span class="text-green">El Progreso</span>
+        </h1>
+        <p class="hero-item text-lg text-ink-soft leading-relaxed mb-9 max-w-md">
+          Más de 20 años acompañando al barrio: almacén, bebidas, lácteos y limpieza con buenos precios. Changuito o canasta, lo que necesites para el día a día.
+        </p>
+        <div class="hero-item flex flex-wrap items-center gap-4">
+          <a href="https://wa.me/54922446007890?text=%C2%A1Hola%20Supermercado%20El%20Progreso!%20%F0%9F%9B%92%20Quiero%20hacer%20una%20consulta"
+             target="_blank" rel="noopener"
+             class="cta-pulse bg-green hover:bg-green-dark text-cream font-display font-semibold text-sm px-8 py-4 rounded-full transition-all duration-300 hover:scale-105">
+            Escribinos por WhatsApp
+          </a>
+          <a href="#precios"
+             class="text-green hover:text-green-dark font-display font-semibold text-sm px-2 py-4 transition-colors duration-300">
+            ¿Querés un precio? →
+          </a>
+        </div>
+      </div>
+
+      <div id="hero-visual" class="relative z-10 flex items-center justify-center">
+        <div class="hero-panel relative w-72 h-72 md:w-96 md:h-96 rounded-[2.5rem] flex items-center justify-center overflow-hidden shadow-2xl">
+          <img src="./img/logo.png" alt="Logo Supermercado El Progreso" class="logo-badge relative z-10 w-40 h-40 md:w-52 md:h-52 object-contain rounded-full bg-cream p-3">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="absolute bottom-8 inset-x-0 flex flex-col items-center gap-2 text-green/50">
+      <span class="font-display text-[10px] tracking-[0.3em] uppercase">scroll</span>
+      <span class="block w-px h-8 bg-green/30 animate-pulse"></span>
+    </div>
+  </section>
+
+  <!-- ═══ NOSOTROS ═══ -->
+  <section id="nosotros" class="py-28 px-6 bg-white overflow-hidden">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      <div class="nosotros-text">
+        <p class="font-display text-xs font-semibold uppercase tracking-[0.25em] text-green mb-4">Quiénes somos</p>
+        <h2 class="font-display text-4xl md:text-5xl font-extrabold text-ink mb-8 leading-tight">El súper<br>de siempre</h2>
+        <div class="space-y-5 text-ink-soft leading-relaxed text-base">
+          <p>Supermercado El Progreso es un negocio familiar con más de 20 años de historia en Las Flores — almacén, bebidas, lácteos y productos de limpieza, todo junto en un local grande pensado para la compra del día a día del barrio.</p>
+          <p>Trabajamos para que la relación precio-calidad siempre tenga sentido, con góndolas ordenadas y reposición constante para no quedarnos sin lo que buscás.</p>
+          <p>Y para no perder tiempo en la fila por una duda de precio, instalamos una pantalla de consulta en la entrada — escaneás el producto y listo, sin esperar a nadie.</p>
+        </div>
+      </div>
+
+      <div class="nosotros-badge relative flex items-center justify-center">
+        <div class="relative w-64 h-64 md:w-80 md:h-80">
+          <div class="absolute inset-0 rounded-full border-2 border-green/15"></div>
+          <div class="absolute inset-6 rounded-full border-2 border-green/10"></div>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span class="font-display text-6xl md:text-7xl font-extrabold text-green leading-none">+20</span>
+            <span class="font-display text-xs font-semibold uppercase tracking-[0.2em] text-ink-soft mt-2">años en<br>Las Flores</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONSULTA DE PRECIOS ═══ -->
+  <section id="precios" class="py-28 px-6 bg-green-dark overflow-hidden relative dotted">
+    <div class="max-w-4xl mx-auto relative z-10">
+      <div class="precios-card bg-green rounded-[2rem] px-8 md:px-14 py-14 flex flex-col md:flex-row items-center gap-10 shadow-2xl">
+        <div class="flex-shrink-0 barcode-strip" aria-hidden="true">
+          <span style="width:4px;height:100%"></span>
+          <span style="width:2px;height:70%"></span>
+          <span style="width:6px;height:100%"></span>
+          <span style="width:2px;height:55%"></span>
+          <span style="width:3px;height:90%"></span>
+          <span style="width:2px;height:65%"></span>
+          <span style="width:5px;height:100%"></span>
+          <span style="width:2px;height:80%"></span>
+          <span style="width:3px;height:60%"></span>
+          <span style="width:4px;height:100%"></span>
+        </div>
+        <div class="flex-1 text-center md:text-left">
+          <p class="font-display text-xs font-semibold uppercase tracking-[0.25em] text-green-light mb-3">Sin hacer cola</p>
+          <h2 class="font-display text-3xl md:text-4xl font-extrabold text-cream mb-4 leading-tight">¿Querés saber un precio?</h2>
+          <p class="text-cream/80 leading-relaxed mb-7 max-w-md mx-auto md:mx-0">
+            Consultalo vos mismo en la pantalla de la entrada: escaneás el código de barras del producto y el precio aparece al instante, sin esperar al cajero.
+          </p>
+          <a href="./consulta.html"
+             class="inline-block bg-cream hover:bg-white text-green-dark font-display font-bold text-sm px-8 py-4 rounded-full transition-all duration-300 hover:scale-105">
+            Abrir pantalla de consulta →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ OFERTA ═══ -->
+  <!-- Controlada por productos.json > oferta. Editar solo ahí. -->
+  <section id="oferta-section" class="hidden py-20 px-6 bg-green-light overflow-hidden"></section>
+
+  <!-- ═══ HORARIOS ═══ -->
+  <section id="horarios" class="py-28 px-6 bg-cream-dark overflow-hidden">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-xs font-semibold uppercase tracking-[0.25em] text-green mb-4">Cuándo encontrarnos</p>
+        <h2 class="font-display text-4xl md:text-5xl font-extrabold text-ink">Horarios</h2>
+        <div class="w-16 h-1 bg-green/30 mx-auto mt-5 rounded-full"></div>
+      </div>
+
+      <div id="horarios-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+
+      <p class="text-center text-ink-soft text-sm italic mt-10">Domingos abrimos en horario reducido, de 9:00 a 13:00.</p>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACTO ═══ -->
+  <section id="contacto" class="py-28 px-6 bg-white">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-xs font-semibold uppercase tracking-[0.25em] text-green mb-4">Dónde estamos</p>
+        <h2 class="font-display text-4xl md:text-5xl font-extrabold text-ink">Encontranos</h2>
+        <div class="w-16 h-1 bg-green/30 mx-auto mt-5 rounded-full"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="contact-col space-y-4">
+          <div class="lift bg-cream-dark rounded-2xl p-6 border border-ink/5">
+            <p class="font-display text-xs font-semibold uppercase tracking-[0.2em] text-green mb-3">Dirección</p>
+            <p class="text-ink-soft text-sm leading-relaxed">Av. Alsina 1120<br>Las Flores, Buenos Aires (B7200)</p>
+            <a href="https://maps.google.com/?q=Av.+Alsina+1120,+Las+Flores,+Buenos+Aires"
+               target="_blank" rel="noopener"
+               class="inline-block mt-3 font-display text-xs font-semibold uppercase text-green/70 hover:text-green transition-colors">
+              Ver en mapa →
+            </a>
+          </div>
+          <div class="lift bg-cream-dark rounded-2xl p-6 border border-ink/5">
+            <p class="font-display text-xs font-semibold uppercase tracking-[0.2em] text-green mb-3">Teléfono / WhatsApp</p>
+            <a href="tel:+54922446007890" class="text-ink-soft hover:text-green text-sm transition-colors">02244 15-600-7890</a>
+          </div>
+          <div id="horarios-card" class="hidden lift bg-cream-dark rounded-2xl p-6 border border-ink/5">
+            <div class="flex items-center justify-between mb-3">
+              <p class="font-display text-xs font-semibold uppercase tracking-[0.2em] text-green">Horarios</p>
+              <span id="estado-local" class="font-display text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full"></span>
+            </div>
+            <div id="horarios-list-contacto" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <div class="contact-col flex flex-col gap-4">
+          <div class="flex-1 min-h-56 rounded-2xl overflow-hidden border border-ink/5">
+            <iframe
+              src="https://maps.google.com/maps?q=Av.+Alsina+1120,+Las+Flores,+Buenos+Aires&output=embed"
+              width="100%" height="100%" style="border:0;min-height:280px;display:block"
+              allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Ubicación Supermercado El Progreso">
+            </iframe>
+          </div>
+          <a href="https://wa.me/54922446007890?text=%C2%A1Hola%20Supermercado%20El%20Progreso!%20%F0%9F%9B%92%20Quiero%20hacer%20una%20consulta"
+             target="_blank" rel="noopener"
+             class="flex items-center justify-between p-6 bg-green hover:bg-green-dark text-cream rounded-2xl transition-colors duration-300 group">
+            <span>
+              <p class="font-display font-semibold text-base">Escribinos por WhatsApp</p>
+              <p class="text-cream/75 text-sm mt-1">Respondemos rápido</p>
+            </span>
+            <span class="font-display text-2xl group-hover:translate-x-1 transition-transform duration-300">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="bg-green-dark py-14 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
+        <div class="flex items-center gap-5">
+          <img src="./img/logo.png" alt="Supermercado El Progreso" class="w-14 h-14 rounded-full object-cover bg-cream p-1">
+          <div>
+            <p class="font-display font-bold text-sm text-cream">Supermercado El Progreso</p>
+            <p class="text-cream/50 text-xs mt-0.5">Av. Alsina 1120 · Las Flores, Buenos Aires</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-4">
+          <div class="flex items-center gap-2">
+            <a href="tel:+54922446007890" title="02244 15-600-7890"
+               class="w-9 h-9 rounded-full border border-cream/20 hover:border-cream/50 text-cream/50 hover:text-cream flex items-center justify-center transition-all duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+            </a>
+            <a href="https://wa.me/54922446007890" target="_blank" rel="noopener" title="WhatsApp"
+               class="w-9 h-9 rounded-full border border-cream/20 hover:border-cream/50 text-cream/50 hover:text-cream flex items-center justify-center transition-all duration-300">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </a>
+          </div>
+          <div class="flex gap-6">
+            <a href="#nosotros" class="font-display text-[10px] font-semibold tracking-widest uppercase text-cream/35 hover:text-cream transition-colors">Nosotros</a>
+            <a href="#precios" class="font-display text-[10px] font-semibold tracking-widest uppercase text-cream/35 hover:text-cream transition-colors">Precios</a>
+            <a href="#contacto" class="font-display text-[10px] font-semibold tracking-widest uppercase text-cream/35 hover:text-cream transition-colors">Contacto</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-cream/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-3">
+        <p class="text-cream/30 text-xs">© 2026 Supermercado El Progreso · Las Flores, Buenos Aires</p>
+        <p class="text-cream/30 text-xs">
+          Desarrollado por <a href="#" class="text-cream/60 hover:text-cream transition-colors">PushCommerce</a> · Julian Carroccio
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WA Float -->
+  <a id="wa-float"
+     href="https://wa.me/54922446007890?text=%C2%A1Hola%20Supermercado%20El%20Progreso!%20%F0%9F%9B%92%20Quiero%20hacer%20una%20consulta"
+     target="_blank"
+     aria-label="Escribir por WhatsApp"
+     class="fixed bottom-6 left-6 z-30 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-xl">
+    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+
+  <!-- Back to top -->
+  <button id="back-to-top"
+          onclick="window.scrollTo({top:0,behavior:'smooth'})"
+          aria-label="Volver al inicio"
+          class="fixed bottom-6 right-6 z-30 w-11 h-11 bg-green hover:bg-green-dark text-cream flex items-center justify-center rounded-full shadow-lg transition-colors duration-300">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+  </button>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ── Fallback: copia exacta de productos.json, para file:// o fetch fallido ── */
+    const _FALLBACK = {
+      "negocio": {
+        "nombre": "Supermercado El Progreso",
+        "whatsapp": "54922446007890",
+        "direccion": "Av. Alsina 1120, Las Flores, Buenos Aires (B7200)",
+        "telefono": "02244 15-600-7890",
+        "analytics_id": ""
+      },
+      "oferta": { "activa": false, "producto_id": null, "texto": "", "precio_oferta": 0 },
+      "categorias": [],
+      "resenas": [],
+      "horarios": {
+        "lunes": [{ "abre": "08:00", "cierra": "21:00" }],
+        "martes": [{ "abre": "08:00", "cierra": "21:00" }],
+        "miércoles": [{ "abre": "08:00", "cierra": "21:00" }],
+        "jueves": [{ "abre": "08:00", "cierra": "21:00" }],
+        "viernes": [{ "abre": "08:00", "cierra": "21:00" }],
+        "sábado": [{ "abre": "08:00", "cierra": "21:00" }],
+        "domingo": [{ "abre": "09:00", "cierra": "13:00" }]
+      }
+    };
+
+    /* ── Mobile menu toggle ── */
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuToggle.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }));
+
+    /* ── Nav shadow on scroll ── */
+    ScrollTrigger.create({
+      start: 'top -60px',
+      onEnter:     () => gsap.to('#nav', { boxShadow: '0 6px 20px rgba(28,43,32,0.08)', duration: 0.4 }),
+      onLeaveBack: () => gsap.to('#nav', { boxShadow: '0 0 0 rgba(0,0,0,0)', duration: 0.4 }),
+    });
+
+    /* ── Hero: fade-up stagger ── */
+    gsap.from('.hero-item', { y: 26, opacity: 0, duration: 0.8, stagger: 0.14, ease: 'power3.out', delay: 0.2 });
+    gsap.from('#hero-visual', { scale: 0.8, opacity: 0, duration: 1, ease: 'back.out(1.5)', delay: 0.35 });
+
+    /* ── Section headers ── */
+    document.querySelectorAll('.section-head').forEach(el => {
+      gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 85%' }, y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' });
+    });
+
+    /* ── Nosotros: split reveal ── */
+    gsap.from('.nosotros-text', { scrollTrigger: { trigger: '.nosotros-text', start: 'top 80%' }, x: -50, opacity: 0, duration: 1, ease: 'power3.out' });
+    gsap.from('.nosotros-badge', { scrollTrigger: { trigger: '.nosotros-badge', start: 'top 80%' }, scale: 0.75, opacity: 0, duration: 1, ease: 'back.out(1.6)' });
+
+    /* ── Precios: zoom-in card ── */
+    gsap.from('.precios-card', { scrollTrigger: { trigger: '.precios-card', start: 'top 80%' }, scale: 0.9, opacity: 0, duration: 0.9, ease: 'power3.out' });
+
+    /* ── Horarios grid: stagger ── */
+    ScrollTrigger.create({
+      trigger: '#horarios-grid',
+      start: 'top 80%',
+      once: true,
+      onEnter: () => gsap.from('#horarios-grid > div', { y: 20, opacity: 0, duration: 0.6, stagger: 0.06, ease: 'power3.out' }),
+    });
+
+    /* ── Contact columns ── */
+    const contactCols = document.querySelectorAll('.contact-col');
+    gsap.from(contactCols[0], { scrollTrigger: { trigger: contactCols[0], start: 'top 80%' }, x: -40, opacity: 0, duration: 1, ease: 'power3.out' });
+    gsap.from(contactCols[1], { scrollTrigger: { trigger: contactCols[1], start: 'top 80%' }, x: 40, opacity: 0, duration: 1, ease: 'power3.out' });
+
+    /* ── GA4 ── */
+    function initGA4(id) {
+      const s = document.createElement('script');
+      s.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+      s.async = true;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', id);
+    }
+
+    /* ── Horarios: abierto/cerrado, maneja turnos que cruzan medianoche ── */
+    const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    const DIAS_LABEL = { lunes:'Lun', martes:'Mar', miércoles:'Mié', jueves:'Jue', viernes:'Vie', sábado:'Sáb', domingo:'Dom' };
+
+    function turnoActivo(turnos, minutos) {
+      return turnos.some(t => {
+        const [ah, am] = t.abre.split(':').map(Number);
+        const [ch, cm] = t.cierra.split(':').map(Number);
+        const abreMin = ah * 60 + am;
+        let cierraMin = ch * 60 + cm;
+        if (cierraMin <= abreMin) cierraMin += 24 * 60; // cruza medianoche
+        return minutos >= abreMin && minutos < cierraMin;
+      });
+    }
+
+    function renderHorarios(data) {
+      const horarios = data.horarios;
+      if (!horarios) return;
+
+      const ahora = new Date();
+      const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+      const diaHoyIdx = ahora.getDay();
+      const diaAyerIdx = (diaHoyIdx + 6) % 7;
+      const diaHoy = DIAS[diaHoyIdx];
+      const diaAyer = DIAS[diaAyerIdx];
+
+      const turnosHoy = horarios[diaHoy] || [];
+      const turnosAyer = horarios[diaAyer] || [];
+
+      const abierto = turnoActivo(turnosHoy, minAhora) || turnoActivo(turnosAyer, minAhora + 24 * 60);
+
+      // Badge estado
+      [document.getElementById('estado-local'), document.getElementById('nav-estado')].forEach(el => {
+        if (!el) return;
+        el.textContent = abierto ? 'Abierto' : 'Cerrado';
+        el.className = `font-display text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${abierto ? 'bg-green-light/20 text-green-dark' : 'bg-red-100 text-red-600'}`;
+        el.classList.remove('hidden');
+      });
+
+      // Grid sección horarios
+      const diasOrdenados = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+      const gridHtml = diasOrdenados.map(key => {
+        const ts = horarios[key] || [];
+        const esHoy = key === diaHoy;
+        const texto = ts.length ? ts.map(t => `${t.abre} – ${t.cierra}`).join(' · ') : 'Cerrado';
+        return `<div class="flex items-center justify-between px-6 py-4 rounded-xl border ${esHoy ? 'border-green/40 bg-green/5' : 'border-ink/10 bg-white'}">
+          <span class="font-display text-sm font-semibold capitalize ${esHoy ? 'text-green' : 'text-ink-soft'}">${key}</span>
+          <span class="text-sm ${esHoy ? 'text-ink font-medium' : 'text-ink-soft'}">${texto}</span>
+        </div>`;
+      }).join('');
+      document.getElementById('horarios-grid').innerHTML = gridHtml;
+
+      // Lista compacta en Contacto
+      document.getElementById('horarios-list-contacto').innerHTML = diasOrdenados.map(key => {
+        const ts = horarios[key] || [];
+        const esHoy = key === diaHoy;
+        const texto = ts.length ? ts.map(t => `${t.abre} – ${t.cierra}`).join(' · ') : 'Cerrado';
+        return `<div class="flex justify-between ${esHoy ? 'text-ink font-medium' : 'text-ink-soft'} text-xs">
+          <span class="font-display font-semibold uppercase">${DIAS_LABEL[key]}</span>
+          <span>${texto}</span>
+        </div>`;
+      }).join('');
+      document.getElementById('horarios-card').classList.remove('hidden');
+    }
+
+    /* ── Oferta: sección SIEMPRE presente en el HTML, renderOferta decide mostrar/ocultar ── */
+    function renderOferta(data) {
+      const section = document.getElementById('oferta-section');
+      const o = data.oferta;
+      if (!o || !o.activa) { section.classList.add('hidden'); return; }
+      let producto = null;
+      for (const cat of (data.categorias || [])) {
+        producto = (cat.productos || []).find(p => p.id === o.producto_id);
+        if (producto) break;
+      }
+      if (!producto) { section.classList.add('hidden'); return; }
+      const pct = Math.round((1 - o.precio_oferta / producto.precio) * 100);
+      section.innerHTML = `
+        <div class="max-w-5xl mx-auto oferta-inner flex flex-col md:flex-row items-center justify-between gap-10 bg-white rounded-[2rem] p-10 md:p-14 shadow-xl">
+          <div>
+            <p class="font-display text-xs font-semibold uppercase tracking-[0.25em] text-green mb-3">${o.texto}</p>
+            <h2 class="font-display text-4xl md:text-5xl font-extrabold text-ink leading-tight mb-2">${producto.nombre}</h2>
+            <div class="flex items-baseline gap-4 mt-4">
+              <span class="font-display text-xl text-ink-soft line-through" data-oferta-precio-original>$${producto.precio.toLocaleString('es-AR')}</span>
+              <span class="font-display text-5xl font-extrabold text-green" data-oferta-precio>$${o.precio_oferta.toLocaleString('es-AR')}</span>
+              <span class="font-display text-sm font-bold bg-green text-cream px-3 py-1 rounded-full">-${pct}%</span>
+            </div>
+          </div>
+          <div class="flex-shrink-0">
+            <a href="https://wa.me/54922446007890?text=%C2%A1Hola!%20Quiero%20aprovechar%20la%20oferta"
+               target="_blank" rel="noopener"
+               class="block bg-green hover:bg-green-dark text-cream font-display font-semibold text-sm px-10 py-5 rounded-full transition-all duration-300 hover:scale-105 whitespace-nowrap text-center">
+              Consultar por WhatsApp →
+            </a>
+          </div>
+        </div>
+      `;
+      section.classList.remove('hidden');
+      gsap.from('.oferta-inner', { scrollTrigger: { trigger: '.oferta-inner', start: 'top 82%' }, y: 40, opacity: 0, duration: 0.9, ease: 'power3.out' });
+    }
+
+    /* ── initPage: llama SIEMPRE a renderOferta, sin importar oferta.activa ── */
+    function initPage(data) {
+      if (data.negocio && data.negocio.analytics_id) initGA4(data.negocio.analytics_id);
+      renderHorarios(data);
+      renderOferta(data);
+    }
+
+    fetch('./productos.json', { cache: 'no-cache' })
+      .then(r => r.json())
+      .then(initPage)
+      .catch(() => initPage(_FALLBACK));
+
+    /* ── Scroll: progress bar + back-to-top + WA float ── */
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('scroll-progress').style.width = (total > 0 ? scrolled / total * 100 : 0) + '%';
+
+      const btt = document.getElementById('back-to-top');
+      scrolled > 300 ? btt.classList.add('visible') : btt.classList.remove('visible');
+
+      const heroH = document.getElementById('hero').offsetHeight;
+      const wa = document.getElementById('wa-float');
+      scrolled > heroH * 0.6 ? wa.classList.add('visible') : wa.classList.remove('visible');
+    }, { passive: true });
+
+    /* ── Service Worker ── */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

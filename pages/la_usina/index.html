@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Usina — Bar Cultural con Shows en Vivo · Las Flores</title>
+  <meta name="description" content="La Usina: bar cultural en un galpón industrial reciclado de Las Flores. Música en vivo, stand-up y noches temáticas, jueves a domingo.">
+  <meta property="og:title" content="La Usina · Bar Cultural · Las Flores">
+  <meta property="og:description" content="Música en vivo, stand-up y noches temáticas en un galpón industrial reciclado. Las Flores, Buenos Aires.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./img/logo.png">
+
+  <link rel="icon" href="./img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./img/favicon-180.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#A84C2D">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BarOrPub",
+    "name": "La Usina",
+    "image": "./img/logo.png",
+    "telephone": "+54922445001234",
+    "url": "https://juliancarroccio.github.io/pushcommerce/pages/la_usina/",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Belgrano 530",
+      "addressLocality": "Las Flores",
+      "addressRegion": "Buenos Aires",
+      "postalCode": "B7200",
+      "addressCountry": "AR"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Thursday", "Friday"], "opens": "20:00", "closes": "01:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "21:00", "closes": "02:00" }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            charcoal:        '#1C1A17',
+            'charcoal-mid':  '#242019',
+            'charcoal-light':'#2E2821',
+            rust:            '#A84C2D',
+            'rust-dark':     '#7A3620',
+            amber:           '#D98E34',
+            'amber-lt':      '#E8A855',
+            cream:           '#EDE4D3',
+          },
+          fontFamily: {
+            display: ['Bebas Neue', 'sans-serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* Film grain overlay */
+    .grain {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.045;
+      animation: grain-shift 0.35s steps(1) infinite;
+    }
+    @keyframes grain-shift {
+      0%  { transform: translate(0,0) }
+      25% { transform: translate(-2%,-3%) }
+      50% { transform: translate(3%,2%) }
+      75% { transform: translate(-1%,3%) }
+    }
+
+    /* Electric sweep behind hero */
+    .spark-beam {
+      position: absolute;
+      inset: -20% -50%;
+      background: linear-gradient(100deg, transparent 42%, rgba(217,142,52,0.09) 50%, transparent 58%);
+      animation: spark-sweep 7s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes spark-sweep {
+      0%, 100% { transform: translateX(-8%); opacity: 0.4; }
+      50%      { transform: translateX(8%);  opacity: 1;   }
+    }
+
+    /* Corrugated metal (chapa acanalada) */
+    .chapa {
+      background-image: repeating-linear-gradient(
+        100deg,
+        rgba(0,0,0,0.35) 0px, rgba(0,0,0,0.35) 2px,
+        rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px,
+        transparent 4px, transparent 10px
+      );
+      background-color: #332C22;
+    }
+
+    /* Brick pattern */
+    .brick {
+      background-color: #3A2A20;
+      background-image:
+        linear-gradient(335deg, rgba(0,0,0,0.28) 23px, transparent 23px),
+        linear-gradient(155deg, rgba(0,0,0,0.28) 23px, transparent 23px),
+        linear-gradient(335deg, rgba(0,0,0,0.28) 23px, transparent 23px),
+        linear-gradient(155deg, rgba(0,0,0,0.28) 23px, transparent 23px);
+      background-size: 58px 58px;
+      background-position: 0px 2px, 4px 35px, 29px 31px, 34px 6px;
+    }
+
+    /* Warm bokeh */
+    .bokeh {
+      background:
+        radial-gradient(circle at 20% 30%, rgba(217,142,52,0.35) 0, transparent 14%),
+        radial-gradient(circle at 70% 60%, rgba(168,76,45,0.3) 0, transparent 16%),
+        radial-gradient(circle at 85% 20%, rgba(232,168,85,0.3) 0, transparent 10%),
+        radial-gradient(circle at 40% 80%, rgba(217,142,52,0.25) 0, transparent 12%),
+        #241A12;
+    }
+
+    /* String lights dots */
+    .lights {
+      background-color: #20160F;
+      background-image: radial-gradient(circle, rgba(217,142,52,0.55) 2px, transparent 2.5px);
+      background-size: 26px 26px;
+      background-position: 0 10px;
+    }
+
+    /* Logo */
+    .logo-img {
+      transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), filter 0.5s ease;
+      filter: drop-shadow(0 0 40px rgba(217,142,52,0.15));
+    }
+    .logo-img:hover {
+      transform: scale(1.06) rotate(-4deg);
+      filter: drop-shadow(0 0 60px rgba(217,142,52,0.4));
+    }
+
+    /* Gallery / menu card hover */
+    .gcard, .mcard {
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+    .gcard:hover { transform: translateY(-6px) scale(1.015); }
+    .mcard:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+
+    /* Divider line */
+    .bar-line { display: flex; align-items: center; gap: 1rem; color: inherit; }
+    .bar-line::before, .bar-line::after {
+      content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.2;
+    }
+
+    /* CTA pulse ring */
+    .cta-main { position: relative; }
+    .cta-main::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 1px solid rgba(217,142,52,0.5);
+      animation: cta-ring 2.4s ease-in-out infinite;
+    }
+    @keyframes cta-ring {
+      0%, 100% { opacity: 0; transform: scale(0.94); }
+      50%       { opacity: 1; transform: scale(1.06); }
+    }
+
+    .char { display: inline-block; will-change: opacity, transform; }
+
+    /* Scroll progress bar */
+    #scroll-progress {
+      position: fixed; top: 0; left: 0;
+      width: 0%; height: 3px;
+      background: #D98E34;
+      z-index: 99999;
+      pointer-events: none;
+      transition: width 0.08s linear;
+    }
+
+    /* Back to top */
+    #back-to-top {
+      opacity: 0; pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+    /* WA float */
+    #wa-float {
+      opacity: 0; pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    #wa-float.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    #wa-float:hover { transform: scale(1.1); }
+
+    /* Mobile menu */
+    #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+    #mobile-menu.open { max-height: 420px; }
+  </style>
+</head>
+
+<body class="bg-charcoal text-cream font-sans overflow-x-hidden">
+  <div class="grain" aria-hidden="true"></div>
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-500">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="./img/logo.png" alt="La Usina" class="w-9 h-9 rounded-full object-cover">
+        <span class="font-display text-sm tracking-[0.25em] uppercase text-cream/90">La Usina</span>
+        <span id="nav-estado" class="hidden font-display text-[9px] tracking-wider uppercase px-2 py-0.5"></span>
+      </div>
+
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#nosotros" class="text-cream/55 hover:text-amber text-sm transition-colors">Nosotros</a>
+        <a href="#galeria" class="text-cream/55 hover:text-amber text-sm transition-colors">Galería</a>
+        <a href="#horarios" class="text-cream/55 hover:text-amber text-sm transition-colors">Horarios</a>
+        <a href="./menu.html" class="text-cream/55 hover:text-amber text-sm transition-colors">Carta</a>
+        <a href="./evento.html" class="text-cream/55 hover:text-amber text-sm transition-colors">Entradas</a>
+        <a href="#contacto" class="text-cream/55 hover:text-amber text-sm transition-colors">Contacto</a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="./agenda.html"
+           class="hidden sm:inline-block border border-amber/50 hover:border-amber hover:bg-amber/10 text-amber font-display text-xs tracking-widest uppercase px-5 py-2 transition-all duration-300">
+          Reservá
+        </a>
+        <button id="menu-toggle" aria-label="Abrir menú" aria-expanded="false"
+                class="md:hidden w-9 h-9 flex items-center justify-center text-cream/70 hover:text-amber">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="md:hidden bg-charcoal/97 border-t border-amber/10">
+      <div class="flex flex-col px-6 py-4 gap-4">
+        <a href="#nosotros" class="text-cream/70 hover:text-amber text-sm">Nosotros</a>
+        <a href="#galeria" class="text-cream/70 hover:text-amber text-sm">Galería</a>
+        <a href="#horarios" class="text-cream/70 hover:text-amber text-sm">Horarios</a>
+        <a href="./menu.html" class="text-cream/70 hover:text-amber text-sm">Carta</a>
+        <a href="./evento.html" class="text-cream/70 hover:text-amber text-sm">Entradas</a>
+        <a href="#contacto" class="text-cream/70 hover:text-amber text-sm">Contacto</a>
+        <a href="./agenda.html"
+           class="mt-2 inline-block text-center border border-amber/50 text-amber font-display text-xs tracking-widest uppercase px-5 py-3">
+          Reservá tu lugar
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section id="hero" class="relative flex items-center justify-center min-h-screen overflow-hidden">
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse 90% 70% at 50% 40%, #332920 0%, #1C1A17 60%, #0E0C0A 100%)"></div>
+    <div class="spark-beam"></div>
+
+    <div id="hero-content" class="relative z-10 flex flex-col items-center text-center px-6">
+      <div class="hero-logo mb-10 w-36 h-36 md:w-44 md:h-44">
+        <img src="./img/logo.png" alt="La Usina logo" class="logo-img w-full h-full object-contain">
+      </div>
+
+      <h1 id="hero-title" class="font-display text-6xl md:text-8xl lg:text-[7rem] tracking-[0.05em] uppercase text-cream leading-none mb-2">
+        La Usina
+      </h1>
+
+      <div class="hero-sub bar-line text-amber/40 w-72 md:w-[28rem] my-5">
+        <span class="font-display text-xs tracking-[0.3em] uppercase text-amber whitespace-nowrap">Bar Cultural · Shows en Vivo</span>
+      </div>
+
+      <p class="hero-sub text-lg md:text-xl text-cream/55 mb-10 max-w-lg leading-relaxed">
+        Un galpón industrial reciclado para tomar algo distinto.<br>
+        Música en vivo, stand-up y noches temáticas en Las Flores.
+      </p>
+
+      <div class="hero-cta flex flex-col items-center gap-5">
+        <a href="./agenda.html"
+           class="cta-main bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-10 py-4 transition-all duration-300 hover:scale-105">
+          Reservá tu mesa
+        </a>
+        <a href="./menu.html"
+           class="text-cream/45 hover:text-amber font-display text-xs tracking-[0.2em] uppercase transition-all duration-300">
+          Ver la carta →
+        </a>
+        <a href="./evento.html"
+           class="text-amber/70 hover:text-amber font-display text-xs tracking-[0.2em] uppercase transition-all duration-300">
+          🎸 Noche de Blues, 7 de nov — comprá tu entrada →
+        </a>
+      </div>
+    </div>
+
+    <div class="absolute bottom-8 inset-x-0 flex flex-col items-center gap-2 text-amber/30">
+      <span class="font-display text-[10px] tracking-[0.3em] uppercase">scroll</span>
+      <span class="block w-px h-8 bg-amber/20 animate-pulse"></span>
+    </div>
+  </section>
+
+  <!-- ═══ NOSOTROS ═══ -->
+  <section id="nosotros" class="py-28 px-6 bg-charcoal-mid overflow-hidden">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      <div class="nosotros-text">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Quiénes somos</p>
+        <h2 class="font-display text-4xl md:text-5xl text-cream uppercase mb-8 leading-tight">La fábrica<br>se volvió bar</h2>
+        <div class="space-y-5 text-cream/60 leading-relaxed text-base">
+          <p>"La Usina" es un bar cultural instalado en lo que fue un depósito industrial del pueblo — paredes de ladrillo visto, luces cálidas, barra larga, y un escenario chico pensado para que la música y las voces se escuchen cerca.</p>
+          <p>De jueves a sábado abrimos las puertas del galpón: tragos de autor, cervezas de la zona y una propuesta que cambia cada noche — música en vivo, stand-up o una noche temática distinta.</p>
+          <p>Es el lugar de Las Flores para tomar algo distinto un jueves, y quedarse hasta tarde un sábado con banda en vivo.</p>
+        </div>
+      </div>
+
+      <div class="nosotros-badge relative flex items-center justify-center">
+        <div class="relative w-64 h-64 md:w-80 md:h-80">
+          <div class="absolute inset-0 rounded-full border border-amber/15"></div>
+          <div class="absolute inset-6 rounded-full border border-amber/10"></div>
+          <div class="absolute inset-12 rounded-full border border-rust/20"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg class="w-24 h-24 text-amber" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ GALERÍA ═══ -->
+  <section id="galeria" class="py-28 px-6 bg-charcoal overflow-hidden">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">El lugar</p>
+        <h2 class="font-display text-5xl md:text-6xl text-cream uppercase">Así es La Usina</h2>
+        <div class="w-16 h-px bg-amber/25 mx-auto mt-5"></div>
+      </div>
+
+      <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <div class="gcard chapa h-64 relative flex flex-col justify-end p-6 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/10 to-transparent"></div>
+          <svg class="relative z-10 w-8 h-8 text-amber mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 3h12l-1 9a5 5 0 01-10 0L6 3z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 17v4m-3 0h6"/>
+          </svg>
+          <h3 class="relative z-10 font-display text-lg uppercase tracking-wide text-cream">La barra</h3>
+          <p class="relative z-10 text-cream/60 text-sm mt-1">Barra larga de metal y madera, lista para una ronda larga.</p>
+        </div>
+
+        <div class="gcard h-64 relative flex flex-col justify-end p-6 overflow-hidden" style="background: radial-gradient(circle at 50% 20%, rgba(217,142,52,0.4) 0%, #241A12 55%, #1C1A17 100%);">
+          <div class="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-transparent to-transparent"></div>
+          <svg class="relative z-10 w-8 h-8 text-amber mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="9" y="2" width="6" height="11" rx="3"/>
+            <path stroke-linecap="round" d="M5 11a7 7 0 0014 0M12 18v3m-3 0h6"/>
+          </svg>
+          <h3 class="relative z-10 font-display text-lg uppercase tracking-wide text-cream">El escenario</h3>
+          <p class="relative z-10 text-cream/60 text-sm mt-1">Chico, cerca del público. Así nos gusta la música en vivo.</p>
+        </div>
+
+        <div class="gcard lights h-64 relative flex flex-col justify-end p-6 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/20 to-transparent"></div>
+          <svg class="relative z-10 w-8 h-8 text-amber mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 18h6M10 21h4M12 3a6 6 0 00-3.6 10.8c.4.3.6.8.6 1.2v.5h6v-.5c0-.4.2-.9.6-1.2A6 6 0 0012 3z"/>
+          </svg>
+          <h3 class="relative z-10 font-display text-lg uppercase tracking-wide text-cream">Noches de show</h3>
+          <p class="relative z-10 text-cream/60 text-sm mt-1">Bandas en vivo, stand-up y noches temáticas, sábado a sábado.</p>
+        </div>
+
+        <div class="gcard brick h-64 relative flex flex-col justify-end p-6 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/15 to-transparent"></div>
+          <svg class="relative z-10 w-8 h-8 text-amber mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="1"/>
+            <path stroke-linecap="round" d="M3 10h18M9 4v6M15 10v10M3 15h6"/>
+          </svg>
+          <h3 class="relative z-10 font-display text-lg uppercase tracking-wide text-cream">Ladrillo a la vista</h3>
+          <p class="relative z-10 text-cream/60 text-sm mt-1">Las paredes del depósito original, tal como las encontramos.</p>
+        </div>
+
+        <div class="gcard bokeh h-64 relative flex flex-col justify-end p-6 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/10 to-transparent"></div>
+          <svg class="relative z-10 w-8 h-8 text-amber mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 18h6M10 21h4M12 3a6 6 0 00-3.6 10.8c.4.3.6.8.6 1.2v.5h6v-.5c0-.4.2-.9.6-1.2A6 6 0 0012 3z"/>
+          </svg>
+          <h3 class="relative z-10 font-display text-lg uppercase tracking-wide text-cream">Luces cálidas</h3>
+          <p class="relative z-10 text-cream/60 text-sm mt-1">La iluminación justa para quedarse charlando hasta tarde.</p>
+        </div>
+
+        <div class="gcard chapa h-64 relative flex flex-col justify-end p-6 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/10 to-transparent"></div>
+          <svg class="relative z-10 w-8 h-8 text-amber mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+          </svg>
+          <h3 class="relative z-10 font-display text-lg uppercase tracking-wide text-cream">Buena previa</h3>
+          <p class="relative z-10 text-cream/60 text-sm mt-1">Vinilo, buena mesa y la previa perfecta antes del show.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HORARIOS ═══ -->
+  <section id="horarios" class="py-28 px-6 bg-charcoal-mid overflow-hidden">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Cuándo encontrarnos</p>
+        <h2 class="font-display text-5xl md:text-6xl text-cream uppercase">Horarios</h2>
+        <div class="w-16 h-px bg-amber/25 mx-auto mt-5"></div>
+      </div>
+
+      <div id="horarios-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-14"></div>
+
+      <div class="text-center">
+        <p class="text-cream/40 text-sm italic mb-10">Domingo a miércoles cerramos al público — solo eventos privados con reserva.</p>
+        <div class="bg-rust-dark/30 border border-rust/30 py-10 px-8">
+          <p class="font-display text-2xl md:text-3xl uppercase text-cream mb-3">Sábados, banda en vivo desde las 22:30</p>
+          <p class="text-cream/55 mb-7">Las mesas se llenan rápido las noches de show.</p>
+          <a href="./agenda.html"
+             class="inline-block bg-amber hover:bg-amber-lt text-charcoal font-display font-semibold tracking-[0.18em] uppercase text-sm px-10 py-4 transition-all duration-300 hover:scale-105">
+            Reservá tu mesa
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ LA CARTA (teaser) ═══ -->
+  <section id="carta" class="py-28 px-6 bg-charcoal overflow-hidden">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Para tomar y picar</p>
+        <h2 class="font-display text-5xl md:text-6xl text-cream uppercase">La carta</h2>
+        <div class="w-16 h-px bg-amber/25 mx-auto mt-5"></div>
+      </div>
+
+      <div id="carta-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14">
+
+        <div class="mcard bg-charcoal-light border border-amber/10 p-8">
+          <p class="font-display text-[10px] tracking-[0.3em] uppercase text-amber mb-3">Trago de autor</p>
+          <h3 class="font-display text-2xl uppercase text-cream mb-2">Fierro Negro</h3>
+          <p class="text-cream/50 text-sm mb-5">Ron añejo, café, almíbar de panela, ralladura de naranja</p>
+          <p class="font-display text-2xl text-amber">$6.800</p>
+        </div>
+
+        <div class="mcard bg-charcoal-light border border-amber/10 p-8">
+          <p class="font-display text-[10px] tracking-[0.3em] uppercase text-amber mb-3">Cerveza artesanal</p>
+          <h3 class="font-display text-2xl uppercase text-cream mb-2">IPA Oxidada</h3>
+          <p class="text-cream/50 text-sm mb-5">Cervecería del Galpón · 473ml</p>
+          <p class="font-display text-2xl text-amber">$3.600</p>
+        </div>
+
+        <div class="mcard bg-charcoal-light border border-amber/10 p-8">
+          <p class="font-display text-[10px] tracking-[0.3em] uppercase text-amber mb-3">Para compartir</p>
+          <h3 class="font-display text-2xl uppercase text-cream mb-2">Picada La Usina</h3>
+          <p class="text-cream/50 text-sm mb-5">Fiambres, quesos, aceitunas y pan casero · para 2-3</p>
+          <p class="font-display text-2xl text-amber">$9.800</p>
+        </div>
+
+      </div>
+
+      <div class="text-center">
+        <a href="./menu.html"
+           class="inline-block border border-amber/50 hover:border-amber hover:bg-amber/10 text-amber font-display text-xs tracking-[0.25em] uppercase px-10 py-4 transition-all duration-300">
+          Ver la carta completa →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ OFERTA ═══ -->
+  <!-- Controlada por productos.json > oferta. Editar solo ahí. -->
+  <section id="oferta-section" class="hidden py-20 px-6 bg-amber overflow-hidden"></section>
+
+  <!-- ═══ CONTACTO ═══ -->
+  <section id="contacto" class="py-28 px-6 bg-charcoal-mid">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-16 section-head">
+        <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Dónde estamos</p>
+        <h2 class="font-display text-5xl md:text-6xl text-cream uppercase">Encontranos</h2>
+        <div class="w-16 h-px bg-amber/25 mx-auto mt-5"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="contact-col space-y-3">
+          <div class="border border-amber/15 p-6 hover:border-amber/35 transition-colors duration-300 group">
+            <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber mb-3">Dirección</p>
+            <p class="text-cream/75 text-sm leading-relaxed">Belgrano 530<br>Las Flores, Buenos Aires (B7200)</p>
+            <a href="https://maps.google.com/?q=Belgrano+530,+Las+Flores,+Buenos+Aires"
+               target="_blank" rel="noopener"
+               class="inline-block mt-3 font-display text-[10px] tracking-widest uppercase text-amber/50 group-hover:text-amber transition-colors">
+              Ver en mapa →
+            </a>
+          </div>
+          <div class="border border-amber/15 p-6 hover:border-amber/35 transition-colors duration-300">
+            <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber mb-3">Teléfono / WhatsApp</p>
+            <a href="tel:+54922445001234" class="text-cream/75 hover:text-amber text-sm transition-colors">02244 15-500-1234</a>
+          </div>
+          <div id="horarios-card" class="hidden border border-amber/15 p-6 hover:border-amber/35 transition-colors duration-300">
+            <div class="flex items-center justify-between mb-3">
+              <p class="font-display text-[10px] tracking-[0.35em] uppercase text-amber">Horarios</p>
+              <span id="estado-local" class="font-display text-[9px] tracking-wider uppercase px-2 py-0.5"></span>
+            </div>
+            <div id="horarios-list-contacto" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <div class="contact-col flex flex-col gap-4">
+          <div class="flex-1 min-h-56 border border-amber/15 overflow-hidden">
+            <iframe
+              src="https://maps.google.com/maps?q=Belgrano+530,+Las+Flores,+Buenos+Aires&output=embed"
+              width="100%" height="100%" style="border:0;min-height:280px;display:block"
+              allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Ubicación La Usina">
+            </iframe>
+          </div>
+          <a href="./agenda.html"
+             class="flex items-center justify-between p-6 bg-rust hover:bg-rust-dark text-cream transition-colors duration-300 group">
+            <span>
+              <p class="font-display font-semibold text-base uppercase tracking-wider">Reservá tu lugar</p>
+              <p class="text-cream/70 text-sm mt-1">Confirmación al instante</p>
+            </span>
+            <span class="font-display text-2xl group-hover:translate-x-1 transition-transform duration-300">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="bg-[#141210] py-14 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
+        <div class="flex items-center gap-5">
+          <img src="./img/logo.png" alt="La Usina" class="w-14 h-14 rounded-full opacity-80 object-cover">
+          <div>
+            <p class="font-display text-sm tracking-[0.25em] uppercase text-cream/85">La Usina</p>
+            <p class="text-cream/35 text-xs mt-0.5">Bar Cultural · Las Flores</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-4">
+          <div class="flex items-center gap-2">
+            <a href="tel:+54922445001234" title="02244 15-500-1234"
+               class="w-9 h-9 border border-amber/20 hover:border-amber/50 text-cream/35 hover:text-amber flex items-center justify-center transition-all duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+            </a>
+            <a href="https://wa.me/54922445001234" target="_blank" rel="noopener" title="WhatsApp"
+               class="w-9 h-9 border border-amber/20 hover:border-amber/50 text-cream/35 hover:text-amber flex items-center justify-center transition-all duration-300">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </a>
+          </div>
+          <div class="flex gap-6">
+            <a href="#nosotros" class="font-display text-[10px] tracking-widest uppercase text-cream/20 hover:text-amber/60 transition-colors">Nosotros</a>
+            <a href="./menu.html" class="font-display text-[10px] tracking-widest uppercase text-cream/20 hover:text-amber/60 transition-colors">Carta</a>
+            <a href="#contacto" class="font-display text-[10px] tracking-widest uppercase text-cream/20 hover:text-amber/60 transition-colors">Contacto</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-3">
+        <p class="text-cream/15 text-xs">© 2026 La Usina · Las Flores, Buenos Aires</p>
+        <p class="text-cream/15 text-xs">
+          Desarrollado por <a href="#" class="text-amber/40 hover:text-amber transition-colors">PushCommerce</a> · Julian Carroccio
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WA Float: contacto general — la reserva en sí se hace en agenda.html con confirmación instantánea -->
+  <a id="wa-float"
+     href="https://wa.me/54922445001234?text=%C2%A1Hola%20La%20Usina!%20%E2%9A%A1%20Tengo%20una%20consulta"
+     target="_blank"
+     aria-label="Consultar por WhatsApp"
+     class="fixed bottom-6 left-6 z-30 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-xl">
+    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+
+  <!-- Back to top -->
+  <button id="back-to-top"
+          onclick="window.scrollTo({top:0,behavior:'smooth'})"
+          aria-label="Volver al inicio"
+          class="fixed bottom-6 right-6 z-30 w-11 h-11 bg-charcoal/80 hover:bg-charcoal text-amber/70 hover:text-amber flex items-center justify-center border border-amber/15 hover:border-amber/35 transition-colors duration-300 backdrop-blur-sm">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+    </svg>
+  </button>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ── Fallback: copia exacta de productos.json, para file:// o fetch fallido ── */
+    const _FALLBACK = {
+      "negocio": {
+        "nombre": "La Usina",
+        "whatsapp": "54922445001234",
+        "direccion": "Belgrano 530, Las Flores, Buenos Aires (B7200)",
+        "telefono": "02244 15-500-1234",
+        "analytics_id": ""
+      },
+      "oferta": { "activa": false, "producto_id": null, "texto": "", "precio_oferta": 0 },
+      "categorias": [],
+      "resenas": [],
+      "horarios": {
+        "lunes": [],
+        "martes": [],
+        "miércoles": [],
+        "jueves": [{ "abre": "20:00", "cierra": "01:00" }],
+        "viernes": [{ "abre": "20:00", "cierra": "01:00" }],
+        "sábado": [{ "abre": "21:00", "cierra": "02:00" }],
+        "domingo": []
+      }
+    };
+
+    /* ── Mobile menu toggle ── */
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuToggle.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }));
+
+    /* ── Nav background on scroll ── */
+    ScrollTrigger.create({
+      start: 'top -60px',
+      onEnter:     () => gsap.to('#nav', { backgroundColor: 'rgba(14,12,10,0.92)', backdropFilter: 'blur(14px)', duration: 0.4 }),
+      onLeaveBack: () => gsap.to('#nav', { backgroundColor: 'transparent',          backdropFilter: 'blur(0px)',  duration: 0.4 }),
+    });
+
+    /* ── Hero: logo entrance ── */
+    gsap.from('.hero-logo', { scale: 0.3, opacity: 0, duration: 1.3, ease: 'power4.out' });
+
+    /* ── Hero: title neon flicker ── */
+    const titleEl = document.getElementById('hero-title');
+    titleEl.innerHTML = titleEl.textContent.trim().split('').map(c =>
+      c === ' ' ? ' ' : `<span class="char" style="opacity:0">${c}</span>`
+    ).join('');
+    document.querySelectorAll('#hero-title .char').forEach(ch => {
+      gsap.fromTo(ch, { opacity: 0 }, {
+        opacity: 1, duration: 0.08, repeat: 2, yoyo: true, ease: 'steps(1)',
+        delay: 0.4 + Math.random() * 0.7,
+      });
+    });
+
+    /* ── Hero: subs & CTA ── */
+    gsap.from('.hero-sub', { y: 28, opacity: 0, duration: 0.9, stagger: 0.18, ease: 'power3.out', delay: 1.4 });
+    gsap.from('.hero-cta', { y: 28, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 1.85 });
+
+    /* ── Hero: content parallax on scroll ── */
+    gsap.to('#hero-content', {
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
+      y: 200, opacity: 0.1,
+    });
+
+    /* ── Section headers ── */
+    document.querySelectorAll('.section-head').forEach(el => {
+      gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 85%' }, y: 35, opacity: 0, duration: 0.9, ease: 'power3.out' });
+    });
+
+    /* ── Nosotros: split reveal ── */
+    gsap.from('.nosotros-text', { scrollTrigger: { trigger: '.nosotros-text', start: 'top 80%' }, x: -60, opacity: 0, duration: 1, ease: 'power3.out' });
+    gsap.from('.nosotros-badge', { scrollTrigger: { trigger: '.nosotros-badge', start: 'top 80%' }, scale: 0.7, opacity: 0, duration: 1, ease: 'back.out(1.6)' });
+
+    /* ── Gallery: scale-in stagger ── */
+    gsap.from('#gallery-grid .gcard', {
+      scrollTrigger: { trigger: '#gallery-grid', start: 'top 75%' },
+      scale: 0.85, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out',
+    });
+
+    /* ── Carta teaser: stagger cascade ── */
+    gsap.from('#carta-grid .mcard', {
+      scrollTrigger: { trigger: '#carta-grid', start: 'top 75%' },
+      y: 50, opacity: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out',
+    });
+
+    /* ── Contact columns ── */
+    const contactCols = document.querySelectorAll('.contact-col');
+    gsap.from(contactCols[0], { scrollTrigger: { trigger: contactCols[0], start: 'top 80%' }, x: -50, opacity: 0, duration: 1, ease: 'power3.out' });
+    gsap.from(contactCols[1], { scrollTrigger: { trigger: contactCols[1], start: 'top 80%' }, x: 50, opacity: 0, duration: 1, ease: 'power3.out' });
+
+    /* ── GA4 ── */
+    function initGA4(id) {
+      const s = document.createElement('script');
+      s.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+      s.async = true;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', id);
+    }
+
+    /* ── Horarios: abierto/cerrado, maneja turnos que cruzan medianoche ── */
+    const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    const DIAS_LABEL = { lunes:'Lun', martes:'Mar', miércoles:'Mié', jueves:'Jue', viernes:'Vie', sábado:'Sáb', domingo:'Dom' };
+
+    function turnoActivo(turnos, minutos) {
+      return turnos.some(t => {
+        const [ah, am] = t.abre.split(':').map(Number);
+        const [ch, cm] = t.cierra.split(':').map(Number);
+        const abreMin = ah * 60 + am;
+        let cierraMin = ch * 60 + cm;
+        if (cierraMin <= abreMin) cierraMin += 24 * 60; // cruza medianoche
+        return minutos >= abreMin && minutos < cierraMin;
+      });
+    }
+
+    function renderHorarios(data) {
+      const horarios = data.horarios;
+      if (!horarios) return;
+
+      const ahora = new Date();
+      const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+      const diaHoyIdx = ahora.getDay();
+      const diaAyerIdx = (diaHoyIdx + 6) % 7;
+      const diaHoy = DIAS[diaHoyIdx];
+      const diaAyer = DIAS[diaAyerIdx];
+
+      const turnosHoy = horarios[diaHoy] || [];
+      const turnosAyer = horarios[diaAyer] || [];
+
+      const abierto = turnoActivo(turnosHoy, minAhora) || turnoActivo(turnosAyer, minAhora + 24 * 60);
+
+      // Badge estado
+      [document.getElementById('estado-local'), document.getElementById('nav-estado')].forEach(el => {
+        if (!el) return;
+        el.textContent = abierto ? 'Abierto' : 'Cerrado';
+        el.className = `font-display text-[9px] tracking-wider uppercase px-2 py-0.5 ${abierto ? 'bg-green-800/50 text-green-300' : 'bg-red-900/40 text-red-300'}`;
+        el.classList.remove('hidden');
+      });
+
+      // Grid sección horarios
+      const diasOrdenados = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+      const gridHtml = diasOrdenados.map(key => {
+        const ts = horarios[key] || [];
+        const esHoy = key === diaHoy;
+        const texto = ts.length ? ts.map(t => `${t.abre} – ${t.cierra}`).join(' · ') : 'Cerrado al público';
+        return `<div class="flex items-center justify-between px-6 py-4 border ${esHoy ? 'border-amber/40 bg-amber/5' : 'border-amber/10'}">
+          <span class="font-display text-sm tracking-wider uppercase ${esHoy ? 'text-amber' : 'text-cream/60'}">${key}</span>
+          <span class="text-sm ${esHoy ? 'text-cream' : 'text-cream/35'}">${texto}</span>
+        </div>`;
+      }).join('');
+      document.getElementById('horarios-grid').innerHTML = gridHtml;
+
+      // Lista compacta en Contacto
+      document.getElementById('horarios-list-contacto').innerHTML = diasOrdenados.map(key => {
+        const ts = horarios[key] || [];
+        const esHoy = key === diaHoy;
+        const texto = ts.length ? ts.map(t => `${t.abre} – ${t.cierra}`).join(' · ') : 'Cerrado';
+        return `<div class="flex justify-between ${esHoy ? 'text-cream' : 'text-cream/40'} text-xs">
+          <span class="font-display tracking-wider uppercase">${DIAS_LABEL[key]}</span>
+          <span>${texto}</span>
+        </div>`;
+      }).join('');
+      document.getElementById('horarios-card').classList.remove('hidden');
+    }
+
+    /* ── Oferta: sección SIEMPRE presente en el HTML, renderOferta decide mostrar/ocultar ── */
+    function renderOferta(data) {
+      const section = document.getElementById('oferta-section');
+      const o = data.oferta;
+      if (!o || !o.activa) { section.classList.add('hidden'); return; }
+      let producto = null;
+      for (const cat of (data.categorias || [])) {
+        producto = (cat.productos || []).find(p => p.id === o.producto_id);
+        if (producto) break;
+      }
+      if (!producto) { section.classList.add('hidden'); return; }
+      const pct = Math.round((1 - o.precio_oferta / producto.precio) * 100);
+      section.innerHTML = `
+        <div class="max-w-5xl mx-auto oferta-inner flex flex-col md:flex-row items-center justify-between gap-10">
+          <div>
+            <p class="font-display text-[11px] tracking-[0.38em] uppercase text-charcoal/50 mb-3">${o.texto}</p>
+            <h2 class="font-display text-4xl md:text-5xl uppercase text-charcoal leading-tight mb-2">${producto.nombre}</h2>
+            <div class="flex items-baseline gap-4 mt-4">
+              <span class="font-display text-xl text-charcoal/35 line-through" data-oferta-precio-original>$${producto.precio.toLocaleString('es-AR')}</span>
+              <span class="font-display text-5xl font-bold text-charcoal" data-oferta-precio>$${o.precio_oferta.toLocaleString('es-AR')}</span>
+              <span class="font-display text-sm font-bold bg-charcoal text-amber px-3 py-1">-${pct}%</span>
+            </div>
+          </div>
+          <div class="flex-shrink-0">
+            <a href="./menu.html"
+               class="block bg-charcoal hover:bg-[#141210] text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-12 py-5 transition-all duration-300 hover:scale-105 whitespace-nowrap text-center">
+              Ver en la carta →
+            </a>
+          </div>
+        </div>
+      `;
+      section.classList.remove('hidden');
+      gsap.from('.oferta-inner', { scrollTrigger: { trigger: '.oferta-inner', start: 'top 82%' }, y: 40, opacity: 0, duration: 0.9, ease: 'power3.out' });
+    }
+
+    /* ── initPage: llama SIEMPRE a renderOferta, sin importar oferta.activa ── */
+    function initPage(data) {
+      if (data.negocio && data.negocio.analytics_id) initGA4(data.negocio.analytics_id);
+      renderHorarios(data);
+      renderOferta(data);
+    }
+
+    fetch('./productos.json', { cache: 'no-cache' })
+      .then(r => r.json())
+      .then(initPage)
+      .catch(() => initPage(_FALLBACK));
+
+    /* ── Scroll: progress bar + back-to-top + WA float ── */
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('scroll-progress').style.width = (total > 0 ? scrolled / total * 100 : 0) + '%';
+
+      const btt = document.getElementById('back-to-top');
+      scrolled > 300 ? btt.classList.add('visible') : btt.classList.remove('visible');
+
+      const heroH = document.getElementById('hero').offsetHeight;
+      const wa = document.getElementById('wa-float');
+      scrolled > heroH * 0.6 ? wa.classList.add('visible') : wa.classList.remove('visible');
+    }, { passive: true });
+
+    /* ── Service Worker ── */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

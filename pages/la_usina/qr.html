@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR La Usina — Imprimible</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0ece2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      gap: 24px;
+    }
+
+    /* Printable card */
+    .card {
+      background: #1C1A17;
+      color: #EDE4D3;
+      width: 340px;
+      padding: 40px 36px 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      opacity: 0.9;
+      border: 2px solid rgba(217,142,52,0.35);
+    }
+
+    .brand { text-align: center; }
+    .brand-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #D98E34;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: rgba(237,228,211,0.45);
+      margin-top: 4px;
+    }
+
+    .divider { width: 100%; height: 1px; background: rgba(217,142,52,0.18); }
+
+    .qr-wrapper { background: #fff; padding: 14px; border-radius: 4px; }
+
+    #qrcode canvas, #qrcode img { display: block; }
+
+    .cta { text-align: center; }
+    .cta-main {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #D98E34;
+      margin-bottom: 4px;
+    }
+    .cta-sub { font-size: 12px; color: rgba(237,228,211,0.4); }
+
+    .url {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      color: rgba(237,228,211,0.22);
+      word-break: break-all;
+      text-align: center;
+    }
+
+    /* Screen-only controls */
+    .controls { display: flex; gap: 12px; align-items: center; }
+    .btn {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      padding: 12px 28px;
+      transition: all 0.2s ease;
+    }
+    .btn-primary { background: #A84C2D; color: #EDE4D3; font-weight: 600; }
+    .btn-primary:hover { background: #D98E34; color: #1C1A17; }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(28,26,23,0.3);
+      color: rgba(28,26,23,0.55);
+    }
+    .btn-secondary:hover { border-color: rgba(28,26,23,0.6); color: #1C1A17; }
+
+    .hint {
+      font-size: 13px;
+      color: rgba(28,26,23,0.4);
+      text-align: center;
+      max-width: 320px;
+    }
+
+    /* URL editor */
+    .url-editor {
+      display: flex; gap: 8px; align-items: center;
+      background: white;
+      border: 1px solid rgba(28,26,23,0.15);
+      padding: 8px 12px;
+      width: 100%; max-width: 400px;
+    }
+    .url-editor label {
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(28,26,23,0.45); white-space: nowrap;
+    }
+    .url-editor input {
+      flex: 1; border: none; outline: none; font-size: 12px;
+      color: #1C1A17; font-family: monospace;
+    }
+
+    @media print {
+      body { background: white; padding: 0; min-height: unset; justify-content: flex-start; }
+      .controls, .hint, .url-editor { display: none !important; }
+      .card { box-shadow: none; margin: 0 auto; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card" id="print-card">
+    <img src="./img/logo.png" alt="La Usina" class="logo">
+
+    <div class="brand">
+      <p class="brand-name">La Usina</p>
+      <p class="brand-sub">Bar Cultural · Las Flores</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="qr-wrapper">
+      <div id="qrcode"></div>
+    </div>
+
+    <div class="cta">
+      <p class="cta-main">Escaneá para ver la carta</p>
+      <p class="cta-sub">Tragos, cervezas y picadas · Belgrano 530</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="url" id="url-display"></p>
+  </div>
+
+  <div class="url-editor">
+    <label>URL</label>
+    <input type="text" id="url-input"
+           value="https://juliancarroccio.github.io/pushcommerce/pages/la_usina/menu.html"
+           oninput="updateQR(this.value)">
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" onclick="window.print()">🖨 Imprimir</button>
+    <button class="btn btn-secondary" onclick="downloadPNG()">⬇ Descargar PNG</button>
+  </div>
+
+  <p class="hint">Reemplazá la URL cuando el sitio esté en producción.<br>El QR se regenera automáticamente.</p>
+
+  <script>
+    const DEFAULT_URL = 'https://juliancarroccio.github.io/pushcommerce/pages/la_usina/menu.html';
+    let qrInstance = null;
+
+    function buildQR(url) {
+      const container = document.getElementById('qrcode');
+      container.innerHTML = '';
+      qrInstance = new QRCode(container, {
+        text: url,
+        width: 220,
+        height: 220,
+        colorDark: '#1C1A17',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M,
+      });
+      document.getElementById('url-display').textContent = url;
+      document.getElementById('url-input').value = url;
+    }
+
+    function updateQR(url) {
+      if (!url.trim()) return;
+      buildQR(url.trim());
+    }
+
+    function downloadPNG() {
+      const canvas = document.querySelector('#qrcode canvas');
+      if (!canvas) return alert('Esperá a que cargue el QR.');
+      const link = document.createElement('a');
+      link.download = 'qr-la-usina.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    buildQR(DEFAULT_URL);
+  </script>
+</body>
+</html>

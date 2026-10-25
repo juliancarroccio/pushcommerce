@@ -1,0 +1,30 @@
+{
+  "negocio": {
+    "nombre": "La Usina",
+    "whatsapp": "54922445001234"
+  },
+  "evento": {
+    "nombre": "Noche de Blues — Fierro Viejo en vivo",
+    "descripcion": "Fierro Viejo, trío de blues y rock de la zona, presenta su show en La Usina. Primera vez que tocan en Las Flores — cupo limitado, el salón no es grande.",
+    "fecha": "2026-11-07",
+    "hora": "22:30",
+    "puertas": "21:30",
+    "lugar": "La Usina, Belgrano 530, Las Flores"
+  },
+  "tipos_entrada": [
+    {
+      "id": "general",
+      "nombre": "Entrada general",
+      "descripcion": "",
+      "precio": 4500,
+      "cupo_total": 80
+    },
+    {
+      "id": "consumicion",
+      "nombre": "Entrada + consumición",
+      "descripcion": "Incluye un trago de bienvenida a elección de la barra.",
+      "precio": 6500,
+      "cupo_total": 40
+    }
+  ]
+}

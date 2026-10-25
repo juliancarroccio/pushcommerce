@@ -136,6 +136,39 @@ negocio real, son puramente técnicos.)
 
 ---
 
+## ⚠️ PENDIENTE AL FINAL DE TODO — no olvidar (decidido por Julian, 2026-10-25)
+
+Estas dos tareas van **últimas** en la lista, después de todo lo demás. Las
+dos tocan a Cattorini (cliente real), y cualquier cambio ahí hay que
+explicárselo al cliente desde cero antes de aplicarlo.
+
+1. **Seguridad de Cattorini — fases 0 a 3**. Diagnóstico completo en engram
+   (`pushcommerce/seguridad-firestore-rules`).
+   - **Fase 0:** escapar el `innerHTML` de `portal.html` y `pedidos.html`.
+     Hoy hay un XSS que permite robar el PAT de GitHub (`portal.html:2152`,
+     `:2412`).
+   - **Fase 1:** endurecer las reglas sin tocar código (movimientos con
+     strings acotados).
+   - **Fase 2:** reglas y código juntos.
+     - Login del dueño con email y contraseña, en lugar del login anónimo.
+     - `isStaff()` en las reglas.
+     - Índice de seguimiento por código para poder cerrar el `list`.
+     - Dejar de guardar el código mayorista en texto plano.
+     - Migrar los pedidos existentes.
+   - **Fase 3:** probar en el emulador y desplegar coordinado.
+   - Preparar la **explicación para el cliente**, sobre todo cómo cambia el
+     login del panel.
+   - **Necesito de Julian:** las reglas reales de producción (Firebase
+     Console → Firestore → Reglas).
+2. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
+   e-commerce** para ofrecer, más los que hagan falta.
+   - Investigación previa en engram (`roadmap/mercadopago-factibilidad`):
+     Checkout Pro necesita backend → Cloudflare Workers, nunca Vercel Hobby
+     (prohíbe uso comercial).
+   - Falta comparar Stripe y otros, definir el módulo para la skill
+     `new_client` y el precio del servicio.
+   - Aplicarlo a Cattorini va junto con su seguridad.
+
 ## Tasks pendientes (ver también el task tracker)
 
 **Skills:**

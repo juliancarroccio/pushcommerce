@@ -46,9 +46,10 @@
     Ver references/local-db-testing.md.
   -->
   <script>
+    // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
+    // Global a propósito: habilita los atajos de demo (local-db-testing.md §Clientes DEMO).
+    const DEMO = true;
     (function () {
-      // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
-      const DEMO = true;
       const local = DEMO || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
       const srcs = local
         ? ['./firestore-mock.js']
@@ -60,6 +61,8 @@
       srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
     })();
   </script>
+  <script src="./firebase-init.js"></script>
+  <script src="./eventos-core.js"></script>
 
   <style>
     html { scroll-behavior: smooth; }
@@ -67,7 +70,8 @@
     .step { display: none; }
     .step.active { display: block; }
     .opt-card { transition: border-color .2s ease, background-color .2s ease, transform .15s ease; cursor: pointer; }
-    .opt-card:hover { transform: translateY(-2px); }
+    .opt-card:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(217,142,52,.5); }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid #E8A855; outline-offset: 2px; }
     .opt-card.selected { border-color: #D98E34; background: rgba(217,142,52,0.08); }
     .opt-card.agotado { opacity: .4; cursor: not-allowed; pointer-events: none; }
     .fade-in { animation: fadeIn .3s ease; }
@@ -132,12 +136,12 @@
 
       <div class="grid gap-4">
         <div>
-          <label class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Nombre y apellido</label>
-          <input id="in-nombre" type="text" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="Tu nombre">
+          <label for="in-nombre" class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Nombre y apellido</label>
+          <input id="in-nombre" type="text" maxlength="80" autocomplete="name" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="Tu nombre">
         </div>
         <div>
-          <label class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Teléfono / WhatsApp</label>
-          <input id="in-telefono" type="tel" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="02244 15-...">
+          <label for="in-telefono" class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Teléfono / WhatsApp</label>
+          <input id="in-telefono" type="tel" maxlength="30" autocomplete="tel" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="02244 15-...">
         </div>
       </div>
 
@@ -178,27 +182,7 @@
   </footer>
 
   <script>
-    /* ═══════════════════════ Config / Firebase ═══════════════════════ */
-    const FIREBASE_CONFIG = {
-      // TODO (antes de producción): este es un cliente demo inventado, nunca
-      // se creó el proyecto Firebase real. Reemplazar con la config real
-      // siguiendo references/firestore-setup-guide.md antes de ir a producción.
-      apiKey: "TODO_REEMPLAZAR",
-      authDomain: "la-usina-demo.firebaseapp.com",
-      projectId: "la-usina-demo",
-      storageBucket: "la-usina-demo.firebasestorage.app",
-      messagingSenderId: "0",
-      appId: "1:0:web:0"
-    };
-
-    let db = null;
-    try {
-      firebase.initializeApp(FIREBASE_CONFIG);
-      db = firebase.firestore();
-      firebase.auth().signInAnonymously().catch(() => {});
-    } catch (e) {
-      console.error('Error inicializando Firebase/mock:', e);
-    }
+    const E = window.EventosCore;
 
     /* ═══════════════════════ Datos (evento.json) ═══════════════════════ */
     const _FALLBACK = {
@@ -216,18 +200,9 @@
     };
 
     let EVENTO = null;
-    let CUPOS = {}; // tipoId -> vendidas (en vivo, vía onSnapshot)
-
-    /* ═══════════════════════ Código de entrada (9+ caracteres — ver nota de seguridad en module-eventos.md) ═══════════════════════
-       Más largo que el código corto (5) de pedidos/turnos: acá el código ES
-       la entrada — quien lo adivina entra gratis a un evento pago. */
-    const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin 0/O/1/I
-    function genCodigoEntrada(len = 9) {
-      return Array.from({ length: len }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join('');
-    }
+    let CUPOS = null; // tipoId -> { vendidas, cupo_total } (cupos/{tipo}, públicos, en vivo)
 
     function money(n) { return '$' + Number(n).toLocaleString('es-AR'); }
-
     function fechaLabelEvento(ev) {
       const d = new Date(ev.fecha + 'T00:00:00');
       return d.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -245,38 +220,36 @@
       });
       ocultarError();
     }
-
     function mostrarError(msg) {
       const box = document.getElementById('error-box');
       box.textContent = msg;
       box.classList.remove('hidden');
     }
-    function ocultarError() {
-      document.getElementById('error-box').classList.add('hidden');
-    }
+    function ocultarError() { document.getElementById('error-box').classList.add('hidden'); }
 
-    /* ── Paso 1: elegir tipo de entrada ── */
+    /* ── Paso 1: elegir tipo de entrada (disponibilidad desde cupos/{tipo}) ── */
     function renderTipos() {
+      if (!CUPOS) return;
       document.getElementById('tipos-loading').classList.add('hidden');
       const cont = document.getElementById('tipos-list');
       cont.innerHTML = EVENTO.tipos_entrada.map(t => {
-        const vendidas = CUPOS[t.id] || 0;
-        const quedan = Math.max(0, t.cupo_total - vendidas);
-        const agotado = quedan <= 0;
+        const c = CUPOS[t.id];
+        const quedan = c ? Math.max(0, (c.cupo_total || 0) - (c.vendidas || 0)) : 0;
+        const agotado = quedan <= 0; // sin cupo configurado también se muestra deshabilitado
+        const txt = !c ? 'No disponible todavía' : (agotado ? 'Agotado' : quedan + ' disponibles');
         return `
-        <div class="opt-card border border-amber/15 bg-charcoal-mid p-6 ${agotado ? 'agotado' : ''}" ${agotado ? '' : `onclick="elegirTipo('${t.id}')"`}>
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <h3 class="font-display text-xl uppercase text-cream mb-1">${t.nombre}</h3>
-              ${t.descripcion ? `<p class="text-cream/50 text-sm mb-2">${t.descripcion}</p>` : ''}
-              <p class="text-amber/70 text-xs font-display tracking-widest uppercase">
-                ${agotado ? 'Agotado' : quedan + ' disponibles'}
-              </p>
-            </div>
-            <p class="font-display text-2xl text-amber whitespace-nowrap">${money(t.precio)}</p>
-          </div>
-        </div>`;
+        <button type="button" class="opt-card w-full text-left border border-amber/15 bg-charcoal-mid p-6 ${agotado ? 'agotado' : ''}" data-tipo="${escHTML(t.id)}" ${agotado ? 'disabled' : ''}>
+          <span class="flex items-start justify-between gap-4">
+            <span class="block">
+              <span class="block font-display text-xl uppercase text-cream mb-1">${escHTML(t.nombre)}</span>
+              ${t.descripcion ? `<span class="block text-cream/50 text-sm mb-2">${escHTML(t.descripcion)}</span>` : ''}
+              <span class="block text-amber/70 text-xs font-display tracking-widest uppercase" data-quedan>${txt}</span>
+            </span>
+            <span class="block font-display text-2xl text-amber whitespace-nowrap">${money(t.precio)}</span>
+          </span>
+        </button>`;
       }).join('');
+      cont.querySelectorAll('[data-tipo]:not([disabled])').forEach(b => b.addEventListener('click', () => elegirTipo(b.dataset.tipo)));
     }
 
     function elegirTipo(tipoId) {
@@ -285,60 +258,32 @@
       irAPaso(2);
     }
 
-    /* ── Paso 2 → 3: confirmar compra (transacción anti-oversell) ── */
+    /* ── Paso 2 → 3: confirmar compra (transacción anti-oversell sobre cupos/{tipo}) ── */
     async function comprarEntrada() {
       ocultarError();
       const nombre = document.getElementById('in-nombre').value.trim();
       const telefono = document.getElementById('in-telefono').value.trim();
-      if (!nombre || !telefono) { mostrarError('Completá nombre y teléfono para confirmar.'); return; }
+      if (nombre.length < 2 || nombre.length > 80 || telefono.length > 30 || telefono.replace(/\D/g, '').length < 8) {
+        mostrarError('Completá tu nombre y un teléfono válido (con característica) para confirmar.');
+        return;
+      }
+      if (!db) { mostrarError('No hay conexión con la venta de entradas. Escribinos por WhatsApp.'); return; }
 
       const btn = document.getElementById('btn-confirmar');
       btn.disabled = true;
       btn.textContent = 'Confirmando...';
 
-      const codigo = genCodigoEntrada();
-      const entradaData = {
-        tipo_id: estado.tipo.id,
-        tipo_nombre: estado.tipo.nombre,
-        comprador: { nombre, telefono },
-        codigo,
-        estado: 'pendiente_pago',
-        validadaEn: null,
-        creadoEn: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
       try {
-        if (typeof db.runTransaction === 'function') {
-          /* Firestore real: transacción atómica — relee cupos y revalida antes de escribir. */
-          await db.runTransaction(async (tx) => {
-            const cupoRef = db.collection('cupos').doc(estado.tipo.id);
-            const cupoSnap = await tx.get(cupoRef);
-            const vendidas = cupoSnap.exists ? (cupoSnap.data().vendidas || 0) : 0;
-            if (vendidas >= estado.tipo.cupo_total) throw new Error('AGOTADO');
-            tx.set(cupoRef, { vendidas: vendidas + 1 });
-            const entradaRef = db.collection('entradas').doc();
-            tx.set(entradaRef, entradaData);
-          });
-        } else {
-          /* Mock de nivel 0 (local-db-testing.md): no soporta runTransaction,
-             así que el re-chequeo es best-effort — alcanza para probar la
-             LÓGICA de anti-oversell, no la atomicidad real de dos compras
-             simultáneas. Eso se valida contra el emulador (nivel 1) antes de
-             producción. */
-          const cupoRef = db.collection('cupos').doc(estado.tipo.id);
-          const cupoSnap = await cupoRef.get();
-          const vendidas = cupoSnap.exists ? (cupoSnap.data().vendidas || 0) : 0;
-          if (vendidas >= estado.tipo.cupo_total) throw new Error('AGOTADO');
-          await cupoRef.set({ vendidas: vendidas + 1 });
-          await db.collection('entradas').add(entradaData);
-        }
-
+        const codigo = await E.comprarEntrada(db, estado.tipo, { nombre, telefono });
         mostrarConfirmacion(codigo);
       } catch (e) {
-        if (e.message === 'AGOTADO') {
-          mostrarError('Justo se agotó ese tipo de entrada mientras completabas tus datos. Elegí otro, por favor.');
+        if (e.code === 'AGOTADO') {
           irAPaso(1);
           renderTipos();
+          mostrarError('Justo se agotó ese tipo de entrada mientras completabas tus datos. Elegí otro, por favor.');
+        } else if (e.code === 'SIN_CUPO_CONFIGURADO') {
+          irAPaso(1);
+          mostrarError('Esta entrada todavía no está a la venta. Escribinos por WhatsApp.');
         } else {
           mostrarError('No se pudo confirmar la compra: ' + e.message);
         }
@@ -349,42 +294,41 @@
     }
 
     function mostrarConfirmacion(codigo) {
-      const resumen = `${estado.tipo.nombre} para "${EVENTO.evento.nombre}" — ${fechaLabelEvento(EVENTO.evento)}.`;
-      document.getElementById('confirmado-resumen').textContent = resumen;
+      document.getElementById('confirmado-resumen').textContent = `${estado.tipo.nombre} para "${EVENTO.evento.nombre}" — ${fechaLabelEvento(EVENTO.evento)}.`;
       document.getElementById('confirmado-codigo').textContent = codigo;
       const urlEntrada = `./mi-entrada.html?code=${codigo}`;
-      document.getElementById('link-mi-entrada').textContent = location.origin + location.pathname.replace('evento.html', '') + urlEntrada.replace('./', '');
-      document.getElementById('link-mi-entrada').href = urlEntrada;
+      const link = document.getElementById('link-mi-entrada');
+      link.textContent = new URL(urlEntrada, location.href).href;
+      link.href = urlEntrada;
       document.getElementById('btn-ver-entrada').href = urlEntrada;
-      const wa = EVENTO.negocio.whatsapp;
       const msg = encodeURIComponent(`¡Hola La Usina! Compré "${estado.tipo.nombre}" para ${EVENTO.evento.nombre}. Código: ${codigo}. ¿Cómo coordinamos el pago?`);
-      document.getElementById('wa-confirmado').href = `https://wa.me/${wa}?text=${msg}`;
+      document.getElementById('wa-confirmado').href = `https://wa.me/${EVENTO.negocio.whatsapp}?text=${msg}`;
       irAPaso(3);
+      window.scrollTo({ top: 0 });
     }
 
     /* ═══════════════════════ Boot ═══════════════════════ */
-    function initPage(data) {
+    async function initPage(data) {
       EVENTO = data;
       document.getElementById('ev-nombre').textContent = EVENTO.evento.nombre;
       document.getElementById('ev-cuando').textContent = `${fechaLabelEvento(EVENTO.evento)} · Puertas ${EVENTO.evento.puertas}hs · Show ${EVENTO.evento.hora}hs`;
       document.getElementById('ev-lugar').textContent = EVENTO.evento.lugar;
       document.getElementById('ev-descripcion').textContent = EVENTO.evento.descripcion;
 
-      if (db) {
-        db.collection('cupos').onSnapshot(snap => {
-          CUPOS = {};
-          snap.docs.forEach(d => { CUPOS[d.id] = d.data().vendidas || 0; });
-          renderTipos();
-        }, err => { console.error('onSnapshot cupos:', err); renderTipos(); });
-      } else {
+      if (!db) { CUPOS = {}; renderTipos(); return; }
+      // SOLO DEMO: siembra los cupos/{tipo} que falten (en un cliente real los crea el staff).
+      try { await E.sembrarCuposDemo(db, EVENTO); } catch (e) { console.warn('No se pudieron sembrar los cupos demo:', e); }
+      db.collection('cupos').onSnapshot(snap => {
+        CUPOS = {};
+        snap.forEach(d => { CUPOS[d.id] = d.data(); });
         renderTipos();
-      }
+      }, err => { console.error('onSnapshot cupos:', err); CUPOS = {}; renderTipos(); });
     }
 
     fetch('./evento.json', { cache: 'no-cache' })
       .then(r => r.json())
-      .then(initPage)
-      .catch(() => initPage(_FALLBACK));
+      .catch(() => _FALLBACK)
+      .then(initPage);
   </script>
 </body>
 </html>

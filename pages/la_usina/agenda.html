@@ -46,9 +46,10 @@
     Ver references/local-db-testing.md.
   -->
   <script>
+    // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
+    // Global a propósito: habilita los atajos de demo (local-db-testing.md §Clientes DEMO).
+    const DEMO = true;
     (function () {
-      // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
-      const DEMO = true;
       const local = DEMO || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
       const srcs = local
         ? ['./firestore-mock.js']
@@ -60,6 +61,8 @@
       srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
     })();
   </script>
+  <script src="./firebase-init.js"></script>
+  <script src="./turnos-core.js"></script>
 
   <style>
     html { scroll-behavior: smooth; }
@@ -67,29 +70,54 @@
     .step { display: none; }
     .step.active { display: block; }
     .opt-card { transition: border-color .2s ease, background-color .2s ease, transform .15s ease; cursor: pointer; }
-    .opt-card:hover { transform: translateY(-2px); }
+    .opt-card:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(217,142,52,.5); }
+    .opt-card:disabled { opacity: .35; cursor: not-allowed; }
     .opt-card.selected { border-color: #D98E34; background: rgba(217,142,52,0.08); }
     .slot-btn { transition: all .15s ease; }
     .slot-btn:disabled { opacity: .3; cursor: not-allowed; }
     .slot-btn.selected { background: #D98E34; color: #1C1A17; border-color: #D98E34; }
+    button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #E8A855; outline-offset: 2px; }
     .fade-in { animation: fadeIn .3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    .bar-line { display: flex; align-items: center; gap: 1rem; }
-    .bar-line::before, .bar-line::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: .2; }
     .spinner { border: 2px solid rgba(217,142,52,.25); border-top-color: #D98E34; border-radius: 50%; width: 18px; height: 18px; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Selector de vista (solo DEMO) ── */
+    .vista-btn { padding: .55rem 1.1rem; font-family: 'Bebas Neue', sans-serif; letter-spacing: .18em; font-size: .85rem; text-transform: uppercase; color: rgba(237,228,211,.55); transition: background-color .15s ease, color .15s ease; }
+    .vista-btn[aria-pressed="true"] { background: #D98E34; color: #1C1A17; }
+    .vista-btn:not([aria-pressed="true"]):hover { color: #EDE4D3; }
+
+    /* ── Calendario mensual ── */
+    .cal-grid { width: 100%; border-collapse: separate; border-spacing: 4px; table-layout: fixed; }
+    .cal-grid th { font-family: 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: .14em; font-size: .72rem; color: rgba(237,228,211,.4); padding-bottom: 4px; }
+    .cal-grid td { padding: 0; }
+    .cal-dia { position: relative; width: 100%; aspect-ratio: 1 / 1; min-height: 38px; display: flex; align-items: center; justify-content: center;
+               font-family: 'Bebas Neue', sans-serif; font-size: 1.15rem; letter-spacing: .04em; border: 1px solid transparent; background: transparent; color: rgba(237,228,211,.2); }
+    .cal-dia[aria-disabled="true"] { cursor: not-allowed; }
+    .cal-disponible { background: #242019; border-color: rgba(217,142,52,.35); color: #EDE4D3; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+    .cal-disponible:hover { border-color: #D98E34; background: rgba(217,142,52,.12); }
+    .cal-lleno { color: rgba(237,228,211,.38); text-decoration: line-through; text-decoration-color: rgba(168,76,45,.9); border-color: rgba(168,76,45,.35);
+                 background: repeating-linear-gradient(135deg, rgba(168,76,45,.14) 0 4px, transparent 4px 8px); }
+    .cal-hoy::after { content: ''; position: absolute; bottom: 5px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #E8A855; }
+    .cal-hoy { box-shadow: inset 0 0 0 1px rgba(232,168,85,.6); }
+    .cal-sel { background: #D98E34 !important; color: #1C1A17 !important; border-color: #D98E34 !important; }
+    .cal-sel.cal-hoy::after { background: #1C1A17; }
+    .cal-nav { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(217,142,52,.25); color: #D98E34; font-size: 1.1rem; }
+    .cal-nav:disabled { opacity: .2; cursor: not-allowed; }
+    .cal-nav:not(:disabled):hover { border-color: #D98E34; }
+    .ley { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; margin-right: 6px; }
   </style>
 </head>
 <body class="bg-charcoal text-cream font-sans min-h-screen">
 
   <!-- NAV -->
   <nav class="border-b border-amber/10">
-    <div class="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
+    <div class="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between gap-4">
       <a href="./index.html" class="flex items-center gap-3">
         <img src="./img/logo.png" alt="La Usina" class="w-8 h-8 rounded-full object-cover">
         <span class="font-display text-sm tracking-[0.25em] uppercase text-cream/90">La Usina</span>
       </a>
-      <a href="./index.html" class="text-cream/40 hover:text-amber text-xs font-display tracking-widest uppercase transition-colors">← Volver al sitio</a>
+      <a href="./seguimiento.html" class="text-cream/40 hover:text-amber text-xs font-display tracking-widest uppercase transition-colors text-right">Ya reservé →</a>
     </div>
   </nav>
 
@@ -102,18 +130,18 @@
     </div>
 
     <!-- Progreso -->
-    <div id="progreso" class="flex items-center justify-center gap-2 mb-10 text-[10px] font-display tracking-widest uppercase text-cream/30">
+    <div id="progreso" class="flex flex-wrap items-center justify-center gap-2 mb-10 text-[10px] font-display tracking-widest uppercase text-cream/30">
       <span data-step-label="1" class="text-amber">1. Servicio</span>
-      <span class="opacity-30">→</span>
+      <span class="opacity-30" aria-hidden="true">→</span>
       <span data-step-label="2">2. Día</span>
-      <span class="opacity-30">→</span>
+      <span class="opacity-30" aria-hidden="true">→</span>
       <span data-step-label="3">3. Horario</span>
-      <span class="opacity-30">→</span>
+      <span class="opacity-30" aria-hidden="true">→</span>
       <span data-step-label="4">4. Tus datos</span>
     </div>
 
     <!-- ERROR general -->
-    <div id="error-box" class="hidden mb-6 border border-red-700/40 bg-red-900/20 text-red-200 text-sm px-5 py-4"></div>
+    <div id="error-box" role="alert" class="hidden mb-6 border border-red-700/40 bg-red-900/20 text-red-200 text-sm px-5 py-4"></div>
 
     <!-- PASO 1: Servicio -->
     <section id="step-1" class="step active fade-in">
@@ -123,17 +151,58 @@
     <!-- PASO 2: Día -->
     <section id="step-2" class="step fade-in">
       <div class="mb-6">
-        <button class="text-amber/60 hover:text-amber text-xs font-display tracking-widest uppercase" onclick="irAPaso(1)">← Cambiar servicio</button>
+        <button type="button" class="text-amber/60 hover:text-amber text-xs font-display tracking-widest uppercase" onclick="irAPaso(1)">← Cambiar servicio</button>
       </div>
       <h2 class="font-display text-2xl uppercase text-cream mb-1" id="step2-titulo"></h2>
       <p id="step2-nota" class="text-cream/45 text-sm mb-6"></p>
+
+      <!-- Solo DEMO: muestra las dos vistas. En un cliente real el dueño elige una (turnos.json → selector_fecha). -->
+      <div id="demo-vista" class="hidden mb-6 border border-dashed border-amber/40 p-4">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+          <p id="demo-vista-label" class="font-display text-[11px] tracking-[0.3em] uppercase text-amber">Vista</p>
+          <div role="group" aria-labelledby="demo-vista-label" class="inline-flex border border-amber/40">
+            <button type="button" class="vista-btn" data-vista="botones" aria-pressed="true">Botones</button>
+            <button type="button" class="vista-btn border-l border-amber/40" data-vista="calendario" aria-pressed="false">Calendario</button>
+          </div>
+        </div>
+        <p class="text-cream/45 text-xs mt-3 leading-relaxed">Modo demo: acá podés probar las dos. En la versión real el dueño elige una sola desde su panel.</p>
+      </div>
+
+      <div id="fechas-loading" class="hidden flex items-center gap-3 text-cream/40 text-sm py-6"><span class="spinner"></span> Buscando días con lugar...</div>
+
+      <!-- Vista: botones (próximas fechas) -->
       <div id="fechas-list" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+
+      <!-- Vista: calendario mensual -->
+      <div id="calendario" class="hidden">
+        <div class="flex items-center justify-between mb-3">
+          <button type="button" id="cal-prev" class="cal-nav" aria-label="Mes anterior">‹</button>
+          <h3 id="cal-mes" class="font-display text-xl uppercase tracking-widest text-cream" aria-live="polite"></h3>
+          <button type="button" id="cal-next" class="cal-nav" aria-label="Mes siguiente">›</button>
+        </div>
+        <table class="cal-grid" role="grid" aria-labelledby="cal-mes">
+          <thead>
+            <tr>
+              <th scope="col" abbr="lunes">Lu</th><th scope="col" abbr="martes">Ma</th><th scope="col" abbr="miércoles">Mi</th>
+              <th scope="col" abbr="jueves">Ju</th><th scope="col" abbr="viernes">Vi</th><th scope="col" abbr="sábado">Sá</th><th scope="col" abbr="domingo">Do</th>
+            </tr>
+          </thead>
+          <tbody id="cal-body"></tbody>
+        </table>
+        <p class="text-cream/40 text-[11px] mt-4 flex flex-wrap gap-x-5 gap-y-2">
+          <span><span class="ley" style="background:#242019;border:1px solid rgba(217,142,52,.5)"></span>Con lugar</span>
+          <span><span class="ley" style="background:repeating-linear-gradient(135deg, rgba(168,76,45,.5) 0 3px, transparent 3px 6px);border:1px solid rgba(168,76,45,.5)"></span>Sin lugar</span>
+          <span><span class="ley" style="border:1px solid rgba(237,228,211,.12)"></span>Sin atención</span>
+          <span><span class="ley" style="border-radius:50%;width:7px;height:7px;background:#E8A855;margin-left:3px"></span>Hoy</span>
+        </p>
+        <p class="text-cream/30 text-[11px] mt-2">Teclado: flechas para moverte, Enter para elegir, RePág/AvPág para cambiar de mes.</p>
+      </div>
     </section>
 
     <!-- PASO 3: Horario -->
     <section id="step-3" class="step fade-in">
       <div class="mb-6">
-        <button class="text-amber/60 hover:text-amber text-xs font-display tracking-widest uppercase" onclick="irAPaso(2)">← Cambiar día</button>
+        <button type="button" class="text-amber/60 hover:text-amber text-xs font-display tracking-widest uppercase" onclick="irAPaso(2)">← Cambiar día</button>
       </div>
       <h2 class="font-display text-2xl uppercase text-cream mb-1" id="step3-titulo"></h2>
       <p id="step3-sub" class="text-cream/45 text-sm mb-6"></p>
@@ -145,7 +214,7 @@
     <!-- PASO 4: Datos -->
     <section id="step-4" class="step fade-in">
       <div class="mb-6">
-        <button class="text-amber/60 hover:text-amber text-xs font-display tracking-widest uppercase" onclick="irAPaso(3)">← Cambiar horario</button>
+        <button type="button" class="text-amber/60 hover:text-amber text-xs font-display tracking-widest uppercase" onclick="irAPaso(3)">← Cambiar horario</button>
       </div>
       <div class="border border-amber/15 bg-charcoal-mid p-6 mb-6">
         <p class="font-display text-[10px] tracking-[0.3em] uppercase text-amber mb-2">Vas a reservar</p>
@@ -154,27 +223,27 @@
 
       <div class="grid gap-4">
         <div>
-          <label class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Nombre y apellido</label>
-          <input id="in-nombre" type="text" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="Tu nombre">
+          <label for="in-nombre" class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Nombre y apellido</label>
+          <input id="in-nombre" type="text" maxlength="80" autocomplete="name" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="Tu nombre">
         </div>
         <div>
-          <label class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Teléfono / WhatsApp</label>
-          <input id="in-telefono" type="tel" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="02244 15-...">
+          <label for="in-telefono" class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Teléfono / WhatsApp</label>
+          <input id="in-telefono" type="tel" maxlength="30" autocomplete="tel" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="02244 15-...">
         </div>
         <div>
-          <label class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Nota (opcional)</label>
-          <textarea id="in-nota" rows="2" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="Cuántos son, algo que debamos saber..."></textarea>
+          <label for="in-nota" class="block text-xs font-display tracking-widest uppercase text-cream/50 mb-2">Nota (opcional)</label>
+          <textarea id="in-nota" rows="2" maxlength="300" class="w-full bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none" placeholder="Cuántos son, algo que debamos saber..."></textarea>
         </div>
       </div>
 
-      <button id="btn-confirmar" onclick="confirmarReserva()" class="mt-8 w-full bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-10 py-4 transition-all duration-300">
+      <button id="btn-confirmar" type="button" onclick="confirmarReserva()" class="mt-8 w-full bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-10 py-4 transition-all duration-300">
         Confirmar reserva
       </button>
     </section>
 
     <!-- PASO 5: Confirmado -->
     <section id="step-5" class="step fade-in text-center">
-      <div class="border border-amber/30 bg-charcoal-mid p-10">
+      <div class="border border-amber/30 bg-charcoal-mid p-6 sm:p-10">
         <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">¡Reserva confirmada!</p>
         <h2 class="font-display text-3xl uppercase text-cream mb-6">Te esperamos</h2>
         <p id="confirmado-resumen" class="text-cream/70 text-sm mb-6 leading-relaxed"></p>
@@ -182,10 +251,10 @@
           <p class="text-[10px] font-display tracking-widest uppercase text-cream/40 mb-1">Código de tu reserva</p>
           <p id="confirmado-codigo" class="font-display text-3xl text-amber tracking-widest"></p>
         </div>
-        <p class="text-cream/40 text-xs mb-8">Guardá este código. Si necesitás cambiar algo, escribinos por WhatsApp mencionándolo.</p>
+        <p class="text-cream/40 text-xs mb-8 max-w-sm mx-auto leading-relaxed">Guardá este código: con él ves el estado de tu reserva cuando quieras. Para cambiar o cancelar, escribinos por WhatsApp mencionándolo.</p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
-          <a id="wa-confirmado" href="#" target="_blank" rel="noopener" class="inline-block bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Avisar por WhatsApp</a>
-          <a href="./index.html" class="inline-block border border-amber/40 hover:border-amber text-amber font-display tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Volver al sitio</a>
+          <a id="link-seguimiento" href="./seguimiento.html" class="inline-block bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Ver mi reserva</a>
+          <a id="wa-confirmado" href="#" target="_blank" rel="noopener" class="inline-block border border-amber/40 hover:border-amber text-amber font-display tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Avisar por WhatsApp</a>
         </div>
       </div>
     </section>
@@ -201,32 +270,13 @@
   </footer>
 
   <script>
-    /* ═══════════════════════ Config / Firebase ═══════════════════════ */
-    const FIREBASE_CONFIG = {
-      // TODO (antes de producción): este es un cliente demo inventado, nunca
-      // se creó el proyecto Firebase real. Reemplazar con la config real
-      // siguiendo references/firestore-setup-guide.md antes de ir a producción.
-      apiKey: "TODO_REEMPLAZAR",
-      authDomain: "la-usina-demo.firebaseapp.com",
-      projectId: "la-usina-demo",
-      storageBucket: "la-usina-demo.firebasestorage.app",
-      messagingSenderId: "0",
-      appId: "1:0:web:0"
-    };
-
-    let db = null;
-    try {
-      firebase.initializeApp(FIREBASE_CONFIG);
-      db = firebase.firestore();
-      firebase.auth().signInAnonymously().catch(() => {});
-    } catch (e) {
-      console.error('Error inicializando Firebase/mock:', e);
-    }
+    const T = window.TurnosCore;
 
     /* ═══════════════════════ Datos (turnos.json) ═══════════════════════ */
     const _FALLBACK = {
       "negocio": { "nombre": "La Usina", "whatsapp": "54922445001234", "direccion": "Belgrano 530, Las Flores, Buenos Aires (B7200)", "telefono": "02244 15-500-1234" },
       "modo_confirmacion": "instantanea",
+      "selector_fecha": "botones",
       "servicios": [
         { "id": "mesa-show", "nombre": "Mesa para la noche de show", "recurso_id": "mesas-show", "duracion_min": 30, "nota": "Para la noche de show del sábado — banda en vivo desde las 22:30. Elegí tu hora de llegada." },
         { "id": "privado-eventos", "nombre": "Privado para eventos", "recurso_id": "privado", "duracion_min": 120, "nota": "Cumpleaños, after-office o reuniones privadas en el salón que normalmente está cerrado al público entre semana." }
@@ -240,81 +290,11 @@
     };
 
     let TURNOS = null;
-
-    function recursoDe(servicio) { return TURNOS.recursos.find(r => r.id === servicio.recurso_id); }
-
-    /* ═══════════════════════ Helpers de tiempo ═══════════════════════ */
-    const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-
-    function toMin(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
-    function toHHMM(min) { const h = Math.floor(min / 60), m = min % 60; return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); }
-    function diaDeLaSemana(dateObj) { return DIAS[dateObj.getDay()]; }
-    function fechaISO(dateObj) {
-      const y = dateObj.getFullYear(), m = String(dateObj.getMonth() + 1).padStart(2, '0'), d = String(dateObj.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-    function fechaLabel(dateObj) {
-      return dateObj.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' });
-    }
-
-    /* Próximas fechas (hasta 90 días) en las que el recurso tiene alguna franja */
-    function proximasFechasValidas(recurso, n) {
-      const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-      const out = [];
-      for (let i = 0; i < 90 && out.length < n; i++) {
-        const d = new Date(hoy); d.setDate(hoy.getDate() + i);
-        const dia = diaDeLaSemana(d);
-        if ((recurso.horario_atencion[dia] || []).length > 0) out.push(d);
-      }
-      return out;
-    }
-
-    /* ═══════════════════════ Algoritmo de slots (capacidad-aware) ═══════════════════════
-       Extiende el algoritmo base de references/module-turnos.md: en vez de
-       boolean "ocupado/libre" por solapamiento, cuenta cuántas reservas
-       'confirmado' solapan el candidato y lo compara contra recurso.capacidad
-       (8 mesas en paralelo para el show, 1 para el salón privado — mismo
-       recurso_id, capacidad distinta). Un 'bloqueado' manual del dueño
-       consume el slot entero sin importar la capacidad. */
-    function solapa(hIniA, hFinA, hIniB, hFinB) {
-      return toMin(hIniA) < toMin(hFinB) && toMin(hFinA) > toMin(hIniB);
-    }
-
-    function slotsDisponibles(servicio, recurso, fecha, reservasExistentes) {
-      const dia = diaDeLaSemana(new Date(fecha + 'T00:00:00'));
-      const franjas = recurso.horario_atencion[dia] || [];
-      const intervalo = recurso.intervalo_slots_min;
-      const capacidad = recurso.capacidad || 1;
-      const confirmadas = reservasExistentes.filter(r => r.estado === 'confirmado');
-      const bloqueos = reservasExistentes.filter(r => r.estado === 'bloqueado');
-
-      const slots = [];
-      for (const franja of franjas) {
-        for (let inicio = toMin(franja.abre); inicio + servicio.duracion_min <= toMin(franja.cierra); inicio += intervalo) {
-          const fin = inicio + servicio.duracion_min;
-          const hora_inicio = toHHMM(inicio), hora_fin = toHHMM(fin);
-          const bloqueado = bloqueos.some(r => solapa(hora_inicio, hora_fin, r.hora_inicio, r.hora_fin));
-          const ocupadas = confirmadas.filter(r => solapa(hora_inicio, hora_fin, r.hora_inicio, r.hora_fin)).length;
-          const libres = bloqueado ? 0 : Math.max(0, capacidad - ocupadas);
-          slots.push({ hora_inicio, hora_fin, libres, capacidad });
-        }
-      }
-      return slots;
-    }
-
-    async function leerReservas(recursoId, fecha) {
-      const snap = await db.collection('reservas').where('recurso_id', '==', recursoId).where('fecha', '==', fecha).get();
-      return snap.docs.map(d => d.data());
-    }
-
-    /* ═══════════════════════ Código de seguimiento ═══════════════════════ */
-    const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin 0/O/1/I
-    function genCodigo(len = 5) {
-      return Array.from({ length: len }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join('');
-    }
+    let vista = 'botones'; // 'botones' | 'calendario' (turnos.json → selector_fecha)
 
     /* ═══════════════════════ Estado del wizard ═══════════════════════ */
-    const estado = { servicio: null, recurso: null, fecha: null, fechaObj: null, slot: null };
+    const estado = { servicio: null, recurso: null, fecha: null, slot: null, calMes: null };
+    const cacheRango = new Map(); // `${recurso}|${desde}|${hasta}` -> Promise<Map>
 
     function irAPaso(n) {
       document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -324,64 +304,207 @@
         el.classList.toggle('text-cream/30', Number(el.dataset.stepLabel) !== n);
       });
       ocultarError();
+      if (n === 2 && estado.servicio) renderDia(); // al volver del paso 3, refresca la ocupación
     }
-
     function mostrarError(msg) {
       const box = document.getElementById('error-box');
       box.textContent = msg;
       box.classList.remove('hidden');
     }
-    function ocultarError() {
-      document.getElementById('error-box').classList.add('hidden');
+    function ocultarError() { document.getElementById('error-box').classList.add('hidden'); }
+
+    /** Ocupación pública (slots) de un rango, con cache corta mientras se navega el paso 2. */
+    function ocupacionRango(desde, hasta) {
+      const k = `${estado.recurso.id}|${desde}|${hasta}`;
+      if (!cacheRango.has(k)) {
+        const p = T.leerOcupacionRango(db, estado.recurso.id, desde, hasta);
+        p.catch(() => cacheRango.delete(k));
+        cacheRango.set(k, p);
+      }
+      return cacheRango.get(k);
     }
 
     /* ── Paso 1: elegir servicio ── */
     function renderServicios() {
       const cont = document.getElementById('servicios-list');
       cont.innerHTML = TURNOS.servicios.map(s => {
-        const r = recursoDe(s);
+        const r = T.recursoDe(TURNOS, s);
         return `
-        <div class="opt-card border border-amber/15 bg-charcoal-mid p-6" onclick="elegirServicio('${s.id}')">
-          <h3 class="font-display text-xl uppercase text-cream mb-1">${s.nombre}</h3>
-          <p class="text-cream/50 text-sm mb-3">${s.nota || ''}</p>
-          <p class="text-amber/70 text-xs font-display tracking-widest uppercase">Duración ${s.duracion_min} min · ${r.capacidad > 1 ? r.capacidad + ' lugares por horario' : 'Un solo salón'}</p>
-        </div>`;
+        <button type="button" class="opt-card text-left border border-amber/15 bg-charcoal-mid p-6" data-servicio="${escHTML(s.id)}">
+          <span class="block font-display text-xl uppercase text-cream mb-1">${escHTML(s.nombre)}</span>
+          <span class="block text-cream/50 text-sm mb-3">${escHTML(s.nota || '')}</span>
+          <span class="block text-amber/70 text-xs font-display tracking-widest uppercase">Duración ${Number(s.duracion_min)} min · ${r.capacidad > 1 ? r.capacidad + ' lugares por horario' : 'Un solo salón'}</span>
+        </button>`;
       }).join('');
+      cont.querySelectorAll('[data-servicio]').forEach(b => b.addEventListener('click', () => elegirServicio(b.dataset.servicio)));
     }
 
     function elegirServicio(servicioId) {
       estado.servicio = TURNOS.servicios.find(s => s.id === servicioId);
-      estado.recurso = recursoDe(estado.servicio);
+      estado.recurso = T.recursoDe(TURNOS, estado.servicio);
+      estado.fecha = null;
+      estado.calMes = null;
       document.getElementById('step2-titulo').textContent = estado.servicio.nombre;
       document.getElementById('step2-nota').textContent = estado.servicio.nota || '';
-      renderFechas();
       irAPaso(2);
     }
 
-    /* ── Paso 2: elegir día ── */
-    function renderFechas() {
-      const fechas = proximasFechasValidas(estado.recurso, 8);
-      const cont = document.getElementById('fechas-list');
-      if (!fechas.length) {
-        cont.innerHTML = `<p class="text-cream/40 text-sm col-span-full">No hay fechas disponibles en los próximos 90 días.</p>`;
-        return;
-      }
-      cont.innerHTML = fechas.map(d => `
-        <button class="opt-card border border-amber/15 bg-charcoal-mid px-4 py-4 text-center" onclick="elegirFecha('${fechaISO(d)}')">
-          <span class="block font-display text-sm uppercase text-cream">${fechaLabel(d)}</span>
-        </button>`).join('');
+    /* ── Paso 2: elegir día (botones o calendario) ── */
+    function renderDia() {
+      cacheRango.clear();
+      document.querySelectorAll('.vista-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vista === vista)));
+      document.getElementById('fechas-list').classList.toggle('hidden', vista !== 'botones');
+      document.getElementById('calendario').classList.toggle('hidden', vista !== 'calendario');
+      if (vista === 'calendario') renderCalendario();
+      else renderFechas();
     }
 
-    async function elegirFecha(fechaStr) {
-      estado.fecha = fechaStr;
-      estado.fechaObj = new Date(fechaStr + 'T00:00:00');
+    async function renderFechas() {
+      const cont = document.getElementById('fechas-list');
+      const loading = document.getElementById('fechas-loading');
+      const fechas = T.proximasFechasConAtencion(estado.recurso, 8);
+      if (!fechas.length) {
+        cont.innerHTML = `<p class="text-cream/40 text-sm col-span-full">No hay fechas disponibles en los próximos ${T.VENTANA_DIAS} días.</p>`;
+        return;
+      }
+      cont.innerHTML = '';
+      loading.classList.remove('hidden');
+      let ocup;
+      try { ocup = await ocupacionRango(fechas[0], fechas[fechas.length - 1]); }
+      catch (e) { ocup = new Map(); mostrarError('No se pudo consultar la disponibilidad: ' + e.message); }
+      finally { loading.classList.add('hidden'); }
+      if (vista !== 'botones') return;
+      cont.innerHTML = fechas.map(f => {
+        const ok = T.estadoDia(estado.servicio, estado.recurso, f, ocup.get(f)) === 'disponible';
+        return `
+        <button type="button" class="opt-card border border-amber/15 bg-charcoal-mid px-4 py-4 text-center" data-fecha="${f}" ${ok ? '' : 'disabled'}>
+          <span class="block font-display text-sm uppercase text-cream">${T.fechaLabel(f)}</span>
+          ${ok ? '' : '<span class="block text-[10px] font-display tracking-widest uppercase text-cream/60 mt-1">Sin lugar</span>'}
+        </button>`;
+      }).join('');
+      cont.querySelectorAll('[data-fecha]:not([disabled])').forEach(b => b.addEventListener('click', () => elegirFecha(b.dataset.fecha)));
+    }
+
+    /* ── Calendario mensual (lun → dom), acotado a la ventana de reserva ── */
+    const primerDiaMes = (iso) => iso.slice(0, 8) + '01';
+    function ultimoDiaMes(iso) { const d = T.parseFecha(primerDiaMes(iso)); d.setMonth(d.getMonth() + 1); d.setDate(0); return T.fechaISO(d); }
+    function mesRelativo(iso, n) { const d = T.parseFecha(primerDiaMes(iso)); d.setMonth(d.getMonth() + n); return T.fechaISO(d); }
+    const ESTADO_TXT = { disponible: 'con lugar', lleno: 'sin lugar', cerrado: 'sin atención', fuera: 'no disponible' };
+
+    async function renderCalendario(focoFecha) {
+      const hoy = T.hoyISO(), ultimo = T.ultimoDiaReservable();
+      const minMes = primerDiaMes(hoy), maxMes = primerDiaMes(ultimo);
+      if (!estado.calMes) estado.calMes = primerDiaMes(estado.fecha || hoy);
+      const mes = estado.calMes;
+      const ini = mes, fin = ultimoDiaMes(mes);
+
+      document.getElementById('cal-mes').textContent = T.parseFecha(mes).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+      document.getElementById('cal-prev').disabled = mes <= minMes;
+      document.getElementById('cal-next').disabled = mes >= maxMes;
+
+      const desde = ini < hoy ? hoy : ini, hasta = fin > ultimo ? ultimo : fin;
+      let ocup = new Map();
+      if (desde <= hasta) {
+        const loading = document.getElementById('fechas-loading');
+        loading.classList.remove('hidden');
+        try { ocup = await ocupacionRango(desde, hasta); }
+        catch (e) { mostrarError('No se pudo consultar la disponibilidad: ' + e.message); }
+        finally { loading.classList.add('hidden'); }
+      }
+      if (vista !== 'calendario' || estado.calMes !== mes) return; // cambió mientras se leía
+
+      const offset = (T.parseFecha(ini).getDay() + 6) % 7; // lunes = 0
+      const nDias = Number(fin.slice(8));
+      const celdas = [];
+      for (let i = 0; i < offset; i++) celdas.push('<td></td>');
+      let primeraDisponible = null;
+      for (let d = 1; d <= nDias; d++) {
+        const f = mes.slice(0, 8) + String(d).padStart(2, '0');
+        const st = T.estadoDia(estado.servicio, estado.recurso, f, ocup.get(f));
+        if (st === 'disponible' && !primeraDisponible) primeraDisponible = f;
+        const clases = ['cal-dia', 'cal-' + st];
+        if (f === hoy) clases.push('cal-hoy');
+        if (f === estado.fecha) clases.push('cal-sel');
+        const label = `${T.fechaLabelLarga(f)}${f === hoy ? ' (hoy)' : ''}: ${ESTADO_TXT[st]}`;
+        celdas.push(`<td role="gridcell"><button type="button" class="${clases.join(' ')}" data-fecha="${f}" data-estado="${st}"
+          aria-label="${label}" aria-disabled="${st !== 'disponible'}"${f === estado.fecha ? ' aria-pressed="true"' : ''}${f === hoy ? ' aria-current="date"' : ''} tabindex="-1">${d}</button></td>`);
+      }
+      while (celdas.length % 7) celdas.push('<td></td>');
+      let html = '';
+      for (let i = 0; i < celdas.length; i += 7) html += '<tr>' + celdas.slice(i, i + 7).join('') + '</tr>';
+      const body = document.getElementById('cal-body');
+      body.innerHTML = html;
+
+      // Roving tabindex: un solo día entra en el orden de Tab.
+      const candidato = [focoFecha, estado.fecha, primeraDisponible, (hoy >= ini && hoy <= fin) ? hoy : null, ini]
+        .find(f => f && f >= ini && f <= fin);
+      const btnFoco = body.querySelector(`[data-fecha="${candidato}"]`);
+      if (btnFoco) {
+        btnFoco.tabIndex = 0;
+        if (focoFecha) btnFoco.focus();
+      }
+    }
+
+    async function moverFocoCalendario(desdeFecha, deltaDias, deltaMeses) {
+      let destino;
+      if (deltaMeses) {
+        const mesDest = mesRelativo(desdeFecha, deltaMeses);
+        const dia = Math.min(Number(desdeFecha.slice(8)), Number(ultimoDiaMes(mesDest).slice(8)));
+        destino = mesDest.slice(0, 8) + String(dia).padStart(2, '0');
+      } else {
+        destino = T.addDias(desdeFecha, deltaDias);
+      }
+      const mesDestino = primerDiaMes(destino);
+      if (mesDestino < primerDiaMes(T.hoyISO()) || mesDestino > primerDiaMes(T.ultimoDiaReservable())) return;
+      if (mesDestino !== estado.calMes) {
+        estado.calMes = mesDestino;
+        await renderCalendario(destino);
+      } else {
+        const body = document.getElementById('cal-body');
+        body.querySelectorAll('.cal-dia').forEach(b => { b.tabIndex = -1; });
+        const b = body.querySelector(`[data-fecha="${destino}"]`);
+        if (b) { b.tabIndex = 0; b.focus(); }
+      }
+    }
+
+    document.getElementById('cal-body').addEventListener('click', (e) => {
+      const b = e.target.closest('.cal-dia');
+      if (!b || b.getAttribute('aria-disabled') === 'true') return;
+      elegirFecha(b.dataset.fecha);
+    });
+    document.getElementById('cal-body').addEventListener('keydown', (e) => {
+      const b = e.target.closest('.cal-dia');
+      if (!b) return;
+      const f = b.dataset.fecha;
+      const dow = (T.parseFecha(f).getDay() + 6) % 7;
+      const mov = {
+        ArrowLeft: [-1], ArrowRight: [1], ArrowUp: [-7], ArrowDown: [7],
+        Home: [-dow], End: [6 - dow], PageUp: [0, -1], PageDown: [0, 1],
+      }[e.key];
+      if (!mov) return;
+      e.preventDefault();
+      moverFocoCalendario(f, mov[0], mov[1] || 0);
+    });
+    document.getElementById('cal-prev').addEventListener('click', () => { estado.calMes = mesRelativo(estado.calMes, -1); renderCalendario(); });
+    document.getElementById('cal-next').addEventListener('click', () => { estado.calMes = mesRelativo(estado.calMes, 1); renderCalendario(); });
+
+    // Selector de vista: SOLO en DEMO (en un cliente real lo decide turnos.json).
+    document.querySelectorAll('.vista-btn').forEach(b => b.addEventListener('click', () => {
+      if (!DEMO || vista === b.dataset.vista) return;
+      vista = b.dataset.vista;
+      renderDia();
+    }));
+
+    async function elegirFecha(fecha) {
+      estado.fecha = fecha;
+      estado.calMes = primerDiaMes(fecha);
       document.getElementById('step3-titulo').textContent = estado.servicio.nombre;
-      document.getElementById('step3-sub').textContent = fechaLabel(estado.fechaObj);
+      document.getElementById('step3-sub').textContent = T.fechaLabelLarga(fecha);
       irAPaso(3);
       await renderSlots();
     }
 
-    /* ── Paso 3: elegir horario ── */
+    /* ── Paso 3: elegir horario (lee slots, nunca reservas) ── */
     async function renderSlots() {
       const loading = document.getElementById('slots-loading');
       const list = document.getElementById('slots-list');
@@ -391,52 +514,56 @@
       empty.classList.add('hidden');
 
       try {
-        const reservas = await leerReservas(estado.recurso.id, estado.fecha);
-        const slots = slotsDisponibles(estado.servicio, estado.recurso, estado.fecha, reservas);
+        const ocupacion = await T.leerOcupacion(db, estado.recurso.id, estado.fecha);
+        const slots = T.slotsDisponibles(estado.servicio, estado.recurso, estado.fecha, ocupacion);
         loading.classList.add('hidden');
+        if (!slots.length || slots.every(s => s.libres <= 0)) empty.classList.remove('hidden');
 
-        if (!slots.length) { empty.classList.remove('hidden'); return; }
-
-        list.innerHTML = slots.map(s => {
+        list.innerHTML = slots.map((s, i) => {
           const disabled = s.libres <= 0;
           const label = s.capacidad > 1
             ? `${s.hora_inicio} <span class="block text-[10px] opacity-60 mt-0.5">${disabled ? 'Sin lugar' : s.libres + '/' + s.capacidad + ' libres'}</span>`
             : `${s.hora_inicio}–${s.hora_fin} <span class="block text-[10px] opacity-60 mt-0.5">${disabled ? 'Ocupado' : 'Disponible'}</span>`;
-          return `<button class="slot-btn border border-amber/15 bg-charcoal-mid px-4 py-4 text-center font-display text-sm uppercase text-cream"
-                    ${disabled ? 'disabled' : `onclick='elegirSlot(${JSON.stringify(s)})'`}>
-                    ${label}
-                  </button>`;
+          return `<button type="button" class="slot-btn border border-amber/15 bg-charcoal-mid px-4 py-4 text-center font-display text-sm uppercase text-cream"
+                    data-slot="${i}" data-hora="${s.hora_inicio}" ${disabled ? 'disabled' : ''}>${label}</button>`;
         }).join('');
-
-        if (slots.every(s => s.libres <= 0)) empty.classList.remove('hidden');
+        list.querySelectorAll('[data-slot]:not([disabled])').forEach(b => b.addEventListener('click', () => elegirSlot(slots[Number(b.dataset.slot)])));
       } catch (e) {
         loading.classList.add('hidden');
         mostrarError('No se pudo calcular la disponibilidad: ' + e.message);
       }
     }
 
+    function horarioTxt(slot) {
+      return estado.servicio.duracion_min > 30 ? `de ${slot.hora_inicio} a ${slot.hora_fin}` : `a las ${slot.hora_inicio}`;
+    }
     function elegirSlot(slot) {
       estado.slot = slot;
-      const r = `${estado.servicio.nombre} · ${fechaLabel(estado.fechaObj)} · ${slot.hora_inicio}${estado.servicio.duracion_min > 30 ? '–' + slot.hora_fin : ''}`;
-      document.getElementById('resumen').textContent = r;
+      document.getElementById('resumen').textContent = `${estado.servicio.nombre} · ${T.fechaLabelLarga(estado.fecha)} · ${horarioTxt(slot)}`;
       irAPaso(4);
     }
 
-    /* ── Paso 4 → 5: confirmar (transacción anti-doble-reserva) ── */
+    /* ── Paso 4 → 5: confirmar (transacción sobre slots/ con doc refs) ── */
     async function confirmarReserva() {
       ocultarError();
       const nombre = document.getElementById('in-nombre').value.trim();
       const telefono = document.getElementById('in-telefono').value.trim();
-      const nota = document.getElementById('in-nota').value.trim();
-      if (!nombre || !telefono) { mostrarError('Completá nombre y teléfono para confirmar.'); return; }
+      const nota = document.getElementById('in-nota').value.trim().slice(0, 300);
+      if (nombre.length < 2 || telefono.replace(/\D/g, '').length < 8) {
+        mostrarError('Completá tu nombre y un teléfono válido (con característica) para confirmar.');
+        return;
+      }
+      if (!db) { mostrarError('No hay conexión con la base de reservas. Escribinos por WhatsApp.'); return; }
 
       const btn = document.getElementById('btn-confirmar');
       btn.disabled = true;
       btn.textContent = 'Confirmando...';
 
-      const codigo = genCodigo();
-      const docData = {
+      const codigo = genCodigo(6);
+      const docReserva = {
+        codigo,
         recurso_id: estado.recurso.id,
+        recurso_nombre: estado.recurso.nombre || estado.recurso.id,
         servicio_id: estado.servicio.id,
         servicio_nombre: estado.servicio.nombre,
         fecha: estado.fecha,
@@ -445,38 +572,17 @@
         cliente: { nombre, telefono },
         nota,
         estado: 'confirmado',
-        codigo,
-        creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+        creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
       };
 
       try {
-        if (typeof db.runTransaction === 'function') {
-          /* Firestore real: transacción atómica — relee y revalida antes de escribir. */
-          await db.runTransaction(async (tx) => {
-            const q = db.collection('reservas').where('recurso_id', '==', estado.recurso.id).where('fecha', '==', estado.fecha);
-            const snap = await tx.get(q);
-            const existentes = snap.docs.map(d => d.data());
-            validarCupoLibre(existentes);
-            const ref = db.collection('reservas').doc();
-            tx.set(ref, docData);
-          });
-        } else {
-          /* Mock de nivel 0 (local-db-testing.md): no soporta runTransaction,
-             así que el re-chequeo es best-effort (leer, validar, recién
-             escribir) — alcanza para probar la LÓGICA de disponibilidad, no
-             la atomicidad real de dos reservas simultáneas. Eso se valida
-             contra el emulador (nivel 1) antes de producción. */
-          const existentes = await leerReservas(estado.recurso.id, estado.fecha);
-          validarCupoLibre(existentes);
-          await db.collection('reservas').add(docData);
-        }
-
+        await T.reservarTurno(db, estado.recurso, docReserva);
         mostrarConfirmacion(codigo);
       } catch (e) {
-        if (e.message === 'OCUPADO') {
-          mostrarError('Justo se ocupó ese horario mientras completabas tus datos. Elegí otro, por favor.');
+        if (e.code === 'OCUPADO') {
           irAPaso(3);
           await renderSlots();
+          mostrarError('Justo se ocupó ese horario mientras completabas tus datos. Elegí otro, por favor.');
         } else {
           mostrarError('No se pudo confirmar la reserva: ' + e.message);
         }
@@ -486,26 +592,22 @@
       }
     }
 
-    function validarCupoLibre(existentes) {
-      const capacidad = estado.recurso.capacidad || 1;
-      const bloqueado = existentes.some(r => r.estado === 'bloqueado' && solapa(estado.slot.hora_inicio, estado.slot.hora_fin, r.hora_inicio, r.hora_fin));
-      const ocupadas = existentes.filter(r => r.estado === 'confirmado' && solapa(estado.slot.hora_inicio, estado.slot.hora_fin, r.hora_inicio, r.hora_fin)).length;
-      if (bloqueado || ocupadas >= capacidad) throw new Error('OCUPADO');
-    }
-
     function mostrarConfirmacion(codigo) {
-      const resumen = `${estado.servicio.nombre} para ${fechaLabel(estado.fechaObj)} a las ${estado.slot.hora_inicio}${estado.servicio.duracion_min > 30 ? ' hasta las ' + estado.slot.hora_fin : ''}.`;
-      document.getElementById('confirmado-resumen').textContent = resumen;
+      document.getElementById('confirmado-resumen').textContent =
+        `${estado.servicio.nombre} para el ${T.fechaLabelLarga(estado.fecha)} ${horarioTxt(estado.slot)}.`;
       document.getElementById('confirmado-codigo').textContent = codigo;
-      const wa = TURNOS.negocio.whatsapp;
-      const msg = encodeURIComponent(`¡Hola La Usina! Reservé "${estado.servicio.nombre}" para ${fechaLabel(estado.fechaObj)} a las ${estado.slot.hora_inicio}. Código: ${codigo}`);
-      document.getElementById('wa-confirmado').href = `https://wa.me/${wa}?text=${msg}`;
+      document.getElementById('link-seguimiento').href = `./seguimiento.html?code=${codigo}`;
+      const msg = encodeURIComponent(`¡Hola La Usina! Reservé "${estado.servicio.nombre}" para el ${T.fechaLabelLarga(estado.fecha)} ${horarioTxt(estado.slot)}. Código: ${codigo}`);
+      document.getElementById('wa-confirmado').href = `https://wa.me/${TURNOS.negocio.whatsapp}?text=${msg}`;
       irAPaso(5);
+      window.scrollTo({ top: 0 });
     }
 
     /* ═══════════════════════ Boot ═══════════════════════ */
     function initPage(data) {
       TURNOS = data;
+      vista = T.selectorFecha(TURNOS);
+      if (DEMO) document.getElementById('demo-vista').classList.remove('hidden');
       renderServicios();
     }
 

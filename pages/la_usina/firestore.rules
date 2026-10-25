@@ -1,0 +1,102 @@
+// La Usina — reglas para cuando exista el proyecto Firebase real.
+// Hoy es un cliente DEMO (DEMO = true → mock en localStorage, que NO ejecuta
+// estas reglas). Plantillas: module-reservas.md §Reglas (turnos, modo
+// instantáneo) y module-eventos.md §Reglas. NO probadas en el emulador
+// todavía (local-db-testing.md nivel 1) — hacerlo antes de usarlas.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isStaff() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'password'
+        && request.auth.token.email in ['TODO_EMAIL_DUENO'];
+    }
+    function esFecha(s) { return s is string && s.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'); }
+    function esHora(s) { return s is string && s.matches('^[0-2][0-9]:[0-5][0-9]$'); }
+    function slotIdDe(rec, fecha, hora) { return rec + '__' + fecha + '__' + hora.replace(':', ''); }
+
+    /* ───────────── Turnos (module-turnos.md, instantánea) ───────────── */
+    match /reservas/{codigo} {
+      allow create: if isStaff() || (
+        request.resource.data.keys().hasOnly(['codigo','recurso_id','recurso_nombre','servicio_id','servicio_nombre','fecha','hora_inicio','hora_fin','cliente','nota','estado','creadoEn'])
+        && request.resource.data.keys().hasAll(['codigo','recurso_id','servicio_id','fecha','hora_inicio','hora_fin','cliente','estado','creadoEn'])
+        && codigo.matches('^[A-HJ-NP-Z2-9]{6}$')
+        && request.resource.data.codigo == codigo
+        && request.resource.data.recurso_id in ['mesas-show', 'privado']
+        && esFecha(request.resource.data.fecha)
+        && esHora(request.resource.data.hora_inicio) && esHora(request.resource.data.hora_fin)
+        && request.resource.data.hora_inicio < request.resource.data.hora_fin
+        && request.resource.data.cliente.keys().hasOnly(['nombre','telefono'])
+        && request.resource.data.cliente.nombre is string
+        && request.resource.data.cliente.nombre.size() >= 2 && request.resource.data.cliente.nombre.size() <= 80
+        && request.resource.data.cliente.telefono is string
+        && request.resource.data.cliente.telefono.size() >= 8 && request.resource.data.cliente.telefono.size() <= 30
+        && (!('nota' in request.resource.data) || (request.resource.data.nota is string && request.resource.data.nota.size() <= 300))
+        && request.resource.data.estado == 'confirmado'
+        && request.resource.data.creadoEn == request.time
+        // instantánea: no hay reserva confirmada sin su lock (el slot del inicio la incluye).
+        && getAfter(/databases/$(database)/documents/slots/$(slotIdDe(request.resource.data.recurso_id, request.resource.data.fecha, request.resource.data.hora_inicio))).data.reservas.hasAny([codigo])
+      );
+      allow get: if true;                        // seguimiento.html: doc(codigo)
+      allow list, update, delete: if isStaff();  // panel
+    }
+
+    // Contador por intervalo. La capacidad sale de la regla, no del cliente:
+    // si el dueño cambia la capacidad en el portal, actualizar acá y redeployar.
+    match /slots/{slotId} {
+      function capacidadDe(rec) { return {'mesas-show': 8, 'privado': 1}[rec]; }
+      allow read: if true;
+      allow create: if isStaff() || (
+        request.resource.data.keys().hasOnly(['recurso_id','fecha','hora','ocupados','capacidad','reservas'])
+        && request.resource.data.ocupados == 1
+        && request.resource.data.reservas.size() == 1
+        && request.resource.data.capacidad == capacidadDe(request.resource.data.recurso_id)
+        && slotId == slotIdDe(request.resource.data.recurso_id, request.resource.data.fecha, request.resource.data.hora)
+        && existsAfter(/databases/$(database)/documents/reservas/$(request.resource.data.reservas[0]))
+      );
+      allow update: if isStaff() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ocupados','reservas'])
+        && request.resource.data.ocupados == resource.data.ocupados + 1
+        && request.resource.data.ocupados <= resource.data.capacidad
+        && request.resource.data.reservas.size() == resource.data.reservas.size() + 1
+        // un slot bloqueado tiene ocupados == capacidad → el +1 ya no pasa la línea de arriba
+        && existsAfter(/databases/$(database)/documents/reservas/$(request.resource.data.reservas[request.resource.data.reservas.size() - 1]))
+      );
+      allow delete: if isStaff();
+    }
+
+    /* ───────────── Eventos (module-eventos.md) ───────────── */
+    match /cupos/{tipoId} {
+      allow read: if true;
+      allow create, delete: if isStaff();
+      allow update: if isStaff() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['vendidas','ultima_entrada'])
+        && request.resource.data.vendidas == resource.data.vendidas + 1
+        && request.resource.data.vendidas <= resource.data.cupo_total
+        && getAfter(/databases/$(database)/documents/entradas/$(request.resource.data.ultima_entrada)).data.tipo_id == tipoId
+        && !exists(/databases/$(database)/documents/entradas/$(request.resource.data.ultima_entrada))
+      );
+    }
+
+    match /entradas/{codigo} {
+      allow create: if isStaff() || (
+        request.resource.data.keys().hasOnly(['codigo','tipo_id','comprador','estado','validadaEn','creadoEn'])
+        && codigo.matches('^[A-HJ-NP-Z2-9]{9}$')
+        && request.resource.data.codigo == codigo
+        && request.resource.data.comprador.keys().hasOnly(['nombre','telefono'])
+        && request.resource.data.comprador.nombre is string
+        && request.resource.data.comprador.nombre.size() >= 2 && request.resource.data.comprador.nombre.size() <= 80
+        && request.resource.data.comprador.telefono is string
+        && request.resource.data.comprador.telefono.size() >= 8 && request.resource.data.comprador.telefono.size() <= 30
+        && request.resource.data.estado == 'pendiente_pago'
+        && request.resource.data.validadaEn == null
+        && request.resource.data.creadoEn == request.time
+        && getAfter(/databases/$(database)/documents/cupos/$(request.resource.data.tipo_id)).data.vendidas
+             == get(/databases/$(database)/documents/cupos/$(request.resource.data.tipo_id)).data.vendidas + 1
+      );
+      allow get: if true;                        // mi-entrada.html: doc(codigo)
+      allow list, update, delete: if isStaff();  // portal y validar.html (staff)
+    }
+  }
+}

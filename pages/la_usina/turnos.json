@@ -6,6 +6,7 @@
     "telefono": "02244 15-500-1234"
   },
   "modo_confirmacion": "instantanea",
+  "selector_fecha": "botones",
   "servicios": [
     {
       "id": "mesa-show",

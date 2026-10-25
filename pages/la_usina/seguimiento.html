@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi reserva · La Usina</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" href="./img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./img/favicon-180.png">
+  <meta name="theme-color" content="#A84C2D">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            charcoal:        '#1C1A17',
+            'charcoal-mid':  '#242019',
+            'charcoal-light':'#2E2821',
+            rust:            '#A84C2D',
+            'rust-dark':     '#7A3620',
+            amber:           '#D98E34',
+            'amber-lt':      '#E8A855',
+            cream:           '#EDE4D3',
+          },
+          fontFamily: {
+            display: ['Bebas Neue', 'sans-serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!--
+    Carga condicional: en localhost usa el mock de Firestore (Level 0, cero
+    instalación, localStorage) — en cualquier otro host, los SDKs reales.
+    Ver references/local-db-testing.md.
+  -->
+  <script>
+    // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
+    // Global a propósito: habilita los atajos de demo (local-db-testing.md §Clientes DEMO).
+    const DEMO = true;
+    (function () {
+      const local = DEMO || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const srcs = local
+        ? ['./firestore-mock.js']
+        : [
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js',
+          ];
+      srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
+    })();
+  </script>
+  <script src="./firebase-init.js"></script>
+  <script src="./turnos-core.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid #E8A855; outline-offset: 2px; }
+    .fade-in { animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .spinner { border: 2px solid rgba(217,142,52,.25); border-top-color: #D98E34; border-radius: 50%; width: 22px; height: 22px; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-charcoal text-cream font-sans min-h-screen flex flex-col">
+
+  <!-- NAV -->
+  <nav class="border-b border-amber/10">
+    <div class="max-w-xl mx-auto px-6 py-5 flex items-center justify-between gap-4">
+      <a href="./index.html" class="flex items-center gap-3">
+        <img src="./img/logo.png" alt="La Usina" class="w-8 h-8 rounded-full object-cover">
+        <span class="font-display text-sm tracking-[0.25em] uppercase text-cream/90">La Usina</span>
+      </a>
+      <a href="./agenda.html" class="text-cream/40 hover:text-amber text-xs font-display tracking-widest uppercase transition-colors text-right">Nueva reserva →</a>
+    </div>
+  </nav>
+
+  <main class="flex-1 w-full max-w-xl mx-auto px-6 py-14 text-center">
+
+    <!-- Sin código en la URL -->
+    <div id="sin-codigo" class="hidden fade-in">
+      <p class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4">Mi reserva</p>
+      <h1 class="font-display text-3xl uppercase text-cream mb-4">Consultá tu reserva</h1>
+      <p class="text-cream/50 text-sm mb-8">Escribí el código de 6 caracteres que te dimos al reservar.</p>
+      <form id="form-buscar" class="flex gap-3 max-w-sm mx-auto">
+        <label for="in-buscar-codigo" class="sr-only">Código de reserva</label>
+        <input id="in-buscar-codigo" type="text" maxlength="12" autocomplete="off" placeholder="TU CÓDIGO" class="flex-1 min-w-0 bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none uppercase tracking-widest text-sm text-center">
+        <button type="submit" class="bg-rust hover:bg-rust-dark text-cream font-display tracking-widest uppercase text-sm px-6 py-3">Ver</button>
+      </form>
+    </div>
+
+    <!-- Cargando -->
+    <div id="cargando" class="hidden fade-in flex flex-col items-center gap-4 py-10">
+      <span class="spinner"></span>
+      <p class="text-cream/40 text-sm">Buscando tu reserva...</p>
+    </div>
+
+    <!-- No encontrada -->
+    <div id="no-encontrada" class="hidden fade-in">
+      <p class="font-display text-[11px] tracking-[0.38em] uppercase text-red-400 mb-4">No encontrada</p>
+      <h1 class="font-display text-3xl uppercase text-cream mb-4">No encontramos ese código</h1>
+      <p class="text-cream/50 text-sm mb-8 leading-relaxed">Revisá que esté completo y bien escrito. Si recién reservaste, esperá un minuto y volvé a probar; si no, consultanos por WhatsApp.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a id="wa-no-encontrada" href="#" target="_blank" rel="noopener" class="inline-block bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Consultar por WhatsApp</a>
+        <a href="./seguimiento.html" class="inline-block border border-amber/40 hover:border-amber text-amber font-display tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Probar otro código</a>
+      </div>
+    </div>
+
+    <!-- Reserva -->
+    <div id="reserva" class="hidden fade-in">
+      <p id="r-eyebrow" class="font-display text-[11px] tracking-[0.38em] uppercase text-amber mb-4"></p>
+      <h1 id="r-titulo" class="font-display text-3xl uppercase text-cream mb-4"></h1>
+      <p id="r-texto" class="text-cream/60 text-sm mb-8 leading-relaxed"></p>
+      <div class="border border-amber/30 bg-charcoal-mid p-6 mb-8 text-left">
+        <dl class="grid grid-cols-[auto,1fr] gap-x-5 gap-y-3 text-sm">
+          <dt class="font-display text-[11px] tracking-widest uppercase text-cream/40 pt-0.5">Servicio</dt><dd id="r-servicio" class="text-cream"></dd>
+          <dt class="font-display text-[11px] tracking-widest uppercase text-cream/40 pt-0.5">Día</dt><dd id="r-fecha" class="text-cream"></dd>
+          <dt class="font-display text-[11px] tracking-widest uppercase text-cream/40 pt-0.5">Horario</dt><dd id="r-hora" class="text-cream"></dd>
+          <dt class="font-display text-[11px] tracking-widest uppercase text-cream/40 pt-0.5">A nombre de</dt><dd id="r-nombre" class="text-cream break-words"></dd>
+          <dt class="font-display text-[11px] tracking-widest uppercase text-cream/40 pt-0.5">Código</dt><dd id="r-codigo" class="font-display text-xl text-amber tracking-widest"></dd>
+        </dl>
+      </div>
+      <div id="r-cancelar" class="border-t border-amber/10 pt-6">
+        <p class="font-display text-[11px] tracking-[0.3em] uppercase text-amber mb-2">¿Necesitás cambiar o cancelar?</p>
+        <p class="text-cream/45 text-xs mb-4 leading-relaxed">Escribinos por WhatsApp con tu código y lo resolvemos. Si no vas a venir, avisanos así liberamos el lugar para otra persona.</p>
+        <a id="wa-cancelar" href="#" target="_blank" rel="noopener" class="inline-block border border-amber/40 hover:border-amber text-amber font-display tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Escribir por WhatsApp</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="text-center py-10 text-cream/20 text-xs">
+    © 2026 La Usina · Las Flores, Buenos Aires
+    <div class="mt-3 flex justify-center gap-6">
+      <a href="./privacidad.html" class="hover:text-amber/60 transition-colors">Privacidad</a>
+      <a href="./terminos.html" class="hover:text-amber/60 transition-colors">Términos</a>
+    </div>
+  </footer>
+
+  <script>
+    const T = window.TurnosCore;
+    let WA_NEGOCIO = '54922445001234';
+    fetch('./turnos.json', { cache: 'no-cache' }).then(r => r.json())
+      .then(d => { if (d.negocio && d.negocio.whatsapp) WA_NEGOCIO = d.negocio.whatsapp; actualizarLinksWA(); })
+      .catch(() => {});
+
+    const waUrl = (txt) => `https://wa.me/${WA_NEGOCIO}?text=${encodeURIComponent(txt)}`;
+    let codigoActual = '';
+    function actualizarLinksWA() {
+      if (!codigoActual) return;
+      document.getElementById('wa-no-encontrada').href = waUrl(`¡Hola La Usina! Quiero consultar por mi reserva, código ${codigoActual}.`);
+      document.getElementById('wa-cancelar').href = waUrl(`¡Hola La Usina! Quiero cambiar/cancelar mi reserva, código ${codigoActual}.`);
+    }
+
+    function mostrar(id) {
+      ['sin-codigo', 'cargando', 'no-encontrada', 'reserva'].forEach(x => document.getElementById(x).classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    document.getElementById('form-buscar').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const c = normalizarCodigo(document.getElementById('in-buscar-codigo').value);
+      if (c) location.href = `./seguimiento.html?code=${encodeURIComponent(c)}`;
+    });
+
+    const TEXTOS = {
+      confirmado: { eyebrow: 'Reserva confirmada', titulo: 'Te esperamos', texto: 'Tu lugar está reservado. Si se te complica, avisanos con tiempo.', cancelable: true },
+      pendiente:  { eyebrow: 'Solicitud recibida', titulo: 'Falta confirmar', texto: 'Recibimos tu pedido; todavía no está confirmado. Te avisamos por WhatsApp.', cancelable: true },
+      completado: { eyebrow: 'Reserva cumplida', titulo: '¡Gracias por venir!', texto: 'Esta reserva ya pasó. Te esperamos la próxima.', cancelable: false },
+      cancelado:  { eyebrow: 'Cancelada', titulo: 'Reserva cancelada', texto: 'Esta reserva fue cancelada y el lugar quedó libre. Si pensás que es un error, escribinos.', cancelable: false },
+      rechazada:  { eyebrow: 'Sin confirmar', titulo: 'No pudimos confirmar tu solicitud', texto: 'No teníamos lugar para lo que pediste. Escribinos y buscamos otra opción.', cancelable: false },
+    };
+
+    function render(r) {
+      const key = r.estado === 'cancelado' && r.motivo === 'rechazada' ? 'rechazada' : r.estado;
+      const t = TEXTOS[key];
+      if (!t) { mostrar('no-encontrada'); return; } // ej. un bloqueo interno: no es una reserva de cliente
+      document.getElementById('r-eyebrow').textContent = t.eyebrow;
+      document.getElementById('r-eyebrow').className = 'font-display text-[11px] tracking-[0.38em] uppercase mb-4 ' + (key === 'cancelado' || key === 'rechazada' ? 'text-red-400' : 'text-amber');
+      document.getElementById('r-titulo').textContent = t.titulo;
+      document.getElementById('r-texto').textContent = t.texto;
+      document.getElementById('r-servicio').textContent = r.servicio_nombre || r.recurso_nombre || '';
+      document.getElementById('r-fecha').textContent = r.fecha ? T.fechaLabelLarga(r.fecha) : '';
+      document.getElementById('r-hora').textContent = r.hora_inicio ? `${r.hora_inicio} a ${r.hora_fin}` : '';
+      document.getElementById('r-nombre').textContent = r.cliente ? r.cliente.nombre : '';
+      document.getElementById('r-codigo').textContent = r.codigo;
+      document.getElementById('r-cancelar').classList.toggle('hidden', !t.cancelable);
+      mostrar('reserva');
+    }
+
+    function escuchar(codigo) {
+      codigoActual = codigo;
+      actualizarLinksWA();
+      mostrar('cargando');
+      if (!db) { mostrar('no-encontrada'); return; }
+      // get por ID (doc ID = código): el público tiene `get`, nunca `list`.
+      db.collection('reservas').doc(codigo).onSnapshot(snap => {
+        if (!snap.exists) { mostrar('no-encontrada'); return; }
+        render(snap.data());
+      }, err => {
+        console.error('onSnapshot reserva:', err);
+        mostrar('no-encontrada');
+      });
+    }
+
+    const code = normalizarCodigo(new URLSearchParams(location.search).get('code'));
+    if (!code) mostrar('sin-codigo');
+    else escuchar(code);
+  </script>
+</body>
+</html>

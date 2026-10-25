@@ -45,9 +45,10 @@
     Ver references/local-db-testing.md.
   -->
   <script>
+    // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
+    // Global a propósito: habilita los atajos de demo (local-db-testing.md §Clientes DEMO).
+    const DEMO = true;
     (function () {
-      // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
-      const DEMO = true;
       const local = DEMO || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
       const srcs = local
         ? ['./firestore-mock.js']
@@ -59,6 +60,8 @@
       srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
     })();
   </script>
+  <script src="./firebase-init.js"></script>
+  <script src="./eventos-core.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -91,7 +94,8 @@
       <h1 class="font-display text-3xl uppercase text-cream mb-4">Falta el código</h1>
       <p class="text-cream/50 text-sm mb-8">Abrí este link desde el mensaje que recibiste al comprar tu entrada (termina en <code>?code=...</code>), o escribí el código manualmente.</p>
       <div class="flex gap-3 max-w-sm mx-auto">
-        <input id="in-buscar-codigo" type="text" placeholder="TU CÓDIGO" class="flex-1 bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none uppercase tracking-widest text-sm text-center">
+        <label for="in-buscar-codigo" class="sr-only">Código de entrada</label>
+        <input id="in-buscar-codigo" type="text" maxlength="14" autocomplete="off" placeholder="TU CÓDIGO" onkeydown="if(event.key==='Enter') buscarPorInput();" class="flex-1 min-w-0 bg-charcoal-mid border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none uppercase tracking-widest text-sm text-center">
         <button onclick="buscarPorInput()" class="bg-rust hover:bg-rust-dark text-cream font-display tracking-widest uppercase text-sm px-6 py-3">Ver</button>
       </div>
     </div>
@@ -106,7 +110,8 @@
     <div id="no-encontrada" class="hidden fade-in">
       <p class="font-display text-[11px] tracking-[0.38em] uppercase text-red-400 mb-4">No encontrada</p>
       <h1 class="font-display text-3xl uppercase text-cream mb-4">No existe ese código</h1>
-      <p class="text-cream/50 text-sm mb-8">Revisá que el código esté completo y bien escrito. Si comprás por acá y tenés dudas, escribinos por WhatsApp.</p>
+      <p class="text-cream/50 text-sm mb-8">Revisá que el código esté completo y bien escrito. Si recién compraste, esperá un minuto; si no, escribinos por WhatsApp.</p>
+      <a id="wa-no-encontrada" href="#" target="_blank" rel="noopener" class="inline-block bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-8 py-3 mb-3 transition-colors">Consultar por WhatsApp</a><br>
       <a href="./evento.html" class="inline-block border border-amber/40 hover:border-amber text-amber font-display tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Comprar una entrada</a>
     </div>
 
@@ -123,7 +128,7 @@
       </div>
       <p class="text-cream/40 text-xs mb-6">Coordiná el pago por WhatsApp para que tu entrada pase a vendida y aparezca el QR.</p>
       <a id="wa-pendiente" href="#" target="_blank" rel="noopener" class="inline-block bg-rust hover:bg-rust-dark text-cream font-display font-semibold tracking-[0.18em] uppercase text-sm px-8 py-3 transition-colors">Coordinar pago por WhatsApp</a>
-      <div class="mt-8 border border-dashed border-amber/40 p-5 max-w-sm mx-auto">
+      <div id="demo-pago-box" class="hidden mt-8 border border-dashed border-amber/40 p-5 max-w-sm mx-auto">
         <p class="text-[10px] font-display tracking-widest uppercase text-amber mb-2">Modo demo</p>
         <p class="text-cream/50 text-xs mb-4">En un negocio real, el dueño confirma el pago desde su panel. Acá lo simulás vos para ver el QR.</p>
         <button id="btn-demo-pago" type="button" class="border border-amber/60 hover:bg-amber hover:text-charcoal text-amber font-display tracking-[0.18em] uppercase text-xs px-6 py-2 transition-colors">Simular pago confirmado</button>
@@ -138,7 +143,7 @@
       <div id="qrcode" class="mb-6"></div>
       <p class="text-cream/40 text-xs mb-1">Mostrá este QR en la puerta — se valida una sola vez.</p>
       <p class="font-display text-sm text-amber tracking-widest mt-4" id="v-codigo"></p>
-      <div class="mt-8 border border-dashed border-amber/40 p-5 max-w-sm mx-auto">
+      <div id="demo-validar-box" class="hidden mt-8 border border-dashed border-amber/40 p-5 max-w-sm mx-auto">
         <p class="text-[10px] font-display tracking-widest uppercase text-amber mb-2">Modo demo</p>
         <p class="text-cream/50 text-xs mb-4">Probá la pantalla que usa el personal en la puerta: escaneá este QR o tipeá el código. La primera vez entra; la segunda, se rechaza.</p>
         <a href="./validar.html" target="_blank" class="inline-block border border-amber/60 hover:bg-amber hover:text-charcoal text-amber font-display tracking-[0.18em] uppercase text-xs px-6 py-2 transition-colors">Abrir validación en la puerta</a>
@@ -171,25 +176,18 @@
   </footer>
 
   <script>
-    const FIREBASE_CONFIG = {
-      apiKey: "TODO_REEMPLAZAR",
-      authDomain: "la-usina-demo.firebaseapp.com",
-      projectId: "la-usina-demo",
-      storageBucket: "la-usina-demo.firebasestorage.app",
-      messagingSenderId: "0",
-      appId: "1:0:web:0"
-    };
+    const E = window.EventosCore;
+    let EVENTO = null;
+    let WA_NEGOCIO = '54922445001234';
+    let ultimaEntrada = null;
 
-    let db = null;
-    try {
-      firebase.initializeApp(FIREBASE_CONFIG);
-      db = firebase.firestore();
-      firebase.auth().signInAnonymously().catch(() => {});
-    } catch (e) {
-      console.error('Error inicializando Firebase/mock:', e);
-    }
+    // Nombre del tipo y WhatsApp salen de evento.json (la entrada solo guarda tipo_id).
+    fetch('./evento.json', { cache: 'no-cache' }).then(r => r.json())
+      .then(d => { EVENTO = d; if (d.negocio && d.negocio.whatsapp) WA_NEGOCIO = d.negocio.whatsapp; if (ultimaEntrada) renderEntrada(ultimaEntrada); })
+      .catch(() => {});
 
-    const WA_NEGOCIO = '54922445001234';
+    const waMsg = (txt) => `https://wa.me/${WA_NEGOCIO}?text=${encodeURIComponent(txt)}`;
+    const nombreTipo = (d) => E.nombreTipo(EVENTO, d.tipo_id);
 
     function ocultarTodo() {
       ['sin-codigo', 'cargando', 'no-encontrada', 'estado-pendiente', 'estado-vendida', 'estado-validada', 'estado-cancelada']
@@ -198,72 +196,76 @@
     function mostrar(id) { ocultarTodo(); document.getElementById(id).classList.remove('hidden'); }
 
     function buscarPorInput() {
-      const code = document.getElementById('in-buscar-codigo').value.trim().toUpperCase();
+      const code = normalizarCodigo(document.getElementById('in-buscar-codigo').value);
       if (!code) return;
       location.href = `./mi-entrada.html?code=${encodeURIComponent(code)}`;
     }
 
-    let unsub = null;
-    let docIdActual = null;
-
-    // Demo: reemplaza la confirmación de pago que en un negocio real hace el dueño desde portal.html.
+    // Atajos SOLO de la demo: en un negocio real el pago lo confirma el dueño desde
+    // portal.html (staff), y el público no tiene permiso de update sobre entradas.
+    if (DEMO) {
+      document.getElementById('demo-pago-box').classList.remove('hidden');
+      document.getElementById('demo-validar-box').classList.remove('hidden');
+    }
+    let codigoActual = null;
     document.getElementById('btn-demo-pago').addEventListener('click', () => {
-      if (!db || !docIdActual) return;
-      db.collection('entradas').doc(docIdActual).update({ estado: 'vendida' });
+      if (!DEMO || !db || !codigoActual) return;
+      db.collection('entradas').doc(codigoActual).update({ estado: 'vendida' });
     });
 
     function escucharEntrada(codigo) {
+      codigoActual = codigo;
+      document.getElementById('wa-no-encontrada').href = waMsg(`¡Hola La Usina! Quiero consultar por mi entrada, código ${codigo}.`);
       mostrar('cargando');
       if (!db) { mostrar('no-encontrada'); return; }
-      if (unsub) unsub();
-      unsub = db.collection('entradas').where('codigo', '==', codigo).limit(1)
-        .onSnapshot(snap => {
-          if (snap.empty) { mostrar('no-encontrada'); return; }
-          docIdActual = snap.docs[0].id;
-          renderEntrada(snap.docs[0].data());
-        }, err => {
-          console.error('onSnapshot entrada:', err);
-          mostrar('no-encontrada');
-        });
+      // doc(codigo): el público tiene `get` por ID, nunca `list` (module-eventos.md).
+      db.collection('entradas').doc(codigo).onSnapshot(snap => {
+        if (!snap.exists) { mostrar('no-encontrada'); return; }
+        renderEntrada(snap.data());
+      }, err => {
+        console.error('onSnapshot entrada:', err);
+        mostrar('no-encontrada');
+      });
     }
 
+    let qrPintado = null;
     function renderEntrada(d) {
-      const waMsg = (txt) => `https://wa.me/${WA_NEGOCIO}?text=${encodeURIComponent(txt)}`;
-
+      ultimaEntrada = d;
       if (d.estado === 'pendiente_pago') {
-        document.getElementById('p-tipo').textContent = d.tipo_nombre || d.tipo_id;
+        document.getElementById('p-tipo').textContent = nombreTipo(d);
         document.getElementById('p-comprador').textContent = d.comprador ? `${d.comprador.nombre} · ${d.comprador.telefono}` : '';
         document.getElementById('p-codigo').textContent = d.codigo;
-        document.getElementById('wa-pendiente').href = waMsg(`¡Hola La Usina! Quiero coordinar el pago de mi entrada "${d.tipo_nombre}". Código: ${d.codigo}`);
+        document.getElementById('wa-pendiente').href = waMsg(`¡Hola La Usina! Quiero coordinar el pago de mi entrada "${nombreTipo(d)}". Código: ${d.codigo}`);
         mostrar('estado-pendiente');
         return;
       }
 
       if (d.estado === 'vendida') {
         // El QR SOLO se pinta en este estado — nunca antes (ver module-eventos.md, checklist).
-        document.getElementById('v-tipo').textContent = d.tipo_nombre || d.tipo_id;
+        document.getElementById('v-tipo').textContent = nombreTipo(d);
         document.getElementById('v-comprador').textContent = d.comprador ? d.comprador.nombre : '';
         document.getElementById('v-codigo').textContent = d.codigo;
         const cont = document.getElementById('qrcode');
-        cont.innerHTML = '';
-        new QRCode(cont, {
-          text: d.codigo, // el código mismo es lo que lee validar.html, no una URL
-          width: 220, height: 220,
-          colorDark: '#1C1A17', colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.M,
-        });
+        if (qrPintado !== d.codigo) {
+          cont.innerHTML = '';
+          new QRCode(cont, {
+            text: d.codigo, // el código mismo es lo que lee validar.html, no una URL
+            width: 220, height: 220,
+            colorDark: '#1C1A17', colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M,
+          });
+          qrPintado = d.codigo;
+        }
         mostrar('estado-vendida');
         return;
       }
 
+      document.getElementById('qrcode').innerHTML = '';
+      qrPintado = null;
+
       if (d.estado === 'validada') {
-        let fecha = '';
-        try {
-          const raw = d.validadaEn;
-          const dt = raw && raw.toDate ? raw.toDate() : (raw ? new Date(raw) : null);
-          if (dt) fecha = dt.toLocaleString('es-AR');
-        } catch {}
-        document.getElementById('va-fecha').textContent = fecha ? `Validada el ${fecha}.` : 'Validada.';
+        const f = aFecha(d.validadaEn);
+        document.getElementById('va-fecha').textContent = f ? `Validada el ${f.toLocaleString('es-AR')}.` : 'Validada.';
         mostrar('estado-validada');
         return;
       }
@@ -272,8 +274,7 @@
       mostrar('estado-cancelada');
     }
 
-    const params = new URLSearchParams(location.search);
-    const code = (params.get('code') || '').trim().toUpperCase();
+    const code = normalizarCodigo(new URLSearchParams(location.search).get('code'));
     if (!code) { mostrar('sin-codigo'); }
     else { escucharEntrada(code); }
   </script>

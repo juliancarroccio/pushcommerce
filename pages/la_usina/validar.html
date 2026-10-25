@@ -45,9 +45,10 @@
     Ver references/local-db-testing.md.
   -->
   <script>
+    // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
+    // Global a propósito: habilita los atajos de demo (local-db-testing.md §Clientes DEMO).
+    const DEMO = true;
     (function () {
-      // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
-      const DEMO = true;
       const local = DEMO || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
       const srcs = local
         ? ['./firestore-mock.js']
@@ -59,6 +60,8 @@
       srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
     })();
   </script>
+  <script src="./firebase-init.js"></script>
+  <script src="./eventos-core.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -88,8 +91,27 @@
 
   <main class="max-w-md mx-auto px-5 py-8">
 
+    <!-- Solo DEMO: aviso de que en un negocio real esta pantalla pide login de staff -->
+    <div id="demo-aviso" class="hidden mb-6 border border-dashed border-amber/40 p-4 text-xs text-cream/60 leading-relaxed">
+      <p class="font-display text-[11px] tracking-[0.3em] uppercase text-amber mb-1">Modo demo</p>
+      En un negocio real esta pantalla pide el login del personal (email y contraseña). Acá la podés usar directo para probar la validación.
+    </div>
+
+    <!-- Login del personal (Firebase Auth email + contraseña, allowlist en las reglas). Nunca anónimo. -->
+    <form id="staff-login" class="hidden border border-amber/15 bg-charcoal-mid p-5 mb-6" autocomplete="on">
+      <p class="font-display text-[11px] tracking-widest uppercase text-amber mb-4">Acceso del personal</p>
+      <label for="in-email" class="block text-xs text-cream/50 mb-1">Email</label>
+      <input id="in-email" type="email" autocomplete="username" required class="w-full bg-charcoal border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none mb-3">
+      <label for="in-pass" class="block text-xs text-cream/50 mb-1">Contraseña</label>
+      <input id="in-pass" type="password" autocomplete="current-password" required class="w-full bg-charcoal border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none mb-3">
+      <p id="login-error" class="hidden text-xs text-red-300 mb-3"></p>
+      <button type="submit" class="w-full bg-rust hover:bg-rust-dark text-cream font-display tracking-widest uppercase text-sm px-5 py-3">Entrar</button>
+    </form>
+
+    <div id="panel-puerta" class="hidden">
+
     <!-- Resultado grande -->
-    <div id="resultado" class="hidden fade-in border rounded-lg p-6 mb-6 text-center">
+    <div id="resultado" role="status" aria-live="assertive" class="hidden fade-in border rounded-lg p-6 mb-6 text-center">
       <p id="resultado-icono" class="text-5xl mb-3"></p>
       <p id="resultado-titulo" class="font-display text-2xl uppercase mb-2"></p>
       <p id="resultado-sub" class="text-sm opacity-80"></p>
@@ -113,8 +135,9 @@
     <div class="border border-amber/15 bg-charcoal-mid p-5">
       <p class="font-display text-[11px] tracking-widest uppercase text-amber mb-3">Código manual</p>
       <div class="flex gap-2">
-        <input id="in-codigo" type="text" placeholder="CÓDIGO DE 9 CARACTERES" maxlength="12"
-               class="flex-1 bg-charcoal border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none uppercase tracking-widest text-sm text-center"
+        <label for="in-codigo" class="sr-only">Código de la entrada</label>
+        <input id="in-codigo" type="text" placeholder="CÓDIGO DE 9 CARACTERES" maxlength="14" autocomplete="off"
+               class="flex-1 min-w-0 bg-charcoal border border-amber/15 focus:border-amber text-cream px-4 py-3 outline-none uppercase tracking-widest text-sm text-center"
                onkeydown="if(event.key==='Enter') validarAhora();">
         <button onclick="validarAhora()" class="bg-rust hover:bg-rust-dark text-cream font-display tracking-widest uppercase text-sm px-5 py-3">Validar</button>
       </div>
@@ -123,26 +146,14 @@
     <p class="text-center text-cream/30 text-[11px] mt-6 leading-relaxed">
       Ante cualquier duda, se rechaza. Un código ya usado no vuelve a pasar.
     </p>
+    <p class="text-center mt-4"><button id="btn-salir" type="button" class="hidden text-[11px] text-cream/40 hover:text-amber underline">Cerrar sesión</button></p>
+    </div>
   </main>
 
   <script>
-    const FIREBASE_CONFIG = {
-      apiKey: "TODO_REEMPLAZAR",
-      authDomain: "la-usina-demo.firebaseapp.com",
-      projectId: "la-usina-demo",
-      storageBucket: "la-usina-demo.firebasestorage.app",
-      messagingSenderId: "0",
-      appId: "1:0:web:0"
-    };
-
-    let db = null;
-    try {
-      firebase.initializeApp(FIREBASE_CONFIG);
-      db = firebase.firestore();
-      firebase.auth().signInAnonymously().catch(() => {});
-    } catch (e) {
-      console.error('Error inicializando Firebase/mock:', e);
-    }
+    const E = window.EventosCore;
+    let EVENTO = null;
+    fetch('./evento.json', { cache: 'no-cache' }).then(r => r.json()).then(d => { EVENTO = d; }).catch(() => {});
 
     let validadasHoy = 0;
     function actualizarContador() {
@@ -150,100 +161,75 @@
     }
     actualizarContador();
 
+    /* ═══════════════════════ Acceso ═══════════════════════
+       Staff = Firebase Auth email + contraseña en la allowlist de isStaff()
+       (firestore-setup-guide.md §2). Nunca signInAnonymously. En DEMO no hay
+       staff logueable, así que la pantalla se usa directo. */
+    function mostrarPanel(si) {
+      document.getElementById('panel-puerta').classList.toggle('hidden', !si);
+      document.getElementById('staff-login').classList.toggle('hidden', si);
+    }
+    if (DEMO) {
+      document.getElementById('demo-aviso').classList.remove('hidden');
+      mostrarPanel(true);
+    } else {
+      firebase.auth().onAuthStateChanged(user => {
+        const ok = !!(user && !user.isAnonymous);
+        mostrarPanel(ok);
+        document.getElementById('btn-salir').classList.toggle('hidden', !ok);
+      });
+      document.getElementById('staff-login').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = document.getElementById('login-error');
+        err.classList.add('hidden');
+        try {
+          await firebase.auth().signInWithEmailAndPassword(document.getElementById('in-email').value.trim(), document.getElementById('in-pass').value);
+        } catch (ex) {
+          err.textContent = 'No se pudo entrar: revisá email y contraseña.';
+          err.classList.remove('hidden');
+        }
+      });
+      document.getElementById('btn-salir').addEventListener('click', () => firebase.auth().signOut());
+    }
+
     /* ═══════════════════════ Validación ═══════════════════════
-       Ante CUALQUIER estado que no sea 'vendida', se rechaza. Nunca se deja
-       pasar "por las dudas" — ver checklist de module-eventos.md. */
+       Transacción sobre entradas/{codigo} (doc ref, nunca un where). Ante
+       CUALQUIER estado que no sea 'vendida', se rechaza — nunca se deja pasar
+       "por las dudas" (module-eventos.md). */
     let validando = false;
 
     async function validarAhora() {
       const input = document.getElementById('in-codigo');
-      const codigo = input.value.trim().toUpperCase();
+      const codigo = input.value;
       input.value = '';
-      if (!codigo) return;
+      if (!codigo.trim()) return;
       await validarCodigo(codigo);
     }
 
     async function validarCodigo(codigoRaw) {
       if (validando) return;
       validando = true;
-      const codigo = codigoRaw.trim().toUpperCase();
-
-      if (!db) { mostrarResultado(false, '⚠️', 'Sin conexión a la base', 'No se puede validar sin acceso a los datos.'); validando = false; return; }
-      if (codigo.length < 6) { mostrarResultado(false, '⛔', 'Código inválido', 'Muy corto para ser un código de entrada real.'); validando = false; return; }
-
-      mostrarResultado(null, '…', 'Verificando…', codigo);
-
+      const codigo = normalizarCodigo(codigoRaw);
       try {
-        const snap = await db.collection('entradas').where('codigo', '==', codigo).limit(1).get();
-        if (snap.empty) {
-          mostrarResultado(false, '⛔', 'CÓDIGO NO ENCONTRADO', 'No existe ninguna entrada con ese código. No se deja pasar.');
-          return;
-        }
-        const docId = snap.docs[0].id;
-        const ref = db.collection('entradas').doc(docId);
+        if (!db) { mostrarResultado(false, '⚠️', 'Sin conexión a la base', 'No se puede validar sin acceso a los datos.'); return; }
+        if (!/^[A-HJ-NP-Z2-9]{9}$/.test(codigo)) { mostrarResultado(false, '⛔', 'Código inválido', 'Una entrada tiene 9 caracteres (sin 0, O, 1 ni I). No se deja pasar.'); return; }
 
-        let resultado;
-        if (typeof db.runTransaction === 'function') {
-          /* Firestore real: transacción atómica sobre el doc ya ubicado —
-             relee el estado fresco y recién ahí decide, para que dos
-             escaneos casi simultáneos del mismo QR no pasen ambos. */
-          resultado = await db.runTransaction(async (tx) => {
-            const fresh = await tx.get(ref);
-            if (!fresh.exists) return { ok: false, titulo: 'CÓDIGO NO ENCONTRADO', sub: 'La entrada ya no existe. No se deja pasar.' };
-            const d = fresh.data();
-            return procesarEstado(tx, ref, d, true);
-          });
-        } else {
-          /* Mock de nivel 0: sin runTransaction, re-chequeo best-effort —
-             alcanza para probar la lógica de "una sola vez", no la
-             atomicidad real ante dos escaneos exactamente simultáneos.
-             Eso se valida contra el emulador antes de producción. */
-          const fresh = await ref.get();
-          const d = fresh.data();
-          resultado = await procesarEstado(null, ref, d, false);
-        }
-
-        if (resultado.ok) {
+        mostrarResultado(null, '…', 'Verificando…', codigo);
+        const r = await E.validarEntrada(db, codigo);
+        if (r.ok) {
           validadasHoy++;
           actualizarContador();
-          mostrarResultado(true, '✅', 'ENTRADA VÁLIDA', resultado.sub);
+          const nombre = r.entrada.comprador ? r.entrada.comprador.nombre : '';
+          mostrarResultado(true, '✅', 'ENTRADA VÁLIDA', `${E.nombreTipo(EVENTO, r.entrada.tipo_id)}${nombre ? ' — ' + nombre : ''}`);
         } else {
-          mostrarResultado(false, '⛔', resultado.titulo, resultado.sub);
+          mostrarResultado(false, '⛔', r.titulo, r.sub);
         }
       } catch (e) {
-        // Cualquier error inesperado también se trata como rechazo — nunca
-        // se deja pasar "por las dudas".
+        // Cualquier error inesperado también se trata como rechazo.
         mostrarResultado(false, '⛔', 'ERROR AL VALIDAR', 'No se pudo confirmar el estado. No se deja pasar: ' + e.message);
       } finally {
         validando = false;
       }
-    }
-
-    function procesarEstado(tx, ref, d, transaccional) {
-      if (d.estado === 'vendida') {
-        const update = { estado: 'validada', validadaEn: firebase.firestore.FieldValue.serverTimestamp() };
-        if (transaccional) tx.update(ref, update);
-        else ref.update(update);
-        const nombre = d.comprador ? d.comprador.nombre : '';
-        return { ok: true, sub: `${d.tipo_nombre || d.tipo_id}${nombre ? ' — ' + nombre : ''}` };
-      }
-      if (d.estado === 'validada') {
-        let fecha = '';
-        try {
-          const raw = d.validadaEn;
-          const dt = raw && raw.toDate ? raw.toDate() : (raw ? new Date(raw) : null);
-          if (dt) fecha = dt.toLocaleString('es-AR');
-        } catch {}
-        return { ok: false, titulo: 'YA FUE USADA', sub: fecha ? `Validada el ${fecha}.` : 'Ya fue validada antes.' };
-      }
-      if (d.estado === 'pendiente_pago') {
-        return { ok: false, titulo: 'PAGO NO CONFIRMADO', sub: 'Esta entrada nunca se confirmó como vendida.' };
-      }
-      if (d.estado === 'cancelada') {
-        return { ok: false, titulo: 'ENTRADA CANCELADA', sub: 'Esta entrada fue cancelada.' };
-      }
-      // Cualquier estado desconocido: nunca dejar pasar por las dudas.
-      return { ok: false, titulo: 'ESTADO NO VÁLIDO', sub: 'Estado desconocido: ' + d.estado };
     }
 
     function mostrarResultado(ok, icono, titulo, sub) {

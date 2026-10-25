@@ -19,9 +19,10 @@
     SDKs reales — necesarios para la tab Agenda (datos en vivo de `reservas`).
   -->
   <script>
+    // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
+    // Global a propósito: habilita los atajos de demo (local-db-testing.md §Clientes DEMO).
+    const DEMO = true;
     (function () {
-      // Cliente DEMO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
-      const DEMO = true;
       const local = DEMO || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
       const srcs = local
         ? ['./firestore-mock.js']
@@ -33,6 +34,9 @@
       srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
     })();
   </script>
+  <script src="./firebase-init.js"></script>
+  <script src="./turnos-core.js"></script>
+  <script src="./eventos-core.js"></script>
 
   <style>
     * { box-sizing: border-box; }
@@ -97,6 +101,13 @@
     .estado-cancelado  { background: rgba(200,60,60,0.2); color: #E08080; }
     .estado-completado { background: rgba(140,140,140,0.25); color: #CFCFCF; }
     .estado-bloqueado  { background: rgba(120,80,40,0.25); color: #D9A86A; }
+    .selector-fecha-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 700px) { .selector-fecha-opts { grid-template-columns: 1fr; } }
+    .opt-radio { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid rgba(217,142,52,0.2); background: #1C1A17; cursor: pointer; font-size: 0.9rem; }
+    .opt-radio:has(input:checked) { border-color: #D98E34; background: rgba(217,142,52,0.08); }
+    .opt-radio input { margin-top: 4px; accent-color: #D98E34; }
+    .opt-desc { font-size: 0.8rem; opacity: 0.6; }
+    .warn-serv { font-size: 0.78rem; color: #E8A855; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -167,6 +178,17 @@
   </div>
 
   <div class="content-wrap">
+    <!-- Login del staff en Firebase (email + contraseña). Solo fuera de DEMO; lo maneja initStaffFirebase(). -->
+    <div id="staff-fb-login" class="card" style="display:none;">
+      <h3 class="display text-lg uppercase mb-1">Acceso a reservas y entradas</h3>
+      <p class="msg-info mb-4">Para ver la agenda y las entradas en vivo, entrá con tu email y contraseña del panel (Firebase). Es distinto de la contraseña del token de GitHub.</p>
+      <form id="form-staff-fb" class="grid-2">
+        <div><label class="lbl" for="in-staff-email">Email</label><input id="in-staff-email" type="email" class="inp" autocomplete="username" required /></div>
+        <div><label class="lbl" for="in-staff-pass">Contraseña</label><input id="in-staff-pass" type="password" class="inp" autocomplete="current-password" required /></div>
+        <div id="err-staff-fb" class="msg-info err" style="display:none;grid-column:1/-1;"></div>
+        <div style="grid-column:1/-1;"><button class="btn" type="submit">Entrar</button></div>
+      </form>
+    </div>
     <div id="save-bar" class="mb-4" style="display:none;">
       <div class="card" style="background:#A84C2D; border-color:#A84C2D; color:#EDE4D3; padding:16px; display:flex; justify-content:space-between; align-items:center;">
         <span>Hay cambios sin publicar.</span>
@@ -198,7 +220,7 @@
           <h3 class="display text-lg uppercase">Servicios</h3>
           <button class="btn-ghost" onclick="agregarServicio()">+ Agregar servicio</button>
         </div>
-        <p class="msg-info mb-4">Cada servicio usa su propio recurso (línea de disponibilidad independiente) — así "Mesa para la noche de show" y "Privado para eventos" no se pisan entre sí aunque tengan horarios distintos.</p>
+        <p class="msg-info mb-4">Cada servicio usa su propio recurso (línea de disponibilidad independiente) — así "Mesa para la noche de show" y "Privado para eventos" no se pisan entre sí aunque tengan horarios distintos. Si cambiás la capacidad, también hay que actualizar <code>capacidadDe</code> en <code>firestore.rules</code> y redeployarlas.</p>
         <div id="servicios-list"></div>
       </div>
     </div>
@@ -258,6 +280,16 @@
 
     <!-- Tab Horario de atención -->
     <div class="tab-panel" id="tab-horario-atencion">
+      <div class="card" id="card-selector-fecha">
+        <h3 class="display text-lg uppercase mb-1">Cómo elige el día tu clientela</h3>
+        <p class="msg-info mb-4">Se aplica a la página pública de reservas cuando publicás los cambios (campo <code>selector_fecha</code> de <code>turnos.json</code>).</p>
+        <div role="radiogroup" aria-label="Cómo elige el día tu clientela" class="selector-fecha-opts">
+          <label class="opt-radio"><input type="radio" name="selector_fecha" value="botones" />
+            <span><strong>Botones</strong><br><span class="opt-desc">Las próximas 8 fechas con atención, una al lado de la otra. Un toque y listo — ideal si abrís pocos días.</span></span></label>
+          <label class="opt-radio"><input type="radio" name="selector_fecha" value="calendario" />
+            <span><strong>Calendario</strong><br><span class="opt-desc">Grilla mensual con los días sin atención o sin lugar deshabilitados — ideal si te reservan con semanas de anticipación.</span></span></label>
+        </div>
+      </div>
       <div id="horarios-recursos"></div>
     </div>
 
@@ -414,10 +446,11 @@ function doLogout() { sessionStorage.removeItem(SESSION_PAT); location.reload();
 async function enterApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
-  try { await loadRemote(); initAgendaLive(); }
+  try { await loadRemote(); }
   catch (e) { alert('Error al cargar datos: ' + e.message); }
-  try { await loadEventoRemote(); initEntradasLive(); }
+  try { await loadEventoRemote(); }
   catch (e) { alert('Error al cargar el evento: ' + e.message); }
+  if (data) initStaffFirebase(); // listeners de reservas/entradas (staff)
 }
 
 /* ============ GH API ============ */
@@ -502,9 +535,19 @@ function bindAll() {
 }
 
 function renderAll() {
+  renderSelectorFecha();
   renderServicios();
   renderHorarios();
   poblarSelectsAgenda();
+}
+
+/* ============ Tab Horario de atención: selector_fecha ('botones' | 'calendario') ============ */
+function renderSelectorFecha() {
+  const actual = data.selector_fecha === 'calendario' ? 'calendario' : 'botones';
+  document.querySelectorAll('input[name="selector_fecha"]').forEach(inp => {
+    inp.checked = inp.value === actual;
+    inp.onchange = () => { if (inp.checked) { data.selector_fecha = inp.value; markDirty(); } };
+  });
 }
 
 /* ============ Tab Servicios (servicios[] + su recurso enlazado) ============ */
@@ -539,12 +582,22 @@ function renderServicios() {
       data.recursos = data.recursos.filter(x => x.id !== recursoId);
       markDirty(); renderAll();
     };
+    const warn = document.createElement('p');
+    warn.className = 'warn-serv';
+    row.appendChild(warn);
+    const validar = () => {
+      const msgs = [];
+      if (r && s.duracion_min % r.intervalo_slots_min !== 0) msgs.push(`La duración (${s.duracion_min} min) tiene que ser múltiplo de cada cuántos minutos se ofrece un horario (${r.intervalo_slots_min} min).`);
+      warn.textContent = msgs.join(' ');
+      warn.style.display = msgs.length ? 'block' : 'none';
+    };
+    validar();
     row.querySelector('[data-k="nombre"]').oninput = (e) => { s.nombre = e.target.value; markDirty(); };
-    row.querySelector('[data-k="duracion_min"]').oninput = (e) => { s.duracion_min = parseInt(e.target.value) || 15; markDirty(); };
+    row.querySelector('[data-k="duracion_min"]').oninput = (e) => { s.duracion_min = parseInt(e.target.value) || 15; markDirty(); validar(); };
     row.querySelector('[data-k="nota"]').oninput = (e) => { s.nota = e.target.value; markDirty(); };
     if (r) {
       row.querySelector('[data-k-r="capacidad"]').oninput = (e) => { r.capacidad = Math.max(1, parseInt(e.target.value) || 1); markDirty(); };
-      row.querySelector('[data-k-r="intervalo_slots_min"]').oninput = (e) => { r.intervalo_slots_min = Math.max(5, parseInt(e.target.value) || 30); markDirty(); };
+      row.querySelector('[data-k-r="intervalo_slots_min"]').oninput = (e) => { r.intervalo_slots_min = Math.max(5, parseInt(e.target.value) || 30); markDirty(); validar(); };
     }
     cont.appendChild(row);
   });
@@ -602,50 +655,60 @@ function renderHorarios() {
   });
 }
 
-/* ============ Tab Agenda — Firestore en vivo ============ */
-const FIREBASE_CONFIG = {
-  // TODO (antes de producción): cliente demo inventado, nunca se creó un
-  // proyecto Firebase real. Reemplazar siguiendo firestore-setup-guide.md.
-  apiKey: "TODO_REEMPLAZAR", authDomain: "la-usina-demo.firebaseapp.com", projectId: "la-usina-demo",
-  storageBucket: "la-usina-demo.firebasestorage.app", messagingSenderId: "0", appId: "1:0:web:0"
-};
-let fbDb = null;
-try {
-  if (typeof firebase !== 'undefined') {
-    firebase.initializeApp(FIREBASE_CONFIG);
-    fbDb = firebase.firestore();
-    firebase.auth().signInAnonymously().catch(e => console.error('Auth error:', e));
-  }
-} catch (e) { console.error('Error init Firebase/mock en portal:', e.message); }
+/* ============ Tab Agenda — Firestore en vivo (staff) ============
+   Todo pasa por turnos-core.js: alta manual, cancelar y bloqueos corren
+   transacciones sobre slots/ (doc refs), así la disponibilidad pública que
+   lee agenda.html queda siempre consistente con las reservas. */
+const T = window.TurnosCore;
+const E = window.EventosCore;
+const fbDb = db; // de firebase-init.js (mock en DEMO)
 
-const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-function toMin(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
-function toHHMM(min) { return String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(min % 60).padStart(2, '0'); }
-function solapa(iA, fA, iB, fB) { return toMin(iA) < toMin(fB) && toMin(fA) > toMin(iB); }
-function fechaISO(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
-function fechaLabel(d) { return d.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' }); }
-function proximasFechasValidas(recurso, n) {
-  const hoy = new Date(); hoy.setHours(0,0,0,0);
-  const out = [];
-  for (let i = 0; i < 90 && out.length < n; i++) {
-    const d = new Date(hoy); d.setDate(hoy.getDate() + i);
-    const dia = DIAS[d.getDay()];
-    if ((recurso.horario_atencion[dia] || []).length > 0) out.push(d);
-  }
-  return out;
+/* Login del staff en Firebase (email + contraseña, allowlist en isStaff()).
+   Es OTRO login que el del PAT de GitHub: el PAT publica JSON, este lee
+   reservas/entradas. En DEMO no hay Firebase real, se saltea. */
+let liveIniciado = false;
+function iniciarLive() {
+  if (liveIniciado || !fbDb) return;
+  liveIniciado = true;
+  initAgendaLive();
+  initEntradasLive();
+}
+function initStaffFirebase() {
+  if (DEMO) { iniciarLive(); return; }
+  firebase.auth().onAuthStateChanged(user => {
+    const ok = !!(user && !user.isAnonymous);
+    document.getElementById('staff-fb-login').style.display = ok ? 'none' : 'block';
+    if (ok) iniciarLive();
+  });
+  document.getElementById('form-staff-fb').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const err = document.getElementById('err-staff-fb');
+    err.style.display = 'none';
+    try {
+      await firebase.auth().signInWithEmailAndPassword(document.getElementById('in-staff-email').value.trim(), document.getElementById('in-staff-pass').value);
+    } catch (ex) { err.textContent = 'No se pudo entrar: revisá email y contraseña.'; err.style.display = 'block'; }
+  });
 }
 
+function fechaLabel(iso) { return T.fechaLabel(iso); }
+
 function initAgendaLive() {
-  if (!fbDb) return;
   fbDb.collection('reservas').onSnapshot(snap => {
     const reservas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     reservas.sort((a, b) => (a.fecha + a.hora_inicio).localeCompare(b.fecha + b.hora_inicio));
     renderReservas(reservas);
-    const pendientesHoy = reservas.filter(r => r.estado === 'confirmado' && r.fecha >= fechaISO(new Date())).length;
+    const proximas = reservas.filter(r => r.estado === 'confirmado' && r.fecha >= T.hoyISO()).length;
     const badge = document.getElementById('badge-agenda');
-    if (pendientesHoy > 0) { badge.textContent = pendientesHoy; badge.style.display = 'inline-block'; }
+    if (proximas > 0) { badge.textContent = proximas; badge.style.display = 'inline-block'; }
     else badge.style.display = 'none';
+    // Cualquier cambio en reservas puede cambiar los horarios libres del alta manual.
+    if (data) manualRenderSlots();
   }, err => console.error('onSnapshot reservas:', err));
+}
+
+async function accionReserva(fn) {
+  try { await fn(); }
+  catch (e) { alert('No se pudo completar la acción: ' + e.message); }
 }
 
 function renderReservas(reservas) {
@@ -655,13 +718,15 @@ function renderReservas(reservas) {
   reservas.forEach(r => {
     const row = document.createElement('div');
     row.className = 'reserva-row';
+    row.dataset.codigo = r.id;
     const chipClass = 'estado-' + r.estado;
+    const titulo = r.estado === 'bloqueado' ? `Bloqueo · ${r.recurso_nombre || r.recurso_id}` : (r.servicio_nombre || r.recurso_id);
     row.innerHTML = `
       <div>
-        <div style="font-weight:600;">${esc(r.servicio_nombre || r.recurso_id)} <span class="estado-chip ${chipClass}">${esc(r.estado)}</span></div>
+        <div style="font-weight:600;">${esc(titulo)} <span class="estado-chip ${chipClass}">${esc(r.estado)}</span></div>
         <div style="font-size:0.82rem;opacity:0.7;">${esc(r.fecha)} · ${esc(r.hora_inicio)}–${esc(r.hora_fin)} ${r.cliente ? '· ' + esc(r.cliente.nombre) + ' (' + esc(r.cliente.telefono) + ')' : ''}</div>
         ${r.nota ? `<div style="font-size:0.78rem;opacity:0.5;">${esc(r.nota)}</div>` : ''}
-        ${r.codigo ? `<div style="font-size:0.72rem;opacity:0.4;">Código: ${esc(r.codigo)}</div>` : ''}
+        <div style="font-size:0.72rem;opacity:0.4;">Código: ${esc(r.id)}</div>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
         ${r.estado === 'confirmado' ? `<button class="btn-ghost" data-act="completado">Completada</button><button class="btn-danger" data-act="cancelar">Cancelar</button>` : ''}
@@ -669,31 +734,31 @@ function renderReservas(reservas) {
       </div>
     `;
     const btnCompletado = row.querySelector('[data-act="completado"]');
-    if (btnCompletado) btnCompletado.onclick = () => fbDb.collection('reservas').doc(r.id).update({ estado: 'completado' });
+    if (btnCompletado) btnCompletado.onclick = () => accionReserva(() => T.cambiarEstadoReserva(fbDb, data, r.id, 'completado'));
     const btnCancelar = row.querySelector('[data-act="cancelar"]');
-    if (btnCancelar) btnCancelar.onclick = () => { if (confirm('¿Cancelar esta reserva?')) fbDb.collection('reservas').doc(r.id).update({ estado: 'cancelado' }); };
+    if (btnCancelar) btnCancelar.onclick = () => { if (confirm('¿Cancelar esta reserva? Libera su lugar.')) accionReserva(() => T.cambiarEstadoReserva(fbDb, data, r.id, 'cancelado')); };
     const btnDesbloquear = row.querySelector('[data-act="desbloquear"]');
-    if (btnDesbloquear) btnDesbloquear.onclick = () => { if (confirm('¿Quitar este bloqueo?')) fbDb.collection('reservas').doc(r.id).delete(); };
+    if (btnDesbloquear) btnDesbloquear.onclick = () => { if (confirm('¿Quitar este bloqueo?')) accionReserva(() => T.quitarBloqueo(fbDb, r.id)); };
     cont.appendChild(row);
   });
 }
 
 /* ---- Selects compartidos (alta manual + bloqueo) ---- */
 function poblarSelectsAgenda() {
-  const opts = (data.servicios || []).map(s => `<option value="${s.id}">${esc(s.nombre)}</option>`).join('');
+  const opts = (data.servicios || []).map(s => `<option value="${esc(s.id)}">${esc(s.nombre)}</option>`).join('');
   document.getElementById('manual-servicio').innerHTML = opts;
   document.getElementById('bloqueo-servicio').innerHTML = opts;
   manualRenderFechas();
   bloqueoRenderFechas();
 }
+function opcionesFechas(recurso) {
+  return T.proximasFechasConAtencion(recurso, 8).map(f => `<option value="${f}">${fechaLabel(f)}</option>`).join('') || '<option value="">Sin fechas disponibles</option>';
+}
 
 function manualRenderFechas() {
-  const servicioId = document.getElementById('manual-servicio').value;
-  const s = (data.servicios || []).find(x => x.id === servicioId);
+  const s = (data.servicios || []).find(x => x.id === document.getElementById('manual-servicio').value);
   if (!s) return;
-  const r = recursoDe(s);
-  const fechas = proximasFechasValidas(r, 8);
-  document.getElementById('manual-fecha').innerHTML = fechas.map(d => `<option value="${fechaISO(d)}">${fechaLabel(d)}</option>`).join('') || '<option value="">Sin fechas disponibles</option>';
+  document.getElementById('manual-fecha').innerHTML = opcionesFechas(T.recursoDe(data, s));
   manualRenderSlots();
 }
 async function manualRenderSlots() {
@@ -702,31 +767,15 @@ async function manualRenderSlots() {
   const sel = document.getElementById('manual-slot');
   if (!servicioId || !fecha || !fbDb) { sel.innerHTML = ''; return; }
   const s = data.servicios.find(x => x.id === servicioId);
-  const r = recursoDe(s);
-  const snap = await fbDb.collection('reservas').where('recurso_id', '==', r.id).where('fecha', '==', fecha).get();
-  const existentes = snap.docs.map(d => d.data());
-  const slots = calcularSlots(s, r, fecha, existentes);
+  const r = T.recursoDe(data, s);
+  const ocup = await T.leerOcupacion(fbDb, r.id, fecha);
+  const slots = T.slotsDisponibles(s, r, fecha, ocup);
+  const previo = sel.value;
   sel.innerHTML = slots.map(sl => `<option value="${sl.hora_inicio}|${sl.hora_fin}" ${sl.libres <= 0 ? 'disabled' : ''}>${sl.hora_inicio}–${sl.hora_fin} (${sl.libres}/${sl.capacidad} libres)</option>`).join('') || '<option value="">Sin horarios ese día</option>';
-}
-function calcularSlots(servicio, recurso, fecha, existentes) {
-  const dia = DIAS[new Date(fecha + 'T00:00:00').getDay()];
-  const franjas = recurso.horario_atencion[dia] || [];
-  const capacidad = recurso.capacidad || 1;
-  const confirmadas = existentes.filter(r => r.estado === 'confirmado');
-  const bloqueos = existentes.filter(r => r.estado === 'bloqueado');
-  const out = [];
-  for (const franja of franjas) {
-    for (let ini = toMin(franja.abre); ini + servicio.duracion_min <= toMin(franja.cierra); ini += recurso.intervalo_slots_min) {
-      const fin = ini + servicio.duracion_min;
-      const hi = toHHMM(ini), hf = toHHMM(fin);
-      const bloqueado = bloqueos.some(b => solapa(hi, hf, b.hora_inicio, b.hora_fin));
-      const ocupadas = confirmadas.filter(c => solapa(hi, hf, c.hora_inicio, c.hora_fin)).length;
-      out.push({ hora_inicio: hi, hora_fin: hf, libres: bloqueado ? 0 : Math.max(0, capacidad - ocupadas), capacidad });
-    }
-  }
-  return out;
+  if (previo && [...sel.options].some(o => o.value === previo && !o.disabled)) sel.value = previo;
 }
 
+/** Alta manual (reserva telefónica): misma transacción de slots que el público, ya 'confirmado'. */
 async function altaManual() {
   const servicioId = document.getElementById('manual-servicio').value;
   const fecha = document.getElementById('manual-fecha').value;
@@ -737,55 +786,48 @@ async function altaManual() {
   if (!servicioId || !fecha || !slotVal || !nombre || !telefono) { alert('Completá servicio, fecha, horario, nombre y teléfono.'); return; }
   const [hora_inicio, hora_fin] = slotVal.split('|');
   const s = data.servicios.find(x => x.id === servicioId);
-  const r = recursoDe(s);
-  const codigo = genCodigo();
+  const r = T.recursoDe(data, s);
+  const codigo = genCodigo(6);
   try {
-    const snap = await fbDb.collection('reservas').where('recurso_id', '==', r.id).where('fecha', '==', fecha).get();
-    const existentes = snap.docs.map(d => d.data());
-    const bloqueado = existentes.some(e => e.estado === 'bloqueado' && solapa(hora_inicio, hora_fin, e.hora_inicio, e.hora_fin));
-    const ocupadas = existentes.filter(e => e.estado === 'confirmado' && solapa(hora_inicio, hora_fin, e.hora_inicio, e.hora_fin)).length;
-    if (bloqueado || ocupadas >= (r.capacidad || 1)) { alert('Ese horario ya no tiene cupo. Elegí otro.'); manualRenderSlots(); return; }
-    await fbDb.collection('reservas').add({
-      recurso_id: r.id, servicio_id: s.id, servicio_nombre: s.nombre, fecha, hora_inicio, hora_fin,
-      cliente: { nombre, telefono }, nota, estado: 'confirmado', codigo,
-      creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+    await T.reservarTurno(fbDb, r, {
+      codigo, recurso_id: r.id, recurso_nombre: r.nombre || r.id, servicio_id: s.id, servicio_nombre: s.nombre,
+      fecha, hora_inicio, hora_fin, cliente: { nombre, telefono }, nota, estado: 'confirmado',
+      creadoEn: firebase.firestore.FieldValue.serverTimestamp(),
     });
     document.getElementById('manual-nombre').value = ''; document.getElementById('manual-telefono').value = ''; document.getElementById('manual-nota').value = '';
     alert('Reserva agregada. Código: ' + codigo);
-    manualRenderSlots();
-  } catch (e) { alert('No se pudo agregar la reserva: ' + e.message); }
+  } catch (e) {
+    if (e.code === 'OCUPADO') alert('Ese horario ya no tiene lugar. Elegí otro.');
+    else alert('No se pudo agregar la reserva: ' + e.message);
+  } finally { manualRenderSlots(); }
 }
 
 function bloqueoRenderFechas() {
-  const servicioId = document.getElementById('bloqueo-servicio').value;
-  const s = (data.servicios || []).find(x => x.id === servicioId);
+  const s = (data.servicios || []).find(x => x.id === document.getElementById('bloqueo-servicio').value);
   if (!s) return;
-  const r = recursoDe(s);
-  const fechas = proximasFechasValidas(r, 8);
-  document.getElementById('bloqueo-fecha').innerHTML = fechas.map(d => `<option value="${fechaISO(d)}">${fechaLabel(d)}</option>`).join('') || '<option value="">Sin fechas disponibles</option>';
+  document.getElementById('bloqueo-fecha').innerHTML = opcionesFechas(T.recursoDe(data, s));
 }
+/** Bloqueo manual: ocupa toda la capacidad de cada intervalo que toca, atómico. */
 async function crearBloqueo() {
   const servicioId = document.getElementById('bloqueo-servicio').value;
   const fecha = document.getElementById('bloqueo-fecha').value;
   const desde = document.getElementById('bloqueo-desde').value;
   const hasta = document.getElementById('bloqueo-hasta').value;
-  const motivo = document.getElementById('bloqueo-motivo').value.trim();
+  const nota = document.getElementById('bloqueo-motivo').value.trim();
   if (!servicioId || !fecha || !desde || !hasta) { alert('Completá servicio, fecha y horario.'); return; }
+  if (desde >= hasta) { alert('"Hasta" tiene que ser después de "Desde".'); return; }
   const s = data.servicios.find(x => x.id === servicioId);
-  const r = recursoDe(s);
+  const r = T.recursoDe(data, s);
   try {
-    await fbDb.collection('reservas').add({
-      recurso_id: r.id, servicio_id: s.id, servicio_nombre: s.nombre, fecha,
-      hora_inicio: desde, hora_fin: hasta, nota: motivo, estado: 'bloqueado',
-      creadoEn: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    const res = await T.crearBloqueo(fbDb, r, { fecha, desde, hasta, nota });
     document.getElementById('bloqueo-motivo').value = '';
-    alert('Horario bloqueado.');
-  } catch (e) { alert('No se pudo bloquear: ' + e.message); }
+    alert(`Horario bloqueado (${res.horas.join(', ')}).` + (res.conReservas ? `\nOjo: ya había ${res.conReservas} reserva(s) en ese rango; siguen vigentes.` : ''));
+    manualRenderSlots();
+  } catch (e) {
+    if (e.code === 'SIN_HORARIOS') alert('Ese rango no toca ningún horario de atención de ese día.');
+    else alert('No se pudo bloquear: ' + e.message);
+  }
 }
-
-const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-function genCodigo(len = 5) { return Array.from({ length: len }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join(''); }
 
 /* ============================================================
    module-eventos.md — Entradas / Tipos de entrada
@@ -823,6 +865,9 @@ async function publishEventoChanges() {
     eventoSha = res.content.sha;
     eventoDirty = false;
     document.getElementById('save-bar-evento').style.display = 'none';
+    // module-eventos.md: los cupos/{tipo} los crea/actualiza el staff (cupo_total espejado de evento.json).
+    try { if (fbDb) await E.sincronizarCupos(fbDb, eventoData); }
+    catch (e) { alert('El evento se publicó, pero no se pudieron actualizar los cupos en la base: ' + e.message); return; }
     alert('Evento publicado ✓');
   } catch (e) {
     alert('Error al publicar el evento: ' + e.message);
@@ -886,13 +931,10 @@ function agregarTipoEntrada() {
 
 /* ---- Tab Entradas — Firestore en vivo (colecciones `entradas` y `cupos`) ---- */
 function initEntradasLive() {
-  if (!fbDb) return;
   fbDb.collection('entradas').onSnapshot(snap => {
     const entradas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    entradas.sort((a, b) => {
-      const ca = a.creadoEn || '', cb = b.creadoEn || '';
-      return String(cb).localeCompare(String(ca)); // más nuevas primero
-    });
+    const ts = (e) => { const f = aFecha(e.creadoEn); return f ? f.getTime() : 0; };
+    entradas.sort((a, b) => ts(b) - ts(a)); // más nuevas primero
     renderEntradas(entradas);
     renderMetricasEntradas(entradas);
     const pendientes = entradas.filter(e => e.estado === 'pendiente_pago').length;
@@ -919,9 +961,9 @@ function renderEntradas(entradas) {
     const chipClass = ESTADO_CHIP_ENTRADA[e.estado] || 'estado-cancelado';
     row.innerHTML = `
       <div>
-        <div style="font-weight:600;">${esc(e.tipo_nombre || e.tipo_id)} <span class="estado-chip ${chipClass}">${esc(e.estado)}</span></div>
+        <div style="font-weight:600;">${esc(E.nombreTipo(eventoData, e.tipo_id))} <span class="estado-chip ${chipClass}">${esc(e.estado)}</span></div>
         <div style="font-size:0.82rem;opacity:0.7;">${e.comprador ? esc(e.comprador.nombre) + ' · ' + esc(e.comprador.telefono) : ''}</div>
-        <div style="font-size:0.72rem;opacity:0.4;">Código: ${esc(e.codigo)}</div>
+        <div style="font-size:0.72rem;opacity:0.4;">Código: ${esc(e.id)}</div>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
         ${e.estado === 'pendiente_pago' ? `<button class="btn-ghost" data-act="confirmar">Confirmar pago</button><button class="btn-danger" data-act="cancelar">Cancelar</button>` : ''}
@@ -929,25 +971,14 @@ function renderEntradas(entradas) {
       </div>
     `;
     const btnConfirmar = row.querySelector('[data-act="confirmar"]');
-    if (btnConfirmar) btnConfirmar.onclick = () => fbDb.collection('entradas').doc(e.id).update({ estado: 'vendida' });
+    if (btnConfirmar) btnConfirmar.onclick = () => accionReserva(() => fbDb.collection('entradas').doc(e.id).update({ estado: 'vendida', actualizadoEn: firebase.firestore.FieldValue.serverTimestamp() }));
     const btnCancelar = row.querySelector('[data-act="cancelar"]');
     if (btnCancelar) btnCancelar.onclick = () => {
       if (!confirm('¿Cancelar esta entrada? Libera su lugar en el cupo del tipo.')) return;
-      cancelarEntrada(e);
+      accionReserva(() => E.cancelarEntrada(fbDb, e.id)); // transacción: devuelve el cupo
     };
     cont.appendChild(row);
   });
-}
-
-async function cancelarEntrada(entrada) {
-  try {
-    await fbDb.collection('entradas').doc(entrada.id).update({ estado: 'cancelada' });
-    // Libera el cupo que esa entrada había reservado al comprarse (nunca por debajo de 0).
-    const cupoRef = fbDb.collection('cupos').doc(entrada.tipo_id);
-    const cupoSnap = await cupoRef.get();
-    const vendidas = cupoSnap.exists ? (cupoSnap.data().vendidas || 0) : 0;
-    await cupoRef.set({ vendidas: Math.max(0, vendidas - 1) });
-  } catch (e) { alert('No se pudo cancelar: ' + e.message); }
 }
 
 function renderMetricasEntradas(entradas) {

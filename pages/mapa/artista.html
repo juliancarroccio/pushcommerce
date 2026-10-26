@@ -227,7 +227,7 @@ window.addEventListener('scroll', () => {
 const slug = new URLSearchParams(location.search).get('slug');
 if (!slug) { location.href = './artistas.html'; }
 
-fetch('./artistas.json')
+fetch('./artistas.json', { cache: 'no-cache' })
   .then(r => r.json())
   .then(data => {
     _artist = data.artistas.find(a => a.slug === slug);

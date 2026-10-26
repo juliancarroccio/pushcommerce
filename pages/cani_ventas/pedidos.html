@@ -763,7 +763,7 @@ db.collection('pedidos').orderBy('creadoEn','desc').limit(500)
   }, () => document.getElementById('conn-bar').classList.add('on'));
 
 // ── MODAL ─────────────────────────────────────────────────────────────────────
-fetch('./productos.json').then(r => r.json()).then(d => {
+fetch('./productos.json', { cache: 'no-cache' }).then(r => r.json()).then(d => {
   d.categorias.forEach(cat => {
     (cat.productos||[]).forEach(p => {
       if (p.disponible === false) return;

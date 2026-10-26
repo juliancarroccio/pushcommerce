@@ -692,7 +692,7 @@
     gtag('config', id);
   }
 
-  fetch('./hotel.json')
+  fetch('./hotel.json', { cache: 'no-cache' })
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .catch(() => FALLBACK)
     .then(initPage);

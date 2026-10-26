@@ -877,7 +877,7 @@ window.addEventListener('scroll', () => {
 loadCart();
 updateCartUI();
 
-fetch('./productos.json')
+fetch('./productos.json', { cache: 'no-cache' })
   .then(r => r.json())
   .then(data => buildCatalog(data))
   .catch(() => buildCatalog(_FALLBACK));

@@ -1283,7 +1283,7 @@
     };
 
     // ─── INIT ───
-    fetch('./productos.json')
+    fetch('./productos.json', { cache: 'no-cache' })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(data => initPage(data))
       .catch(() => initPage(_FALLBACK));
@@ -1526,6 +1526,11 @@
       scrollTrigger: { trigger: '#contacto', start: 'top 80%', toggleActions: 'play none none none' },
       x: 40, opacity: 0, duration: 0.8, delay: 0.15, ease: 'power2.out'
     });
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
   </script>
 </body>
 </html>

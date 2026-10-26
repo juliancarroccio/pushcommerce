@@ -579,7 +579,7 @@ window.addEventListener('scroll', () => {
   document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 400);
 });
 
-fetch('./productos.json')
+fetch('./productos.json', { cache: 'no-cache' })
   .then(r => r.json())
   .then(buildCatalog)
   .catch(() => {});

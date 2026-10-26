@@ -263,7 +263,7 @@ let _pendingProduct = null;
 let _selectedTalle = null;
 
 
-fetch('./productos.json').then(r => r.json()).then(init).catch(() => {});
+fetch('./productos.json', { cache: 'no-cache' }).then(r => r.json()).then(init).catch(() => {});
 
 function init(data) {
   _data = data;

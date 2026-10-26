@@ -77,7 +77,7 @@
     © 2026 Biga · Sitio web por PushCommerce
   </footer>
   <script>
-    fetch('./productos.json').then(r => r.json()).then(d => {
+    fetch('./productos.json', { cache: 'no-cache' }).then(r => r.json()).then(d => {
       const n = d && d.negocio && d.negocio.whatsapp;
       if (!n) return;
       document.querySelectorAll('.js-wa').forEach(a => {

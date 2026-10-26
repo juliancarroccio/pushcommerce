@@ -740,7 +740,7 @@ function bootApp() {
     }, () => document.getElementById('conn-bar').classList.add('on'));
 
   // Cargar catálogo para el modal
-  fetch('./productos.json').then(r => r.json()).then(d => {
+  fetch('./productos.json', { cache: 'no-cache' }).then(r => r.json()).then(d => {
     d.categorias.forEach(cat => {
       (cat.productos||[]).forEach(p => {
         catalog.push({ emoji: cat.emoji||'🍔', nombre: p.nombre, precio: p.precio, catLabel: `${cat.emoji||''} ${cat.nombre}`, catId: cat.id, isBurger: !!cat.nota_sin_papas });

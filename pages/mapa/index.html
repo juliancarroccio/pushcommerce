@@ -464,7 +464,7 @@ gsap.from('.expo-card', { opacity: 0, y: 40, duration: 0.8, stagger: 0.15, scrol
 gsap.from('.programa-item', { opacity: 0, y: 30, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '.programas-grid', start: 'top 80%' } });
 
 // Load artistas preview (8 artists)
-fetch('./artistas.json')
+fetch('./artistas.json', { cache: 'no-cache' })
   .then(r => r.json())
   .then(buildPreview)
   .catch(() => {});

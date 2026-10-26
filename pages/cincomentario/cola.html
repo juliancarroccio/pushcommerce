@@ -754,7 +754,7 @@ db.collection('pedidos').orderBy('timestamp','desc').limit(500)
   }, () => document.getElementById('conn-bar').classList.add('on'));
 
 // ── MODAL AGREGAR ─────────────────────────────────────────────────────────────
-fetch('./productos.json')
+fetch('./productos.json', { cache: 'no-cache' })
   .then(r => r.json())
   .then(d => {
     d.categorias.forEach(cat => {

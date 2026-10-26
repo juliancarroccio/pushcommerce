@@ -746,7 +746,7 @@ function initAnimations() {
   });
 }
 
-fetch('./productos.json')
+fetch('./productos.json', { cache: 'no-cache' })
   .then(r => r.json())
   .then(initPage)
   .catch(() => {});

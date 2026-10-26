@@ -177,7 +177,7 @@ window.addEventListener('load', () => {
   }
 });
 
-fetch('./artistas.json')
+fetch('./artistas.json', { cache: 'no-cache' })
   .then(r => r.json())
   .then(data => { _data = data; buildGrid(data); })
   .catch(() => {});

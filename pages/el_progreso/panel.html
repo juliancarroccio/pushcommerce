@@ -280,7 +280,7 @@
   function init() {
     var productos = leerCatalogo();
     if (productos === null) {
-      fetch('precios.json')
+      fetch('precios.json', { cache: 'no-cache' })
         .then(function (r) { return r.json(); })
         .then(function (data) {
           var base = Array.isArray(data.productos) ? data.productos : [];

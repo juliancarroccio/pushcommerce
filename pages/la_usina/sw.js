@@ -1,6 +1,24 @@
-// v2: al cambiar el nombre del cache, `activate` borra el v1 (que tenía
-// agenda.html y firestore-mock.js viejos guardados cache-first).
-const CACHE = 'la-usina-v2';
+/* sw.js estándar de PushCommerce.
+ *
+ * Objetivo: que NUNCA haga falta pedirle a nadie que borre la caché.
+ * - HTML, JS, CSS y JSON (precios, catálogo, horarios): siempre se piden a la
+ *   red, revalidando con el servidor (cache: 'no-cache' → GitHub Pages responde
+ *   304 si no cambió, es liviano). La caché se usa SOLO si no hay conexión.
+ * - Imágenes y fuentes: cache-first (casi nunca cambian y son lo pesado). Si se
+ *   reemplaza una imagen, conviene cambiarle el nombre de archivo.
+ * - Al instalarse se activa enseguida (skipWaiting + clients.claim) y borra las
+ *   cachés de versiones anteriores. Si reemplaza un sw viejo, recarga una vez las
+ *   pestañas abiertas: el visitante ve lo nuevo en la misma visita.
+ * - En el HTML, no usar cache-busters tipo `?v=Date.now()` en los fetch de JSON:
+ *   cada URL distinta queda guardada en la caché y crece sin límite. Usar
+ *   `fetch('./productos.json', { cache: 'no-cache' })`.
+ * - No toca nada de otros orígenes (CDNs, Firebase, Google Fonts, Analytics).
+ *
+ * Al copiarlo a un cliente: cambiar VERSION y PRECACHE. VERSION tiene que ser
+ * distinta de la que tenía el sw.js anterior del cliente (así se limpian las
+ * cachés viejas de los visitantes).
+ */
+const VERSION = 'la-usina-v3';
 const PRECACHE = [
   './',
   './index.html',
@@ -12,53 +30,57 @@ const PRECACHE = [
   './img/logo.png',
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE).catch(() => {})));
+self.addEventListener('install', (e) => {
   self.skipWaiting();
-});
-
-self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
+    caches.open(VERSION)
+      // cache: 'reload' → baja la versión actual del servidor, no la de la caché HTTP.
+      .then((c) => Promise.all(PRECACHE.map((u) => c.add(new Request(u, { cache: 'reload' })).catch(() => {}))))
   );
-  self.clients.claim();
 });
 
-function networkFirst(req) {
-  return fetch(req, { cache: 'no-cache' })
-    .then(res => {
-      if (res.ok) {
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(req, clone));
-      }
-      return res;
-    })
-    .catch(() => caches.match(req));
+self.addEventListener('activate', (e) => {
+  e.waitUntil((async () => {
+    const viejas = (await caches.keys()).filter((k) => k !== VERSION);
+    await Promise.all(viejas.map((k) => caches.delete(k)));
+    await self.clients.claim();
+    // Si reemplaza una versión anterior, las pestañas abiertas están mostrando
+    // HTML servido por el sw viejo: se recargan una vez para ver lo nuevo ya.
+    // En la primera visita de alguien no hay cachés viejas y no recarga nada.
+    if (viejas.length) {
+      const ventanas = await self.clients.matchAll({ type: 'window' });
+      ventanas.forEach((w) => w.navigate(w.url).catch(() => {}));
+    }
+  })());
+});
+
+function guardar(req, res) {
+  if (res && res.ok && res.type === 'basic') {
+    const copia = res.clone();
+    caches.open(VERSION).then((c) => c.put(req, copia));
+  }
+  return res;
 }
 
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
-  const path = new URL(e.request.url).pathname;
-  // Network-first para JSON (carta/horarios/evento), HTML y JS: así un deploy
-  // nuevo (páginas, mock, cores) llega siempre; el cache queda solo como
-  // respaldo offline.
-  if (e.request.mode === 'navigate' || /\.(json|html|js)$/.test(path) || path.endsWith('/')) {
-    e.respondWith(networkFirst(e.request));
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+
+  const esEstatico = ['image', 'font'].includes(req.destination) ||
+    /\.(png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(url.pathname);
+
+  if (esEstatico) {
+    e.respondWith(caches.match(req).then((r) => r || fetch(req).then((res) => guardar(req, res))));
     return;
   }
-  // Cache-first para estáticos (imágenes, íconos)
+
+  // fetch(url, init) y no fetch(req, init): un Request de navegación no se puede
+  // re-crear con opciones (tira TypeError).
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(res => {
-        if (res.ok) {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
-        return res;
-      });
-    })
+    fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' })
+      .then((res) => guardar(req, res))
+      .catch(() => caches.match(req).then((r) => r || (req.mode === 'navigate' ? caches.match('./index.html') : undefined)))
   );
 });

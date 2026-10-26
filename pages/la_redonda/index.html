@@ -581,7 +581,7 @@
 gsap.registerPlugin(ScrollTrigger);
 
 
-fetch('./productos.json').then(r => r.json()).then(initPage).catch(() => {});
+fetch('./productos.json', { cache: 'no-cache' }).then(r => r.json()).then(initPage).catch(() => {});
 
 function initPage(data) {
   buildHorarios(data);

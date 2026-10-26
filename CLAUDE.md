@@ -23,6 +23,11 @@ cada uno configurable. Dos formas de pago, por servicio:
 | Pago único | $70 USD/servicio + $8 USD canon por cambio post-entrega | Negocios ya funcionando que quieren escalar |
 | SaaS mensual | $8 USD/mes | Emprendimientos que recién arrancan o quieren probar |
 
+**Adicional de E-commerce — integración de pago online (MercadoPago):**
++$20 USD en pago único / +$2 USD/mes en SaaS. Es un canon por mantenimiento:
+nuestro costo de infraestructura es $0 (Cloudflare Workers gratis), y la
+comisión de MercadoPago la paga el comercio a MP.
+
 **Siempre gratis en cualquier servicio:** SEO básico, Google Analytics, QR code, hosting GitHub Pages $0 para siempre.
 **Diferenciador central:** costo $0 de hosting para siempre. Sin Menuya, Pency ni Milocal.
 

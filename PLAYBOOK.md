@@ -75,6 +75,17 @@ Un cliente puede contratar varios servicios a la vez (ej. Landing + E-commerce +
 |---|---|
 | Cambio extra de mantenimiento | $10 USD |
 | Tickera o cola de pedidos (Firebase) | $20 USD |
+| **Integración de pago online** (adicional de E-commerce) | **+$20 USD** en pago único / **+$2 USD/mes** en SaaS |
+
+**Integración de pago online (MercadoPago):** el comprador paga con tarjeta
+en cuotas (el interés lo paga él) o con dinero de MercadoPago, y el pedido se
+marca como pagado solo, sin que el comercio tenga que chequear nada. La
+transferencia bancaria sigue disponible, con 0% de comisión. La comisión de
+MercadoPago la paga el comercio directo a MercadoPago. El adicional es un
+canon por mantenimiento: servidor de pagos (Cloudflare, costo $0 para
+nosotros), credenciales, avisos de pago y cambios de la API de MercadoPago.
+Detalle técnico: `references/module-pagos-mercadopago.md` de la skill
+`new_client`.
 
 ### A medida (variable)
 

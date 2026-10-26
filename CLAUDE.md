@@ -142,6 +142,26 @@ Estas tareas van **últimas** en la lista, después de todo lo demás. Tocan a
 clientes reales (Cattorini, El Sabor de Mamá), y cualquier cambio ahí hay
 que explicárselo al cliente desde cero antes de aplicarlo.
 
+**Antes de tocar cualquier cliente productivo:**
+- **Producción NO es `pages/` de este repo.** Cada uno vive en su propio repo:
+  `cattorini/cattorini.github.io` y `elsabordemama/elsabordemama.github.io`.
+  Las copias de `pages/cattorini` y `pages/el_sabor_de_mama` están
+  desactualizadas: en Cattorini difiere `productos.json` (última
+  sincronización el 2026-08-28), y la copia local del portal publica a
+  `juliancarroccio/pushcommerce`, mientras que el de producción publica a su
+  propio repo.
+- Trabajar sobre un clon del repo de producción, y **re-verificar ahí** el
+  diagnóstico de seguridad, que se hizo sobre las copias locales.
+- **Acceso:** la cuenta `juliancarroccio` solo tiene permiso de **lectura**
+  sobre los dos repos de producción. Para publicar, Julian tiene que agregarla
+  como colaboradora desde la cuenta de cada cliente (Settings → Collaborators),
+  o publicar él.
+- Incluir en el deploy de cada cliente el **`sw.js` estándar**
+  (`~/.claude/skills/new_client/assets/sw-template.js`) y los `fetch` de JSON
+  con `{ cache: 'no-cache' }`. Es lo que evita pedirle a la gente que borre la
+  caché. El Sabor de Mamá hoy sirve el HTML cache-first con caché fija
+  `esm-v1`: sus visitantes ven versiones viejas.
+
 1. **Seguridad de Cattorini — fases 0 a 3**. Diagnóstico completo en engram
    (`pushcommerce/seguridad-firestore-rules`).
    - **Fase 0:** escapar el `innerHTML` de `portal.html` y `pedidos.html`.

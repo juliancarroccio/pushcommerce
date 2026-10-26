@@ -152,10 +152,22 @@ que explicárselo al cliente desde cero antes de aplicarlo.
   propio repo.
 - Trabajar sobre un clon del repo de producción, y **re-verificar ahí** el
   diagnóstico de seguridad, que se hizo sobre las copias locales.
-- **Acceso:** la cuenta `juliancarroccio` solo tiene permiso de **lectura**
-  sobre los dos repos de producción. Para publicar, Julian tiene que agregarla
-  como colaboradora desde la cuenta de cada cliente (Settings → Collaborators),
-  o publicar él.
+- **Acceso:** Julian tiene las cuentas de GitHub de cada cliente (las crea
+  él al pasar a producción). La cuenta `juliancarroccio` hoy solo tiene
+  permiso de lectura sobre esos repos.
+  - **Procedimiento acordado:** Julian entra a cada cuenta de cliente →
+    Settings → Collaborators → agrega `juliancarroccio`, y se publica con su
+    sesión de `gh`.
+  - **NUNCA** guardar ni usar contraseñas o PATs de clientes en archivos del
+    repo, memoria o commits.
+- **Rotar credenciales después del trabajo:** el 2026-10-25 se compartieron
+  en el chat contraseñas de las cuentas de ambos clientes y el PAT del portal
+  de El Sabor de Mamá.
+  - Regenerar ese PAT como fine-grained: solo ese repo, permiso Contents, con
+    vencimiento. Volver a cargarlo en el portal.
+  - Cambiar las contraseñas. Cattorini usa la misma para GitHub y para el mail
+    de Firebase.
+  - Activar la verificación en dos pasos en las cuentas.
 - Incluir en el deploy de cada cliente el **`sw.js` estándar**
   (`~/.claude/skills/new_client/assets/sw-template.js`) y los `fetch` de JSON
   con `{ cache: 'no-cache' }`. Es lo que evita pedirle a la gente que borre la

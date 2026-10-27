@@ -218,7 +218,13 @@ que explicárselo al cliente desde cero antes de aplicarlo.
    - **Necesito de Julian:** las reglas reales del proyecto
      `elsabordemama-dec44` y confirmar que ese repo tiene el mismo código.
    - Preparar la explicación para el cliente.
-3. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
+3. **Proyectos Firebase de demos viejas:** `hotel-balo` (ex Balo) y
+   `cincomentariolf` (ex Cincomentario). Las demos ahora usan el mock, pero
+   esos proyectos siguen existiendo y sus configs están en el historial
+   público de git. Las demos viejas escribieron reservas y pedidos ahí.
+   Julian tiene que revisarlos en la consola de Firebase y borrarlos, o
+   cerrar sus reglas.
+4. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
    e-commerce** para ofrecer, más los que hagan falta.
    - Investigación previa en engram (`roadmap/mercadopago-factibilidad`):
      Checkout Pro necesita backend → Cloudflare Workers, nunca Vercel Hobby

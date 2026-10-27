@@ -78,35 +78,34 @@ pushcommerce/
 
 ## ⚠️ Clientes REALES vendidos — NUNCA tocar sin pedido explícito
 
-- `pages/el_sabor_de_mama/`
-- `pages/cattorini/`
+- **El Sabor de Mamá** → repo `elsabordemama/elsabordemama.github.io`
+- **Cattorini** → repo `cattorini/cattorini.github.io` (dominio `cattorinioriginal.com`)
 
-Son negocios reales que ya pagaron y están en producción. **No les
+Viven en sus propios repos, no en `pages/` (las copias viejas que había
+acá se borraron el 2026-10-27). Son negocios reales que ya pagaron y
+están en producción. **No les
 apliques ninguna refactorización, módulo nuevo, migración de skill ni
 "mejora" general** — ni siquiera si parece una mejora objetiva (ej. no
 migrarlos al flujo modular de `new_client` v3.0). Tocalos únicamente
 cuando Julian lo pida explícitamente PARA ESE cliente puntual.
 
-El resto de `pages/*` son demos/trabajo en curso — sí es terreno normal
-para iterar, probar y aplicar el flujo nuevo. (Distinto de los clientes
+Todo `pages/*` son demos: sí es terreno normal para iterar, probar y
+aplicar el flujo nuevo.
+
+**Demos de negocios reales que no compraron:** se convierten en negocios
+ficticios antes de mostrarlos. Llevan nombre y logo de fantasía, sin
+dirección, teléfono, redes, fotos ni reseñas reales, con `noindex` y la
+leyenda "Sitio de demostración · negocio ficticio" en el pie. Así quedaron
+`almacen_del_pago` (ex Cincomentario) y `hotel_los_aromos` (ex Balo). No
+volver a usar los nombres ni los datos reales de esos negocios. (Distinto de los clientes
 de prueba descartables tipo `pages/*_de_prueba/` que se crean y borran
 dentro de una misma sesión para validar la skill — esos ni siquiera son
 negocio real, son puramente técnicos.)
 
 ## Clientes actuales
 
-### Cincomentario (demo completa ✅)
-- **Tipo:** Fiambrería y Quesería
-- **Dirección:** Av. San Martín 862, Las Flores (B7200)
-- **Tel:** 02244 44-4777
-- **Email:** RegionalesCincomentario@hotmail.com
-- **Facebook:** @RegionalesCincomentario
-- **Rating:** 4.7★ (34 reseñas Google)
-- **Logo:** `pages/cincomentario/494509243_18122239129446348_7279241484691807032_n.jpg`
-- **Paleta:** wood `#1A1008`, amber `#C8822E`, parchment `#F2E8D5`, tan `#C9A87C`
-- **Tipografía:** Oswald (display) + Cormorant Garamond (serif)
-- **Estado:** landing + tienda construidas, pendiente subir a GH Pages
-- **Pendiente:** reseñas, QR, oferta semanal, MercadoPago
+Clientes en producción: Cattorini y El Sabor de Mamá (ver arriba). Los
+demás sitios de `pages/` son demos.
 
 ---
 
@@ -150,11 +149,9 @@ que explicárselo al cliente desde cero antes de aplicarlo.
 **Antes de tocar cualquier cliente productivo:**
 - **Producción NO es `pages/` de este repo.** Cada uno vive en su propio repo:
   `cattorini/cattorini.github.io` y `elsabordemama/elsabordemama.github.io`.
-  Las copias de `pages/cattorini` y `pages/el_sabor_de_mama` están
-  desactualizadas: en Cattorini difiere `productos.json` (última
-  sincronización el 2026-08-28), y la copia local del portal publica a
-  `juliancarroccio/pushcommerce`, mientras que el de producción publica a su
-  propio repo.
+  Las copias que había en `pages/` se borraron el 2026-10-27. El
+  `MANUAL_CATTORINI.md`, que tiene credenciales y no se versiona, quedó en
+  `~/Documents/repos/cattorini-backups/`.
 - Trabajar sobre un clon del repo de producción, y **re-verificar ahí** el
   diagnóstico de seguridad, que se hizo sobre las copias locales.
 - **Acceso:** Julian tiene las cuentas de GitHub de cada cliente (las crea
@@ -238,13 +235,6 @@ que explicárselo al cliente desde cero antes de aplicarlo.
 - [ ] `edit-section` — editar sección puntual de página existente
 - [ ] `update-products` — editar catálogo en tienda.html
 - [ ] `add-service` — inyectar features nuevas (reseñas, QR, MP, etc.)
-
-**Cincomentario pendiente:**
-- [ ] Subir a GitHub Pages (URL demo real)
-- [ ] Sección "Oferta de la semana"
-- [ ] Sección de reseñas Google (tiene 34, 4.7★)
-- [ ] QR code imprimible
-- [ ] MercadoPago en tienda
 
 ---
 

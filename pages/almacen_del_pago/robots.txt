@@ -1,0 +1,5 @@
+# Sitio de demostración (negocio ficticio). La exclusión de buscadores se hace
+# con <meta name="robots" content="noindex, nofollow"> en cada página; acá no se
+# bloquea el rastreo para que los buscadores puedan leer ese noindex.
+User-agent: *
+Allow: /

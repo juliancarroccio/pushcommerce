@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservas — Hotel Los Aromos</title>
+  <meta name="description" content="Consultá disponibilidad en Hotel Los Aromos, Las Flores. Te respondemos por WhatsApp en minutos." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="https://juliancarroccio.github.io/pushcommerce/pages/hotel_los_aromos/reservas.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Reservas — Hotel Los Aromos" />
+  <meta property="og:description" content="Elegí habitación y fechas y consultá disponibilidad por WhatsApp." />
+  <meta property="og:url" content="https://juliancarroccio.github.io/pushcommerce/pages/hotel_los_aromos/reservas.html" />
+  <meta property="og:image" content="https://juliancarroccio.github.io/pushcommerce/pages/hotel_los_aromos/img/og-image.jpg" />
+  <meta name="theme-color" content="#2580C8" />
+  <link rel="icon" href="./img/favicon.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!--
+    Carga condicional: en localhost (o siempre, en clientes DEMO) usa el mock
+    de Firestore en localStorage; en cualquier otro host, los SDKs reales.
+  -->
+  <script>
+    // Negocio FICTICIO sin proyecto Firebase real: siempre mock (localStorage), también en producción.
+    const DEMO = true;
+    (function () {
+      const local = DEMO || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const srcs = local
+        ? ['./firestore-mock.js']
+        : [
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
+            'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js',
+          ];
+      srcs.forEach(src => document.write(`<scr${''}ipt src="${src}"></scr${''}ipt>`));
+    })();
+  </script>
+  <script src="./firebase-init.js"></script>
+  <style>
+    :root {
+      --navy:       #15202E;
+      --sky:        #2580C8;
+      --sky-lt:     #3A94DC;
+      --terra:      #C4804A;
+      --cream:      #F5F2EE;
+      --warm-white: #FDFAF6;
+      --text:       #2A3540;
+      --text-mid:   #5E7080;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Outfit', sans-serif; background: var(--cream); color: var(--text); margin: 0; min-height: 100vh; }
+
+    .res-header {
+      background: var(--navy); padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .step-label {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-weight: 600; color: var(--navy); margin-bottom: 1.25rem; font-size: 1.05rem;
+    }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--sky); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    .hab-radio { display: none; }
+    .hab-card-label {
+      display: block; cursor: pointer; border: 2px solid #e5e0d8;
+      border-radius: 0.875rem; padding: 1.5rem; background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s; user-select: none;
+    }
+    .hab-card-label:hover { border-color: var(--sky-lt); box-shadow: 0 4px 16px rgba(37,128,200,0.1); }
+    .hab-radio:checked + .hab-card-label {
+      border-color: var(--sky); background: rgba(37,128,200,0.04);
+      box-shadow: 0 0 0 3px rgba(37,128,200,0.15); transform: translateY(-2px);
+    }
+
+    .stepper-btn {
+      width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--sky);
+      background: #fff; cursor: pointer; color: var(--sky); font-size: 1.2rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s; flex-shrink: 0;
+    }
+    .stepper-btn:hover { background: var(--sky); color: #fff; }
+    .stepper-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .form-input {
+      width: 100%; border: 1.5px solid #d4cfc7; border-radius: 0.625rem;
+      padding: 0.75rem 1rem; font-family: 'Outfit', sans-serif; font-size: 1rem;
+      color: var(--text); background: #fff; transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+    }
+    .form-input:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(37,128,200,0.12); }
+    .form-input::placeholder { color: var(--text-mid); }
+    label.field-label { display: block; font-weight: 600; font-size: 0.875rem; color: var(--navy); margin-bottom: 0.4rem; }
+
+    .btn-submit {
+      width: 100%; padding: 1rem; background: var(--sky); color: #fff;
+      border: none; border-radius: 0.75rem; font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer; letter-spacing: 0.01em;
+      transition: background 0.2s, transform 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .btn-submit:hover { background: var(--sky-lt); transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      background: var(--navy); color: #fff; padding: 0.875rem 1.75rem; border-radius: 2rem;
+      font-size: 0.95rem; font-weight: 500; opacity: 0; transition: opacity 0.3s;
+      pointer-events: none; z-index: 9999; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ── Calendar ── */
+    #cal-placeholder {
+      text-align: center; padding: 2rem 1rem; color: var(--text-mid);
+      border: 2px dashed #d4cfc7; border-radius: 0.875rem; background: rgba(255,255,255,0.5);
+    }
+    #cal-loading { text-align: center; padding: 2.5rem 1rem; color: var(--text-mid); font-size: 0.9rem; }
+
+    .cal-nav {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.875rem;
+    }
+    .cal-nav-btn {
+      background: none; border: 1.5px solid #d4cfc7; border-radius: 0.5rem;
+      width: 34px; height: 34px; cursor: pointer; color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s; font-size: 1.15rem; flex-shrink: 0;
+    }
+    .cal-nav-btn:hover:not(:disabled) { background: var(--cream); }
+    .cal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .cal-month-label { font-weight: 600; color: var(--navy); font-size: 1rem; }
+
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+    .cal-dow {
+      text-align: center; font-size: 0.7rem; font-weight: 600; color: var(--text-mid);
+      padding: 0.4rem 0; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .cal-day {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; border-radius: 6px; cursor: pointer;
+      border: none; background: transparent; font-family: 'Outfit', sans-serif;
+      color: var(--text); transition: background 0.1s, color 0.1s; padding: 0;
+    }
+    .cal-day.empty { cursor: default; color: #ccc; pointer-events: none; }
+    .cal-day:not([disabled]):not(.empty):hover { background: rgba(37,128,200,0.12); }
+    .cal-day[disabled]:not(.blocked) { color: #ccc !important; cursor: not-allowed; }
+    .cal-day.blocked {
+      color: #e0a0a0 !important; cursor: not-allowed;
+      background: rgba(220,50,50,0.05) !important; position: relative;
+    }
+    .cal-day.blocked::after {
+      content: ''; position: absolute; left: 15%; right: 15%; top: 50%;
+      height: 1.5px; background: #e0a0a0; transform: rotate(-12deg);
+    }
+    .cal-day.today:not(.checkin):not(.checkout) { color: var(--sky); font-weight: 700; }
+    .cal-day.in-range { background: rgba(37,128,200,0.11); border-radius: 0; }
+    .cal-day.checkin, .cal-day.checkout {
+      background: var(--sky) !important; color: #fff !important; font-weight: 600;
+    }
+    .cal-day.checkin  { border-radius: 6px 0 0 6px; }
+    .cal-day.checkout { border-radius: 0 6px 6px 0; }
+    .cal-day.checkin.solo { border-radius: 6px; }
+
+    .cal-summary {
+      margin-top: 0.875rem; padding: 0.75rem 1rem;
+      background: rgba(37,128,200,0.06); border-radius: 0.625rem;
+      font-size: 0.875rem; color: var(--text-mid);
+      border: 1px solid rgba(37,128,200,0.14); line-height: 1.6;
+    }
+    .cal-legend {
+      display: flex; gap: 1rem; margin-top: 0.625rem; flex-wrap: wrap;
+      font-size: 0.75rem; color: var(--text-mid);
+    }
+    .leg-item { display: flex; align-items: center; gap: 0.35rem; }
+    .leg-dot  { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="res-header">
+  <a href="./index.html" style="color:rgba(255,255,255,0.75); text-decoration:none; font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; transition:color 0.2s;"
+     onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.75)'">
+    ← Volver al inicio
+  </a>
+  <img src="./img/logo.png" alt="Hotel Los Aromos" style="max-height:34px; width:auto; background:#fff; padding:4px 10px; border-radius:4px;" />
+  <div style="width:80px;"></div>
+</header>
+
+<!-- Main -->
+<main style="max-width:640px; margin:0 auto; padding:2.5rem 1.5rem 4rem;">
+
+  <div style="text-align:center; margin-bottom:2.5rem;">
+    <h1 style="font-family:'DM Serif Display',serif; font-size:2.25rem; color:var(--navy); margin:0 0 0.75rem; line-height:1.2;">
+      Consultá disponibilidad
+    </h1>
+    <p style="color:var(--text-mid); font-size:1.05rem; margin:0; line-height:1.6;">
+      Completá el formulario y te respondemos por WhatsApp en minutos.
+    </p>
+  </div>
+
+  <form id="reserva-form" novalidate>
+    <div style="background:#fff; border-radius:1.25rem; box-shadow:0 4px 32px rgba(21,32,46,0.08); padding:2rem; display:flex; flex-direction:column; gap:2rem;">
+
+      <!-- Paso 1: Habitación -->
+      <div>
+        <div class="step-label">
+          <div class="step-num">1</div>
+          Elegí tu habitación
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.875rem;">
+
+          <div>
+            <input type="radio" class="hab-radio" name="habitacion" id="hab1" value="1" data-tipo="Simple" data-capacidad="1">
+            <label class="hab-card-label" for="hab1">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+                <span style="font-size:1.75rem;">🛏️</span>
+                <div>
+                  <p style="font-weight:700; color:var(--navy); margin:0; font-size:1.05rem;">Simple</p>
+                  <p style="font-size:0.8rem; color:var(--sky); margin:0; font-weight:500;">👤 1 persona</p>
+                </div>
+              </div>
+              <p style="font-size:0.875rem; color:var(--text-mid); margin:0; line-height:1.5;">Habitación cómoda e ideal para viajeros solos. Baño privado, TV cable, WiFi.</p>
+            </label>
+          </div>
+
+          <div>
+            <input type="radio" class="hab-radio" name="habitacion" id="hab2" value="2" data-tipo="Doble" data-capacidad="2">
+            <label class="hab-card-label" for="hab2">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+                <span style="font-size:1.75rem;">🛏️🛏️</span>
+                <div>
+                  <p style="font-weight:700; color:var(--navy); margin:0; font-size:1.05rem;">Doble</p>
+                  <p style="font-size:0.8rem; color:var(--sky); margin:0; font-weight:500;">👤👤 hasta 2 personas</p>
+                </div>
+              </div>
+              <p style="font-size:0.875rem; color:var(--text-mid); margin:0; line-height:1.5;">Dos camas individuales o matrimonial. Baño privado, TV cable, WiFi.</p>
+            </label>
+          </div>
+
+          <div>
+            <input type="radio" class="hab-radio" name="habitacion" id="hab3" value="3" data-tipo="Doble Superior" data-capacidad="3">
+            <label class="hab-card-label" for="hab3">
+              <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+                <span style="font-size:1.75rem;">✨</span>
+                <div>
+                  <p style="font-weight:700; color:var(--navy); margin:0; font-size:1.05rem;">Doble Superior</p>
+                  <p style="font-size:0.8rem; color:var(--terra); margin:0; font-weight:500;">👤👤👤 hasta 3 personas</p>
+                </div>
+              </div>
+              <p style="font-size:0.875rem; color:var(--text-mid); margin:0; line-height:1.5;">Matrimonial + zona de estar, amenities, baño privado. La más completa.</p>
+            </label>
+          </div>
+
+        </div>
+        <p id="err-hab" style="color:#e53e3e; font-size:0.85rem; margin:0.5rem 0 0; display:none;">Por favor elegí un tipo de habitación.</p>
+      </div>
+
+      <!-- Paso 2: Calendario + Huéspedes -->
+      <div>
+        <div class="step-label">
+          <div class="step-num">2</div>
+          Fechas y huéspedes
+        </div>
+
+        <div id="cal-area">
+          <div id="cal-placeholder">
+            <p style="margin:0; font-size:0.925rem;">← Primero elegí el tipo de habitación</p>
+            <p style="margin:0.35rem 0 0; font-size:0.8rem;">El calendario mostrará los días disponibles</p>
+          </div>
+        </div>
+        <p id="err-fechas" style="color:#e53e3e; font-size:0.85rem; margin:0.5rem 0 0; display:none;">Seleccioná check-in y check-out en el calendario.</p>
+
+        <div style="margin-top:1.25rem;">
+          <label class="field-label">Huéspedes</label>
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <button type="button" class="stepper-btn" id="btn-minus" disabled>−</button>
+            <span id="huespedes-val" style="font-size:1.25rem; font-weight:700; color:var(--navy); min-width:24px; text-align:center;">1</span>
+            <button type="button" class="stepper-btn" id="btn-plus">+</button>
+            <span style="font-size:0.85rem; color:var(--text-mid);">persona(s)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 3: Datos -->
+      <div>
+        <div class="step-label">
+          <div class="step-num">3</div>
+          Tus datos
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          <div>
+            <label class="field-label" for="nombre">Nombre completo *</label>
+            <input type="text" id="nombre" class="form-input" placeholder="Juan García" required />
+            <p id="err-nombre" style="color:#e53e3e; font-size:0.85rem; margin:0.35rem 0 0; display:none;">Ingresá tu nombre completo.</p>
+          </div>
+          <div>
+            <label class="field-label" for="telefono">Teléfono / WhatsApp *</label>
+            <input type="tel" id="telefono" class="form-input" placeholder="221 123-4567" required />
+            <p id="err-telefono" style="color:#e53e3e; font-size:0.85rem; margin:0.35rem 0 0; display:none;">Ingresá tu teléfono o WhatsApp.</p>
+          </div>
+          <div>
+            <label class="field-label" for="nota">Nota (opcional)</label>
+            <textarea id="nota" class="form-input" rows="3" placeholder="Llegamos tarde, necesitamos cuna, etc." style="resize:vertical;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-submit">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Consultar disponibilidad por WhatsApp
+      </button>
+
+      <p style="font-size:0.8rem; color:var(--text-mid); text-align:center; margin:0;">
+        Tu consulta se enviará por WhatsApp al hotel. Te confirmamos disponibilidad y precio en minutos.
+      </p>
+
+    </div>
+  </form>
+</main>
+
+<footer style="background:var(--navy); color:rgba(255,255,255,0.45); padding:1.5rem; text-align:center; font-size:0.8rem; line-height:1.7;">
+  © 2026 Hotel Los Aromos ·
+  <a href="./privacidad.html" style="color:rgba(255,255,255,0.55);">Privacidad</a> ·
+  <a href="./terminos.html" style="color:rgba(255,255,255,0.55);">Términos</a><br>
+  Sitio por <a href="https://lasflores.software" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.65);">Las Flores Software</a>
+  <span style="display:block; font-size:0.72rem; color:rgba(255,255,255,0.35);">Sitio de demostración · negocio ficticio</span>
+</footer>
+
+<div id="toast"></div>
+
+<!-- Solo DEMO: resultado de la consulta (en un negocio real se abre WhatsApp) -->
+<div id="demo-modal" role="dialog" aria-modal="true" aria-labelledby="demo-titulo"
+     style="display:none; position:fixed; inset:0; z-index:9000; background:rgba(21,32,46,0.7); align-items:center; justify-content:center; padding:1rem;">
+  <div style="background:#fff; border-radius:1rem; max-width:460px; width:100%; max-height:90vh; overflow-y:auto; padding:1.75rem; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <p style="font-size:0.7rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--terra); margin:0 0 0.5rem;">Modo demo</p>
+    <h2 id="demo-titulo" style="font-family:'DM Serif Display',serif; font-size:1.6rem; color:var(--navy); margin:0 0 0.75rem;">¡Consulta registrada!</h2>
+    <p style="color:var(--text-mid); font-size:0.9rem; line-height:1.6; margin:0 0 1rem;">
+      La reserva quedó cargada como <strong>pendiente</strong> en el panel de recepción. En un hotel real, además se abre
+      WhatsApp con este mensaje listo para enviar:
+    </p>
+    <pre id="demo-msg" style="white-space:pre-wrap; word-break:break-word; background:#e7f8ee; border:1px solid #bfe8cf; border-radius:0.75rem; padding:1rem; font-family:'Outfit',sans-serif; font-size:0.85rem; color:#1f3b2b; margin:0 0 1.25rem;"></pre>
+    <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+      <a href="./recepcion.html" style="flex:1; text-align:center; background:var(--sky); color:#fff; padding:0.75rem 1rem; border-radius:0.625rem; font-weight:600; text-decoration:none;">Ver en recepción</a>
+      <button type="button" id="demo-cerrar" style="flex:1; background:#fff; color:var(--navy); border:1.5px solid #d4cfc7; padding:0.75rem 1rem; border-radius:0.625rem; font-weight:600; cursor:pointer; font-family:'Outfit',sans-serif;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // FIREBASE_CONFIG y `db` vienen de ./firebase-init.js (en DEMO, contra el mock).
+
+  /* ── Helpers ── */
+  function showToast(msg, ms = 3500) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function addDays(ds, n) {
+    const d = new Date(ds + 'T12:00:00'); // noon avoids DST issues
+    d.setDate(d.getDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+
+  function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
+
+  function firstDOW(y, m) {
+    const d = new Date(y, m, 1).getDay(); // 0 = Sunday
+    return d === 0 ? 6 : d - 1;          // Mon=0 … Sun=6
+  }
+
+  /* ── Calendar state ── */
+  let blockedDates = new Set(); // 'YYYY-MM-DD' occupied nights
+  let calCheckin   = null;
+  let calCheckout  = null;
+  let calYear, calMonth;
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  function rangeHasBlocked(from, to) {
+    let d = addDays(from, 1);
+    while (d < to) {
+      if (blockedDates.has(d)) return true;
+      d = addDays(d, 1);
+    }
+    return false;
+  }
+
+  function renderCalendar() {
+    const container = document.getElementById('cal-container');
+    if (!container) return;
+
+    const y = calYear, m = calMonth;
+    const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const DOWS   = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
+
+    const dim      = daysInMonth(y, m);
+    const firstDow = firstDOW(y, m);
+    const prevDim  = daysInMonth(y, m === 0 ? 11 : m - 1);
+
+    let html = `
+      <div class="cal-nav">
+        <button class="cal-nav-btn" id="cal-prev" type="button">‹</button>
+        <span class="cal-month-label">${MONTHS[m]} ${y}</span>
+        <button class="cal-nav-btn" id="cal-next" type="button">›</button>
+      </div>
+      <div class="cal-grid">
+        ${DOWS.map(d => `<div class="cal-dow">${d}</div>`).join('')}
+    `;
+
+    for (let i = 0; i < firstDow; i++) {
+      html += `<div class="cal-day empty">${prevDim - firstDow + 1 + i}</div>`;
+    }
+
+    const todayDate = new Date(todayStr + 'T12:00:00');
+
+    for (let day = 1; day <= dim; day++) {
+      const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dayDate   = new Date(ds + 'T12:00:00');
+      const isPast    = dayDate < todayDate;
+      const isBlocked = blockedDates.has(ds);
+      const isToday   = ds === todayStr;
+      const isCI      = ds === calCheckin;
+      const isCO      = ds === calCheckout;
+      const inRange   = calCheckin && calCheckout && ds > calCheckin && ds < calCheckout;
+
+      let cls = ['cal-day'];
+      if (isPast)        cls.push('disabled');
+      else if (isBlocked) cls.push('blocked');
+      if (isToday && !isPast && !isCI && !isCO) cls.push('today');
+      if (isCI)      { cls.push('checkin');  if (!calCheckout) cls.push('solo'); }
+      if (isCO)        cls.push('checkout');
+      if (inRange)     cls.push('in-range');
+
+      const disabled = isPast || isBlocked;
+      html += `<button type="button" class="${cls.join(' ')}" data-date="${ds}"${disabled ? ' disabled' : ''}>${day}</button>`;
+    }
+
+    const total    = firstDow + dim;
+    const trailing = total % 7 === 0 ? 0 : 7 - (total % 7);
+    for (let i = 1; i <= trailing; i++) {
+      html += `<div class="cal-day empty">${i}</div>`;
+    }
+
+    html += '</div>'; // cal-grid
+
+    // Summary row
+    html += '<div class="cal-summary">';
+    if (!calCheckin) {
+      html += '<span>Tocá una fecha para elegir tu llegada</span>';
+    } else if (!calCheckout) {
+      html += `<strong style="color:var(--sky)">Check-in:</strong> ${formatDate(calCheckin)} &nbsp;·&nbsp; <em>Ahora elegí tu fecha de salida</em>`;
+    } else {
+      const nights = Math.round((new Date(calCheckout) - new Date(calCheckin)) / 86400000);
+      html += `<strong style="color:var(--sky)">Check-in:</strong> ${formatDate(calCheckin)}
+               &nbsp;·&nbsp; <strong style="color:var(--sky)">Check-out:</strong> ${formatDate(calCheckout)}
+               &nbsp;&nbsp; 🌙 <strong style="color:var(--navy)">${nights} noche${nights !== 1 ? 's' : ''}</strong>`;
+    }
+    html += '</div>';
+
+    // Legend
+    html += `
+      <div class="cal-legend">
+        <span class="leg-item"><span class="leg-dot" style="background:var(--sky);"></span>Seleccionado</span>
+        <span class="leg-item"><span class="leg-dot" style="background:rgba(37,128,200,0.12);"></span>Rango elegido</span>
+        <span class="leg-item"><span class="leg-dot" style="background:rgba(220,50,50,0.07); border:1px solid #e0a0a0;"></span>No disponible</span>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    // Navigation
+    const now     = new Date();
+    const prevBtn = document.getElementById('cal-prev');
+    const nextBtn = document.getElementById('cal-next');
+    prevBtn.disabled = y === now.getFullYear() && m === now.getMonth();
+
+    prevBtn.addEventListener('click', () => {
+      calMonth--;
+      if (calMonth < 0) { calMonth = 11; calYear--; }
+      renderCalendar();
+    });
+    nextBtn.addEventListener('click', () => {
+      calMonth++;
+      if (calMonth > 11) { calMonth = 0; calYear++; }
+      renderCalendar();
+    });
+
+    container.querySelectorAll('.cal-day[data-date]').forEach(btn => {
+      btn.addEventListener('click', () => onDayClick(btn.dataset.date));
+    });
+  }
+
+  function onDayClick(ds) {
+    if (!calCheckin || (calCheckin && calCheckout)) {
+      // Start fresh
+      calCheckin  = ds;
+      calCheckout = null;
+    } else {
+      if (ds <= calCheckin) {
+        calCheckin  = ds;
+        calCheckout = null;
+      } else if (rangeHasBlocked(calCheckin, ds)) {
+        showToast('⛔ Ese rango incluye fechas no disponibles. Elegí otras fechas.');
+        calCheckin  = ds;
+        calCheckout = null;
+      } else {
+        calCheckout = ds;
+      }
+    }
+    renderCalendar();
+  }
+
+  async function loadBlockedDates(habitacionId) {
+    const calArea = document.getElementById('cal-area');
+    calArea.innerHTML = '<div id="cal-loading">⏳ Cargando disponibilidad…</div>';
+    calCheckin   = null;
+    calCheckout  = null;
+    blockedDates = new Set();
+
+    if (db) {
+      try {
+        await DEMO_SEED_READY; // solo DEMO: reservas de ejemplo ya cargadas
+        const snap = await db.collection('reservas')
+          .where('habitacion_id', '==', habitacionId)
+          .where('estado', 'in', ['confirmada', 'hospedado'])
+          .get();
+
+        snap.forEach(doc => {
+          let { checkin, checkout } = doc.data();
+          // Block all nights: from checkin (inclusive) to checkout (exclusive)
+          let d = checkin;
+          while (d < checkout) {
+            blockedDates.add(d);
+            d = addDays(d, 1);
+          }
+        });
+      } catch(e) {
+        // Firebase not configured yet — show calendar without blocked dates
+      }
+    }
+
+    const now  = new Date();
+    calYear  = now.getFullYear();
+    calMonth = now.getMonth();
+
+    calArea.innerHTML = '<div id="cal-container"></div>';
+    renderCalendar();
+  }
+
+  /* ── Trigger calendar on room selection ── */
+  document.querySelectorAll('.hab-radio').forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.checked) {
+        document.getElementById('err-hab').style.display = 'none';
+        loadBlockedDates(parseInt(radio.value));
+      }
+    });
+  });
+
+  /* Pre-select room from ?hab=N querystring */
+  const urlParams = new URLSearchParams(window.location.search);
+  const habParam  = urlParams.get('hab');
+  if (habParam) {
+    const radio = document.getElementById('hab' + habParam);
+    if (radio) { radio.checked = true; loadBlockedDates(parseInt(radio.value)); }
+  }
+
+  /* ── Stepper huéspedes ── */
+  let huespedes = 1;
+  const btnMinus = document.getElementById('btn-minus');
+  const btnPlus  = document.getElementById('btn-plus');
+  const hVal     = document.getElementById('huespedes-val');
+
+  btnMinus.addEventListener('click', () => {
+    if (huespedes > 1) {
+      huespedes--;
+      hVal.textContent    = huespedes;
+      btnMinus.disabled   = huespedes <= 1;
+      btnPlus.disabled    = false;
+    }
+  });
+  btnPlus.addEventListener('click', () => {
+    if (huespedes < 4) {
+      huespedes++;
+      hVal.textContent  = huespedes;
+      btnPlus.disabled  = huespedes >= 4;
+      btnMinus.disabled = false;
+    }
+  });
+
+  /* ── Validación y submit ── */
+  function clearErrors() {
+    ['err-hab', 'err-fechas', 'err-nombre', 'err-telefono'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+  }
+
+  document.getElementById('reserva-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    clearErrors();
+    let valid = true;
+
+    const habRadio = document.querySelector('input[name="habitacion"]:checked');
+    if (!habRadio) { document.getElementById('err-hab').style.display = 'block'; valid = false; }
+
+    if (!calCheckin || !calCheckout) { document.getElementById('err-fechas').style.display = 'block'; valid = false; }
+
+    const nombre = document.getElementById('nombre').value.trim();
+    if (!nombre) { document.getElementById('err-nombre').style.display = 'block'; valid = false; }
+
+    const telefono = document.getElementById('telefono').value.trim();
+    if (!telefono) { document.getElementById('err-telefono').style.display = 'block'; valid = false; }
+
+    if (!valid) return;
+
+    const habTipo = habRadio.dataset.tipo;
+    const habId   = parseInt(habRadio.value);
+    const noches  = Math.round((new Date(calCheckout) - new Date(calCheckin)) / 86400000);
+    const nota    = document.getElementById('nota').value.trim();
+
+    /* Firestore — non-blocking */
+    if (db) {
+      db.collection('reservas').add({
+        timestamp:       firebase.firestore.FieldValue.serverTimestamp(),
+        estado:          'pendiente',
+        nombre,          telefono,
+        habitacion_id:   habId,
+        habitacion_tipo: habTipo,
+        checkin:         calCheckin,
+        checkout:        calCheckout,
+        noches,          huespedes,
+        nota:            nota || '',
+        orden:           Date.now()
+      }).catch(() => {});
+    }
+
+    /* WhatsApp */
+    let lines = [
+      'Hola! Quiero consultar disponibilidad en el Hotel Los Aromos.',
+      '',
+      '📋 Detalle de la reserva:',
+      `• Habitación: ${habTipo}`,
+      `• Check-in: ${formatDate(calCheckin)}`,
+      `• Check-out: ${formatDate(calCheckout)}`,
+      `• Noches: ${noches}`,
+      `• Huéspedes: ${huespedes}`,
+      `• Nombre: ${nombre}`,
+      `• Teléfono: ${telefono}`,
+    ];
+    if (nota) lines.push(`• Nota: ${nota}`);
+    lines.push('', '¿Tienen disponibilidad? ¡Muchas gracias! 🙏');
+
+    if (DEMO) {
+      // Demo (negocio ficticio): el número de WhatsApp es un placeholder, así que en vez
+      // de abrir WhatsApp mostramos el mensaje que le llegaría al hotel.
+      mostrarDemo(lines.join('\n'));
+      return;
+    }
+    window.open('https://wa.me/5492244000000?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+    showToast('✓ Abriendo WhatsApp...');
+  });
+
+  /* ── Solo DEMO: confirmación en pantalla ── */
+  function mostrarDemo(msg) {
+    const bg = document.getElementById('demo-modal');
+    document.getElementById('demo-msg').textContent = msg;
+    bg.style.display = 'flex';
+  }
+  document.getElementById('demo-cerrar').addEventListener('click', () => {
+    document.getElementById('demo-modal').style.display = 'none';
+  });
+</script>
+</body>
+</html>

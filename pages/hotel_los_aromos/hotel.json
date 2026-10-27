@@ -1,0 +1,48 @@
+{
+  "negocio": {
+    "nombre": "Hotel Los Aromos",
+    "whatsapp": "5492244000000",
+    "telefono": "02244 00-0000",
+    "direccion": "Las Flores, Buenos Aires",
+    "analytics_id": ""
+  },
+  "habitaciones": [
+    {
+      "id": 1,
+      "tipo": "Simple",
+      "emoji": "🛏️",
+      "descripcion": "Habitación cómoda y luminosa, ideal para quien viaja solo. Cama individual, baño privado, TV y WiFi gratuito.",
+      "capacidad": 1
+    },
+    {
+      "id": 2,
+      "tipo": "Doble",
+      "emoji": "🛏️🛏️",
+      "descripcion": "Dos camas individuales o cama matrimonial. Perfecta para parejas o compañeros de viaje. Baño privado, TV y WiFi.",
+      "capacidad": 2
+    },
+    {
+      "id": 3,
+      "tipo": "Doble Superior",
+      "emoji": "✨",
+      "descripcion": "La habitación más amplia: cama matrimonial, zona de estar, baño privado con amenities, TV y WiFi. Ideal para estadías largas o hasta 3 personas.",
+      "capacidad": 3
+    }
+  ],
+  "servicios": [
+    { "icono": "☕", "nombre": "Desayuno incluido", "detalle": "7:00 a 10:00 hs — medialunas, tostadas, jugos, frutas y café" },
+    { "icono": "📶", "nombre": "WiFi gratuito", "detalle": "Conexión en todas las habitaciones y espacios comunes" },
+    { "icono": "📺", "nombre": "TV en la habitación", "detalle": "Televisor en todas las habitaciones" },
+    { "icono": "🚗", "nombre": "Estacionamiento", "detalle": "Lugar para dejar el auto sin costo durante la estadía" },
+    { "icono": "🛋️", "nombre": "Sala de estar", "detalle": "Un espacio común tranquilo para leer, trabajar o descansar" },
+    { "icono": "🕐", "nombre": "Recepción 24 hs", "detalle": "Atención al huésped durante todo el día y la noche" },
+    { "icono": "💼", "nombre": "Ideal para viajantes", "detalle": "Facturamos estadías de trabajo y armamos estadías largas" },
+    { "icono": "🗺️", "nombre": "Información turística", "detalle": "Te recomendamos qué conocer en Las Flores y la zona" }
+  ],
+  "horarios": {
+    "check_in": "14:00",
+    "check_out": "11:00",
+    "desayuno_desde": "07:00",
+    "desayuno_hasta": "10:00"
+  }
+}

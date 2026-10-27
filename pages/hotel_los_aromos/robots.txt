@@ -1,0 +1,5 @@
+# Demo de un negocio ficticio. No se bloquea el rastreo a propósito: así los
+# buscadores pueden leer el <meta name="robots" content="noindex, nofollow">
+# de cada página y no la indexan. Sin sitemap.
+User-agent: *
+Allow: /

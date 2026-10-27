@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
  * Test de ejemplo mínimo — demuestra que la infraestructura de Playwright
  * funciona en este repo. NO es parte del testing real de ningún cliente.
  *
- * Usa pages/cincomentario/ (cliente demo, NO vendido) solo para LEER y
+ * Usa pages/almacen_del_pago/ (demo de negocio ficticio) solo para LEER y
  * verificar que carga. No modificar esos archivos desde este test.
  *
  * Se navega vía http://localhost:4173 (ver playwright.config.ts: webServer
@@ -15,7 +15,7 @@ import { test, expect } from '@playwright/test';
  * ~/.claude/skills/new_client/references/testing-playwright.md
  */
 
-test('cincomentario/index.html carga el título y no tira errores de consola', async ({ page }) => {
+test('almacen_del_pago/index.html carga el título y no tira errores de consola', async ({ page }) => {
   const consoleErrors: string[] = [];
   page.on('console', (msg) => {
     if (msg.type() === 'error') {
@@ -26,7 +26,7 @@ test('cincomentario/index.html carga el título y no tira errores de consola', a
     consoleErrors.push(err.message);
   });
 
-  await page.goto('/cincomentario/index.html');
+  await page.goto('/almacen_del_pago/index.html');
 
   // El título de la página debe existir y no estar vacío.
   await expect(page).toHaveTitle(/.+/);

@@ -1,4 +1,4 @@
-/* sw.js estándar de PushCommerce.
+/* sw.js estándar de Las Flores Software.
  *
  * Objetivo: que NUNCA haga falta pedirle a nadie que borre la caché.
  * - HTML, JS, CSS y JSON (precios, catálogo, horarios): siempre se piden a la

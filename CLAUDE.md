@@ -177,9 +177,8 @@ que explicárselo al cliente desde cero antes de aplicarlo.
   `esm-v1`: sus visitantes ven versiones viejas.
 
 1. **Cattorini — dominio propio `cattorinioriginal.com`** desde el 2026-10-26.
-   `cattorini.github.io` redirige al dominio nuevo. Lo único pendiente es el
-   clic de Julian en "Enforce HTTPS", porque nuestra cuenta no es admin del
-   repo. **Seguridad PUBLICADA el 2026-10-26** (commits `078e671` y
+   `cattorini.github.io` redirige al dominio nuevo, HTTPS forzado, alta en
+   Google Search Console con sitemap enviado. **Seguridad PUBLICADA el 2026-10-26** (commits `078e671` y
    `51ed357` en `cattorini/cattorini.github.io`; reglas desplegadas con
    `firebase deploy`). Detalle en engram (`cliente/cattorini/seguridad-pagos-2026-10`).
    Verificado en vivo: el público no puede listar ni tocar stock, y no se
@@ -220,12 +219,18 @@ que explicárselo al cliente desde cero antes de aplicarlo.
    - Preparar la explicación para el cliente.
 3. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
    e-commerce** para ofrecer, más los que hagan falta.
-   - Investigación previa en engram (`roadmap/mercadopago-factibilidad`):
-     Checkout Pro necesita backend → Cloudflare Workers, nunca Vercel Hobby
-     (prohíbe uso comercial).
-   - Falta comparar Stripe y otros, definir el módulo para la skill
-     `new_client` y el precio del servicio.
-   - Aplicarlo a Cattorini va junto con su seguridad.
+   - ✅ **Diseño hecho:** `~/.claude/skills/new_client/references/module-pagos-mercadopago.md`.
+     - Checkout Pro + Worker de Cloudflare (gratis), nunca Vercel Hobby.
+     - Stripe no opera en Argentina.
+     - Transferencia y QR siguen manuales, con 0% de comisión.
+     - Mayoristas también pagan online, validando su código en el Worker.
+     - Cattorini: máximo 3 cuotas, interés a cargo del comprador.
+     - El Worker también se hace cargo del descuento de stock, y eso levanta
+       el tope de 12 variantes por producto.
+   - ✅ **Precio:** adicional de e-commerce, US$20 pago único / US$2 por mes.
+   - **Falta implementar.** Julian tiene que crear la app de prueba en
+     MercadoPago Developers con su cuenta y una cuenta de Cloudflare (pasos en
+     el doc, §10). Cattorini es el primer cliente.
 
 ## Tasks pendientes (ver también el task tracker)
 

@@ -184,14 +184,14 @@ que explicárselo al cliente desde cero antes de aplicarlo.
    `firebase deploy`). Detalle en engram (`cliente/cattorini/seguridad-pagos-2026-10`).
    Verificado en vivo: el público no puede listar ni tocar stock, y no se
    pueden crear usuarios anónimos. Queda pendiente:
-   - **Prueba manual de Julian o el dueño:**
+   - ✅ **Prueba manual** hecha por Julian el 2026-10-27, todo OK. Pasos que se probaron:
      - Login del portal: PAT + email/contraseña.
      - Pedido real chico → aparece en `pedidos.html` → "Cancelar pedido"
        devuelve el stock.
      - Solicitud mayorista → aprobar → el código se ve una vez → entra con
        ese código en la tienda.
      - Mirar la consola del navegador por errores de CSP.
-   - **Datos legales del cliente:** reemplazar los marcadores `[RAZÓN
+   - ✅ **Datos legales** cargados el 2026-10-27 (ORIGINAL 59 S.A.). **Falta del cliente:** QR "Data Fiscal" de ARCA y 3 dudas: IVA en precios mayoristas, si sigue el pago en el local, cómo cobra las 3 cuotas. Antes decía: reemplazar los marcadores `[RAZÓN
      SOCIAL]`, `[CUIT]`, `[CONDICIÓN IVA]`, `[DOMICILIO]`, `[EMAIL DE
      CONTACTO]` y `[POLÍTICA DE CAMBIOS]`.
    - **Errores de carga para el cliente:** `~/Desktop/ERRORES_CARGA_CATTORINI.md`.
@@ -218,13 +218,7 @@ que explicárselo al cliente desde cero antes de aplicarlo.
    - **Necesito de Julian:** las reglas reales del proyecto
      `elsabordemama-dec44` y confirmar que ese repo tiene el mismo código.
    - Preparar la explicación para el cliente.
-3. **Proyectos Firebase de demos viejas:** `hotel-balo` (ex Balo) y
-   `cincomentariolf` (ex Cincomentario). Las demos ahora usan el mock, pero
-   esos proyectos siguen existiendo y sus configs están en el historial
-   público de git. Las demos viejas escribieron reservas y pedidos ahí.
-   Julian tiene que revisarlos en la consola de Firebase y borrarlos, o
-   cerrar sus reglas.
-4. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
+3. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
    e-commerce** para ofrecer, más los que hagan falta.
    - Investigación previa en engram (`roadmap/mercadopago-factibilidad`):
      Checkout Pro necesita backend → Cloudflare Workers, nunca Vercel Hobby
@@ -238,9 +232,7 @@ que explicárselo al cliente desde cero antes de aplicarlo.
 **Skills:**
 - [x] `new_client` — pipeline modular completo, v3.0, delega a 6 agentes
       especializados (`~/.claude/agents/pushcommerce-*.md`)
-- [ ] `edit-section` — editar sección puntual de página existente
-- [ ] `update-products` — editar catálogo en tienda.html
-- [ ] `add-service` — inyectar features nuevas (reseñas, QR, MP, etc.)
+- [~] `/edit-section`, `/update-products`, `/add-service`: existen en `.claude/commands/` pero están DESACTUALIZADOS (ejemplos con Cincomentario, no saben que los clientes reales viven en sus propios repos, ni del modelo de seguridad, el sw.js estándar o la marca Las Flores Software). Actualizarlos antes de usarlos.
 
 ---
 

@@ -179,24 +179,30 @@ que explicárselo al cliente desde cero antes de aplicarlo.
   caché. El Sabor de Mamá hoy sirve el HTML cache-first con caché fija
   `esm-v1`: sus visitantes ven versiones viejas.
 
-1. **Seguridad de Cattorini — fases 0 a 3**. Diagnóstico completo en engram
-   (`pushcommerce/seguridad-firestore-rules`).
-   - **Fase 0:** escapar el `innerHTML` de `portal.html` y `pedidos.html`.
-     Hoy hay un XSS que permite robar el PAT de GitHub (`portal.html:2152`,
-     `:2412`).
-   - **Fase 1:** endurecer las reglas sin tocar código (movimientos con
-     strings acotados).
-   - **Fase 2:** reglas y código juntos.
-     - Login del dueño con email y contraseña, en lugar del login anónimo.
-     - `isStaff()` en las reglas.
-     - Índice de seguimiento por código para poder cerrar el `list`.
-     - Dejar de guardar el código mayorista en texto plano.
-     - Migrar los pedidos existentes.
-   - **Fase 3:** probar en el emulador y desplegar coordinado.
-   - Preparar la **explicación para el cliente**, sobre todo cómo cambia el
-     login del panel.
-   - **Necesito de Julian:** las reglas reales de producción (Firebase
-     Console → Firestore → Reglas).
+1. **Cattorini — seguridad PUBLICADA el 2026-10-26** (commits `078e671` y
+   `51ed357` en `cattorini/cattorini.github.io`; reglas desplegadas con
+   `firebase deploy`). Detalle en engram (`cliente/cattorini/seguridad-pagos-2026-10`).
+   Verificado en vivo: el público no puede listar ni tocar stock, y no se
+   pueden crear usuarios anónimos. Queda pendiente:
+   - **Prueba manual de Julian o el dueño:**
+     - Login del portal: PAT + email/contraseña.
+     - Pedido real chico → aparece en `pedidos.html` → "Cancelar pedido"
+       devuelve el stock.
+     - Solicitud mayorista → aprobar → el código se ve una vez → entra con
+       ese código en la tienda.
+     - Mirar la consola del navegador por errores de CSP.
+   - **Datos legales del cliente:** reemplazar los marcadores `[RAZÓN
+     SOCIAL]`, `[CUIT]`, `[CONDICIÓN IVA]`, `[DOMICILIO]`, `[EMAIL DE
+     CONTACTO]` y `[POLÍTICA DE CAMBIOS]`.
+   - **Errores de carga para el cliente:** `~/Desktop/ERRORES_CARGA_CATTORINI.md`.
+     El portal no deja publicar hasta corregir los precios de los productos
+     #1 y #12.
+   - **Explicarle al dueño:**
+     - El login nuevo.
+     - El código de cada mayorista se ve una sola vez.
+     - "Cancelar pedido" devuelve stock y "Eliminar" no.
+     - Los pedidos con más de 12 combinaciones talle/color de una misma prenda
+       van por WhatsApp.
 2. **Seguridad de El Sabor de Mamá — CRÍTICO, peor que Cattorini**.
    Diagnóstico en engram (`pushcommerce/seguridad-sabor-de-mama`).
    - `pedidos` sin ningún tipo de auth: el código necesita reglas abiertas

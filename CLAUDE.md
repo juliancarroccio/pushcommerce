@@ -179,7 +179,10 @@ que explicárselo al cliente desde cero antes de aplicarlo.
   caché. El Sabor de Mamá hoy sirve el HTML cache-first con caché fija
   `esm-v1`: sus visitantes ven versiones viejas.
 
-1. **Cattorini — seguridad PUBLICADA el 2026-10-26** (commits `078e671` y
+1. **Cattorini — dominio propio `cattorinioriginal.com`** desde el 2026-10-26.
+   `cattorini.github.io` redirige al dominio nuevo. Lo único pendiente es el
+   clic de Julian en "Enforce HTTPS", porque nuestra cuenta no es admin del
+   repo. **Seguridad PUBLICADA el 2026-10-26** (commits `078e671` y
    `51ed357` en `cattorini/cattorini.github.io`; reglas desplegadas con
    `firebase deploy`). Detalle en engram (`cliente/cattorini/seguridad-pagos-2026-10`).
    Verificado en vivo: el público no puede listar ni tocar stock, y no se

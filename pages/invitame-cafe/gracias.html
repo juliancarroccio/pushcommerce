@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Gracias · Invitame un café</title>
+  <meta name="theme-color" content="#0C2C4B">
+  <link rel="icon" type="image/png" href="./img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./cafe.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="./firebase-init.js"></script>
+</head>
+<body>
+  <div class="top"><img src="./img/logo.png" alt="" width="37" height="26"><span>Las Flores Software</span></div>
+  <main><div id="estado" class="estado" aria-live="polite"></div></main>
+  <footer>Sitio por <a href="https://lasflores.software" rel="noopener">Las Flores Software</a></footer>
+
+<script>
+(function () {
+  const cont = document.getElementById('estado');
+  // IMPORTANTE: MercadoPago agrega status, payment_id, collection_status, etc. a
+  // esta URL. Se IGNORAN: la verdad es solo el doc aportes/{code} que escribe el Worker.
+  const code = normalizarCodigo(new URLSearchParams(location.search).get('code'));
+
+  const MOTIVOS = {
+    cc_rejected_insufficient_amount: 'fondos insuficientes',
+    cc_rejected_bad_filled_card_number: 'revisá el número de la tarjeta',
+    cc_rejected_bad_filled_date: 'revisá la fecha de vencimiento',
+    cc_rejected_bad_filled_security_code: 'revisá el código de seguridad',
+    cc_rejected_bad_filled_other: 'revisá los datos de la tarjeta',
+    cc_rejected_call_for_authorize: 'tenés que autorizar el pago con tu banco',
+    cc_rejected_card_disabled: 'la tarjeta está deshabilitada',
+    cc_rejected_high_risk: 'MercadoPago no pudo validar el pago',
+    cc_rejected_max_attempts: 'llegaste al máximo de intentos',
+    cc_rejected_duplicated_payment: 'ya hiciste un pago igual',
+  };
+
+  const pantalla = (grande, titulo, texto, extra) => {
+    cont.innerHTML =
+      `<div class="grande" aria-hidden="true">${grande}</div><h1>${escHTML(titulo)}</h1>` +
+      (texto ? `<p>${texto}</p>` : '') + (extra || '');
+  };
+  const spinner = '<div class="spinner oscuro" aria-hidden="true"></div>';
+  const linkInicio = '<a class="btn sec" href="./index.html">Volver al inicio</a>';
+  const wa = '<a href="https://wa.me/5492244472255" rel="noopener" style="text-decoration:underline">escribime</a>';
+
+  let timer = null;
+  function limpiarTimer() { if (timer) { clearTimeout(timer); timer = null; } }
+
+  function pintar(a) {
+    const pago = a.pago || {};
+    const estado = pago.estado;
+    if (estado !== 'iniciado') limpiarTimer();
+    const reintento = `<a class="btn" href="./index.html?opcion=${encodeURIComponent(a.opcion || '')}">Probar de nuevo</a>`;
+    switch (estado) {
+      case 'aprobado': {
+        const nombre = a.nombre ? ', ' + escHTML(a.nombre) : '';
+        pantalla('☕', '¡Gracias' + nombre + '!', 'Pago recibido. Me alegra mucho que te haya servido.',
+          (a.mensaje ? `<p class="msg">“${escHTML(a.mensaje)}”</p>` : '') + linkInicio);
+        break;
+      }
+      case 'iniciado':
+        pantalla(spinner, 'Confirmando tu pago…', 'Esto toma unos segundos. No cierres la página.');
+        if (!timer) timer = setTimeout(() => {
+          pantalla(spinner, 'Todavía no recibimos la confirmación', 'Si pagaste, no hagas nada: se actualiza solo.');
+        }, 60000);
+        break;
+      case 'pendiente':
+        pantalla('⏳', 'Pago pendiente de acreditación', 'Cuando se acredite, esta página se actualiza sola.');
+        break;
+      case 'en_revision':
+        pantalla('⏳', 'MercadoPago está revisando el pago', 'Se actualiza solo cuando MercadoPago decida.');
+        break;
+      case 'rechazado': {
+        const m = MOTIVOS[pago.mpStatusDetail];
+        pantalla('❌', 'Pago rechazado' + (m ? ': ' + m : ''), 'No se cobró nada.', reintento);
+        break;
+      }
+      case 'cancelado':
+        pantalla('🚫', 'El pago se canceló', 'No se cobró nada.', reintento);
+        break;
+      case 'vencido':
+        pantalla('⌛', 'El link de pago venció', 'No se cobró nada.', reintento);
+        break;
+      case 'reembolsado':
+        pantalla('↩️', 'Te devolvimos el dinero', 'Gracias igual por la intención.', linkInicio);
+        break;
+      default: // en_disputa, contracargo, monto_inconsistente, desconocido
+        pantalla('🔎', 'Estamos revisando tu pago', `Si tenés dudas, ${wa}.`, linkInicio);
+    }
+  }
+
+  function noExiste(msg) {
+    limpiarTimer();
+    pantalla('🤔', msg, '', linkInicio);
+  }
+
+  if (!code) return noExiste('No encontramos ese aporte');
+  if (!FIREBASE_LISTO || !db) return pantalla('☕', 'Muy pronto', 'Esta página todavía no está conectada.', linkInicio);
+
+  pantalla(spinner, 'Confirmando tu pago…', 'Esto toma unos segundos. No cierres la página.');
+  db.collection('aportes').doc(code).onSnapshot(
+    snap => { snap.exists ? pintar(snap.data()) : noExiste('No encontramos ese aporte'); },
+    err => { console.error(err); noExiste('No pudimos leer el estado de tu aporte'); }
+  );
+})();
+</script>
+</body>
+</html>

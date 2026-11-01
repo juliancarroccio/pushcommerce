@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel · Invitame un café</title>
+  <link rel="icon" type="image/png" href="./img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./cafe.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="./firebase-init.js"></script>
+  <script src="./pagos-panel.js"></script>
+</head>
+<body>
+  <div class="top"><img src="./img/logo.png" alt="" width="37" height="26"><span>Panel · Invitame un café</span></div>
+  <main>
+    <div id="pronto" class="pronto" hidden>Firebase todavía no está configurado.</div>
+
+    <form id="login" novalidate hidden>
+      <h1>Ingresar</h1>
+      <label class="campo"><span>Email</span><input id="email" type="email" autocomplete="username" required></label>
+      <label class="campo"><span>Contraseña</span><input id="clave" type="password" autocomplete="current-password" required></label>
+      <div id="login-error" class="error" role="alert" hidden></div>
+      <button id="login-btn" class="btn" type="submit">Entrar</button>
+    </form>
+
+    <section id="app" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px">
+        <h1 style="margin:0;font-size:28px">Aportes</h1>
+        <button id="salir" class="btn sec" type="button" style="width:auto;padding:8px 16px;font-size:15px">Salir</button>
+      </div>
+      <div id="pagos"></div>
+    </section>
+  </main>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  if (!FIREBASE_LISTO || !auth || !db) { $('pronto').hidden = false; return; }
+
+  let panel = null;
+  auth.onAuthStateChanged(user => {
+    if (panel) { panel.desmontar(); panel = null; }
+    $('login').hidden = !!user;
+    $('app').hidden = !user;
+    if (!user) return;
+    // Quién es staff lo deciden las reglas de Firestore; acá solo se monta la lista.
+    panel = PagosPanel.montar($('pagos'), {
+      db,
+      coleccion: 'aportes',
+      titulo: d => (d.titulo || d.opcion || '') + (d.nombre ? ' · ' + d.nombre : ''),
+      detalle: d => d.mensaje ? 'Mensaje: ' + d.mensaje : '',
+    });
+  });
+
+  $('login').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = $('login-btn');
+    btn.disabled = true;
+    $('login-error').hidden = true;
+    try {
+      await auth.signInWithEmailAndPassword($('email').value.trim(), $('clave').value);
+    } catch (err) {
+      $('login-error').textContent = 'Email o contraseña incorrectos.';
+      $('login-error').hidden = false;
+    } finally { btn.disabled = false; }
+  });
+  $('salir').addEventListener('click', () => auth.signOut());
+})();
+</script>
+</body>
+</html>

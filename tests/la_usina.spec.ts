@@ -217,6 +217,10 @@ test('vista calendario (selector demo): día sin atención deshabilitado, elegir
   await expect(page.locator(`.cal-dia[data-fecha="${hoy}"]`)).toHaveAttribute('aria-current', 'date');
 
   // Un día sin atención (la mesa de show solo abre los sábados) está deshabilitado y no avanza.
+  // Si hoy es el último sábado del mes, el resto del mes ya es pasado: mirar el siguiente.
+  if (await page.locator('.cal-dia[data-estado="cerrado"]').count() === 0) {
+    await page.locator('#cal-next').click();
+  }
   const cerrado = page.locator('.cal-dia[data-estado="cerrado"]').first();
   await expect(cerrado).toHaveAttribute('aria-disabled', 'true');
   await cerrado.click({ force: true });

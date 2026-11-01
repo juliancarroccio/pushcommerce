@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Invitame un café</title>
+  <meta name="description" content="Si algo de lo que hago te sirvió, invitame un café.">
+  <meta name="theme-color" content="#0C2C4B">
+  <link rel="icon" type="image/png" href="./img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./cafe.css">
+  <script src="./pagos-config.js"></script>
+</head>
+<body>
+  <div class="top"><img src="./img/logo.png" alt="" width="37" height="26"><span>Las Flores Software</span></div>
+  <main>
+    <h1>Invitame un café</h1>
+    <p class="lead">Si algo de lo que hago te sirvió, invitame un café. Es la primera prueba real de pagos online de Las Flores Software.</p>
+
+    <form id="form" novalidate>
+      <fieldset class="opciones" id="opciones" role="radiogroup" aria-label="Elegí qué invitarme"></fieldset>
+
+      <label class="campo"><span>Tu nombre (opcional)</span>
+        <input id="nombre" type="text" maxlength="40" autocomplete="given-name"></label>
+      <label class="campo"><span>Un mensaje (opcional) <small id="cuenta">0/140</small></span>
+        <textarea id="mensaje" maxlength="140" rows="3"></textarea></label>
+
+      <div id="error" class="error" role="alert" hidden></div>
+      <button id="btn" class="btn" type="submit">Invitar con MercadoPago</button>
+    </form>
+
+    <div id="pronto" class="pronto" hidden>Muy pronto ☕</div>
+
+    <p class="aviso">Pagás en MercadoPago (tarjeta hasta 3 cuotas con interés del banco, débito o dinero en cuenta). Es un aporte voluntario; si pagaste por error <a href="https://wa.me/5492244472255" rel="noopener">escribime</a> y te lo devuelvo.</p>
+  </main>
+  <footer>Sitio por <a href="https://lasflores.software" rel="noopener">Las Flores Software</a></footer>
+
+<script>
+(function () {
+  // Solo para MOSTRAR. El monto real lo decide el Worker según `opcion`.
+  const OPCIONES = [
+    { id: 'cafe', emoji: '☕', nombre: 'Un café', monto: 100 },
+    { id: 'cortado', emoji: '🥐', nombre: 'Café con medialuna', monto: 150 },
+    { id: 'desayuno', emoji: '🍳', nombre: 'Desayuno', monto: 200 },
+    { id: 'almuerzo', emoji: '🍝', nombre: 'Almuerzo', monto: 300 },
+  ];
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const pesos = n => '$' + n.toLocaleString('es-AR');
+
+  let elegida = 'cafe';
+  const pre = new URLSearchParams(location.search).get('opcion');
+  if (OPCIONES.some(o => o.id === pre)) elegida = pre;
+
+  $('opciones').innerHTML = OPCIONES.map(o =>
+    `<button type="button" class="opcion" role="radio" data-opcion="${o.id}" aria-checked="false">
+      <span class="emoji" aria-hidden="true">${o.emoji}</span>
+      <span class="nombre">${esc(o.nombre)}</span>
+      <span class="precio">${pesos(o.monto)}</span>
+    </button>`).join('');
+
+  function marcar() {
+    document.querySelectorAll('.opcion').forEach(b => {
+      const on = b.dataset.opcion === elegida;
+      b.setAttribute('aria-checked', on);
+      b.tabIndex = on ? 0 : -1;
+    });
+  }
+  $('opciones').addEventListener('click', e => {
+    const b = e.target.closest('.opcion');
+    if (b) { elegida = b.dataset.opcion; marcar(); }
+  });
+  $('opciones').addEventListener('keydown', e => {
+    const i = OPCIONES.findIndex(o => o.id === elegida);
+    const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (!d) return;
+    e.preventDefault();
+    elegida = OPCIONES[(i + d + OPCIONES.length) % OPCIONES.length].id;
+    marcar();
+    document.querySelector(`[data-opcion="${elegida}"]`).focus();
+  });
+  marcar();
+
+  $('mensaje').addEventListener('input', () => { $('cuenta').textContent = $('mensaje').value.length + '/140'; });
+
+  // Sin Worker configurado: "Muy pronto", sin romper nada.
+  if (!WORKER_LISTO) {
+    $('form').hidden = true;
+    $('pronto').hidden = false;
+    return;
+  }
+
+  const btn = $('btn');
+  const etiqueta = btn.textContent;
+  function error(msg) { $('error').textContent = msg; $('error').hidden = !msg; }
+  function ocupado(si) {
+    btn.disabled = si;
+    btn.innerHTML = si ? '<span class="spinner" aria-hidden="true"></span> Abriendo MercadoPago…' : esc(etiqueta);
+  }
+
+  $('form').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (btn.disabled) return;
+    error('');
+    ocupado(true);
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 20000);
+    try {
+      // Nunca se manda monto: solo la opción.
+      const r = await fetch(WORKER_URL.replace(/\/+$/, '') + '/v1/aportes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ opcion: elegida, nombre: $('nombre').value.trim(), mensaje: $('mensaje').value.trim() }),
+        signal: ctl.signal,
+      });
+      if (r.status === 422) throw new Error('Esa opción no está disponible. Recargá la página e intentá de nuevo.');
+      if (r.status === 429) throw new Error('Demasiados intentos seguidos. Esperá un minuto y probá de nuevo.');
+      if (!r.ok) throw new Error('No pudimos abrir MercadoPago. No se cobró nada. Tocá el botón para reintentar.');
+      const data = await r.json();
+      let destino;
+      try { destino = new URL(data.init_point); } catch (_) { destino = null; }
+      if (!data.codigo || !destino || destino.protocol !== 'https:' || !/(^|\.)mercadopago\.com(\.ar)?$/.test(destino.hostname)) {
+        throw new Error('Respuesta inesperada del servidor. No se cobró nada. Reintentá en un rato.');
+      }
+      // Guardar el código ANTES de redirigir (si el usuario vuelve por otro camino).
+      try { localStorage.setItem('lfs_cafe_codigo', data.codigo); } catch (_) {}
+      location.href = destino.href; // misma pestaña; window.open tras un await lo bloquea Safari
+    } catch (err) {
+      const red = err.name === 'AbortError' || err instanceof TypeError;
+      error(red ? 'No pudimos conectar. Revisá tu conexión y reintentá. No se cobró nada.' : err.message);
+      ocupado(false);
+    } finally {
+      clearTimeout(timer);
+    }
+  });
+
+  // Volver con el botón Atrás (bfcache): destrabar el botón.
+  window.addEventListener('pageshow', e => { if (e.persisted) ocupado(false); });
+
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>

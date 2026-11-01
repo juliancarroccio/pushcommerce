@@ -202,21 +202,12 @@ que explicárselo al cliente desde cero antes de aplicarlo.
      - "Cancelar pedido" devuelve stock y "Eliminar" no.
      - Los pedidos con más de 12 combinaciones talle/color de una misma prenda
        van por WhatsApp.
-2. **Seguridad de El Sabor de Mamá — CRÍTICO, peor que Cattorini**.
-   Diagnóstico en engram (`pushcommerce/seguridad-sabor-de-mama`).
-   - `pedidos` sin ningún tipo de auth: el código necesita reglas abiertas
-     para leer, modificar y borrar → cualquiera descarga los datos de los
-     clientes, borra la cola o mete spam.
-   - XSS en `pedidos.html:459-492, 550-559, 633`, que puede llegar al PAT y
-     al repo de producción.
-   - El acceso a la cola se saltea con `sessionStorage['pc_cola']`.
-   - Fix: login del dueño con email y contraseña en `pedidos.html`, escapar
-     el `innerHTML` y reglas con `create` público validado y el resto solo
-     dueño. Desplegar primero el código y después las reglas.
-   - Producción vive en otro repo: `elsabordemama/elsabordemama.github.io`.
-   - **Necesito de Julian:** las reglas reales del proyecto
-     `elsabordemama-dec44` y confirmar que ese repo tiene el mismo código.
-   - Preparar la explicación para el cliente.
+2. ~~Seguridad de El Sabor de Mamá~~ — **DESCARTADO por Julian el 2026-10-31.**
+   La dueña es familiar, maneja poco dinero y datos que no comprometen, y
+   casi seguro solo usa los avisos por WhatsApp, no la cola de pedidos.
+   El trabajo quedó en la rama local `seguridad-y-cache` de
+   `~/Documents/repos/elsabordemama.github.io` (sin push), por si algún día
+   se retoma. Diagnóstico en engram (`pushcommerce/seguridad-sabor-de-mama`).
 3. **Medios de pago: MercadoPago, Stripe, etc.**, como **servicio nuevo de
    e-commerce** para ofrecer, más los que hagan falta.
    - ✅ **Diseño hecho:** `~/.claude/skills/new_client/references/module-pagos-mercadopago.md`.
@@ -228,9 +219,16 @@ que explicárselo al cliente desde cero antes de aplicarlo.
      - El Worker también se hace cargo del descuento de stock, y eso levanta
        el tope de 12 variantes por producto.
    - ✅ **Precio:** adicional de e-commerce, US$20 pago único / US$2 por mes.
-   - **Falta implementar.** Julian tiene que crear la app de prueba en
-     MercadoPago Developers con su cuenta y una cuenta de Cloudflare (pasos en
-     el doc, §10). Cattorini es el primer cliente.
+   - **Piloto primero (decidido 2026-10-31): "Invitame un café"** en
+     `pages/invitame-cafe/` (pública, `noindex`), con 4 montos fijos ($100,
+     $150, $200, $300) y plata real, para aprender antes de Cattorini.
+     El Worker vive en el repo `~/Documents/repos/lfs-pagos` (contrato en
+     `CONTRATO.md`), separado en un núcleo genérico + "tenant" por cliente.
+     Panel reutilizable `pages/invitame-cafe/pagos-panel.js` para sumarlo al
+     panel de cualquier cliente.
+   - Julian tiene que crear la app en MercadoPago Developers con su cuenta,
+     una cuenta de Cloudflare y un proyecto Firebase para el piloto (pasos en
+     el README de `lfs-pagos`). Después del piloto: Cattorini.
 
 ## Tasks pendientes (ver también el task tracker)
 

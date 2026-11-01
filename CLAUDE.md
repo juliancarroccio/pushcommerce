@@ -226,9 +226,13 @@ que explicárselo al cliente desde cero antes de aplicarlo.
      `CONTRATO.md`), separado en un núcleo genérico + "tenant" por cliente.
      Panel reutilizable `pages/invitame-cafe/pagos-panel.js` para sumarlo al
      panel de cualquier cliente.
-   - Julian tiene que crear la app en MercadoPago Developers con su cuenta,
-     una cuenta de Cloudflare y un proyecto Firebase para el piloto (pasos en
-     el README de `lfs-pagos`). Después del piloto: Cattorini.
+   - ✅ **Piloto en producción (1-nov-2026):** cobró un pago real de $100
+     (comisión 4,3% con dinero en cuenta) y lo devolvió; todo automático.
+     Publicado como demo en lasflores.software ("demo con pago real").
+     Aprendizajes en `module-pagos-mercadopago.md` §16.
+   - **Siguiente: v2 = OAuth + un solo Worker para todos los clientes**
+     (§17 del mismo doc). El plan Free de Cloudflare permite solo 5 crons por
+     cuenta. Después: Cattorini.
 
 ## Tasks pendientes (ver también el task tracker)
 

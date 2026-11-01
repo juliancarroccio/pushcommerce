@@ -7,12 +7,12 @@
  * logueado). Nunca escribe: eso lo hace el Worker.
  */
 const FIREBASE_CONFIG = {
-  apiKey: 'TODO_REEMPLAZAR',
-  authDomain: 'TODO_REEMPLAZAR',
-  projectId: 'TODO_REEMPLAZAR',
-  storageBucket: 'TODO_REEMPLAZAR',
-  messagingSenderId: 'TODO_REEMPLAZAR',
-  appId: 'TODO_REEMPLAZAR',
+  apiKey: 'AIzaSyCybMSGwcesqboXb2kZkFKanM3mqtqfnik',
+  authDomain: 'lfs-pagos.firebaseapp.com',
+  projectId: 'lfs-pagos',
+  storageBucket: 'lfs-pagos.firebasestorage.app',
+  messagingSenderId: '336576883049',
+  appId: '1:336576883049:web:80ba98c8f267b5be1db5f8',
 };
 const FIREBASE_LISTO = !Object.values(FIREBASE_CONFIG).some(v => /TODO/.test(v));
 

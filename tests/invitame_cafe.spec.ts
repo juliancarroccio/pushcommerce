@@ -96,6 +96,17 @@ async function workerConfigurado(page: Page) {
     r.fulfill({ contentType: 'text/javascript', body: `const WORKER_URL='${WORKER}'; const WORKER_LISTO=true;` }));
 }
 
+/** Simula la config sin completar (TODO), sea cual sea la publicada. */
+async function sinConfigurar(page: Page) {
+  await page.route('**/invitame-cafe/pagos-config.js', (r) =>
+    r.fulfill({ contentType: 'text/javascript', body: `const WORKER_URL='TODO_WORKER_URL'; const WORKER_LISTO=false;` }));
+  await page.route('**/invitame-cafe/firebase-init.js', async (r) => {
+    const res = await r.fetch();
+    const body = (await res.text()).replace(/(apiKey|authDomain|projectId|storageBucket|messagingSenderId|appId): '[^']*'/g, "$1: 'TODO_REEMPLAZAR'");
+    await r.fulfill({ response: res, body });
+  });
+}
+
 function aporte(estado: string, extra: any = {}, pago: any = {}) {
   return {
     opcion: 'cortado', titulo: 'Café con medialuna', monto: 150, nombre: 'Ana', mensaje: 'Gracias!',
@@ -111,6 +122,7 @@ async function sinOverflow(page: Page) {
 /* ═══════════════════════════ index ═══════════════════════════ */
 test.describe('index', () => {
   test('sin Worker configurado muestra "Muy pronto" y no el botón', async ({ page }) => {
+    await sinConfigurar(page);
     await page.goto('/invitame-cafe/index.html');
     await expect(page.locator('#pronto')).toBeVisible();
     await expect(page.locator('#btn')).toBeHidden();
@@ -304,6 +316,7 @@ const PAGOS = { AAAAAAAA22: { 111: { status: 'approved', transaction_amount: 150
 
 test.describe('panel', () => {
   test('sin Firebase configurado no se rompe', async ({ page }) => {
+    await sinConfigurar(page);
     await page.goto('/invitame-cafe/panel.html');
     await expect(page.locator('#pronto')).toBeVisible();
   });

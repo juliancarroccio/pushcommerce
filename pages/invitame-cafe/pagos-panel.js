@@ -15,6 +15,7 @@
  *         monto:   d => d.total,                // por defecto d.monto
  *         // pago: d => d.pago,                 // por defecto d.pago
  *         // encabezado: 'Pagos',               // título opcional de la sección
+ *         // incluir: d => !!d.pago,            // si la colección tiene docs sin pago
  *       });
  *       // p.desmontar() al cerrar sesión.
  *     Cada doc debe tener `creadoEn` (orden) y `pago.estado` (contrato del
@@ -125,6 +126,7 @@
     const fDetalle = opts.detalle || (() => '');
     const fMonto = opts.monto || (d => d.monto);
     const fPago = opts.pago || (d => d.pago);
+    const fIncluir = opts.incluir || (() => true);
 
     const st = { docs: [], filtro: '', abiertos: new Set(), det: {}, error: '' };
 
@@ -234,7 +236,7 @@
     const unsub = db.collection(coleccion).orderBy('creadoEn', 'desc').limit(limite).onSnapshot(
       snap => {
         st.error = '';
-        st.docs = snap.docs.map(x => Object.assign({ id: x.id }, x.data()));
+        st.docs = snap.docs.map(x => Object.assign({ id: x.id }, x.data())).filter(fIncluir);
         render();
       },
       err => {
